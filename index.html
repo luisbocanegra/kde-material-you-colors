@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="material-dynamic-colors.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <h1>Image:</h1>
+    <img src="Elixir.png" alt="" height="300px" id="image_element">
+    <input type="file" name="" id="input" value="Elixir.png" dirname="/">
+    <h1>Colors!</h1>
+    <p id="colors_element"></p>
+    <script>
+        async function start() {
+
+            //canvas = document.getElementById("image_element")
+            //var image = canvas.toDataURL("image/png")
+            let colors = await materialDynamicColors("Selene.png");
+            //console.log(colors);
+            var path = document.location.pathname;
+            //var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
+            //document.getElementById("colors_element").innerHTML = JSON.stringify(colors);
+            document.getElementById("colors_element").innerHTML = JSON.stringify(colors);
+        }
+
+        start();
+    </script>
+</body>
+
+</html>
