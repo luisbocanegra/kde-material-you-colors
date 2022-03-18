@@ -11,7 +11,7 @@ class RGB(numpy.ndarray): # taken from https://programming-idioms.org/idiom/154/
             int(rgbstr[i:i+2], 16)
             for i in range(1, len(rgbstr), 2)
             ]).view(cls)
- 
+
         def __str__(self):
             self = self.astype(numpy.uint8)
             return '#' + ''.join(format(n, 'x') for n in self)
@@ -35,9 +35,9 @@ class ColorScheme:
         #blend1 = Color(c1.rgb + c2.rgb)
         print(f'{c1} + {c2} = {c3}')
         light_scheme = f"""[ColorEffects:Disabled]
-Color=56,56,56
-ColorAmount=0
-ColorEffect=0
+Color={c3}
+ColorAmount=0.55
+ColorEffect=3
 ContrastAmount=0.65
 ContrastEffect=0
 IntensityAmount=0.1
@@ -58,7 +58,7 @@ IntensityEffect=0
 BackgroundAlternate=255,89,125
 BackgroundNormal={colors['light']['surface']}
 DecorationFocus={colors['light']['primary']}
-DecorationHover=255,89,125
+DecorationHover={colors['light']['primary']}
 ForegroundActive=#ffff00
 ForegroundInactive=75,79,85
 ForegroundLink=41,128,185
@@ -67,6 +67,9 @@ ForegroundNeutral=95,125,205
 ForegroundNormal={colors['light']['onSurface']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
+
+[Colors:Header]
+BackgroundNormal={colors['light']['secondaryContainer']}
 
 [Colors:Selection]
 BackgroundAlternate=255,89,125
@@ -97,18 +100,18 @@ ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:View]
-BackgroundAlternate=250,251,252
+BackgroundAlternate={colors['light']['inverseOnSurface']}
 BackgroundNormal={c3}
 DecorationFocus={colors['light']['primary']}
 DecorationHover={colors['light']['primary']}
-ForegroundActive=61,174,233
-ForegroundInactive=75,79,85
+ForegroundActive={colors['light']['onSurface']}
+ForegroundInactive={colors['light']['onSurfaceVariant']}
 ForegroundLink=31,140,236
-ForegroundNegative=67,205,189
+ForegroundNegative={colors['light']['error']}
 ForegroundNeutral={colors['light']['inversePrimary']}
 ForegroundNormal={colors['light']['onSurfaceVariant']}
 ForegroundPositive=156,83,198
-ForegroundVisited=127,140,141
+ForegroundVisited=196,54,189
 
 [Colors:Window]
 BackgroundAlternate=#ff0000
@@ -130,7 +133,7 @@ Name=Material You Light
 shadeSortColumn=true
 
 [KDE]
-contrast=10
+contrast=5
 
 [WM]
 activeBackground={colors['light']['secondaryContainer']}
@@ -141,9 +144,9 @@ inactiveBlend=247,249,249
 inactiveForeground={colors['light']['onSecondaryContainer']}
 """
         dark_scheme = f"""[ColorEffects:Disabled]
-Color=56,56,56
-ColorAmount=0
-ColorEffect=0
+Color={c3_dark}
+ColorAmount=0.55
+ColorEffect=3
 ContrastAmount=0.65
 ContrastEffect=0
 IntensityAmount=0.1
@@ -175,7 +178,7 @@ ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:Selection]
-BackgroundAlternate=255,89,125
+BackgroundAlternate={colors['dark']['primary']}
 BackgroundNormal={colors['dark']['primary']}
 DecorationFocus={colors['dark']['primary']}
 DecorationHover=255,89,125
@@ -212,7 +215,7 @@ ForegroundInactive=75,79,85
 ForegroundLink=31,140,236
 ForegroundNegative=67,205,189
 ForegroundNeutral={colors['dark']['inversePrimary']}
-ForegroundNormal=60,66,70
+ForegroundNormal={colors['dark']['onSurface']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 

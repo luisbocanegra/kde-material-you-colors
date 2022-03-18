@@ -12,9 +12,9 @@ url = "http://localhost/kde-material-you-colors/"
 def remove_last_line_from_string(s):
     return s[:s.rfind('\n')]
 # Set current wallpaper
-wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '74q;d' | sed 's#Image=file://###'", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '75q;d' | sed 's#Image=file://###'", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 #wallpaper_path = wallpaper_path.split('\n', 1)[1]
-c_m = "cp -r "+ wallpaper_path + " current_wallpaper.png"
+c_m = "cp -rfL '"+ wallpaper_path + "' current_wallpaper.png"
 print(c_m)
 os.system(c_m)
 print('hola')
