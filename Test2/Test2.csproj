@@ -9,7 +9,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Json.Net" Version="1.0.33" />
+    <!-- <PackageReference Include="Json.Net" Version="1.0.33" /> -->
     <PackageReference Include="MaterialColorUtilities" Version="0.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />

@@ -1,9 +1,9 @@
 {
     "light": {
-        "Primary": "#1E47F2",
+        "Primary": "#4657B1",
         "OnPrimary": "#FFFFFF",
         "PrimaryContainer": "#DDE1FF",
-        "OnPrimaryContainer": "#000E5F",
+        "OnPrimaryContainer": "#000E5E",
         "Secondary": "#5A5D72",
         "OnSecondary": "#FFFFFF",
         "SecondaryContainer": "#E0E1FA",
@@ -30,14 +30,14 @@
     },
     "dark": {
         "Primary": "#B8C3FF",
-        "OnPrimary": "#001D94",
-        "PrimaryContainer": "#002CCE",
+        "OnPrimary": "#0F2581",
+        "PrimaryContainer": "#2C3E98",
         "OnPrimaryContainer": "#DDE1FF",
         "Secondary": "#C3C5DD",
         "OnSecondary": "#2C2F42",
         "SecondaryContainer": "#43465A",
         "OnSecondaryContainer": "#E0E1FA",
-        "Tertiary": "#E5BAD7",
+        "Tertiary": "#E5BAD8",
         "OnTertiary": "#44273E",
         "TertiaryContainer": "#5D3C55",
         "OnTertiaryContainer": "#FFD7F3",
@@ -45,7 +45,7 @@
         "OnError": "#680003",
         "ErrorContainer": "#930006",
         "OnErrorContainer": "#FFDAD4",
-        "Background": "#1B1B1F",
+        "Background": "#FFFFFF",
         "OnBackground": "#E4E1E6",
         "Surface": "#1B1B1F",
         "OnSurface": "#E4E1E6",
@@ -55,6 +55,6 @@
         "Shadow": "#000000",
         "InverseSurface": "#E4E1E6",
         "InverseOnSurface": "#303034",
-        "InversePrimary": "#1E47F2"
+        "InversePrimary": "#4657B1"
     }
 }
