@@ -14,43 +14,20 @@ def remove_last_line_from_string(s):
     return s[:s.rfind('\n')]
 # Set current wallpaper
 wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '75q;d' | sed 's#Image=file://###'", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+#print(wallpaper_path)
 #wallpaper_path = wallpaper_path.split('\n', 1)[1]
-c_m = "cp -rfL '"+ wallpaper_path + "' current_wallpaper.png"
-print(c_m)
-os.system(c_m)
-print('hola')
-print(wallpaper_path)
-print('hola')
+copy_command = "cp -rfL '"+ wallpaper_path + "' Test2/Resources/wallpaper.png"
+print(copy_command)
+os.system(copy_command)
 
-#with open(wallpaper_path) as wallpaper:
-# os.symlink('/home/luis/Pictures/Wallpapers/Elixir.png', 'tmpLink')
-# os.rename('tmpLink', 'current_wallpaper.png')
-# shutil.copy('/home/luis/Pictures/Wallpapers/Elixir.png','current_wallpaper.png')
-# os.system("cp")
-# create an HTML Session object
-session = AsyncHTMLSession()
-try:
-    async def get_results():
-        r = await session.get(url)
-        await r.html.arender(timeout=30, sleep=10)
-        return r
-    
-    # Use the object above to connect to needed webpage
-    response =  session.run(get_results)
-    # Run JavaScript code on webpage
-    
-except requests.exceptions.RequestException as e:
-    print(e)
+colors_from_net = subprocess.Popen("cd /run/media/luis/Windows10/Users/luis/Documents/kde-material-you-colors/Test2 && dotnet run", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 
-# find element with colors object
-print(response[0].text)
+print(colors_from_net)
 
-colors_element = response[0].html.find("#colors_element")
-
-print(colors_element[0].text)
-if colors_element:
+# print(colors_element[0].text)
+if colors_from_net:
     # get text from element
-    colors_str = colors_element[0].text
+    colors_str = colors_from_net
 
     #print(colors_str)
 
@@ -58,7 +35,7 @@ if colors_element:
     colors_json = json.loads(colors_str)
 
     with open ('putput.json', 'w', encoding='utf8') as light_scheme_file:
-            light_scheme_file.write(str(colors_json))
+            light_scheme_file.write(str(colors_json).replace("'", '"'))
 
     #print(colors_json)
     colors_light = ColorScheme(colors_json)

@@ -25,12 +25,12 @@ class ColorScheme:
     def make_light_scheme(self):
         colors = self.colors
         #print(f'Colors light:\n{self.colors}')
-        c1 = RGB.from_str(colors['light']['surface'])
-        c2 = RGB.from_str(colors['light']['secondaryContainer'])
+        c1 = RGB.from_str(colors['light']['Surface'])
+        c2 = RGB.from_str(colors['light']['SecondaryContainer'])
         c3 = ((((c1 + c2 ) /2) + c1)  / 2)
         
-        c1 = RGB.from_str(colors['dark']['surface'])
-        c2 = RGB.from_str(colors['dark']['secondaryContainer'])
+        c1 = RGB.from_str(colors['dark']['Surface'])
+        c2 = RGB.from_str(colors['dark']['SecondaryContainer'])
         c3_dark = ((((c1 + c2 ) /2)))
         #blend1 = Color(c1.rgb + c2.rgb)
         print(f'{c1} + {c2} = {c3}')
@@ -56,43 +56,43 @@ IntensityEffect=0
 
 [Colors:Button]
 BackgroundAlternate=255,89,125
-BackgroundNormal={colors['light']['surface']}
-DecorationFocus={colors['light']['primary']}
-DecorationHover={colors['light']['primary']}
+BackgroundNormal={colors['light']['Surface']}
+DecorationFocus={colors['light']['Primary']}
+DecorationHover={colors['light']['Primary']}
 ForegroundActive=#ffff00
 ForegroundInactive=0,0,255
 ForegroundLink=41,128,185
 ForegroundNegative=39,120,110
 ForegroundNeutral=95,125,205
-ForegroundNormal={colors['light']['onSurface']}
+ForegroundNormal={colors['light']['OnSurface']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:Header]
-BackgroundNormal={colors['light']['secondaryContainer']}
+BackgroundNormal={colors['light']['SecondaryContainer']}
 
 [Colors:Selection]
 BackgroundAlternate=255,89,125
-BackgroundNormal={colors['light']['primary']}
-DecorationFocus={colors['light']['primary']}
+BackgroundNormal={colors['light']['Primary']}
+DecorationFocus={colors['light']['Primary']}
 DecorationHover=255,89,125
 ForegroundActive=252,252,252
 ForegroundInactive=132,134,140
 ForegroundLink=253,188,75
 ForegroundNegative=67,205,189
 ForegroundNeutral=95,125,205
-ForegroundNormal={colors['light']['onPrimary']}
+ForegroundNormal={colors['light']['OnPrimary']}
 ForegroundPositive=156,83,198
 ForegroundVisited=189,195,199
 
 [Colors:Tooltip]
 BackgroundAlternate=255,89,125
-BackgroundNormal={colors['light']['primary']}
+BackgroundNormal={colors['light']['Primary']}
 DecorationFocus=255,99,118
 DecorationHover=255,89,125
 ForegroundActive=61,174,233
 
-ForegroundInactive={colors['light']['onPrimary']}
+ForegroundInactive={colors['light']['OnPrimary']}
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
 ForegroundNeutral=95,125,205
@@ -101,32 +101,32 @@ ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:View]
-BackgroundAlternate={colors['light']['inverseOnSurface']}
+BackgroundAlternate={colors['light']['InverseOnSurface']}
 BackgroundNormal={c3}
-DecorationFocus={colors['light']['primary']}
+DecorationFocus={colors['light']['Primary']}
 #-----------------------------------------------
-DecorationHover={colors['light']['primary']}
-ForegroundActive={colors['light']['onSurface']}
-ForegroundInactive={colors['light']['onSurfaceVariant']}
+DecorationHover={colors['light']['Primary']}
+ForegroundActive={colors['light']['OnSurface']}
+ForegroundInactive={colors['light']['OnSurfaceVariant']}
 ForegroundLink=31,140,236
-ForegroundNegative={colors['light']['error']}
-ForegroundNeutral={colors['light']['inversePrimary']}
-ForegroundNormal={colors['light']['onSurfaceVariant']}
+ForegroundNegative={colors['light']['Error']}
+ForegroundNeutral={colors['light']['InversePrimary']}
+ForegroundNormal={colors['light']['OnSurfaceVariant']}
 ForegroundPositive=156,83,198
 ForegroundVisited=196,54,189
 
 [Colors:Window]
 BackgroundAlternate=#ff0000
-BackgroundNormal={colors['light']['secondaryContainer']}
+BackgroundNormal={colors['light']['SecondaryContainer']}
 DecorationFocus=#ff0000
 DecorationHover=#00ff00
 ForegroundActive=61,174,233
 ForegroundInactive=75,79,85
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
-ForegroundNeutral={colors['light']['inversePrimary']}
+ForegroundNeutral={colors['light']['InversePrimary']}
 #---------------------------------------------------- Window header text all
-ForegroundNormal={colors['light']['onSurfaceVariant']}
+ForegroundNormal={colors['light']['OnSurfaceVariant']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
@@ -139,12 +139,12 @@ shadeSortColumn=true
 contrast=5
 
 [WM]
-activeBackground={colors['light']['secondaryContainer']}
+activeBackground={colors['light']['SecondaryContainer']}
 activeBlend=183,186,195
-activeForeground={colors['light']['onSecondaryContainer']}
-inactiveBackground={colors['light']['secondaryContainer']}
+activeForeground={colors['light']['OnSecondaryContainer']}
+inactiveBackground={colors['light']['SecondaryContainer']}
 inactiveBlend=247,249,249
-inactiveForeground={colors['light']['onSecondaryContainer']}
+inactiveForeground={colors['light']['OnSecondaryContainer']}
 """
         dark_scheme = f"""[ColorEffects:Disabled]
 Color={c3_dark}
@@ -168,35 +168,35 @@ IntensityEffect=0
 
 [Colors:Button]
 BackgroundAlternate=255,89,125
-BackgroundNormal={colors['dark']['secondary']}
-DecorationFocus={colors['dark']['primary']}
+BackgroundNormal={colors['dark']['Secondary']}
+DecorationFocus={colors['dark']['Primary']}
 DecorationHover=255,89,125
 ForegroundActive=#ffff00
 ForegroundInactive=#ff0000
 ForegroundLink=41,128,185
 ForegroundNegative=39,120,110
 ForegroundNeutral=95,125,205
-ForegroundNormal={colors['dark']['onSecondary']}
+ForegroundNormal={colors['dark']['OnSecondary']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:Selection]
-BackgroundAlternate={colors['dark']['primary']}
-BackgroundNormal={colors['dark']['primary']}
-DecorationFocus={colors['dark']['primary']}
+BackgroundAlternate={colors['dark']['Primary']}
+BackgroundNormal={colors['dark']['Primary']}
+DecorationFocus={colors['dark']['Primary']}
 DecorationHover=255,89,125
 ForegroundActive=252,252,252
 ForegroundInactive=132,134,140
 ForegroundLink=253,188,75
 ForegroundNegative=67,205,189
 ForegroundNeutral=95,125,205
-ForegroundNormal={colors['dark']['onPrimary']}
+ForegroundNormal={colors['dark']['OnPrimary']}
 ForegroundPositive=156,83,198
 ForegroundVisited=189,195,199
 
 [Colors:Tooltip]
 BackgroundAlternate=255,89,125
-BackgroundNormal={colors['dark']['primary']}
+BackgroundNormal={colors['dark']['Primary']}
 DecorationFocus=255,99,118
 DecorationHover=255,89,125
 ForegroundActive=61,174,233
@@ -211,28 +211,28 @@ ForegroundVisited=127,140,141
 [Colors:View]
 BackgroundAlternate=250,251,252
 BackgroundNormal={c3_dark}
-DecorationFocus={colors['dark']['primary']}
-DecorationHover={colors['dark']['primary']}
+DecorationFocus={colors['dark']['Primary']}
+DecorationHover={colors['dark']['Primary']}
 ForegroundActive=61,174,233
 ForegroundInactive=75,79,85
 ForegroundLink=31,140,236
 ForegroundNegative=67,205,189
-ForegroundNeutral={colors['dark']['inversePrimary']}
-ForegroundNormal={colors['dark']['onSurface']}
+ForegroundNeutral={colors['dark']['InversePrimary']}
+ForegroundNormal={colors['dark']['OnSurface']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
 [Colors:Window]
 BackgroundAlternate=#ff0000
-BackgroundNormal={colors['dark']['secondaryContainer']}
+BackgroundNormal={colors['dark']['SecondaryContainer']}
 DecorationFocus=#ff0000
 DecorationHover=#00ff00
 ForegroundActive=61,174,233
 ForegroundInactive=75,79,85
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
-ForegroundNeutral={colors['dark']['inversePrimary']}
-ForegroundNormal={colors['dark']['onSurface']}
+ForegroundNeutral={colors['dark']['InversePrimary']}
+ForegroundNormal={colors['dark']['OnSurface']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
 
@@ -245,14 +245,14 @@ shadeSortColumn=true
 contrast=10
 
 [WM]
-activeBackground={colors['dark']['secondaryContainer']}
+activeBackground={colors['dark']['SecondaryContainer']}
 activeBlend=183,186,195
-activeForeground={colors['dark']['onSecondaryContainer']}
-inactiveBackground={colors['dark']['secondaryContainer']}
+activeForeground={colors['dark']['OnSecondaryContainer']}
+inactiveBackground={colors['dark']['SecondaryContainer']}
 inactiveBlend=247,249,249
-inactiveForeground={colors['dark']['onSecondaryContainer']}
+inactiveForeground={colors['dark']['OnSecondaryContainer']}
 """
-        #print(colors['light']['primary'])
+        #print(colors['light']['Primary'])
         
         home = str(Path.home())
         with open (home+'/.local/share/color-schemes/MaterialYouLight.colors', 'w', encoding='utf8') as light_scheme_file:
