@@ -20,7 +20,8 @@
             var path = document.location.pathname;
             //var directory = path.substring(path.indexOf('/'), path.lastIndexOf('/'));
             //document.getElementById("colors_element").innerHTML = JSON.stringify(colors);
-            document.getElementById("colors_element").innerHTML = JSON.stringify(colors);
+            document.getElementById("colors_element").innerHTML = JSON.stringify(colors, null, 4);
+            console.log(JSON.stringify(colors, null, 4));
         }
 
         start();

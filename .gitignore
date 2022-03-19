@@ -132,3 +132,17 @@ dmypy.json
 
 *.png
 *.jpeg
+
+.fake
+.ionide
+
+.old/
+
+### DotnetCore ###
+# .NET Core build folders
+Test2/bin/
+Test2/obj/
+
+# Common node modules locations
+/node_modules
+/wwwroot/node_modules

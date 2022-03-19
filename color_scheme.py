@@ -60,7 +60,7 @@ BackgroundNormal={colors['light']['surface']}
 DecorationFocus={colors['light']['primary']}
 DecorationHover={colors['light']['primary']}
 ForegroundActive=#ffff00
-ForegroundInactive=75,79,85
+ForegroundInactive=0,0,255
 ForegroundLink=41,128,185
 ForegroundNegative=39,120,110
 ForegroundNeutral=95,125,205
@@ -91,7 +91,8 @@ BackgroundNormal={colors['light']['primary']}
 DecorationFocus=255,99,118
 DecorationHover=255,89,125
 ForegroundActive=61,174,233
-ForegroundInactive=75,79,85
+
+ForegroundInactive={colors['light']['onPrimary']}
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
 ForegroundNeutral=95,125,205
@@ -103,6 +104,7 @@ ForegroundVisited=127,140,141
 BackgroundAlternate={colors['light']['inverseOnSurface']}
 BackgroundNormal={c3}
 DecorationFocus={colors['light']['primary']}
+#-----------------------------------------------
 DecorationHover={colors['light']['primary']}
 ForegroundActive={colors['light']['onSurface']}
 ForegroundInactive={colors['light']['onSurfaceVariant']}
@@ -123,6 +125,7 @@ ForegroundInactive=75,79,85
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
 ForegroundNeutral={colors['light']['inversePrimary']}
+#---------------------------------------------------- Window header text all
 ForegroundNormal={colors['light']['onSurfaceVariant']}
 ForegroundPositive=156,83,198
 ForegroundVisited=127,140,141
@@ -169,7 +172,7 @@ BackgroundNormal={colors['dark']['secondary']}
 DecorationFocus={colors['dark']['primary']}
 DecorationHover=255,89,125
 ForegroundActive=#ffff00
-ForegroundInactive=75,79,85
+ForegroundInactive=#ff0000
 ForegroundLink=41,128,185
 ForegroundNegative=39,120,110
 ForegroundNeutral=95,125,205
@@ -268,5 +271,5 @@ inactiveForeground={colors['dark']['onSecondaryContainer']}
         #     print(light_scheme_file.read())
             
         os.system('./plasma-theme  -c /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
-        time.sleep(3)
+        time.sleep(1)
         os.system('./plasma-theme  -c /home/luis/.local/share/color-schemes/MaterialYouLight.colors')

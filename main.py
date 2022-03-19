@@ -7,6 +7,7 @@ from color_scheme import ColorScheme
 import os
 from subprocess import check_output
 import shutil
+import pretty_errors
 
 url = "http://localhost/kde-material-you-colors/"
 def remove_last_line_from_string(s):
@@ -31,7 +32,7 @@ session = AsyncHTMLSession()
 try:
     async def get_results():
         r = await session.get(url)
-        await r.html.arender(timeout=10, sleep=2)
+        await r.html.arender(timeout=30, sleep=10)
         return r
     
     # Use the object above to connect to needed webpage
@@ -42,11 +43,11 @@ except requests.exceptions.RequestException as e:
     print(e)
 
 # find element with colors object
-#print(response[0].text)
+print(response[0].text)
 
 colors_element = response[0].html.find("#colors_element")
 
-
+print(colors_element[0].text)
 if colors_element:
     # get text from element
     colors_str = colors_element[0].text
