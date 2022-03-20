@@ -1,32 +1,43 @@
 from multiprocessing.connection import wait
 import subprocess
-import requests
-from requests_html import AsyncHTMLSession
 import json
 from color_scheme import ColorScheme
 import os
-from subprocess import check_output
-import shutil
 import pretty_errors
-
-url = "http://localhost/kde-material-you-colors/"
-
-
-def remove_last_line_from_string(s):
-    return s[:s.rfind('\n')]
+import dbus
+import argparse
 
 
-# Set current wallpaper
-wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '74q;d' | sed 's#Image=file://###'",
-                                  shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+def get_wallpaper(plugin = 'org.kde.image', monitor=0):
+    script = """
+    var Desktops = desktops();
+    //for (i=0;i<Desktops.length;i++) {
+        d = Desktops[%s];
+        d.wallpaperPlugin = "%s";
+        d.currentConfigGroup = Array("Wallpaper", "%s", "General");
+        print(d.readConfig("Image"));
+    //}
+    """
+    bus = dbus.SessionBus()
+    plasma = dbus.Interface(bus.get_object('org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
+    return str(plasma.evaluateScript(script % (monitor,plugin, plugin))).replace('file://','')
+    
+    
+    
+
+current_wallpaper = get_wallpaper('com.github.zren.inactiveblur',0)
+print(current_wallpaper)
+# Get current wallpaper
+wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '75q;d' | sed 's#Image=file://###'",
+                                    shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 # print(wallpaper_path)
 #wallpaper_path = wallpaper_path.split('\n', 1)[1]
-copy_command = "cp -rfL '" + wallpaper_path + "' Test2/Resources/wallpaper.png"
+copy_command = "cp -rfL '" + current_wallpaper + "' Test2/Resources/wallpaper.png"
 print(copy_command)
 os.system(copy_command)
 
 colors_from_net = subprocess.Popen("cd /run/media/luis/Windows10/Users/luis/Documents/kde-material-you-colors/Test2 && dotnet run",
-                                   shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+                                    shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 
 print(colors_from_net)
 
