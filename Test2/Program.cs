@@ -36,7 +36,7 @@ class Program
         public MyLightScheme(CorePalette corePalette) : base(corePalette) { }
         //string s = "String from MyScheme";
 
-        protected override int BackgroundLight => corePalette.Neutral[99];
+        protected override int BackgroundLight => corePalette.NeutralVariant[95];
     }
 
     // override some colors of the Light scheme ;)
@@ -46,7 +46,7 @@ class Program
         public MyDarkScheme(CorePalette corePalette) : base(corePalette) { }
         //string s = "String from MyScheme";
 
-        protected override int BackgroundDark => corePalette.Primary[1000];
+        protected override int BackgroundDark => corePalette.NeutralVariant[10];
     }
 
     // Main Method
