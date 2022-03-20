@@ -11,24 +11,15 @@ using System.Drawing;
 using System.Text;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.IO;
 // --- Console.WriteLine("Hello, World!");
 
 class Program
 {
-    // Generate seed color from an image:
-    // Load the image into an int[].
-    // The image is stored in an embedded resource, and then decoded and resized using SkiaSharp.
-    static string imageResourceId = "Test2.Resources.wallpaper.png";
-    static Stream resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(imageResourceId)!;
-    static SKBitmap bitmap = SKBitmap.Decode(resourceStream).Resize(new SKImageInfo(112, 112), SKFilterQuality.Medium);
-    static int[] pixels = bitmap.Pixels.Select(p => (int)(uint)p).ToArray();
-
-    // This is where the magic happens
-    static int seedColor = ImageUtils.ColorFromImage(pixels);
-
-    // CorePalette gives you access to every tone of the key colors
-    static CorePalette corePalette = CorePalette.Of(seedColor);
-
+    static int tempColor = -452997;
+    //Make temporary color palette
+    public static CorePalette corePalette = CorePalette.Of(tempColor);
+    
     // override some colors of the Light scheme ;)
     class MyLightScheme : LightScheme
     {
@@ -50,14 +41,33 @@ class Program
     }
 
     // Main Method
-    static void Main()
+    static void Main(string[] args)
     {
-        // Create custom schemes
-        MyLightScheme lightScheme = new(corePalette);
-        MyDarkScheme darkScheme = new(corePalette);
+        // Generate seed color from an image
+    
+        // Load the image from passed argument with absolute path
+        string path = string.Join('-',args);
+        // Open filestream of image as read only
+        FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read);
 
-        // Save color palette for export
-        var colors = new Dictionary<string, string>();
+        // Then decode and resize using SkiaSharp.
+        SKImage img = SKImage.FromEncodedData(fs);
+        SKBitmap bitmap = SKBitmap.FromImage(img).Resize(new SKImageInfo(112, 112), SKFilterQuality.Medium);
+
+        int[] pixels = bitmap.Pixels.Select(p => (int)(uint)p).ToArray();
+
+        // This is where the magic happens
+        int seedColor = ImageUtils.ColorFromImage(pixels);
+
+        // CorePalette gives you access to every tone of the key colors
+        CorePalette myCorePalette = CorePalette.Of(seedColor);
+
+        // Create custom schemes
+        MyLightScheme lightScheme = new(myCorePalette);
+        MyDarkScheme darkScheme = new(myCorePalette);
+
+        //TODO: Save color palette to single json
+        // var colors = new Dictionary<string, string>();
 
         // light section of export
         var colors_light = new Dictionary<string, string>();
@@ -79,23 +89,14 @@ class Program
 
         // light to json
         string jsonLight = JsonConvert.SerializeObject(colors_light);
-        //string jsonLightUnescaped = Regex.Unescape(jsonLight);
-        //colors.Add("light", jsonLightUnescaped);
 
         // dark to json
         string jsonDark = JsonConvert.SerializeObject(colors_dark);
-        // string jsonDarkUnescaped = Regex.Unescape(jsonDark);
-        // colors.Add("dark", jsonDarkUnescaped);
 
-        //string jsonString = JsonConvert.SerializeObject(colors_light);
-
-        //jsonString = Regex.Unescape(jsonString);
-        //Console.WriteLine(jsonString);
         Console.Write("{\"light\":");
-        Console.WriteLine(jsonLight+",");
+        Console.WriteLine(jsonLight + ",");
         Console.WriteLine("\"dark\":");
         Console.WriteLine(jsonDark);
         Console.WriteLine("}");
-
     }
 }
