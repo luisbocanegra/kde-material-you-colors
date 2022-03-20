@@ -1,41 +1,40 @@
-import os
+from array import array
 from pathlib import Path
 import time
+from colr import hex2rgb
+from matplotlib.colors import rgb2hex
 import numpy
 from colorutils import Color
-
-class RGB(numpy.ndarray): # taken from https://programming-idioms.org/idiom/154/halfway-between-two-hex-color-codes/2155/python
-        @classmethod
-        def from_str(cls, rgbstr):
-            return numpy.array([
-            int(rgbstr[i:i+2], 16)
-            for i in range(1, len(rgbstr), 2)
-            ]).view(cls)
-
-        def __str__(self):
-            self = self.astype(numpy.uint8)
-            return '#' + ''.join(format(n, 'x') for n in self)
+import subprocess
 
 class ColorScheme:
     
     def __init__(self, colors):
         self.colors = colors
         
+    def blendColors(colorA, colorB, amount):
+        [rA, gA, bA] = hex2rgb(colorA)
+        [rB, gB, bB] = hex2rgb(colorB)
+        r = numpy.int(rA + (rB - rA) * amount)
+        g = numpy.int(gA + (gB - gA) * amount)
+        b = numpy.int(bA + (bB - bA) * amount)
+        color = Color((r, g, b))
+        return color.hex
+        
         
     def make_light_scheme(self):
         colors = self.colors
         #print(f'Colors light:\n{self.colors}')
-        c1 = RGB.from_str(colors['light']['Surface'])
-        c2 = RGB.from_str(colors['light']['SecondaryContainer'])
-        c3 = ((((c1 + c2 ) /2) + c1)  / 2)
+        LightSurface1 = ColorScheme.blendColors(colors['light']['Surface'],colors['light']['Primary'],.08)
         
-        c1 = RGB.from_str(colors['dark']['Surface'])
-        c2 = RGB.from_str(colors['dark']['SecondaryContainer'])
-        c3_dark = ((((c1 + c2 ) /2)))
-        #blend1 = Color(c1.rgb + c2.rgb)
-        print(f'{c1} + {c2} = {c3}')
+        DarkSurface1 = ColorScheme.blendColors(colors['dark']['Surface'],colors['dark']['Primary'],.08)
+        
+        #surface1 = ColorsHelper(colors['light']['Surface'],colors['light']['Primary'],1,0.05)
+        surface1 = ColorScheme.blendColors(colors['light']['Surface'],colors['light']['Primary'],.08)
+
+                
         light_scheme = f"""[ColorEffects:Disabled]
-Color={c3}
+Color={LightSurface1}
 ColorAmount=0.55
 ColorEffect=3
 ContrastAmount=0.65
@@ -44,15 +43,15 @@ IntensityAmount=0.1
 IntensityEffect=0
 
 [ColorEffects:Inactive]
-ChangeSelectionColor=false
-Color=112,111,110
-ColorAmount=-0.9
+ChangeSelectionColor=true
+Color=#000fff
+ColorAmount=1
 ColorEffect=0
-ContrastAmount=0.1
+ContrastAmount=1
 ContrastEffect=0
-Enable=true
-IntensityAmount=0
-IntensityEffect=0
+Enable=false
+IntensityAmount=10
+IntensityEffect=10
 
 [Colors:Button]
 BackgroundAlternate=255,89,125
@@ -72,15 +71,15 @@ ForegroundVisited=127,140,141
 BackgroundNormal={colors['light']['SecondaryContainer']}
 
 [Colors:Selection]
-BackgroundAlternate=255,89,125
+BackgroundAlternate={colors['light']['Primary']}
 BackgroundNormal={colors['light']['Primary']}
 DecorationFocus={colors['light']['Primary']}
-DecorationHover=255,89,125
-ForegroundActive=252,252,252
-ForegroundInactive=132,134,140
+DecorationHover={colors['light']['Primary']}
+ForegroundActive={colors['light']['OnPrimary']}
+ForegroundInactive={colors['light']['OnPrimary']}
 ForegroundLink=253,188,75
 ForegroundNegative=67,205,189
-ForegroundNeutral=95,125,205
+ForegroundNeutral={colors['light']['OnPrimary']}
 ForegroundNormal={colors['light']['OnPrimary']}
 ForegroundPositive=156,83,198
 ForegroundVisited=189,195,199
@@ -91,7 +90,6 @@ BackgroundNormal={colors['light']['Primary']}
 DecorationFocus=255,99,118
 DecorationHover=255,89,125
 ForegroundActive=61,174,233
-
 ForegroundInactive={colors['light']['OnPrimary']}
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
@@ -102,11 +100,11 @@ ForegroundVisited=127,140,141
 
 [Colors:View]
 BackgroundAlternate={colors['light']['InverseOnSurface']}
-BackgroundNormal={c3}
+BackgroundNormal={LightSurface1}
 DecorationFocus={colors['light']['Primary']}
 #-----------------------------------------------
 DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['OnSurface']}
+ForegroundActive={colors['light']['OnPrimary']}
 ForegroundInactive={colors['light']['OnSurfaceVariant']}
 ForegroundLink=31,140,236
 ForegroundNegative={colors['light']['Error']}
@@ -124,7 +122,7 @@ ForegroundActive=61,174,233
 ForegroundInactive=75,79,85
 ForegroundLink=41,128,185
 ForegroundNegative=67,205,189
-ForegroundNeutral={colors['light']['InversePrimary']}
+ForegroundNeutral={colors['light']['Primary']}
 #---------------------------------------------------- Window header text all
 ForegroundNormal={colors['light']['OnSurfaceVariant']}
 ForegroundPositive=156,83,198
@@ -133,21 +131,21 @@ ForegroundVisited=127,140,141
 [General]
 ColorScheme=MaterialYouLight
 Name=Material You Light
-shadeSortColumn=true
+shadeSortColumn=false
 
 [KDE]
 contrast=5
 
 [WM]
 activeBackground={colors['light']['SecondaryContainer']}
-activeBlend=183,186,195
+activeBlend=#ff0000
 activeForeground={colors['light']['OnSecondaryContainer']}
 inactiveBackground={colors['light']['SecondaryContainer']}
-inactiveBlend=247,249,249
+inactiveBlend=#ff0000
 inactiveForeground={colors['light']['OnSecondaryContainer']}
 """
         dark_scheme = f"""[ColorEffects:Disabled]
-Color={c3_dark}
+Color={DarkSurface1}
 ColorAmount=0.55
 ColorEffect=3
 ContrastAmount=0.65
@@ -210,7 +208,7 @@ ForegroundVisited=127,140,141
 
 [Colors:View]
 BackgroundAlternate=250,251,252
-BackgroundNormal={c3_dark}
+BackgroundNormal={DarkSurface1}
 DecorationFocus={colors['dark']['Primary']}
 DecorationHover={colors['dark']['Primary']}
 ForegroundActive=61,174,233
@@ -270,6 +268,10 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
         # with open (home+'/.local/share/color-schemes/MaterialYouLight.colors', 'r', encoding='utf8') as light_scheme_file:
         #     print(light_scheme_file.read())
             
-        os.system('./plasma-theme  -c /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
-        time.sleep(1)
-        os.system('./plasma-theme  -c /home/luis/.local/share/color-schemes/MaterialYouLight.colors')
+        #os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
+        subprocess.Popen("plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouDark.colors",
+                                    shell=True, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL).communicate()[0].decode('utf-8').strip()
+        time.sleep(2)
+        subprocess.Popen("plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouLight.colors",
+                                    shell=True, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL).communicate()[0].decode('utf-8').strip()
+        #os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouLight.colors')
