@@ -146,3 +146,9 @@ Test2/obj/
 # Common node modules locations
 /node_modules
 /wwwroot/node_modules
+
+#
+Arc-Color-clone2
+output.json
+old.json
+*.colors
