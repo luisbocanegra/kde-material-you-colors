@@ -25,18 +25,18 @@ def get_wallpaper(plugin = 'org.kde.image', monitor=0):
     
     
 
-current_wallpaper = get_wallpaper('com.github.zren.inactiveblur',0)
+current_wallpaper = str("'"+get_wallpaper('com.github.zren.inactiveblur',0)+"'")
 print(current_wallpaper)
 # Get current wallpaper
-wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '75q;d' | sed 's#Image=file://###'",
-                                    shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+#wallpaper_path = subprocess.Popen("cat '/home/luis/.config/plasma-org.kde.plasma.desktop-appletsrc' | sed '75q;d' | sed 's#Image=file://###'",
+#                                    shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 # print(wallpaper_path)
 #wallpaper_path = wallpaper_path.split('\n', 1)[1]
-copy_command = "cp -rfL '" + current_wallpaper + "' Test2/Resources/wallpaper.png"
-print(copy_command)
-os.system(copy_command)
+#copy_command = "cp -rfL " + current_wallpaper + " Test2/Resources/wallpaper.png"
+#print(copy_command)
+#os.system(copy_command)
 
-colors_from_net = subprocess.Popen("cd /run/media/luis/Windows10/Users/luis/Documents/kde-material-you-colors/Test2 && dotnet run",
+colors_from_net = subprocess.Popen("cd /run/media/luis/Windows10/Users/luis/Documents/kde-material-you-colors/Test2 && dotnet run "+current_wallpaper,
                                     shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 
 print(colors_from_net)
