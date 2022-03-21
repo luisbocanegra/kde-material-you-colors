@@ -8,7 +8,7 @@ import dbus
 import argparse
 
 # Get current wallpaper from plain file or plugin + containment combo
-def get_wallpaper(plugin = 'org.kde.image', monitor=0, file=None):
+def get_wallpaper_path(plugin = 'org.kde.image', monitor=0, file=None):
     
     if file:
         try: 
@@ -46,9 +46,10 @@ def get_wallpaper(plugin = 'org.kde.image', monitor=0, file=None):
 
 if __name__ == '__main__':
     
-    parser = argparse.ArgumentParser(description='KDE Wallpaper setter')
+    parser = argparse.ArgumentParser(description='Wallpaper Material You colors for KDE')
     parser.add_argument('--monitor','-m', help='Monitor to get wallpaper (default is 0)', default=0)
-    parser.add_argument('--plugin', '-p', help='Wallpaper plugin (default is org.kde.image)', default='org.kde.image')
+    parser.add_argument('--light','-l', const=True, nargs='?', help='Enable Light mode (default is Dark)', default=False)
+    parser.add_argument('--plugin', '-p', help=f'Wallpaper plugin id (default is org.kde.image) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default='org.kde.image')
     parser.add_argument('--file','-f', help='File that contains wallpaper path', default=None)
 
     args = parser.parse_args()
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
     def set_color_schemes(current_wallpaper):
                 if os.path.exists(current_wallpaper):
-                    print(f'Found wallpaper: "{current_wallpaper}"')
+                    #print(f'Found wallpaper: "{current_wallpaper}"')
                     current_wallpaper = f'"{current_wallpaper}"'
                     # get colors from materialYouColors 
                     materialYouColors = subprocess.Popen("./material-you-colors-binary "+current_wallpaper,
@@ -67,21 +68,32 @@ if __name__ == '__main__':
                         # parse colors string to json
                         colors_json = json.loads(materialYouColors)
                         
+                        with open('output.json', 'w', encoding='utf8') as current_scheme:
+                            # light_scheme_file.write(str(colors_json))
+                            current_scheme.write(json.dumps(
+                                colors_json, indent=4, sort_keys=False))
+                        
                         # generate and apply color schemes
                         colors_light = ColorScheme(colors_json)
-                        colors_light.make_color_schemes()
+                        colors_light.make_color_schemes(light=args.light)
                     else:
                         print(f'''Error: Couldn't get colors from "{current_wallpaper}"''')
                         quit(1)
                 else:
                     print(f'''Error: File "{current_wallpaper}" from "{args.file}" does not exist''')
                     quit(1)
+                    
+                    
+    def currentWallpaper():
+        return  str(get_wallpaper_path(plugin=args.plugin, monitor=args.monitor, file=args.file))
     
-    
+    set_color_schemes(currentWallpaper())
+        
+    # check wallpaper change
     while True:
-        current_wallpaper_old = str(get_wallpaper(plugin=args.plugin, monitor=args.monitor, file=args.file))
+        current_wallpaper_old = currentWallpaper()
         time.sleep(1)
-        current_wallpaper_new = str(get_wallpaper(plugin=args.plugin, monitor=args.monitor, file=args.file))
+        current_wallpaper_new = currentWallpaper()
         
         if current_wallpaper_old !=current_wallpaper_new:
             set_color_schemes(current_wallpaper_new)

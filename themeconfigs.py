@@ -1,5 +1,5 @@
 class ThemeConfig:
-    def __init__(self, colors, extras):
+    def __init__(self, colors, extras, base_text_states):
         
         self._light_scheme=f"""[ColorEffects:Disabled]
 Color={extras['LightSurface1']}
@@ -22,21 +22,21 @@ IntensityAmount=10
 IntensityEffect=10
 
 [Colors:Button]
-BackgroundAlternate=255,89,125
+BackgroundAlternate={colors['light']['SurfaceVariant']}
 BackgroundNormal={colors['light']['Surface']}
 DecorationFocus={colors['light']['Primary']}
 DecorationHover={colors['light']['Primary']}
-ForegroundActive=#ffff00
-ForegroundInactive=0,0,255
-ForegroundLink=41,128,185
-ForegroundNegative=39,120,110
-ForegroundNeutral=95,125,205
+ForegroundActive={colors['light']['OnSurface']}
+ForegroundInactive={colors['light']['Outline']}
+ForegroundLink={base_text_states['Link']}
+ForegroundNegative={colors['light']['Error']}
+ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors['light']['OnSurface']}
-ForegroundPositive=156,83,198
-ForegroundVisited=127,140,141
+ForegroundPositive={base_text_states['Positive']}
+ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
-BackgroundNormal={colors['light']['SecondaryContainer']}
+BackgroundNormal={colors['light']['SurfaceVariant']}
 
 [Colors:Selection]
 BackgroundAlternate={colors['light']['Primary']}
@@ -45,26 +45,26 @@ DecorationFocus={colors['light']['Primary']}
 DecorationHover={colors['light']['Primary']}
 ForegroundActive={colors['light']['OnPrimary']}
 ForegroundInactive={colors['light']['OnPrimary']}
-ForegroundLink=253,188,75
-ForegroundNegative=67,205,189
-ForegroundNeutral={colors['light']['OnPrimary']}
+ForegroundLink={extras['LinkOnPrimaryLight']}
+ForegroundNegative={extras['NegativeOnPrimaryLight']}
+ForegroundNeutral={extras['NeutralOnPrimaryLight']}
 ForegroundNormal={colors['light']['OnPrimary']}
-ForegroundPositive=156,83,198
-ForegroundVisited=189,195,199
+ForegroundPositive={extras['PositiveOnPrimaryLight']}
+ForegroundVisited={extras['LinkVisitedOnPrimaryLight']}
 
 [Colors:Tooltip]
-BackgroundAlternate=255,89,125
-BackgroundNormal={colors['light']['Primary']}
-DecorationFocus=255,99,118
-DecorationHover=255,89,125
-ForegroundActive=61,174,233
-ForegroundInactive={colors['light']['OnPrimary']}
-ForegroundLink=41,128,185
-ForegroundNegative=67,205,189
-ForegroundNeutral=95,125,205
-ForegroundNormal=237,240,242
-ForegroundPositive=156,83,198
-ForegroundVisited=127,140,141
+BackgroundAlternate={colors['light']['SurfaceVariant']}
+BackgroundNormal={colors['light']['Surface']}
+DecorationFocus={colors['light']['Primary']}
+DecorationHover={colors['light']['Primary']}
+ForegroundActive={colors['light']['OnSurface']}
+ForegroundInactive={colors['light']['Outline']}
+ForegroundLink={base_text_states['Link']}
+ForegroundNegative={colors['light']['Error']}
+ForegroundNeutral={base_text_states['Neutral']}
+ForegroundNormal={colors['light']['OnSurface']}
+ForegroundPositive={base_text_states['Positive']}
+ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
 BackgroundAlternate={colors['light']['InverseOnSurface']}
@@ -72,29 +72,29 @@ BackgroundNormal={extras['LightSurface1']}
 DecorationFocus={colors['light']['Primary']}
 #-----------------------------------------------
 DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['OnPrimary']}
-ForegroundInactive={colors['light']['OnSurfaceVariant']}
-ForegroundLink=31,140,236
+ForegroundActive={colors['light']['InverseSurface']}
+ForegroundInactive={colors['light']['Outline']}
+ForegroundLink={base_text_states['Link']}
 ForegroundNegative={colors['light']['Error']}
-ForegroundNeutral={colors['light']['InversePrimary']}
+ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors['light']['OnSurfaceVariant']}
-ForegroundPositive=156,83,198
-ForegroundVisited=196,54,189
+ForegroundPositive={base_text_states['Positive']}
+ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Window]
-BackgroundAlternate=#ff0000
-BackgroundNormal={colors['light']['SecondaryContainer']}
-DecorationFocus=#ff0000
-DecorationHover=#00ff00
-ForegroundActive=61,174,233
-ForegroundInactive=75,79,85
-ForegroundLink=41,128,185
-ForegroundNegative=67,205,189
-ForegroundNeutral={colors['light']['Primary']}
-#---------------------------------------------------- Window header text all
+BackgroundAlternate={colors['light']['Surface']}
+BackgroundNormal={colors['light']['SurfaceVariant']}
+DecorationFocus={colors['light']['Primary']}
+DecorationHover={colors['light']['Primary']}
+ForegroundActive={colors['light']['InverseSurface']}
+ForegroundInactive={colors['light']['Outline']}
+ForegroundLink={base_text_states['Link']}
+ForegroundNegative={colors['light']['Error']}
+ForegroundNeutral={base_text_states['Neutral']}
+#--- Window titles, context icons
 ForegroundNormal={colors['light']['OnSurfaceVariant']}
-ForegroundPositive=156,83,198
-ForegroundVisited=127,140,141
+ForegroundPositive={base_text_states['Positive']}
+ForegroundVisited={base_text_states['Negative']}
 
 [General]
 ColorScheme=MaterialYouLight
@@ -112,6 +112,8 @@ inactiveBackground={colors['light']['SecondaryContainer']}
 inactiveBlend=#ff0000
 inactiveForeground={colors['light']['OnSecondaryContainer']}
         """
+        
+        
         self._dark_scheme=f"""[ColorEffects:Disabled]
 Color={extras['DarkSurface1']}
 ColorAmount=0.55
