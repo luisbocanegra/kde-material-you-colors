@@ -12,7 +12,7 @@ IntensityEffect=0
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=false
-Color=#000fff
+Color={colors['light']['SurfaceVariant']}
 ColorAmount=1
 ColorEffect=0
 ContrastAmount=1
@@ -125,7 +125,7 @@ IntensityEffect=0
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=false
-Color=112,111,110
+Color=Color={colors['dark']['SurfaceVariant']}
 ColorAmount=-0.9
 ColorEffect=0
 ContrastAmount=0.1

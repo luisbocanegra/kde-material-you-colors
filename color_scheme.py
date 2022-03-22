@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 from color_utils import blendColors
 import subprocess
-from themeconfigs import ThemeConfig
+from schemeconfigs import ThemeConfig
 
 class ColorScheme:
 
@@ -45,8 +45,8 @@ class ColorScheme:
         }
 
         # Load themes config on the go for now
-        importlib.reload(sys.modules['themeconfigs'])
-        from themeconfigs import ThemeConfig
+        importlib.reload(sys.modules['schemeconfigs'])
+        from schemeconfigs import ThemeConfig
         schemes = ThemeConfig(colors, extras, base_text_states)
 
         light_scheme=schemes.get_light_scheme()
@@ -55,7 +55,7 @@ class ColorScheme:
         # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
         # since I don't know how to reaload it with code lets make a copy and switch between them
         # sadly color settings will show copies too
-        if light:
+        if light==True:
             with open (home+'/.local/share/color-schemes/MaterialYouLight.colors', 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouLight2.colors', 'w', encoding='utf8') as light_scheme_file:
