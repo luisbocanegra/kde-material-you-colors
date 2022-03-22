@@ -1,0 +1,2 @@
+#!/bin/sh
+python /usr/lib/kde-material-you-colors/kde-material-you-colors.py "$@"

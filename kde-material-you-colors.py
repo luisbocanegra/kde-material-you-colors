@@ -60,7 +60,7 @@ if __name__ == '__main__':
                     #print(f'Found wallpaper: "{current_wallpaper}"')
                     current_wallpaper = f'"{current_wallpaper}"'
                     # get colors from materialYouColors 
-                    materialYouColors = subprocess.Popen("./material-you-colors-binary "+current_wallpaper,
+                    materialYouColors = subprocess.Popen("material-color-utility "+current_wallpaper,
                                                         shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
     
                     # make sure that we got colors from MaterialColorUtilities 
