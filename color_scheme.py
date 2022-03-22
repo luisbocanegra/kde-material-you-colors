@@ -55,7 +55,7 @@ class ColorScheme:
         # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
         # since I don't know how to reaload it with code lets make a copy and switch between them
         # sadly color settings will show copies too
-        if light==True:
+        if light == True:
             with open (home+'/.local/share/color-schemes/MaterialYouLight.colors', 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouLight2.colors', 'w', encoding='utf8') as light_scheme_file:
@@ -74,8 +74,8 @@ class ColorScheme:
                 dark_scheme_file.write(dark_scheme)
             # os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark2.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
+                                        shell=True, stderr=subprocess.PIPE)
             #time.sleep(1)
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
+                                        shell=True, stderr=subprocess.PIPE)
             #os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouLight.colors')

@@ -2,6 +2,7 @@ from multiprocessing.connection import wait
 import subprocess
 import json
 import time
+from xmlrpc.client import boolean
 from color_scheme import ColorScheme
 import os
 import dbus
@@ -71,7 +72,11 @@ if __name__ == '__main__':
             print("Loading user config...")
             
             if 'light' in custom:
-                c_light = custom['light']
+                c_light = (custom['light'])
+                if c_light == "True":
+                    c_light = True
+                elif c_light == "False":
+                    c_light = False
                 print(f"Config has light option: {c_light}")
             
             if 'file' in custom:
