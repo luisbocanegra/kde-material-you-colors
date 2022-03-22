@@ -12,6 +12,9 @@ from pathlib import Path
 def get_wallpaper_path(plugin = 'org.kde.image', monitor=0, file=None):
     
     if file:
+        while not os.path.exists(file):
+            print(f'Text file {file} not found waiting 5 seconds to try again')
+            time.sleep(5)
         try: 
             with open (file, 'r', encoding='utf8') as wallpaper:
                 wallpaper_path = str(wallpaper.read()).replace('file://','').strip()
@@ -21,8 +24,7 @@ def get_wallpaper_path(plugin = 'org.kde.image', monitor=0, file=None):
                     print (f'Error: "{file}" file seems empty')
                     quit(1)
         except Exception as e:
-            #print (f'Error opening file file:\n{e}')
-            quit(e)
+            print (f'Error opening file file:\n{e}')
     else:
         script = """
         var Desktops = desktops();
