@@ -43,13 +43,12 @@ def get_wallpaper_path(plugin = 'org.kde.image', monitor=0, file=None):
             quit()
 
 if __name__ == '__main__':
-    print("main")
     home = str(Path.home())
     parser = argparse.ArgumentParser(description='Wallpaper Material You colors for KDE')
     parser.add_argument('--monitor','-m', help='Monitor to get wallpaper (default is 0)', default=0)
     parser.add_argument('--light','-l', const=True, nargs='?', help='Enable Light mode (default is Dark)', default=False)
     parser.add_argument('--plugin', '-p', help=f'Wallpaper plugin id (default is org.kde.image) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default='org.kde.image')
-    parser.add_argument('--file','-f', help='File that contains wallpaper path', default=None)
+    parser.add_argument('--file','-f', help='Text file that contains wallpaper absolute path', default=None)
     
     SCHEMES_PATH=home+"/.local/share/color-schemes"
     CONFIG_PATH=home+"/.config/kde-material-you-colors/config.conf"
@@ -60,24 +59,30 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if not os.path.exists(SCHEMES_PATH):
         os.makedirs(SCHEMES_PATH)
-    print(SCHEMES_PATH)
+
     config = configparser.ConfigParser()
     if os.path.exists(CONFIG_PATH):
         config.read(CONFIG_PATH)
-        if config.has_section('[CUSTOM]'):
-            custom=config(['CUSTOM'])
+        
+        if 'CUSTOM' in config:
+            custom=config['CUSTOM']
+            print("Loading user config...")
             
-            if custom.has_option(['light']):
+            if 'light' in custom:
                 c_light = custom['light']
-                
-            if custom.has_option(['file']):
+                print(f"Config has light option: {c_light}")
+            
+            if 'file' in custom:
                 c_file = custom['file']
+                print(f"Config has file option: {c_file}")
                 
-            if custom.has_option(['monitor']):
+            if 'monitor' in custom:
                 c_monitor = custom['monitor']
+                print(f"Config has monitor option: {c_monitor}")
                 
-            if custom.has_option(['plugin']):
+            if 'plugin' in custom:
                 c_plugin = custom['plugin']
+                print(f"Config has plugin option: {c_plugin}")
                 
     if c_light == None:
         c_light = args.light
@@ -91,25 +96,25 @@ if __name__ == '__main__':
     if c_plugin == None:
         c_plugin = args.plugin
         
-    print(f'plugin: {c_plugin} | Light mode: {c_light} | File: {c_file} | Monitor: {c_monitor}')
+    print(f'Current config: Plugin: {c_plugin} | Light mode: {c_light} | File: {c_file} | Monitor: {c_monitor}')
 
     def set_color_schemes(current_wallpaper):
                 if os.path.exists(current_wallpaper):
                     #print(f'Found wallpaper: "{current_wallpaper}"')
                     current_wallpaper = f'"{current_wallpaper}"'
-                    # get colors from materialYouColors 
+                    # get colors from material-color-utility
                     materialYouColors = subprocess.Popen("material-color-utility "+current_wallpaper,
                                                         shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-    
+                    
                     # make sure that we got colors from MaterialColorUtilities 
                     if materialYouColors:
                         # parse colors string to json
                         colors_json = json.loads(materialYouColors)
                         
-                        with open('output.json', 'w', encoding='utf8') as current_scheme:
-                            # light_scheme_file.write(str(colors_json))
-                            current_scheme.write(json.dumps(
-                                colors_json, indent=4, sort_keys=False))
+                        # with open('output.json', 'w', encoding='utf8') as current_scheme:
+                        #     # light_scheme_file.write(str(colors_json))
+                        #     current_scheme.write(json.dumps(
+                        #         colors_json, indent=4, sort_keys=False))
                         
                         # generate and apply color schemes
                         colors_light = ColorScheme(colors_json)

@@ -4,9 +4,6 @@ After=default.target
 
 [Service]
 Type=simple
-# You should add your flags here if you are using a non default wallpaper plugin
-# or want light mode instead of default dark
-# check kde-material-you-colors -h for details
 ExecStart=/usr/bin/kde-material-you-colors
 # Setting PYTHONUNBUFFERED is necessary to see the output of this service in the journal
 Environment=PYTHONUNBUFFERED=1
