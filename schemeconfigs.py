@@ -67,7 +67,7 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={colors['light']['InverseOnSurface']}
+BackgroundAlternate={colors['light']['Surface']}
 BackgroundNormal={extras['LightSurface1']}
 DecorationFocus={colors['light']['Primary']}
 #-----------------------------------------------
@@ -102,15 +102,15 @@ Name=Material You Light
 shadeSortColumn=false
 
 [KDE]
-contrast=5
+contrast=0
 
 [WM]
-activeBackground={colors['light']['SecondaryContainer']}
+activeBackground={colors['light']['SurfaceVariant']}
 activeBlend=#ff0000
-activeForeground={colors['light']['OnSecondaryContainer']}
+activeForeground={colors['light']['OnSurface']}
 inactiveBackground={colors['light']['SecondaryContainer']}
 inactiveBlend=#ff0000
-inactiveForeground={colors['light']['OnSecondaryContainer']}
+inactiveForeground={colors['light']['OnSurfaceVariant']}
         """
         
         
@@ -182,7 +182,7 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={colors['dark']['InverseOnSurface']}
+BackgroundAlternate={colors['dark']['Surface']}
 BackgroundNormal={extras['DarkSurface1']}
 DecorationFocus={colors['dark']['Primary']}
 #-----------------------------------------------
@@ -220,9 +220,9 @@ shadeSortColumn=true
 contrast=10
 
 [WM]
-activeBackground={colors['dark']['SecondaryContainer']}
+activeBackground={colors['dark']['SurfaceVariant']}
 activeBlend=#ff0000
-activeForeground={colors['dark']['OnSecondaryContainer']}
+activeForeground={colors['dark']['OnSurface']}
 inactiveBackground={colors['dark']['SecondaryContainer']}
 inactiveBlend=#ff0000
 inactiveForeground={colors['dark']['OnSecondaryContainer']}
