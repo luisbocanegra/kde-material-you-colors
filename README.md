@@ -34,6 +34,7 @@ Run `kde-material-you-colors` from terminal
 `--dark -d`&emsp; Enable Dark mode (override user config)
 
 `--plugin -p`&emsp; Wallpaper plugin id (default is org.kde.image) you can find them in: /usr/share/plasma/wallpapers/ or /.local/share/plasma/wallpapers
+
 `--file -f`&emsp; Text file that contains wallpaper absolute path (Takes precedence over all the other options)
 
 # Configuration:
@@ -49,11 +50,11 @@ light = False
 monitor = 1
 
 # Wallpaper plugin id (string)
-plugin = org.kde.images
+plugin = org.kde.image
 ```
-Save the sample configuration to `/home/luis/.config/kde-material-you-colors/config.conf`
+Save the sample configuration to `~/.config/kde-material-you-colors/config.conf`
 
-And `kde-material-you-colors` with no arguments from terminal to test it.
+And run `kde-material-you-colors` with no arguments from terminal to test it.
 
 # Start on login with systemd
 After testing your configuration you can enable the user service to start on login:
