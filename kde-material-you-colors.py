@@ -58,10 +58,9 @@ def set_color_schemes(current_wallpaper, light):
             # parse colors string to json
             colors_json = json.loads(materialYouColors)
 
-            with open('output.json', 'w', encoding='utf8') as current_scheme:
-                # light_scheme_file.write(str(colors_json))
-                current_scheme.write(json.dumps(
-                    colors_json, indent=4, sort_keys=False))
+            # with open('output.json', 'w', encoding='utf8') as current_scheme:
+            #     current_scheme.write(json.dumps(
+            #         colors_json, indent=4, sort_keys=False))
 
             # generate and apply color schemes
             colors_light = ColorScheme(colors_json)

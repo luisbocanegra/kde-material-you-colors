@@ -127,28 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# images
-
-*.png
-*.jpeg
-
 .fake
 .ionide
 
-.old/
-
 ### DotnetCore ###
 # .NET Core build folders
-Test2/bin/
-Test2/obj/
+material-color-utility/bin/
+material-color-utility/obj/
 
-# Common node modules locations
-/node_modules
-/wwwroot/node_modules
 
-#
-Arc-Color-clone2
-output.json
-old.json
-*.colors
