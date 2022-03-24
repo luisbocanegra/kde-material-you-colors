@@ -102,7 +102,7 @@ Name=Material You Light
 shadeSortColumn=false
 
 [KDE]
-contrast=0
+contrast=4
 
 [WM]
 activeBackground={colors['light']['SurfaceVariant']}
@@ -217,7 +217,7 @@ Name=Material You dark
 shadeSortColumn=true
 
 [KDE]
-contrast=10
+contrast=4
 
 [WM]
 activeBackground={colors['dark']['SurfaceVariant']}
