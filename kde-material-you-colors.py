@@ -1,30 +1,38 @@
-import subprocess,json,time,os,dbus,argparse,configparser
+import subprocess
+import json
+import time
+import os
+import dbus
+import argparse
+import configparser
 from color_scheme import ColorScheme
 from pathlib import Path
 HOME = str(Path.home())
-CONFIG_PATH = HOME+"/.config/kde-material-you-colors/config.conf"
-SCHEMES_PATH = HOME+"/.local/share/color-schemes"
+CONFIG_FILE="config.conf"
+SAMPLE_CONFIG_PATH = "/usr/lib/kde-material-you-colors/"
+USER_CONFIG_PATH = HOME+"/.config/kde-material-you-colors/"
+USER_SCHEMES_PATH = HOME+"/.local/share/color-schemes/"
+AUTOSTART_SCRIPT="kde-material-you-colors.desktop"
+SAMPLE_AUTOSTART_SCRIPT_PATH = "/usr/lib/kde-material-you-colors/"
+USER_AUTOSTART_SCRIPT_PATH = HOME+"/.config/autostart/"
+DEFAULT_PLUGIN = 'org.kde.image'
 # Get current wallpaper from plain file or plugin + containment combo
 
-
-def get_wallpaper_path(plugin='org.kde.image', monitor=0, file=None):
+def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
 
     if file:
-        while not os.path.exists(file):
-            print(f'Text file {file} not found waiting 5 seconds to try again')
-            time.sleep(5)
-        try:
-            with open(file, 'r', encoding='utf8') as wallpaper:
-                wallpaper_path = str(wallpaper.read()).replace(
-                    'file://', '').strip()
-                if wallpaper_path:
-                    return wallpaper_path
+        if os.path.exists(file):
+            with open(file) as file:
+                wallpaper = str(file.read()).replace('file://', '').strip()
+                if wallpaper:
+                    return wallpaper
                 else:
-                    print(f'Error: "{file}" file seems empty')
-                    quit(1)
-        except Exception as e:
-            print(f'Error opening file file:\n{e}')
+                    return None
+        else:
+            print(f'File "{file}" does not exist')
+            return None
     else:
+
         script = """
         var Desktops = desktops();
         //for (i=0;i<Desktops.length;i++) {
@@ -43,35 +51,34 @@ def get_wallpaper_path(plugin='org.kde.image', monitor=0, file=None):
             return wallpaper_path
         except Exception as e:
             print(f'Error getting wallpaper from dbus:\n{e}')
-            quit()
 
 
 def set_color_schemes(current_wallpaper, light):
-    if os.path.exists(current_wallpaper):
-        #print(f'Found wallpaper: "{current_wallpaper}"')
-        current_wallpaper = f'"{current_wallpaper}"'
-        # get colors from material-color-utility
-        materialYouColors = subprocess.Popen("material-color-utility "+current_wallpaper,
+    if current_wallpaper != None:
+        if os.path.exists(current_wallpaper):
+            #print(f'Found wallpaper: "{current_wallpaper}"')
+            current_wallpaper = f'"{current_wallpaper}"'
+            # get colors from material-color-utility
+            materialYouColors = subprocess.Popen("material-color-utility "+current_wallpaper,
                                              shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-        # make sure that we got colors from MaterialColorUtilities
-        if materialYouColors:
-            # parse colors string to json
-            colors_json = json.loads(materialYouColors)
+            # make sure that we got colors from MaterialColorUtilities
+            if materialYouColors:
+                # parse colors string to json
+                colors_json = json.loads(materialYouColors)
 
-            # with open('output.json', 'w', encoding='utf8') as current_scheme:
-            #     current_scheme.write(json.dumps(
-            #         colors_json, indent=4, sort_keys=False))
+                # with open('output.json', 'w', encoding='utf8') as current_scheme:
+                #     current_scheme.write(json.dumps(
+                #         colors_json, indent=4, sort_keys=False))
 
-            # generate and apply color schemes
-            colors_light = ColorScheme(colors_json)
-            colors_light.make_color_schemes(light)
+                # generate and apply color schemes
+                colors_light = ColorScheme(colors_json)
+                colors_light.make_color_schemes(light)
+            else:
+                print(
+                    f'''Error: Couldn't get colors from "{current_wallpaper}"''')
         else:
-            print(f'''Error: Couldn't get colors from "{current_wallpaper}"''')
-            quit(1)
-    else:
-        print(
-            f'''Error: File "{current_wallpaper}" from "{args.file}" does not exist''')
-        quit(1)
+            print(
+                f'''Error: File "{current_wallpaper}" does not exist''')
 
 
 class Configs():
@@ -80,114 +87,148 @@ class Configs():
         c_monitor = None
         c_file = None
         c_plugin = None
-        if not os.path.exists(SCHEMES_PATH):
-            os.makedirs(SCHEMES_PATH)
-
-        config = configparser.ConfigParser()
-        if os.path.exists(CONFIG_PATH):
-            config.read(CONFIG_PATH)
-
-            if 'CUSTOM' in config:
-                custom = config['CUSTOM']
-
-                if 'light' in custom:
-                    c_light = custom.getboolean('light')
-
-                if 'file' in custom:
-                    c_file = custom['file']
-
-                if 'monitor' in custom:
-                    c_monitor = custom.getint('monitor')
-                    if c_monitor < 0:
-                        raise ValueError(
-                            'Config for monitor must be a positive integer')
-
-                if 'plugin' in custom:
-                    c_plugin = custom['plugin']
-
-        if args.dark == True:
-            c_light = False
-        elif args.light == False or c_light != None:
-            c_light = c_light
-
-        if args.file != None:
-            c_file = args.file
-        elif c_file == None:
-            c_file = args.file
-
-        if args.monitor != None:
-            if args.monitor < 0:
-                raise ValueError(
-                    'Value for --monitor must be a positive integer')
+        
+        # User may just want to set the startup script / default config, do that only and exit
+        if args.autostart == True:
+            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
+                os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
+            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
+                subprocess.Popen("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
+                                        shell=True,stdout=subprocess.PIPE)
+                print(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
             else:
-                c_monitor = args.monitor
-        elif args.monitor == None and c_monitor == None:
-            c_monitor = 0
+                print(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+            quit(0)
+        elif args.copyconfig == True:
+            if not os.path.exists(USER_CONFIG_PATH):
+                os.makedirs(USER_CONFIG_PATH)
+            if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
+                subprocess.Popen("cp "+SAMPLE_CONFIG_PATH+CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
+                                        shell=True,stdout=subprocess.PIPE)
+                print(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+            else:
+                print(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
+            quit(0)
         else:
-            c_monitor = c_monitor
+            config = configparser.ConfigParser()
+            if os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
+                config.read(USER_CONFIG_PATH+CONFIG_FILE)
 
-        if args.plugin != None:
-            c_plugin = args.plugin
-        elif args.plugin == None and c_plugin == None:
-            c_plugin = 'org.kde.image'
-        else:
-            c_plugin = c_plugin
+                if 'CUSTOM' in config:
+                    custom = config['CUSTOM']
 
-        self._options = {
-            'light': c_light,
-            'file': c_file,
-            'monitor': c_monitor,
-            'plugin': c_plugin
-        }
+                    if 'light' in custom:
+                        c_light = custom.getboolean('light')
+
+                    if 'file' in custom:
+                        c_file = custom['file']
+
+                    if 'monitor' in custom:
+                        c_monitor = custom.getint('monitor')
+                        if c_monitor < 0:
+                            raise ValueError(
+                                'Config for monitor must be a positive integer')
+
+                    if 'plugin' in custom:
+                        c_plugin = custom['plugin']
+            
+            if args.dark == True:
+                c_light = False
+
+            elif args.light == True :
+                c_light = args.light
+
+            else:
+                c_light = c_light
+
+            if args.file != None:
+                c_file = args.file
+            elif c_file == None:
+                c_file = args.file
+
+            if args.monitor != None:
+                if args.monitor < 0:
+                    raise ValueError(
+                        'Value for --monitor must be a positive integer')
+                else:
+                    c_monitor = args.monitor
+            elif args.monitor == None and c_monitor == None:
+                c_monitor = 0
+            else:
+                c_monitor = c_monitor
+
+            if args.plugin != None:
+                c_plugin = args.plugin
+            elif args.plugin == None and c_plugin == None:
+                c_plugin = DEFAULT_PLUGIN
+            else:
+                c_plugin = c_plugin
+
+            self._options = {
+                'light': c_light,
+                'file': c_file,
+                'monitor': c_monitor,
+                'plugin': c_plugin
+            }
 
     @property
     def options(self):
         return self._options
 
-
+def currentWallpaper(options):
+        return get_wallpaper_path(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
+    
 if __name__ == '__main__':
-
+    # Make sure the schemes path exists
+    if not os.path.exists(USER_SCHEMES_PATH):
+            os.makedirs(USER_SCHEMES_PATH)
     parser = argparse.ArgumentParser(
-        description='Wallpaper Material You colors for KDE')
+        description='Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop')
     parser.add_argument('--monitor', '-m', type=int,
-                        help='Monitor to get wallpaper (default is 0)', default=None)
-    parser.add_argument('--light', '-l', type=bool, const=True, nargs='?',
-                        help='Enable Light mode (default is Dark)', default=False)
-    parser.add_argument('--dark', '-d', type=bool, const=True, nargs='?',
-                        help='Enable Dark mode (default is Dark)', default=False)
+                        help='Monitor to get wallpaper (default is 0) but second one is 6 in my case, play with this to find yours', default=None)
     parser.add_argument('--plugin', '-p', type=str,
-                        help=f'Wallpaper plugin id (default is org.kde.image) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default=None)
+                        help=f'Wallpaper plugin id (default is {DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default=None)
     parser.add_argument('--file', '-f', type=str,
-                        help='Text file that contains wallpaper absolute path', default=None)
-
+                        help='Text file that contains wallpaper absolute path (Takes precedence over the above options)', default=None)
+    parser.add_argument('--light', '-l', action='store_true',
+                        help='Enable Light mode (default is Dark)')
+    parser.add_argument('--dark', '-d', action='store_true',
+                        help='Enable Dark mode (ignores user config)')
+    parser.add_argument('--autostart', '-a', action='store_true',
+                        help='Enable (copies) the startup script to automatically start with KDEs')
+    parser.add_argument('--copyconfig', '-c', action='store_true',
+                        help='Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.conf')
+    
+    # Get arguments
     args = parser.parse_args()
+    # Get config from file
     config = Configs(args)
-    options = config.options
+    options_old = config.options
     print(
-        f"Current config: Plugin: {options['plugin']} | Light mode: {options['light']} | File: {options['file']} | Monitor: {options['monitor']}")
+        f"Current config: Plugin: {options_old['plugin']} | Light mode: {options_old['light']} | File: {options_old['file']} | Monitor: {options_old['monitor']}")
 
-    def currentWallpaper(options):
-        return str(get_wallpaper_path(plugin=options['plugin'], monitor=options['monitor'], file=options['file']))
-
-    set_color_schemes(currentWallpaper(options), options['light'])
+    # Get the current wallpaper on startup
+    wallpaper_old = currentWallpaper(options_old)
+    if wallpaper_old != None:
+        print(f'Settting color schemes for {wallpaper_old}')
+        set_color_schemes(currentWallpaper(options_old), options_old['light'])
 
     # check wallpaper change
     while True:
         config = Configs(args)
-        options = config.options
-        wallpaper_old = currentWallpaper(options)
-        time.sleep(1)
-        config = Configs(args)
-        new_options = config.options
-        wallpaper_new = currentWallpaper(options)
-        wallpaper_changed = wallpaper_old != wallpaper_new
-        options_changed = options != new_options
+        options_new = config.options
+        wallpaper_new = currentWallpaper(options_new)
         
-        if options_changed:
-            print(
-                f"New config: Plugin: {new_options['plugin']} | Light mode: {new_options['light']} | File: {new_options['file']} | Monitor: {new_options['monitor']}")
-        if wallpaper_changed:
-            print(f'Wallpaper changed: {wallpaper_new}')
+        wallpaper_changed = wallpaper_old != wallpaper_new
+        options_changed = options_new != options_old
 
         if wallpaper_changed or options_changed:
-            set_color_schemes(wallpaper_new, new_options['light'])
+            if options_changed:
+                print(
+                    f"New config: Plugin: {options_new['plugin']} | Light mode: {options_new['light']} | File: {options_new['file']} | Monitor: {options_new['monitor']}")
+            if wallpaper_changed:
+                print(f'Wallpaper changed: {wallpaper_new}')
+            set_color_schemes(wallpaper_new, options_new['light'])
+        wallpaper_old = wallpaper_new
+        options_old = options_new
+        time.sleep(1)
