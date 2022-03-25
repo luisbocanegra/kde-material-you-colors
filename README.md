@@ -24,6 +24,14 @@ cd kde-material-you-colors
 curl https://raw.githubusercontent.com/luisbocanegra/kde-material-you-colors/main/PKGBUILD --output PKGBUILD
 makepkg -si
 ```
+### Ubuntu based:
+```sh
+git clone https://github.com/luisbocanegra/kde-material-you-colors
+cd kde-material-you-colors
+chmod +x ubuntu-based-install.sh
+sudo ./ubuntu-based-install.sh
+```
+<span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
 # Usage:
 - Run `kde-material-you-colors` from terminal, if you use the default wallpaper plugin on your main screen (0) this should change your Desktop colors right after.
