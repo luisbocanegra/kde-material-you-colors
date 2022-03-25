@@ -1,7 +1,7 @@
 # KDE Material You Colors (beta)
 ### Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
 
-This is a Python program that uses the [C# implementation](https://github.com/material-foundation/material-color-utilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
+This is a Python program that uses the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
 <div>
 </img>
 <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg"></img>
@@ -98,6 +98,6 @@ And run `kde-material-you-colors` with no arguments from terminal to test it.
 - This is not a bug but I'm a noob developer, so expect spaggeti code, PRs to improve it are very wellcomed.
 
 # Thanks & Credits
-- [@albi005 (Albert Ragány-Németh)](https://github.com/albi005) for the [C# implementation](https://github.com/material-foundation/material-color-utilities) of Material Color Utilities which I found the easiest to work with.
+- [@albi005 (Albert Ragány-Németh)](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities which I found the easiest to work with.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
