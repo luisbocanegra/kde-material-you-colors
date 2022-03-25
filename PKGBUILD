@@ -1,6 +1,6 @@
 # Maintainer: luisbocanegra <luis.bocanegra0@protonmail.com>
 pkgname=kde-material-you-colors
-pkgver=0.0.1
+pkgver=0.0.2BETA
 pkgrel=1
 pkgdesc="Automatic KDE Material You Colors Generator from your wallpaper"
 arch=('x86_64')
@@ -9,7 +9,7 @@ license=('APACHE')
 depends=("skia-sharp" "dbus-python" "python-numpy")
 options=('!strip')
 source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v${pkgver}.tar.gz")
-sha256sums=('20f31708155aec3fe02e4cdd8c4f14fdaa360ae5d3358562f5b18773afc05789')
+sha256sums=('6f809b7d35e7645a3bca3ef8e1cee2ed89655e531cb444f04f7320c23988cd3c')
 
 build() {
   cd "${pkgname}-${pkgver}"
@@ -18,7 +18,8 @@ build() {
 
 package() {
   cd "${pkgname}-${pkgver}"
-  install -Dm644 kde-material-you-colors.service ${pkgdir}/usr/lib/systemd/user/kde-material-you-colors.service
+  install -Dm644 kde-material-you-colors.desktop ${pkgdir}/usr/lib/${pkgname}/kde-material-you-colors.desktop
+  install -Dm644 sample_config.conf ${pkgdir}/usr/lib/${pkgname}/sample_config.conf
   install -Dm755 kde-material-you-colors.py ${pkgdir}/usr/lib/${pkgname}/kde-material-you-colors.py
   install -Dm755 kde-material-you-colors ${pkgdir}/usr/bin/kde-material-you-colors
   install -Dm755 color_scheme.py ${pkgdir}/usr/lib/${pkgname}/color_scheme.py
