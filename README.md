@@ -40,7 +40,9 @@ makepkg -si
 
 `--dark -d`&emsp; Enable Dark mode (ignores user config)
 
-`--autostart -a`&emsp; Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.ini
+`--autostart -a`&emsp; Enable (copies) the startup script to automatically start with KDE
+
+`--copyconfig -c` Copies the default config to ~/.config/kde-material-you-colors/config.conf
 
 # Configuration:
 ```ini

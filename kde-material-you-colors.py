@@ -209,9 +209,9 @@ if __name__ == '__main__':
     parser.add_argument('--dark', '-d', action='store_true',
                         help='Enable Dark mode (ignores user config)')
     parser.add_argument('--autostart', '-a', action='store_true',
-                        help='Enable (copies) the startup script to automatically start with KDEs')
+                        help='Enable (copies) the startup script to automatically start with KDE')
     parser.add_argument('--copyconfig', '-c', action='store_true',
-                        help='Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.conf')
+                        help='Copies the default config to ~/.config/kde-material-you-colors/config.conf')
 
     # Get arguments
     args = parser.parse_args()
