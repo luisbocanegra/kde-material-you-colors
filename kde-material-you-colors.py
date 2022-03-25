@@ -8,15 +8,17 @@ import configparser
 from color_scheme import ColorScheme
 from pathlib import Path
 HOME = str(Path.home())
-CONFIG_FILE="config.conf"
+SAMPLE_CONFIG_FILE = "sample_config.conf"
+CONFIG_FILE = "config.conf"
 SAMPLE_CONFIG_PATH = "/usr/lib/kde-material-you-colors/"
 USER_CONFIG_PATH = HOME+"/.config/kde-material-you-colors/"
 USER_SCHEMES_PATH = HOME+"/.local/share/color-schemes/"
-AUTOSTART_SCRIPT="kde-material-you-colors.desktop"
+AUTOSTART_SCRIPT = "kde-material-you-colors.desktop"
 SAMPLE_AUTOSTART_SCRIPT_PATH = "/usr/lib/kde-material-you-colors/"
 USER_AUTOSTART_SCRIPT_PATH = HOME+"/.config/autostart/"
 DEFAULT_PLUGIN = 'org.kde.image'
 # Get current wallpaper from plain file or plugin + containment combo
+
 
 def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
 
@@ -59,23 +61,24 @@ def set_color_schemes(current_wallpaper, light):
             #print(f'Found wallpaper: "{current_wallpaper}"')
             current_wallpaper = f'"{current_wallpaper}"'
             # get colors from material-color-utility
-            materialYouColors = subprocess.Popen("material-color-utility "+current_wallpaper,
-                                             shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-            # make sure that we got colors from MaterialColorUtilities
-            if materialYouColors:
-                # parse colors string to json
-                colors_json = json.loads(materialYouColors)
+            try:
+                materialYouColors = subprocess.check_output("material-color-utility "+current_wallpaper,
+                                                            shell=True).strip()
+                try:
+                    # parse colors string to json
+                    colors_json = json.loads(materialYouColors)
 
-                # with open('output.json', 'w', encoding='utf8') as current_scheme:
-                #     current_scheme.write(json.dumps(
-                #         colors_json, indent=4, sort_keys=False))
+                    # with open('output.json', 'w', encoding='utf8') as current_scheme:
+                    #     current_scheme.write(json.dumps(
+                    #         colors_json, indent=4, sort_keys=False))
 
-                # generate and apply color schemes
-                colors_light = ColorScheme(colors_json)
-                colors_light.make_color_schemes(light)
-            else:
-                print(
-                    f'''Error: Couldn't get colors from "{current_wallpaper}"''')
+                    # generate and apply color schemes
+                    colors_light = ColorScheme(colors_json)
+                    colors_light.make_color_schemes(light)
+                except Exception as e:
+                        print(f'Error: material-color-utility did not return a json object')
+            except Exception as e:
+                print(f'Error trying to get colors from {current_wallpaper}')
         else:
             print(
                 f'''Error: File "{current_wallpaper}" does not exist''')
@@ -87,27 +90,36 @@ class Configs():
         c_monitor = None
         c_file = None
         c_plugin = None
-        
+
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
                 os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
-                subprocess.Popen("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
-                                        shell=True,stdout=subprocess.PIPE)
-                print(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                try:
+                    subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
+                                            shell=True)
+                    print(
+                        f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                except Exception:
+                    quit(1)
             else:
-                print(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                print(
+                    f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
             quit(0)
         elif args.copyconfig == True:
             if not os.path.exists(USER_CONFIG_PATH):
                 os.makedirs(USER_CONFIG_PATH)
             if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
-                subprocess.Popen("cp "+SAMPLE_CONFIG_PATH+CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
-                                        shell=True,stdout=subprocess.PIPE)
-                print(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+                try:
+                    subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
+                                            shell=True)
+                    print(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+                except Exception:
+                    quit(1)
             else:
-                print(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
+                print(
+                    f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
             quit(0)
         else:
             config = configparser.ConfigParser()
@@ -131,11 +143,11 @@ class Configs():
 
                     if 'plugin' in custom:
                         c_plugin = custom['plugin']
-            
+
             if args.dark == True:
                 c_light = False
 
-            elif args.light == True :
+            elif args.light == True:
                 c_light = args.light
 
             else:
@@ -175,13 +187,15 @@ class Configs():
     def options(self):
         return self._options
 
+
 def currentWallpaper(options):
-        return get_wallpaper_path(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
-    
+    return get_wallpaper_path(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
+
+
 if __name__ == '__main__':
     # Make sure the schemes path exists
     if not os.path.exists(USER_SCHEMES_PATH):
-            os.makedirs(USER_SCHEMES_PATH)
+        os.makedirs(USER_SCHEMES_PATH)
     parser = argparse.ArgumentParser(
         description='Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop')
     parser.add_argument('--monitor', '-m', type=int,
@@ -198,7 +212,7 @@ if __name__ == '__main__':
                         help='Enable (copies) the startup script to automatically start with KDEs')
     parser.add_argument('--copyconfig', '-c', action='store_true',
                         help='Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.conf')
-    
+
     # Get arguments
     args = parser.parse_args()
     # Get config from file
@@ -218,7 +232,7 @@ if __name__ == '__main__':
         config = Configs(args)
         options_new = config.options
         wallpaper_new = currentWallpaper(options_new)
-        
+
         wallpaper_changed = wallpaper_old != wallpaper_new
         options_changed = options_new != options_old
 

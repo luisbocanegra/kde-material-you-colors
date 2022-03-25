@@ -61,23 +61,18 @@ class ColorScheme:
                 light_scheme_file.write(light_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouLight2.colors', 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
-            # os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight2.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            #time.sleep(1)
+                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            #os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouLight.colors')
+                                        shell=True, stderr=subprocess.PIPE)
         else:
             print("Setting dark scheme")
             with open (home+'/.local/share/color-schemes/MaterialYouDark.colors', 'w', encoding='utf8') as dark_scheme_file:
                 dark_scheme_file.write(dark_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouDark2.colors', 'w', encoding='utf8') as dark_scheme_file:
                 dark_scheme_file.write(dark_scheme)
-            # os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouDark.colors')
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark2.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             #time.sleep(1)
             subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark.colors",
-                                        shell=True, stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            #os.system('plasma-apply-colorscheme /home/luis/.local/share/color-schemes/MaterialYouLight.colors')
+                                        shell=True, stderr=subprocess.PIPE)
