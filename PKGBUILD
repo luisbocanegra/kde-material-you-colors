@@ -9,7 +9,7 @@ license=('APACHE')
 depends=("skia-sharp" "dbus-python" "python-numpy")
 options=('!strip')
 source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v${pkgver}.tar.gz")
-sha256sums=('6f809b7d35e7645a3bca3ef8e1cee2ed89655e531cb444f04f7320c23988cd3c')
+sha256sums=('c872301f45976ebdedf2aa8d989b09f892fd087a75746ae06c1b2d5b0d95224f')
 
 build() {
   cd "${pkgname}-${pkgver}"
