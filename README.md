@@ -19,8 +19,9 @@ https://user-images.githubusercontent.com/15076387/159639387-d0a52b1e-ab67-431d-
 # Installing:
 ### Arch Linux:
 ```sh 
-git clone https://github.com/luisbocanegra/kde-material-you-colors
+mkdir kde-material-you-colors 
 cd kde-material-you-colors
+curl https://raw.githubusercontent.com/luisbocanegra/kde-material-you-colors/main/PKGBUILD --output PKGBUILD
 makepkg -si
 ```
 
@@ -39,7 +40,7 @@ makepkg -si
 
 `--dark -d`&emsp; Enable Dark mode (ignores user config)
 
-`--autostart -a`&emsp; Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.conf
+`--autostart -a`&emsp; Copies (overwrites) the default config to ~/.config/kde-material-you-colors/config.ini
 
 # Configuration:
 ```ini
