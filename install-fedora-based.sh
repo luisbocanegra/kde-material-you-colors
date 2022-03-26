@@ -3,9 +3,14 @@ BGreen='\033[1;32m'
 clean='\033[0m'
 pkgname=kde-material-you-colors
 
+if ! [ $(id -u) = 0 ]; then
+    echo "This script must be run as sudo or root, try again..."
+    exit 1
+fi;
+
 echo -e "${BGreen}Installing dependencies${clean}"
-sudo apt update
-sudo apt install python3 python3-dbus python3-numpy
+dnf update
+dnf install python3 python3-dbus python3-numpy
 
 echo -e "${BGreen}Installing kde-material-you-colors${clean}"
 mkdir -p /usr/lib/${pkgname}

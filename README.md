@@ -24,12 +24,22 @@ cd kde-material-you-colors
 curl https://raw.githubusercontent.com/luisbocanegra/kde-material-you-colors/main/PKGBUILD --output PKGBUILD
 makepkg -si
 ```
-### Ubuntu based:
+### Other distributions
+1. Clone/download this repository and cd to it
 ```sh
 git clone https://github.com/luisbocanegra/kde-material-you-colors
 cd kde-material-you-colors
-chmod +x ubuntu-based-install.sh
-sudo ./ubuntu-based-install.sh
+```
+2. Make the installer executable and run it as root
+- For Ubuntu based distros:
+```sh
+chmod +x install-ubuntu-based.sh
+sudo ./install-ubuntu-based.sh
+```
+- For Fedora based distros:
+```sh
+chmod +x install-fedora-based.sh
+sudo ./install-fedora-based.sh
 ```
 <span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
