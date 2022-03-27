@@ -1,4 +1,3 @@
-from array import array
 import importlib
 from pathlib import Path
 import sys
@@ -61,9 +60,9 @@ class ColorScheme:
                 light_scheme_file.write(light_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouLight2.colors', 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
-            subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight2.colors",
+            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-            subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight.colors",
+            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight.colors",
                                         shell=True, stderr=subprocess.PIPE)
         else:
             print("Setting dark scheme")
@@ -71,8 +70,8 @@ class ColorScheme:
                 dark_scheme_file.write(dark_scheme)
             with open (home+'/.local/share/color-schemes/MaterialYouDark2.colors', 'w', encoding='utf8') as dark_scheme_file:
                 dark_scheme_file.write(dark_scheme)
-            subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark2.colors",
+            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             #time.sleep(1)
-            subprocess.Popen("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark.colors",
+            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark.colors",
                                         shell=True, stderr=subprocess.PIPE)
