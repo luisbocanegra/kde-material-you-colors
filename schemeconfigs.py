@@ -36,7 +36,7 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
-BackgroundNormal={colors['light']['SurfaceVariant']}
+BackgroundNormal={extras['LightSurface3']}
 
 [Colors:Selection]
 BackgroundAlternate={colors['light']['Primary']}
@@ -67,8 +67,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={colors['light']['Surface']}
-BackgroundNormal={extras['LightSurface1']}
+BackgroundAlternate={extras['LightSurface2']}
+BackgroundNormal={colors['light']['Surface']}
 DecorationFocus={colors['light']['Primary']}
 #-----------------------------------------------
 DecorationHover={colors['light']['Primary']}
@@ -83,7 +83,7 @@ ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Window]
 BackgroundAlternate={colors['light']['Surface']}
-BackgroundNormal={colors['light']['SurfaceVariant']}
+BackgroundNormal={extras['LightSurface3']}
 DecorationFocus={colors['light']['Primary']}
 DecorationHover={colors['light']['Primary']}
 ForegroundActive={colors['light']['InverseSurface']}
@@ -105,7 +105,7 @@ shadeSortColumn=false
 contrast=4
 
 [WM]
-activeBackground={colors['light']['SurfaceVariant']}
+activeBackground={extras['LightSurface3']}
 activeBlend=#ff0000
 activeForeground={colors['light']['OnSurface']}
 inactiveBackground={colors['light']['SecondaryContainer']}
@@ -149,7 +149,7 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
-BackgroundNormal={colors['dark']['SurfaceVariant']}
+BackgroundNormal={extras['DarkSurface3']}
 
 [Colors:Selection]
 BackgroundAlternate={colors['dark']['Primary']}
@@ -182,8 +182,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={colors['dark']['Surface']}
-BackgroundNormal={extras['DarkSurface1']}
+BackgroundAlternate={extras['DarkSurface2']}
+BackgroundNormal={colors['dark']['Surface']}
 DecorationFocus={colors['dark']['Primary']}
 #-----------------------------------------------
 DecorationHover={colors['dark']['Primary']}
@@ -198,7 +198,7 @@ ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Window]
 BackgroundAlternate={colors['dark']['Surface']}
-BackgroundNormal={colors['dark']['SurfaceVariant']}
+BackgroundNormal={extras['DarkSurface3']}
 DecorationFocus={colors['dark']['Primary']}
 DecorationHover={colors['dark']['Primary']}
 ForegroundActive={colors['dark']['InverseSurface']}
@@ -220,7 +220,7 @@ shadeSortColumn=true
 contrast=4
 
 [WM]
-activeBackground={colors['dark']['SurfaceVariant']}
+activeBackground={extras['DarkSurface3']}
 activeBlend=#ff0000
 activeForeground={colors['dark']['OnSurface']}
 inactiveBackground={colors['dark']['SecondaryContainer']}

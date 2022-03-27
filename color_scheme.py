@@ -27,20 +27,32 @@ class ColorScheme:
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
         extras = {
-            "LightSurface1": blendColors(colors['light']['Surface'], colors['light']['Primary'], .08),
-            "DarkSurface1": blendColors(colors['dark']['Surface'], colors['dark']['Primary'], .08),
+            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .05),
+            "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05),
+            
+            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .08),
+            "DarkSurface2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08),
+            
+            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .11),
+            "DarkSurface3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11),
+            
             "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
             "LinkVisitedOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Visited'], .8),
             "NegativeOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Negative'], .8),
             "PositiveOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Positive'], .8),
             "NeutralOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Neutral'], .8),
+            
             "LinkOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Link'], .5),
             "LinkVisitedOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Visited'], .8),
             "NegativeOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Negative'], .8),
             "PositiveOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Positive'], .8),
             "NeutralOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Neutral'], .8),
-            "LightSelectionAlt": blendColors(colors['light']['Surface'], colors['light']['Secondary'], .3),
-            "DarkSelectionAlt": blendColors(colors['dark']['Surface'], colors['dark']['Secondary'], .4),
+            
+            "LightSelectionAlt": blendColors(colors['light']['Background'], colors['light']['Secondary'], .3),
+            "DarkSelectionAlt": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .3),
+            
+            "LightSelectionAltActive": blendColors(colors['light']['Background'], colors['light']['Secondary'], .5),
+            "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
         }
 
         # Load themes config on the go for now
