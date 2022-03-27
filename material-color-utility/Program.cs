@@ -7,30 +7,6 @@ using Newtonsoft.Json;
 
 class Program
 {
-    //Make temporary color palette
-    static int tempColor = -452997;
-    public static CorePalette corePalette = CorePalette.Of(tempColor);
-    
-    // override some colors of the Light scheme ;)
-    class MyLightScheme : LightScheme
-    {
-
-        public MyLightScheme(CorePalette corePalette) : base(corePalette) { }
-        //string s = "String from MyScheme";
-
-        protected override int BackgroundLight => corePalette.NeutralVariant[95];
-    }
-
-    // override some colors of the Light scheme ;)
-    class MyDarkScheme : DarkScheme
-    {
-
-        public MyDarkScheme(CorePalette corePalette) : base(corePalette) { }
-        //string s = "String from MyScheme";
-
-        protected override int BackgroundDark => corePalette.NeutralVariant[10];
-    }
-
     // Main Method
     static void Main(string[] args)
     {
@@ -54,8 +30,8 @@ class Program
         CorePalette myCorePalette = CorePalette.Of(seedColor);
 
         // Create custom schemes
-        MyLightScheme lightScheme = new(myCorePalette);
-        MyDarkScheme darkScheme = new(myCorePalette);
+        LightScheme lightScheme = new(myCorePalette);
+        DarkScheme darkScheme = new(myCorePalette);
 
         //TODO: Save color palette to single json
         // var colors = new Dictionary<string, string>();
