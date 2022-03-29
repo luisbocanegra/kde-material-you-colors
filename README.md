@@ -41,6 +41,9 @@ sudo ./install-ubuntu-based.sh
 chmod +x install-fedora-based.sh
 sudo ./install-fedora-based.sh
 ```
+3. OPTIONAL
+- Install the [Colr](https://pypi.org/project/Colr/) python module to display colored seed colors from terminal
+
 <span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
 # Usage:
@@ -53,6 +56,8 @@ sudo ./install-fedora-based.sh
 `--plugin -p [ID]`&emsp; Wallpaper plugin id (default is org.kde.image) you can find them in: /usr/share/plasma/wallpapers/ or /.local/share/plasma/wallpapers
 
 `--file -f [ABSOLUTE_PATH]`&emsp; Text file that contains wallpaper absolute path (Takes precedence over the above options)
+
+`--ncolor -n [NUMBER]`&emsp; Alternative color mode (default is 0), some images return more than one color, this will use either the matched or last one
 
 `--light -l`&emsp; Enable Light mode (default is Dark)
 
@@ -88,6 +93,10 @@ plugin = org.kde.image
 # Enable Light mode
 # Default is False
 light = False
+
+# Alternative color mode (default is 0), some images return more than one color, this will use either the matched or last color
+# Default is 0
+ncolor = 0
 ```
 Save the sample configuration to `~/.config/kde-material-you-colors/config.conf`
 
