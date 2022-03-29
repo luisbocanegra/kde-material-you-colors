@@ -81,10 +81,13 @@ def set_color_schemes(current_wallpaper, light, ncolor):
                         else:
                             print(f'{BOLD_TEXT}{index}:{col}',end=' ')
                     print(f'{BOLD_TEXT}')
+                    seed = colors_json['seedColor']
+                    sedColor = list(seed.values())[0]
+                    seedNo = list(seed.keys())[0]
                     if USER_HAS_COLR:
-                        print(BOLD_TEXT+"Using seed: "+color(colors_json['seedcolor'],fore=colors_json['seedcolor']))
+                        print(BOLD_TEXT+"Using seed: "+seedNo+":"+color(sedColor,fore=sedColor))
                     else:
-                        print(BOLD_TEXT+"Using seed: "+colors_json['seedcolor']+RESET_TEXT)
+                        print(BOLD_TEXT+"Using seed: "+seedNo+":"+sedColor+RESET_TEXT)
                     # with open('output.json', 'w', encoding='utf8') as current_scheme:
                     #     current_scheme.write(json.dumps(
                     #         colors_json, indent=4, sort_keys=False))

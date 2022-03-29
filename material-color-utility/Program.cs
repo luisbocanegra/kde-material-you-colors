@@ -99,7 +99,7 @@ class Program
         string jsonDark = JsonConvert.SerializeObject(colors_dark);
 
         Console.WriteLine("{\"bestColors\":"+jsonBestColors + ",");
-        Console.WriteLine("\"seedcolor\":\"#"+seedColor.ToString("X")[2..]+"\",");
+        Console.WriteLine("\"seedColor\":{\""+seedNo+"\":\"#"+seedColor.ToString("X")[2..]+"\"},");
         Console.WriteLine("\"light\":"+jsonLight + ",");
         Console.WriteLine("\"dark\":"+jsonDark+"}");
     }
