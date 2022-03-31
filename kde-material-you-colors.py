@@ -5,7 +5,7 @@ import os
 import dbus
 import argparse
 import configparser
-import importlib
+import importlib.util
 from color_scheme import ColorScheme
 from pathlib import Path
 find_colr = importlib.util.find_spec("colr")
