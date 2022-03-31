@@ -4,7 +4,9 @@ import sys
 from color_utils import blendColors
 import subprocess
 from schemeconfigs import ThemeConfig
-
+HOME_DIR = str(Path.home())
+THEME_LIGHT_PATH = HOME_DIR+"/.local/share/color-schemes/MaterialYouLight"
+THEME_DARK_PATH = HOME_DIR+"/.local/share/color-schemes/MaterialYouDark"
 class ColorScheme:
 
     def __init__(self, colors):
@@ -12,9 +14,6 @@ class ColorScheme:
 
     def make_color_schemes(self, light):
         colors = self._colors
-
-        # home folder
-        home = str(Path.home())
 
         # Base text states taken from Breeze Color Scheme
         base_text_states = {
@@ -62,28 +61,28 @@ class ColorScheme:
 
         light_scheme=schemes.get_light_scheme()
         dark_scheme=schemes.get_dark_scheme()
-
+        #subprocess.run("/home/luis/scripts/conky-colors.sh",
+        #                                shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
         # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
         # since I don't know how to reaload it with code lets make a copy and switch between them
         # sadly color settings will show copies too
         if light == True:
             print("Setting light scheme")
-            with open (home+'/.local/share/color-schemes/MaterialYouLight.colors', 'w', encoding='utf8') as light_scheme_file:
+            with open (THEME_LIGHT_PATH+"2.colors", 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
-            with open (home+'/.local/share/color-schemes/MaterialYouLight2.colors', 'w', encoding='utf8') as light_scheme_file:
+            with open (THEME_LIGHT_PATH+".colors", 'w', encoding='utf8') as light_scheme_file:
                 light_scheme_file.write(light_scheme)
-            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight2.colors",
+            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouLight.colors",
+            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+".colors",
                                         shell=True, stderr=subprocess.PIPE)
         else:
-            print("Setting dark scheme")
-            with open (home+'/.local/share/color-schemes/MaterialYouDark.colors', 'w', encoding='utf8') as dark_scheme_file:
+            with open (THEME_DARK_PATH+"2.colors", 'w', encoding='utf8') as dark_scheme_file:
                 dark_scheme_file.write(dark_scheme)
-            with open (home+'/.local/share/color-schemes/MaterialYouDark2.colors', 'w', encoding='utf8') as dark_scheme_file:
+            with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
                 dark_scheme_file.write(dark_scheme)
-            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark2.colors",
+            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-            #time.sleep(1)
-            subprocess.run("plasma-apply-colorscheme "+home+"/.local/share/color-schemes/MaterialYouDark.colors",
+            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
                                         shell=True, stderr=subprocess.PIPE)
+            
