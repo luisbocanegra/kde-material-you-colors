@@ -203,7 +203,7 @@ class Configs():
             
             
             if args.ncolor != None:
-                if args.monitor < 0:
+                if args.ncolor < 0:
                     raise ValueError(
                         'Value for --ncolor must be a positive integer')
                 else:
