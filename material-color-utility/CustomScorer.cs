@@ -13,7 +13,7 @@ public static class Scorer
      * muddied, while curating the high cluster count to a much smaller number of appropriate choices.
      */
      // Try to get more exotic colors ;)
-    private const float CUTOFF_CHROMA = 12f; // was 15f
+    private const float CUTOFF_CHROMA = 18f; // was 15f
     private const float CUTOFF_EXCITED_PROPORTION = 0.01f;
     private const float CUTOFF_TONE = 10f;
     private const float TARGET_CHROMA = 48f;
