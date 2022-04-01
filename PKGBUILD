@@ -1,6 +1,6 @@
-# Maintainer: luisbocanegra <luis.bocanegra0@protonmail.com>
+# Maintainer: luisbocanegra <luis.bocanegra0 at protonmail dot com>
 pkgname=kde-material-you-colors
-pkgver=0.0.2BETA
+pkgver=0.1.0BETA
 pkgrel=1
 pkgdesc="Automatic KDE Material You Colors Generator from your wallpaper"
 arch=('x86_64')
@@ -9,7 +9,7 @@ license=('APACHE')
 depends=("skia-sharp" "dbus-python" "python-numpy" "python-colr")
 options=('!strip')
 source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v${pkgver}.tar.gz")
-sha256sums=('c872301f45976ebdedf2aa8d989b09f892fd087a75746ae06c1b2d5b0d95224f')
+sha256sums=('8ad0e2a893badea716402519806c48c5c851be1414d5fc7e15d1500a9ffa9726')
 
 build() {
   cd "${pkgname}-${pkgver}"
