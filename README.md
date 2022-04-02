@@ -7,7 +7,6 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg"></img>
 <img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
 <img src=https://img.shields.io/badge/Status-beta-red.svg></img>
-<img src="https://img.shields.io/github/repo-size/luisbocanegra/kde-material-you-colors?label=size&style=plasticr"></img>
 </div>
 <div>
 <img src="Screenshot.png"  alt="Screenshot">
@@ -18,12 +17,7 @@ https://user-images.githubusercontent.com/15076387/159639387-d0a52b1e-ab67-431d-
 
 # Installing:
 ### Arch Linux:
-```sh 
-mkdir kde-material-you-colors 
-cd kde-material-you-colors
-curl https://raw.githubusercontent.com/luisbocanegra/kde-material-you-colors/main/PKGBUILD --output PKGBUILD
-makepkg -si
-```
+- [AUR](https://aur.archlinux.org/packages/kde-material-you-colors)
 ### Other distributions
 1. Clone/download this repository and cd to it
 ```sh
