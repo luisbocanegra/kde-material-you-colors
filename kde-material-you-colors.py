@@ -24,11 +24,9 @@ USER_AUTOSTART_SCRIPT_PATH = HOME+"/.config/autostart/"
 DEFAULT_PLUGIN = 'org.kde.image'
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
+
 # Get current wallpaper from plain file or plugin + containment combo
-
-
 def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
-
     if file:
         if os.path.exists(file):
             with open(file) as file:
@@ -60,7 +58,6 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
             return wallpaper_path
         except Exception as e:
             print(f'Error getting wallpaper from dbus:\n{e}')
-
 
 def set_color_schemes(current_wallpaper, light, ncolor):
     if current_wallpaper != None:
@@ -107,15 +104,17 @@ def set_color_schemes(current_wallpaper, light, ncolor):
             print(
                 f'''Error: File "{current_wallpaper}" does not exist''')
 
+def set_icons(icons_light, icons_dark, light):
+    if light and icons_light != None:
+        subprocess.run("/usr/lib/plasma-changeicons "+icons_light,
+                                        shell=True)
+    if not light and icons_dark != None:
+        subprocess.run("/usr/lib/plasma-changeicons "+icons_dark,
+                                        shell=True)
 
 class Configs():
     def __init__(self, args):
-        c_light = None
-        c_monitor = None
-        c_file = None
-        c_plugin = None
-        c_ncolor = None
-
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = None
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -174,13 +173,17 @@ class Configs():
 
                     if 'plugin' in custom:
                         c_plugin = custom['plugin']
+                        
+                    if 'iconslight' in custom:
+                        c_iconslight = custom['iconslight']
+                        
+                    if 'iconsdark' in custom:
+                        c_iconsdark = custom['iconsdark']
 
             if args.dark == True:
                 c_light = False
-
             elif args.light == True:
                 c_light = args.light
-
             else:
                 c_light = c_light
 
@@ -188,6 +191,7 @@ class Configs():
                 c_file = args.file
             elif c_file == None:
                 c_file = args.file
+                
 
             if args.monitor != None:
                 if args.monitor < 0:
@@ -200,8 +204,6 @@ class Configs():
             else:
                 c_monitor = c_monitor
                 
-            
-            
             if args.ncolor != None:
                 if args.ncolor < 0:
                     raise ValueError(
@@ -213,20 +215,31 @@ class Configs():
             else:
                 c_ncolor = c_ncolor
             
-
             if args.plugin != None:
                 c_plugin = args.plugin
             elif args.plugin == None and c_plugin == None:
                 c_plugin = DEFAULT_PLUGIN
             else:
                 c_plugin = c_plugin
+                
+            if args.iconslight != None:
+                c_iconslight = args.iconslight
+            elif c_iconslight == None:
+                c_iconslight = args.iconslight
+                
+            if args.iconsdark != None:
+                c_iconsdark = args.iconsdark
+            elif c_iconsdark == None:
+                c_iconsdark = args.iconsdark
 
             self._options = {
                 'light': c_light,
                 'file': c_file,
                 'monitor': c_monitor,
                 'plugin': c_plugin,
-                'ncolor': c_ncolor
+                'ncolor': c_ncolor,
+                'iconslight': c_iconslight,
+                'iconsdark': c_iconsdark
             }
 
     @property
@@ -260,37 +273,50 @@ if __name__ == '__main__':
                         help='Enable (copies) the startup script to automatically start with KDE')
     parser.add_argument('--copyconfig', '-c', action='store_true',
                         help='Copies the default config to ~/.config/kde-material-you-colors/config.conf')
+    parser.add_argument('--iconslight', type=str,
+                        help='Icons for Dark scheme', default=None)
+    parser.add_argument('--iconsdark', type=str,
+                        help='Icons for Light scheme', default=None)
 
     # Get arguments
     args = parser.parse_args()
     # Get config from file
     config = Configs(args)
     options_old = config.options
-    print(
-        f"Current config: Plugin: {options_old['plugin']} | Light: {options_old['light']} | File: {options_old['file']} | Monitor: {options_old['monitor']} | Ncolor: {options_old['ncolor']}")
-
+    print(f"Config: {options_old}")
+    icons_old = [options_old['iconslight'], options_old['iconsdark']]
+    light_old = options_old['light']
     # Get the current wallpaper on startup
     wallpaper_old = currentWallpaper(options_old)
     if wallpaper_old != None:
         print(f'Settting color schemes for {wallpaper_old}')
         set_color_schemes(currentWallpaper(options_old), options_old['light'], options_old['ncolor'])
+        
+    set_icons(icons_light=options_old['iconslight'], icons_dark=options_old['iconsdark'], light=options_old['light'])
 
     # check wallpaper change
     while True:
         config = Configs(args)
         options_new = config.options
         wallpaper_new = currentWallpaper(options_new)
+        icons_new = [options_new['iconslight'], options_new['iconsdark']]
+        light_new = options_new['light']
 
         wallpaper_changed = wallpaper_old != wallpaper_new
         options_changed = options_new != options_old
+        icons_changed = icons_new != icons_old
+        light_changed = light_new != light_old
 
         if wallpaper_changed or options_changed:
             if options_changed:
-                print(
-                    f"Current config: Plugin: {options_new['plugin']} | Light: {options_new['light']} | File: {options_new['file']} | Monitor: {options_new['monitor']} | Ncolor: {options_new['ncolor']}")
+                print(f"New Config: {options_new}")
+                if icons_changed or light_changed:
+                    set_icons(icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
             if wallpaper_changed:
                 print(f'Wallpaper changed: {wallpaper_new}')
             set_color_schemes(wallpaper_new, options_new['light'],options_new['ncolor'])
         wallpaper_old = wallpaper_new
         options_old = options_new
+        icons_old = icons_new
+        light_old = light_new
         time.sleep(1)
