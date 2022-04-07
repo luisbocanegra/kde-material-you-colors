@@ -6,7 +6,7 @@ pkgdesc="Automatic KDE Material You Colors Generator from your wallpaper"
 arch=('x86_64')
 url="https://github.com/luisbocanegra/kde-material-you-colors"
 license=('APACHE')
-depends=("skia-sharp" "dbus-python" "python-numpy")
+depends=("dbus-python" "python-numpy")
 optdepends=('python-colr: colored hex codes printing')
 options=('!strip')
 source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v${pkgver}.tar.gz")
@@ -27,6 +27,7 @@ package() {
   install -Dm755 color_utils.py ${pkgdir}/usr/lib/${pkgname}/color_utils.py
   install -Dm755 schemeconfigs.py ${pkgdir}/usr/lib/${pkgname}/schemeconfigs.py
   install -Dm755 material-color-utility-bin ${pkgdir}/usr/lib/${pkgname}/material-color-utility-bin
+  install -Dm755 libSkiaSharp.so ${pkgdir}/usr/lib/${pkgname}/libSkiaSharp.so
   ln -s /usr/lib/${pkgname}/material-color-utility-bin ${pkgdir}/usr/bin/material-color-utility
   install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }
