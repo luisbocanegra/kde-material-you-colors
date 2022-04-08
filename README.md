@@ -61,6 +61,10 @@ sudo ./install-fedora-based.sh
 
 `--copyconfig -c` Copies the default config to ~/.config/kde-material-you-colors/config.conf
 
+`--iconslight [ICONS-NAME]`&emsp; Icons for Dark scheme
+
+`--iconsdark [ICONS-NAME]`&emsp; Icons for Light scheme
+
 # Configuration:
 ```ini
 [CUSTOM]
@@ -91,6 +95,14 @@ light = False
 # Alternative color mode (default is 0), some images return more than one color, this will use either the matched or last color
 # Default is 0
 ncolor = 0
+
+# Light scheme icons 
+# Commented by default
+#iconslight = Papirus-Light
+
+# Dark scheme icons
+# Commented by default
+#iconsdark = Papirus-Dark
 ```
 Save the sample configuration to `~/.config/kde-material-you-colors/config.conf`
 
