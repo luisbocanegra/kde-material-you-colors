@@ -26,13 +26,13 @@ class ColorScheme:
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
         extras = {
-            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .05),
+            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08),
             "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05),
             
-            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .08),
+            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11),
             "DarkSurface2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08),
             
-            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .11),
+            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .14),
             "DarkSurface3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11),
             
             "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
