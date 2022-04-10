@@ -25,6 +25,7 @@ DEFAULT_PLUGIN = 'org.kde.image'
 PICTURE_OF_DAY_PLUGIN = 'org.kde.potd'
 PICTURE_OF_DAY_PLUGIN_IMGS_DIR = HOME+'/.cache/plasma_engine_potd/'
 PICTURE_OF_DAY_UNSPLASH_PROVIDER = 'unsplash'
+PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
@@ -58,21 +59,23 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 script_output = tuple(evaluate_script(
                 script, monitor, plugin).split(","))
             except:
-                script_output = tuple(None,None)
-                
+                script_output = ('','')
             img_provider = script_output[0]
             provider_category = script_output[1]
-
+            
             if img_provider:
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+img_provider
             else:
                 # default provider is astronomic photo of the day
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+PICTURE_OF_DAY_DEFAULT_PROVIDER
 
+            # unsplash also has a category
             if img_provider == PICTURE_OF_DAY_UNSPLASH_PROVIDER:
-                # unsplash also has a category
-                potd = potd+":"+provider_category
-
+                # defaul category doesnt doesnt return id, add it
+                if not provider_category:
+                    provider_category = PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
+                potd = f"{potd}:{provider_category}"
+                
             if os.path.exists(potd):
                 return potd
             else:
@@ -123,8 +126,11 @@ def get_last_modification(file):
     Args:
         file (str): absolute path of file
     """
-    if os.path.exists(file):
-        return os.stat(file).st_mtime
+    if file is not None:
+        if os.path.exists(file):
+            return os.stat(file).st_mtime
+        else:
+            return None
     else:
         return None
 
