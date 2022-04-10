@@ -46,7 +46,6 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
         # special case for picture of the day plugin that requires a
         # directory, provider and a category
         if plugin == PICTURE_OF_DAY_PLUGIN:
-
             script = """
             var Desktops = desktops();
                 d = Desktops[%s];
@@ -54,8 +53,13 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 d.currentConfigGroup = Array("Wallpaper", "%s", "General");
                 print(d.readConfig("Provider")+","+d.readConfig("Category"));
             """
-            script_output = tuple(evaluate_script(
+
+            try:
+                script_output = tuple(evaluate_script(
                 script, monitor, plugin).split(","))
+            except:
+                script_output = tuple(None,None)
+                
             img_provider = script_output[0]
             provider_category = script_output[1]
 
@@ -71,6 +75,9 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
 
             if os.path.exists(potd):
                 return potd
+            else:
+                return None
+
         else:
             # wallpaper plugin that stores current image
             script = """
@@ -80,7 +87,11 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 d.currentConfigGroup = Array("Wallpaper", "%s", "General");
                 print(d.readConfig("Image"));
             """
-            return evaluate_script(script, monitor, plugin)
+            try:
+                wallpaper =  evaluate_script(script, monitor, plugin)
+                return wallpaper
+            except:
+                return None
 
 
 def evaluate_script(script, monitor, plugin):
@@ -103,6 +114,7 @@ def evaluate_script(script, monitor, plugin):
         return wallpaper_path
     except Exception as e:
         print(f'Error getting wallpaper from dbus:\n{e}')
+        return None
 
 
 def get_last_modification(file):
@@ -111,7 +123,10 @@ def get_last_modification(file):
     Args:
         file (str): absolute path of file
     """
-    return os.stat(file).st_mtime
+    if os.path.exists(file):
+        return os.stat(file).st_mtime
+    else:
+        return None
 
 def set_color_schemes(current_wallpaper, light, ncolor):
     if current_wallpaper != None:
@@ -378,7 +393,7 @@ if __name__ == '__main__':
                 if icons_changed or light_changed:
                     set_icons(
                         icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
-            if wallpaper_changed:
+            if wallpaper_changed or wallpaper_modified:
                 print(f'Wallpaper changed: {wallpaper_new}')
             set_color_schemes(
                 wallpaper_new, options_new['light'], options_new['ncolor'])
