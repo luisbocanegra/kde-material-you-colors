@@ -140,8 +140,7 @@ def evaluate_script(script, monitor, plugin):
     """
     try:
         bus = dbus.SessionBus()
-        plasma = dbus.Interface(bus.get_object(
-            'org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
+        plasma = dbus.Interface(bus.get_object('org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
         wallpaper_data = str(plasma.evaluateScript(
             script % (monitor, plugin, plugin))).replace('file://', '')
         return wallpaper_data
@@ -446,18 +445,17 @@ if __name__ == '__main__':
     light_old = options_old['light']
     # Get the current wallpaper on startup
     wallpaper_old = currentWallpaper(options_old)
-    wallpaper_old_type = wallpaper_old[0]
-    wallpaper_old_data = wallpaper_old[1]
-    
-    print(f'Wallpaper: {wallpaper_old}')
-    
-    # if wallpaper is image save time of last modification
-    if wallpaper_old_type == "image":
-        wallpaper_mod_time_old = get_last_modification(wallpaper_old_data)
-    else: 
-        wallpaper_mod_time_old = None
         
-    if wallpaper_old != None:
+    if wallpaper_old != None and wallpaper_old[1] != None:
+        wallpaper_old_type = wallpaper_old[0]
+        wallpaper_old_data = wallpaper_old[1]
+        
+        # if wallpaper is image save time of last modification
+        if wallpaper_old_type == "image":
+            wallpaper_mod_time_old = get_last_modification(wallpaper_old_data)
+        else: 
+            wallpaper_mod_time_old = None
+        
         print(f'Settting color schemes for {wallpaper_old_data}')
         set_color_schemes(wallpaper_old,
                         options_old['light'], options_old['ncolor'])
@@ -473,7 +471,7 @@ if __name__ == '__main__':
         
         wallpaper_new = currentWallpaper(options_new)
         
-        if wallpaper_new != None:
+        if wallpaper_new != None and wallpaper_new[1] != None:
             wallpaper_new_type = wallpaper_new[0]
             wallpaper_new_data = wallpaper_new[1]
             
@@ -499,7 +497,7 @@ if __name__ == '__main__':
                         set_icons(
                             icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
                 if wallpaper_changed or wallpaper_modified:
-                    print(f'Wallpaper changed: {wallpaper_new}')
+                    print(f'Wallpaper changed: {wallpaper_new_data}')
                 set_color_schemes(
                     wallpaper_new, options_new['light'], options_new['ncolor'])
             wallpaper_old = wallpaper_new
