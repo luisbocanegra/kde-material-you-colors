@@ -8,6 +8,7 @@ import configparser
 import importlib.util
 from color_scheme import ColorScheme
 from pathlib import Path
+from color_utils import rgb2hex
 find_colr = importlib.util.find_spec("colr")
 USER_HAS_COLR = find_colr is not None
 if USER_HAS_COLR:
@@ -23,6 +24,7 @@ SAMPLE_AUTOSTART_SCRIPT_PATH = "/usr/lib/kde-material-you-colors/"
 USER_AUTOSTART_SCRIPT_PATH = HOME+"/.config/autostart/"
 DEFAULT_PLUGIN = 'org.kde.image'
 PICTURE_OF_DAY_PLUGIN = 'org.kde.potd'
+PLAIN_COLOR_PLUGIN = 'org.kde.color'
 PICTURE_OF_DAY_PLUGIN_IMGS_DIR = HOME+'/.cache/plasma_engine_potd/'
 PICTURE_OF_DAY_UNSPLASH_PROVIDER = 'unsplash'
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
@@ -30,14 +32,25 @@ PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
 
-# Get current wallpaper from text file or plugin + containment combo
-def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
+
+def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
+    """Get current wallpaper or color from text file or plugin + containment combo
+    and return a string with its type (color or image file)
+
+    Args:
+        script (str): javascript to evaluate
+        monitor (int): containment (monitor) number
+        plugin (str): wallpaper plugin id
+
+    Returns:
+        tuple: (type (int), data (str))
+    """
     if file:
         if os.path.exists(file):
             with open(file) as file:
                 wallpaper = str(file.read()).replace('file://', '').strip()
                 if wallpaper:
-                    return wallpaper
+                    return ("image",wallpaper)
                 else:
                     return None
         else:
@@ -47,6 +60,7 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
         # special case for picture of the day plugin that requires a
         # directory, provider and a category
         if plugin == PICTURE_OF_DAY_PLUGIN:
+            # wait a bit to for wallpaper update
             script = """
             var Desktops = desktops();
                 d = Desktops[%s];
@@ -77,10 +91,26 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 potd = f"{potd}:{provider_category}"
                 
             if os.path.exists(potd):
-                return potd
+                return ("image",potd)
             else:
                 return None
-
+        elif plugin == PLAIN_COLOR_PLUGIN:
+            script = """
+            var Desktops = desktops();
+                d = Desktops[%s];
+                d.wallpaperPlugin = "%s";
+                d.currentConfigGroup = Array("Wallpaper", "%s", "General");
+                print(d.readConfig("Color"));
+            """
+            try:
+                color_rgb =  tuple((evaluate_script(script, monitor, plugin)).split(","))
+                r = int(color_rgb[0])
+                g = int(color_rgb[1])
+                b = int(color_rgb[2])
+                
+                return ("color",rgb2hex(r, g, b))
+            except:
+                return None
         else:
             # wallpaper plugin that stores current image
             script = """
@@ -92,7 +122,7 @@ def get_wallpaper_path(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
             """
             try:
                 wallpaper =  evaluate_script(script, monitor, plugin)
-                return wallpaper
+                return ("image",wallpaper)
             except:
                 return None
 
@@ -101,20 +131,20 @@ def evaluate_script(script, monitor, plugin):
     """Make a dbus call to org.kde.PlasmaShell.evaluateScript to get wallpaper data
 
     Args:
-        script (str): javascript to evaluate
+        script (str): js string to evaluate
         monitor (int): containment (monitor) number
         plugin (str): wallpaper plugin id
 
     Returns:
-        _type_: _description_
+        string : wallpaper data (wallpaper path or color)
     """
     try:
         bus = dbus.SessionBus()
         plasma = dbus.Interface(bus.get_object(
             'org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
-        wallpaper_path = str(plasma.evaluateScript(
+        wallpaper_data = str(plasma.evaluateScript(
             script % (monitor, plugin, plugin))).replace('file://', '')
-        return wallpaper_path
+        return wallpaper_data
     except Exception as e:
         print(f'Error getting wallpaper from dbus:\n{e}')
         return None
@@ -133,57 +163,100 @@ def get_last_modification(file):
             return None
     else:
         return None
+    
+def get_material_you_colors(wallpaper_data, ncolor, flag):
+    """ Get material you colors from wallpaper or hex color using material-color-utility
 
-def set_color_schemes(current_wallpaper, light, ncolor):
-    if current_wallpaper != None:
-        if os.path.exists(current_wallpaper):
-            #print(f'Found wallpaper: "{current_wallpaper}"')
-            current_wallpaper = f'"{current_wallpaper}"'
-            # get colors from material-color-utility
-            try:
-                materialYouColors = subprocess.check_output("material-color-utility "+current_wallpaper+" "+str(ncolor),
-                                                            shell=True, universal_newlines=True).strip()
-                try:
-                    # parse colors string to json
-                    colors_json = json.loads(materialYouColors)
-                    print(f'{BOLD_TEXT}Best colors:', end=' ')
-                    for index, col in colors_json['bestColors'].items():
-                        if USER_HAS_COLR:
-                            print(
-                                f'{BOLD_TEXT}{index}:{color(col,fore=col)}', end=' ')
-                        else:
-                            print(f'{BOLD_TEXT}{index}:{col}', end=' ')
-                    print(f'{BOLD_TEXT}')
-                    seed = colors_json['seedColor']
-                    sedColor = list(seed.values())[0]
-                    seedNo = list(seed.keys())[0]
+    Args:
+        wallpaper_data (tuple): wallpaper (type and data)
+        ncolor (int): Alternative color number flag passed to material-color-utility
+        flag (str): image or color flag passed to material-color-utility
+
+    Returns:
+        str: string data from material-color-utility
+    """
+    try:
+        materialYouColors = subprocess.check_output("material-color-utility "+flag+" '"+wallpaper_data+"' -n "+str(ncolor),
+                                                    shell=True, universal_newlines=True).strip()
+        return materialYouColors
+    except Exception as e:
+        print(f'Error trying to get colors from {wallpaper_data}')
+        return None
+
+def set_color_schemes(wallpaper, light, ncolor):
+    """ Display best colors, allow to select alternative color,
+    and make and apply color schemes for dark and light mode
+
+    Args:
+        wallpaper (tuple): wallpaper (type and data)
+        light (bool): wether use or not light scheme
+        ncolor (int): Alternative color number flag passed to material-color-utility
+    """
+    wallpaper_type = wallpaper[0]
+    wallpaper_data = wallpaper[1]
+    if wallpaper != None:
+        if wallpaper_type == "image":
+            use_flag = "-i"
+            if os.path.exists(wallpaper_data):
+                # get colors from material-color-utility
+                materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
+        
+        elif wallpaper_type == "color":
+            use_flag = "-c"
+            materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
+            
+            
+        try:
+            # parse colors string to json
+            colors_json = json.loads(materialYouColors)
+
+            if wallpaper_type != "color":
+                print(f'{BOLD_TEXT}Best colors:', end=' ')
+                for index, col in colors_json['bestColors'].items():
                     if USER_HAS_COLR:
-                        print(BOLD_TEXT+"Using seed: "+seedNo +
-                              ":"+color(sedColor, fore=sedColor))
+                        print(
+                            f'{BOLD_TEXT}{index}:{color(col,fore=col)}', end=' ')
                     else:
-                        print(BOLD_TEXT+"Using seed: " +
-                              seedNo+":"+sedColor+RESET_TEXT)
-                    # with open('output.json', 'w', encoding='utf8') as current_scheme:
-                    #     current_scheme.write(json.dumps(
-                    #         colors_json, indent=4, sort_keys=False))
+                        print(f'{BOLD_TEXT}{index}:{col}', end=' ')
+                print(f'{BOLD_TEXT}')
 
-                    with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
-                        current_scheme.write(json.dumps(
-                            colors_json, indent=4, sort_keys=False))
+            seed = colors_json['seedColor']
+            sedColor = list(seed.values())[0]
+            seedNo = list(seed.keys())[0]
+            if USER_HAS_COLR:
+                print(BOLD_TEXT+"Using seed: "+seedNo +
+                    ":"+color(sedColor, fore=sedColor))
+            else:
+                print(BOLD_TEXT+"Using seed: " +
+                    seedNo+":"+sedColor+RESET_TEXT)
 
-                    # generate and apply color schemes
-                    colors_light = ColorScheme(colors_json)
-                    colors_light.make_color_schemes(light)
-                except Exception as e:
-                    print(f'Error:\n {e}')
-            except Exception as e:
-                print(f'Error trying to get colors from {current_wallpaper}')
-        else:
-            print(
-                f'''Error: File "{current_wallpaper}" does not exist''')
+            with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
+                current_scheme.write(json.dumps(
+                    colors_json, indent=4, sort_keys=False))
+
+            # generate and apply Plasma color schemes
+            colors_light = ColorScheme(colors_json)
+            colors_light.make_color_schemes(light)
+            
+        except Exception as e:
+            print(f'Error:\n {e}')
+                
+                
+                
+                
+    # else:
+    #     print(
+    #         f'''Error: File "{current_wallpaper}" does not exist''')
 
 
 def set_icons(icons_light, icons_dark, light):
+    """ Set icon theme with plasma-changeicons for light and dark schemes
+
+    Args:
+        icons_light (str): Light mode icon theme
+        icons_dark (str): Dark mode icon theme
+        light (bool): wether using light or dark mode
+    """
     if light and icons_light != None:
         subprocess.run("/usr/lib/plasma-changeicons "+icons_light,
                        shell=True)
@@ -193,6 +266,12 @@ def set_icons(icons_light, icons_dark, light):
 
 
 class Configs():
+    """
+    Select configuration based on arguments and config file
+    
+    Returns:
+        dict: Settings dictionary
+    """
     def __init__(self, args):
         c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = None
         # User may just want to set the startup script / default config, do that only and exit
@@ -327,7 +406,7 @@ class Configs():
 
 
 def currentWallpaper(options):
-    return get_wallpaper_path(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
+    return get_wallpaper_data(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
 
 
 if __name__ == '__main__':
@@ -367,23 +446,40 @@ if __name__ == '__main__':
     light_old = options_old['light']
     # Get the current wallpaper on startup
     wallpaper_old = currentWallpaper(options_old)
-    # save time of last modification
-    wallpaper_mod_time_old = get_last_modification(wallpaper_old)
+    wallpaper_old_type = wallpaper_old[0]
+    wallpaper_old_data = wallpaper_old[1]
+    
+    print(f'Wallpaper: {wallpaper_old}')
+    
+    # if wallpaper is image save time of last modification
+    if wallpaper_old_type == "image":
+        wallpaper_mod_time_old = get_last_modification(wallpaper_old_data)
+    else: 
+        wallpaper_mod_time_old = None
+        
     if wallpaper_old != None:
-        print(f'Settting color schemes for {wallpaper_old}')
-        set_color_schemes(currentWallpaper(options_old),
-                          options_old['light'], options_old['ncolor'])
+        print(f'Settting color schemes for {wallpaper_old_data}')
+        set_color_schemes(wallpaper_old,
+                        options_old['light'], options_old['ncolor'])
 
     set_icons(icons_light=options_old['iconslight'],
-              icons_dark=options_old['iconsdark'], light=options_old['light'])
+             icons_dark=options_old['iconsdark'], light=options_old['light'])
 
     # check wallpaper change
     while True:
         config = Configs(args)
         options_new = config.options
+        
         wallpaper_new = currentWallpaper(options_new)
+        wallpaper_new_type = wallpaper_new[0]
+        wallpaper_new_data = wallpaper_new[1]
+        
         # save time of last modification
-        wallpaper_mod_time_new = get_last_modification(wallpaper_new)
+        if wallpaper_new_type == "image":
+            wallpaper_mod_time_new = get_last_modification(wallpaper_new_data)
+        else: 
+            wallpaper_mod_time_new = None
+        
         icons_new = [options_new['iconslight'], options_new['iconsdark']]
         light_new = options_new['light']
 
