@@ -467,41 +467,44 @@ if __name__ == '__main__':
 
     # check wallpaper change
     while True:
+        # reload config file
         config = Configs(args)
         options_new = config.options
         
         wallpaper_new = currentWallpaper(options_new)
-        wallpaper_new_type = wallpaper_new[0]
-        wallpaper_new_data = wallpaper_new[1]
         
-        # save time of last modification
-        if wallpaper_new_type == "image":
-            wallpaper_mod_time_new = get_last_modification(wallpaper_new_data)
-        else: 
-            wallpaper_mod_time_new = None
-        
-        icons_new = [options_new['iconslight'], options_new['iconsdark']]
-        light_new = options_new['light']
+        if wallpaper_new != None:
+            wallpaper_new_type = wallpaper_new[0]
+            wallpaper_new_data = wallpaper_new[1]
+            
+            # if wallpaper is image save time of last modification
+            if wallpaper_new_type == "image":
+                wallpaper_mod_time_new = get_last_modification(wallpaper_new_data)
+            else: 
+                wallpaper_mod_time_new = None
+            
+            icons_new = [options_new['iconslight'], options_new['iconsdark']]
+            light_new = options_new['light']
 
-        wallpaper_changed = wallpaper_old != wallpaper_new
-        wallpaper_modified = wallpaper_mod_time_old != wallpaper_mod_time_new
-        options_changed = options_new != options_old
-        icons_changed = icons_new != icons_old
-        light_changed = light_new != light_old
+            wallpaper_changed = wallpaper_old != wallpaper_new
+            wallpaper_modified = wallpaper_mod_time_old != wallpaper_mod_time_new
+            options_changed = options_new != options_old
+            icons_changed = icons_new != icons_old
+            light_changed = light_new != light_old
 
-        if wallpaper_changed or options_changed or wallpaper_modified:
-            if options_changed:
-                print(f"New Config: {options_new}")
-                if icons_changed or light_changed:
-                    set_icons(
-                        icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
-            if wallpaper_changed or wallpaper_modified:
-                print(f'Wallpaper changed: {wallpaper_new}')
-            set_color_schemes(
-                wallpaper_new, options_new['light'], options_new['ncolor'])
-        wallpaper_old = wallpaper_new
-        wallpaper_mod_time_old = wallpaper_mod_time_new
-        options_old = options_new
-        icons_old = icons_new
-        light_old = light_new
+            if wallpaper_changed or options_changed or wallpaper_modified:
+                if options_changed:
+                    print(f"New Config: {options_new}")
+                    if icons_changed or light_changed:
+                        set_icons(
+                            icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
+                if wallpaper_changed or wallpaper_modified:
+                    print(f'Wallpaper changed: {wallpaper_new}')
+                set_color_schemes(
+                    wallpaper_new, options_new['light'], options_new['ncolor'])
+            wallpaper_old = wallpaper_new
+            wallpaper_mod_time_old = wallpaper_mod_time_new
+            options_old = options_new
+            icons_old = icons_new
+            light_old = light_new
         time.sleep(1)
