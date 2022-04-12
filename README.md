@@ -40,8 +40,13 @@ sudo ./install-fedora-based.sh
 
 <span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
-# Usage:
+
+# Running from terminal
 - Run `kde-material-you-colors` from terminal, if you use the default wallpaper plugin on your main screen (0) this should change your Desktop colors right after.
+
+
+**NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
+
 - If you use a multimonitor setup and want your wallpaper from other screen or use a different wallpaper plugin find your desired configuration by experimenting with the following:
 
 ### Options
@@ -59,13 +64,49 @@ sudo ./install-fedora-based.sh
 
 `--autostart -a`&emsp; Enable (copies) the startup script to automatically start with KDE
 
-`--copyconfig -c` Copies the default config to ~/.config/kde-material-you-colors/config.conf
+`--copyconfig -c`&emsp; Copies the default config to ~/.config/kde-material-you-colors/config.conf
 
 `--iconslight [ICONS-NAME]`&emsp; Icons for Dark scheme
 
 `--iconsdark [ICONS-NAME]`&emsp; Icons for Light scheme
 
+# Startup script:
+
+1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
+
+`kde-material-you-colors -c` 
+
+2. Enable script to automatically start with Plasma:
+
+`kde-material-you-colors -a` 
+
+1. Reboot or logout/login to see the changes,
+
+**NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
+
+# Changing Current Wallpaper plugin
+
+<span style="color:#ff6568"> **Use the configuration file !!** </span>
+
+Using Plasma Wallpaper Settings may Crash Plasmashell and will set again the plugin from Configuration file
+
+
+
+# Working Wallpaper plugins
+This is a list of compatible Plasma Wallpaper Plugins
+
+| Name        | ID          |
+| ----------- | ----------- |
+| Image (default)      | `org.kde.image`  |
+| Picture of the day | `org.kde.potd` |
+| Slideshow | `org.kde.slideshow` |
+| Plain color | `org.kde.color` |
+
 # Configuration:
+
+Open ~/.config/kde-material-you-colors/config.conf
+
+
 ```ini
 [CUSTOM]
 # INSTRUCTIONS
@@ -81,12 +122,17 @@ monitor = 0
 
 # Wallpaper plugin id you can find them in: /usr/share/plasma/wallpapers/ 
 # or /.local/share/plasma/wallpapers for user installed.
-# Default is org.kde.image
+
+# below are some working wallpaper plugins
+# Default:                 org.kde.image
+# Picture of the day is:   org.kde.potd
+# Slideshow:               org.kde.slideshow
+# Plain color:             org.kde.color
 plugin = org.kde.image
 
-# File containing absolute path of a image (Takes precedence over the above options as they are no longer needed)
+# File containing absolute path of an image (Takes precedence over the above options as they are no longer needed)
 # Commented out by default
-#file = /absolute/path/of/some/wallpaper
+#file = /tmp/000_eDP-1_current_wallpaper
 
 # Enable Light mode
 # Default is False
@@ -97,14 +143,12 @@ light = False
 ncolor = 0
 
 # Light scheme icons 
-# Commented by default
-#iconslight = Papirus-Light
+iconslight = Papirus-Light
 
-# Dark scheme icons
-# Commented by default
-#iconsdark = Papirus-Dark
+# Dark scheme icons 
+iconsdark = Papirus-Dark
+
 ```
-Save the sample configuration to `~/.config/kde-material-you-colors/config.conf`
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
 
