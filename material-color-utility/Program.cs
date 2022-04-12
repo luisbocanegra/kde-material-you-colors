@@ -149,6 +149,48 @@ class Program
                 colors_dark.Add(property.Name, "#" + color.ToString("X")[2..]);
             }
 
+            // get all tones of core palettes
+            var primaryTones = new Dictionary<string, string>();
+            for (int i = 0; i< 100; i++)
+            {
+                int color = myCorePalette.Primary[i]!;
+                primaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
+            }
+
+            var secondaryTones = new Dictionary<string, string>();
+            for (int i = 0; i< 100; i++)
+            {
+                int color = myCorePalette.Secondary[i]!;
+                secondaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
+            }
+
+            var tertiaryTones = new Dictionary<string, string>();
+            for (int i = 0; i< 100; i++)
+            {
+                int color = myCorePalette.Tertiary[i]!;
+                tertiaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
+            }
+
+            var neutralTones = new Dictionary<string, string>();
+            for (int i = 0; i< 100; i++)
+            {
+                int color = myCorePalette.Neutral[i]!;
+                neutralTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
+            }
+
+            var neutralVariantTones = new Dictionary<string, string>();
+            for (int i = 0; i< 100; i++)
+            {
+                int color = myCorePalette.Neutral[i]!;
+                neutralVariantTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
+            }
+
+            string jsonPrimaryTones = JsonConvert.SerializeObject(primaryTones);
+            string jsonSecondaryTones = JsonConvert.SerializeObject(secondaryTones);
+            string jsonTertiaryTones = JsonConvert.SerializeObject(tertiaryTones);
+            string jsonNeutraTones = JsonConvert.SerializeObject(neutralTones);
+            string jsonNeutralVariantTones = JsonConvert.SerializeObject(neutralVariantTones);
+
             string jsonBestColors = JsonConvert.SerializeObject(bestColors);
 
             // light to json
@@ -160,7 +202,12 @@ class Program
             Console.WriteLine("{\"bestColors\":" + jsonBestColors + ",");
             Console.WriteLine("\"seedColor\":{\"" + seedNo + "\":\"#" + seedColor.ToString("X")[2..] + "\"},");
             Console.WriteLine("\"light\":" + jsonLight + ",");
-            Console.WriteLine("\"dark\":" + jsonDark + "}");
+            Console.WriteLine("\"dark\":" + jsonDark + ",");
+            Console.WriteLine("\"primaryTones\":" + jsonPrimaryTones + ",");
+            Console.WriteLine("\"secondaryTones\":" + jsonSecondaryTones + ",");
+            Console.WriteLine("\"tertiaryTones\":" + jsonTertiaryTones + ",");
+            Console.WriteLine("\"neutralTones\":" + jsonNeutraTones + ",");
+            Console.WriteLine("\"neutralVariantTones\":" + jsonNeutralVariantTones + "}");
         }
     }
 }
