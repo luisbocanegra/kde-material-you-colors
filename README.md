@@ -154,10 +154,10 @@ light = False
 ncolor = 0
 
 # Light scheme icons 
-iconslight = Papirus-Light
+#iconslight = Papirus-Light
 
 # Dark scheme icons 
-iconsdark = Papirus-Dark
+#iconsdark = Papirus-Dark
 
 ```
 

@@ -9,10 +9,14 @@ import importlib.util
 from color_scheme import ColorScheme
 from pathlib import Path
 from color_utils import rgb2hex
-find_colr = importlib.util.find_spec("colr")
-USER_HAS_COLR = find_colr is not None
+
+USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
+
+USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
+if USER_HAS_PYWAL:
+    import pywal
 HOME = str(Path.home())
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
@@ -242,11 +246,21 @@ def set_color_schemes(wallpaper, light, ncolor):
                 
                 
                 
-                
     # else:
     #     print(
     #         f'''Error: File "{current_wallpaper}" does not exist''')
 
+
+def set_pywal_colors(materialYouColors=None, image=None, pywal_light=None, light=None):
+    if USER_HAS_PYWAL:
+        use_flag = ""
+        if pywal_light != None:
+            if pywal_light == True:
+                use_flag = "-l"
+        elif light != None:
+            if light == True:
+                use_flag = "-l"
+        subprocess.Popen("/usr/bin/wal -i "+image +" "+use_flag , shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
 
 def set_icons(icons_light, icons_dark, light):
     """ Set icon theme with plasma-changeicons for light and dark schemes
@@ -272,7 +286,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = None
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = None
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -337,6 +351,12 @@ class Configs():
 
                     if 'iconsdark' in custom:
                         c_iconsdark = custom['iconsdark']
+                        
+                    if 'pywal' in custom:
+                        c_pywal = custom.getboolean('pywal')
+                    
+                    if 'pywal_light' in custom:
+                        c_pywal_light = custom.getboolean('pywal_light')
 
             if args.dark == True:
                 c_light = False
@@ -344,6 +364,18 @@ class Configs():
                 c_light = args.light
             else:
                 c_light = c_light
+                
+            if args.pywal == True:
+                c_pywal = args.pywal
+            elif c_pywal != None:
+                c_pywal = c_pywal
+                
+            if args.pywaldark == True:
+                c_pywal_light = False
+            elif args.pywallight == True:
+                c_pywal_light = args.pywallight
+            else:
+                c_pywal_light = c_pywal_light
 
             if args.file != None:
                 c_file = args.file
@@ -396,7 +428,9 @@ class Configs():
                 'plugin': c_plugin,
                 'ncolor': c_ncolor,
                 'iconslight': c_iconslight,
-                'iconsdark': c_iconsdark
+                'iconsdark': c_iconsdark,
+                "pywal": c_pywal,
+                "pywal_light":  c_pywal_light
             }
 
     @property
@@ -434,6 +468,12 @@ if __name__ == '__main__':
                         help='Icons for Dark scheme', default=None)
     parser.add_argument('--iconsdark', type=str,
                         help='Icons for Light scheme', default=None)
+    parser.add_argument('--pywal', '-wal', action='store_true',
+                        help='Use wall to theme other apps')
+    parser.add_argument('--pywallight', '-wallight', action='store_true',
+                        help='Use mode for pywall controlled apps')
+    parser.add_argument('--pywaldark', '-walldark', action='store_true',
+                        help='Use dark mode for pywall controlled apps')
 
     # Get arguments
     args = parser.parse_args()
@@ -453,6 +493,9 @@ if __name__ == '__main__':
         # if wallpaper is image save time of last modification
         if wallpaper_old_type == "image":
             wallpaper_mod_time_old = get_last_modification(wallpaper_old_data)
+            if options_old['pywal'] != None:
+                if options_old['pywal']:
+                    set_pywal_colors(None,wallpaper_old_data, pywal_light=options_old['pywal_light'], light=options_old['light'])
         else: 
             wallpaper_mod_time_old = None
         
@@ -468,9 +511,8 @@ if __name__ == '__main__':
         # reload config file
         config = Configs(args)
         options_new = config.options
-        
+        #print(f"pywal: {options_new['pywal']}")
         wallpaper_new = currentWallpaper(options_new)
-        
         if wallpaper_new != None and wallpaper_new[1] != None:
             wallpaper_new_type = wallpaper_new[0]
             wallpaper_new_data = wallpaper_new[1]
@@ -496,10 +538,18 @@ if __name__ == '__main__':
                     if icons_changed or light_changed:
                         set_icons(
                             icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=options_new['light'])
+                
                 if wallpaper_changed or wallpaper_modified:
                     print(f'Wallpaper changed: {wallpaper_new_data}')
+                
                 set_color_schemes(
                     wallpaper_new, options_new['light'], options_new['ncolor'])
+                
+                if wallpaper_new_type == "image":
+                    if options_old['pywal'] != None:
+                        if options_old['pywal']:
+                            set_pywal_colors(None,wallpaper_old_data,pywal_light=options_new['pywal_light'], light=options_new['light'])
+                            
             wallpaper_old = wallpaper_new
             wallpaper_mod_time_old = wallpaper_mod_time_new
             options_old = options_new
