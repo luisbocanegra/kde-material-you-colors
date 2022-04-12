@@ -9,11 +9,13 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 <img src=https://img.shields.io/badge/Status-beta-red.svg></img>
 </div>
 <div>
-<img src="Screenshot.png"  alt="Screenshot">
+<img src="https://user-images.githubusercontent.com/15076387/162865773-a7e2c4b3-b3a0-4d32-8ac3-8204b7ed0140.png"  alt="Screenshot">
 </div>
 
 ### Video demo:
-https://user-images.githubusercontent.com/15076387/159639387-d0a52b1e-ab67-431d-bee0-a7461cdfe408.mp4
+
+https://user-images.githubusercontent.com/15076387/162865563-2784fa53-7cc9-4817-9151-df2df42d957d.mp4
+
 
 # Features
 - Update automatically on wallpaper change
