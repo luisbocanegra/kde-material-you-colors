@@ -25,6 +25,7 @@ https://user-images.githubusercontent.com/15076387/162865563-2784fa53-7cc9-4817-
 - Dark an Light Color schemes
 - Dark and Light Icon theme
 - Multiple wallpaper plugins supported
+- [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
 
 # Installing:
 ### Arch Linux:
@@ -46,8 +47,10 @@ sudo ./install-ubuntu-based.sh
 chmod +x install-fedora-based.sh
 sudo ./install-fedora-based.sh
 ```
-3. OPTIONAL
+### Optional features
 - Install the [Colr](https://pypi.org/project/Colr/) python module to display colored seed colors from terminal
+- Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
+  - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) for scripts to theme supported programs 
 
 <span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
@@ -80,6 +83,10 @@ sudo ./install-fedora-based.sh
 `--iconslight [ICONS-NAME]`&emsp; Icons for Dark scheme
 
 `--iconsdark [ICONS-NAME]`&emsp; Icons for Light scheme
+
+`--pywallight -wall`&emsp; Use pywal Light scheme
+
+`--pywaldark -wald`&emsp; Use pywal Dark scheme
 
 # Startup script:
 
@@ -154,10 +161,23 @@ light = False
 ncolor = 0
 
 # Light scheme icons 
+# Commented by default
 #iconslight = Papirus-Light
 
 # Dark scheme icons 
+# Commented by default
 #iconsdark = Papirus-Dark
+
+# Use pywal to theme other programs using Material You colors (experimental)
+# You need to install pywal python module first
+# Accepted values are True or False
+# Commented by default
+#pywal=True
+
+# Force light/dark mode for pywal (experimental)
+# Accepted values are True or False comment out to dark/light scheme 
+# Commented by default
+#pywal_light = False
 
 ```
 
@@ -181,3 +201,4 @@ And run `kde-material-you-colors` with no arguments from terminal to test it.
 - [@albi005 (Albert Ragány-Németh)](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities which I found the easiest to work with.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
+- [Pywal](https://github.com/dylanaraps/pywal) developers 
