@@ -9,12 +9,13 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 <img src=https://img.shields.io/badge/Status-beta-red.svg></img>
 </div>
 <div>
-<img src="https://user-images.githubusercontent.com/15076387/162865773-a7e2c4b3-b3a0-4d32-8ac3-8204b7ed0140.png"  alt="Screenshot">
+<img src="https://user-images.githubusercontent.com/15076387/163059211-e5e56e10-e841-487e-83ea-60a97497bd6e.png"  alt="Screenshot">
 </div>
+
 
 ### Video demo:
 
-https://user-images.githubusercontent.com/15076387/162865563-2784fa53-7cc9-4817-9151-df2df42d957d.mp4
+https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-b594-83b80436c802.mp4
 
 
 # Features
