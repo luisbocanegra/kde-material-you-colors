@@ -1,5 +1,31 @@
+from color_utils import blendColors
 class ThemeConfig:
-    def __init__(self, colors, extras, base_text_states):
+    def __init__(self, colors, extras, base_text_states,wallpaper_data):
+        colors_best = colors['bestColors']
+        tones_primary = colors['primaryTones']
+
+        tone=10
+        pywal_colors_dark =	()
+        pywal_colors_dark = (blendColors(colors['dark']['Surface'], "#000000", .2),)
+        for x in range(7):
+
+            str_x = str(x)
+            if str_x in colors_best.keys():
+                pywal_colors_dark += (blendColors(colors['dark']['OnSurface'], colors_best[str_x], .55),)
+            else:
+                pywal_colors_dark += (blendColors(colors['dark']['OnSurface'], tones_primary[str(tone)], .6),)
+            tone+=10
+        
+        tone=10
+        pywal_colors_light =	()
+        pywal_colors_light = (blendColors(colors['light']['Surface'], "#ffffff", .08),)
+        for x in range(7):
+            str_x = str(x)
+            if str_x in colors_best.keys():
+                pywal_colors_light += (blendColors(colors['light']['OnSurface'], colors_best[str_x], .8),)
+            else:
+                pywal_colors_light += (blendColors(colors['light']['OnSurface'], tones_primary[str(tone)], .8),)
+            tone+=10
         
         self._light_scheme=f"""[ColorEffects:Disabled]
 Color={extras['LightSurface1']}
@@ -228,7 +254,68 @@ inactiveBlend=#ff0000
 inactiveForeground={colors['dark']['OnSecondaryContainer']}
         """
         
+        self._wal_light_scheme = {
+                                    "wallpaper" : wallpaper_data,
+                                    "alpha": "100",
+
+                                    "special": {
+                                        "background": pywal_colors_light[0],
+                                        "foreground": colors['light']['OnSurface'],
+                                        "cursor": colors['light']['OnSurface'],
+                                    },
+                                    "colors": {
+                                        "color0": pywal_colors_light[0],
+                                        "color1": pywal_colors_light[1],
+                                        "color2": pywal_colors_light[2],
+                                        "color3": pywal_colors_light[3],
+                                        "color4": pywal_colors_light[4],
+                                        "color5": pywal_colors_light[5],
+                                        "color6": pywal_colors_light[6],
+                                        "color7": pywal_colors_light[7],
+                                        "color8": colors['light']['Secondary'],
+                                        "color9": pywal_colors_light[1],
+                                        "color10": pywal_colors_light[2],
+                                        "color11": pywal_colors_light[3],
+                                        "color12": pywal_colors_light[4],
+                                        "color13": pywal_colors_light[5],
+                                        "color14": pywal_colors_light[6],
+                                        "color15": pywal_colors_light[7]
+                                    }
+                                }
+
+        self._wal_dark_scheme = {
+                                    "wallpaper" : wallpaper_data,
+                                    "alpha": "100",
+
+                                    "special": {
+                                        "background": pywal_colors_dark[0],
+                                        "foreground": colors['dark']['OnSurface'],
+                                        "cursor": colors['dark']['OnSurface'],
+                                    },
+                                    "colors": {
+                                        "color0": pywal_colors_dark[0],
+                                        "color1": pywal_colors_dark[1],
+                                        "color2": pywal_colors_dark[2],
+                                        "color3": pywal_colors_dark[3],
+                                        "color4": pywal_colors_dark[4],
+                                        "color5": pywal_colors_dark[5],
+                                        "color6": pywal_colors_dark[6],
+                                        "color7": pywal_colors_dark[7],
+                                        "color8": colors['dark']['Secondary'],
+                                        "color9": pywal_colors_dark[1],
+                                        "color10": pywal_colors_dark[2],
+                                        "color11": pywal_colors_dark[3],
+                                        "color12": pywal_colors_dark[4],
+                                        "color13": pywal_colors_dark[5],
+                                        "color14": pywal_colors_dark[6],
+                                        "color15": pywal_colors_dark[7]
+                                    }
+                                }
     def get_light_scheme(self):
         return(self._light_scheme)
     def get_dark_scheme(self):
         return(self._dark_scheme)
+    def get_wal_light_scheme(self):
+        return (self._wal_light_scheme)
+    def get_wal_dark_scheme(self):
+        return (self._wal_dark_scheme)

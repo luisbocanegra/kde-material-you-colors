@@ -1,6 +1,11 @@
 import importlib
 from pathlib import Path
 import sys
+import glob
+import os
+USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
+if USER_HAS_PYWAL:
+    import pywal
 from color_utils import blendColors
 import subprocess
 from schemeconfigs import ThemeConfig
@@ -12,7 +17,9 @@ class ColorScheme:
     def __init__(self, colors):
         self._colors = colors
 
-    def make_color_schemes(self, light):
+    def make_color_schemes(self, light=None, pywal_light=None, wallpaper=None, pywal_material=True, use_pywal=False):
+        wallpaper_type = wallpaper[0]
+        wallpaper_data = wallpaper[1]
         colors = self._colors
 
         # Base text states taken from Breeze Color Scheme
@@ -57,12 +64,11 @@ class ColorScheme:
         # Load themes config on the go for now
         importlib.reload(sys.modules['schemeconfigs'])
         from schemeconfigs import ThemeConfig
-        schemes = ThemeConfig(colors, extras, base_text_states)
+        schemes = ThemeConfig(colors, extras, base_text_states,wallpaper_data)
 
         light_scheme=schemes.get_light_scheme()
         dark_scheme=schemes.get_dark_scheme()
-        #subprocess.run("/home/luis/scripts/conky-colors.sh",
-        #                                shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+
         # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
         # since I don't know how to reaload it with code lets make a copy and switch between them
         # sadly color settings will show copies too
@@ -85,4 +91,42 @@ class ColorScheme:
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
                                         shell=True, stderr=subprocess.PIPE)
-            
+        if use_pywal != None and use_pywal == True:
+            if USER_HAS_PYWAL:
+                if pywal_light != None:
+                    if pywal_light  == True:
+                        pywal_colors=schemes.get_wal_light_scheme()
+                    else:
+                        pywal_colors=schemes.get_wal_dark_scheme()
+                elif light != None:
+                    if light  == True:
+                        pywal_colors=schemes.get_wal_light_scheme()
+                    else:
+                        pywal_colors=schemes.get_wal_dark_scheme()
+                #use material you colors for pywal
+                if pywal_material:
+                    
+                    # Apply the palette to all open terminals.
+                    # Second argument is a boolean for VTE terminals.
+                    # Set it to true if the terminal you're using is
+                    # VTE based. (xfce4-terminal, termite, gnome-terminal.)
+                    #print(pywal_colors)
+                    pywal.sequences.send(pywal_colors, vte_fix=False)
+                    
+                    # Export all template files.
+                    pywal.export.every(pywal_colors)
+
+                    # Reload xrdb, i3 and polybar.
+                    pywal.reload.env()
+                    
+                # TODO: remove this or make it optional
+                elif wallpaper_data != None:
+                    use_flag = ""
+                    if pywal_light != None:
+                        if pywal_light == True:
+                            use_flag = "-l"
+                    elif light != None:
+                        if light == True:
+                            use_flag = "-l"
+                    subprocess.Popen("/usr/bin/wal -i "+wallpaper_data +" "+use_flag , shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+                

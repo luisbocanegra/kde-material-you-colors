@@ -14,9 +14,6 @@ USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
 
-USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
-if USER_HAS_PYWAL:
-    import pywal
 HOME = str(Path.home())
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
@@ -186,7 +183,8 @@ def get_material_you_colors(wallpaper_data, ncolor, flag):
         print(f'Error trying to get colors from {wallpaper_data}')
         return None
 
-def set_color_schemes(wallpaper, light, ncolor):
+def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_light=None):
+
     """ Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
@@ -238,29 +236,18 @@ def set_color_schemes(wallpaper, light, ncolor):
                     colors_json, indent=4, sort_keys=False))
 
             # generate and apply Plasma color schemes
-            colors_light = ColorScheme(colors_json)
-            colors_light.make_color_schemes(light)
+            colors_schemes = ColorScheme(colors_json)
+            colors_schemes.make_color_schemes(light=light, pywal_light=pywal_light, wallpaper=wallpaper,use_pywal=pywal)
             
         except Exception as e:
             print(f'Error:\n {e}')
-                
-                
-                
-    # else:
-    #     print(
-    #         f'''Error: File "{current_wallpaper}" does not exist''')
+
+    else:
+        print(
+            f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
 
 
-def set_pywal_colors(materialYouColors=None, image=None, pywal_light=None, light=None):
-    if USER_HAS_PYWAL:
-        use_flag = ""
-        if pywal_light != None:
-            if pywal_light == True:
-                use_flag = "-l"
-        elif light != None:
-            if light == True:
-                use_flag = "-l"
-        subprocess.Popen("/usr/bin/wal -i "+image +" "+use_flag , shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+
 
 def set_icons(icons_light, icons_dark, light):
     """ Set icon theme with plasma-changeicons for light and dark schemes
@@ -470,9 +457,9 @@ if __name__ == '__main__':
                         help='Icons for Light scheme', default=None)
     parser.add_argument('--pywal', '-wal', action='store_true',
                         help='Use wall to theme other apps')
-    parser.add_argument('--pywallight', '-wallight', action='store_true',
+    parser.add_argument('--pywallight', '-wall', action='store_true',
                         help='Use mode for pywall controlled apps')
-    parser.add_argument('--pywaldark', '-walldark', action='store_true',
+    parser.add_argument('--pywaldark', '-wald', action='store_true',
                         help='Use dark mode for pywall controlled apps')
 
     # Get arguments
@@ -493,18 +480,17 @@ if __name__ == '__main__':
         # if wallpaper is image save time of last modification
         if wallpaper_old_type == "image":
             wallpaper_mod_time_old = get_last_modification(wallpaper_old_data)
-            if options_old['pywal'] != None:
-                if options_old['pywal']:
-                    set_pywal_colors(None,wallpaper_old_data, pywal_light=options_old['pywal_light'], light=options_old['light'])
         else: 
             wallpaper_mod_time_old = None
         
         print(f'Settting color schemes for {wallpaper_old_data}')
-        set_color_schemes(wallpaper_old,
-                        options_old['light'], options_old['ncolor'])
+        set_color_schemes(
+                    wallpaper=wallpaper_old, light=options_old['light'], ncolor=options_old['ncolor'], pywal=options_old['pywal'], pywal_light=options_old['pywal_light'])
 
     set_icons(icons_light=options_old['iconslight'],
              icons_dark=options_old['iconsdark'], light=options_old['light'])
+    #fix borked terminal idk...
+    print("---------------------")
 
     # check wallpaper change
     while True:
@@ -543,13 +529,10 @@ if __name__ == '__main__':
                     print(f'Wallpaper changed: {wallpaper_new_data}')
                 
                 set_color_schemes(
-                    wallpaper_new, options_new['light'], options_new['ncolor'])
+                    wallpaper=wallpaper_new, light=options_new['light'], ncolor=options_new['ncolor'], pywal=options_new['pywal'], pywal_light=options_new['pywal_light'])
+                #fix borked terminal idk...
+                print("---------------------")
                 
-                if wallpaper_new_type == "image":
-                    if options_old['pywal'] != None:
-                        if options_old['pywal']:
-                            set_pywal_colors(None,wallpaper_old_data,pywal_light=options_new['pywal_light'], light=options_new['light'])
-                            
             wallpaper_old = wallpaper_new
             wallpaper_mod_time_old = wallpaper_mod_time_new
             options_old = options_new
