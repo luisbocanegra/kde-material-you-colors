@@ -15,6 +15,15 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 ### Video demo:
 https://user-images.githubusercontent.com/15076387/159639387-d0a52b1e-ab67-431d-bee0-a7461cdfe408.mp4
 
+# Features
+- Update automatically on wallpaper change
+- Configurarion file
+- Support for selecting Wallpaper plugin from seconday monitors (check Configuration section)
+- Alternative Material You color (mostly random)
+- Dark an Light Color schemes
+- Dark and Light Icon theme
+- Multiple wallpaper plugins supported
+
 # Installing:
 ### Arch Linux:
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors)
@@ -80,7 +89,7 @@ sudo ./install-fedora-based.sh
 
 `kde-material-you-colors -a` 
 
-1. Reboot or logout/login to see the changes,
+3. Reboot or logout/login to see the changes,
 
 **NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
 
