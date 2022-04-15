@@ -3,29 +3,30 @@ class ThemeConfig:
     def __init__(self, colors, extras, base_text_states,wallpaper_data):
         colors_best = colors['bestColors']
         tones_primary = colors['primaryTones']
-
-        tone=10
-        pywal_colors_dark =	()
-        pywal_colors_dark = (blendColors(colors['dark']['Surface'], "#000000", .2),)
+        tones_neutral = colors['neutralTones']
+        
+        tone=30
+        pywal_colors_dark = ()
+        pywal_colors_dark = (blendColors(tones_neutral['8'],colors['dark']['Primary'], .01),)
         for x in range(7):
 
             str_x = str(x)
             if str_x in colors_best.keys():
                 pywal_colors_dark += (blendColors(colors['dark']['OnSurface'], colors_best[str_x], .55),)
             else:
-                pywal_colors_dark += (blendColors(colors['dark']['OnSurface'], tones_primary[str(tone)], .6),)
-            tone+=10
+                pywal_colors_dark += (blendColors(colors['dark']['OnSurface'], tones_primary[str(tone)], .58),)
+                tone+=10
         
-        tone=10
-        pywal_colors_light =	()
-        pywal_colors_light = (blendColors(colors['light']['Surface'], "#ffffff", .08),)
+        tone=30
+        pywal_colors_light = ()
+        pywal_colors_light = (blendColors(tones_neutral['98'], colors['light']['Primary'], .01),)
         for x in range(7):
             str_x = str(x)
             if str_x in colors_best.keys():
-                pywal_colors_light += (blendColors(colors['light']['OnSurface'], colors_best[str_x], .8),)
+                pywal_colors_light += (blendColors(colors['light']['OnSurface'], colors_best[str_x], .70),)
             else:
                 pywal_colors_light += (blendColors(colors['light']['OnSurface'], tones_primary[str(tone)], .8),)
-            tone+=10
+                tone+=10
         
         self._light_scheme=f"""[ColorEffects:Disabled]
 Color={extras['LightSurface1']}
