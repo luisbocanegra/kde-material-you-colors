@@ -2,7 +2,6 @@
 using SkiaSharp;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
-using MaterialColorUtilities.Quantize;
 using Newtonsoft.Json;
 using MaterialColorUtilities.Utils;
 using CommandLine;
@@ -43,12 +42,12 @@ class Program
             // Then decode and resize using SkiaSharp.
             SKImage img = SKImage.FromEncodedData(fs);
             SKBitmap bitmap = SKBitmap.FromImage(img).Resize(new SKImageInfo(112, 112), SKFilterQuality.Medium);
-
+            fs.Close();
             int[] pixels = bitmap.Pixels.Select(p => (int)(uint)p).ToArray();
 
             // This is where the magic happens
             // Get a list from the best colors that will at least contain one element
-            seedColors = ColorsFromImage(pixels);
+            seedColors = ImageUtils.ColorsFromImage(pixels);
 
             foreach (var color in seedColors)
             {
@@ -88,13 +87,7 @@ class Program
         }
         return seedColor;
     }
-    // Return a list of 1+ best colors
-    public static List<int> ColorsFromImage(int[] pixels)
-    {
-        var result = QuantizerCelebi.Quantize(pixels, 128);
-        var ranked = new List<int>(Custom.Scorer.Score(result));
-        return ranked;
-    }
+
     // Main Method
     static void Main(string[] args)
     {
@@ -121,12 +114,14 @@ class Program
             int seedColor = GetColor(path, altColor, hexColor);
 
             // CorePalette gives you access to every tone of the key colors
-            CorePalette myCorePalette = CorePalette.Of(seedColor);
+            CorePalette corePalette = CorePalette.Of(seedColor);
 
-            // Create custom schemes
-            LightScheme lightScheme = new(myCorePalette);
-            DarkScheme darkScheme = new(myCorePalette);
-
+            // Map the core palette to color schemes
+            // A Scheme contains the named colors, like Primary or OnTertiaryContainer
+            Scheme<int> lightScheme = new LightSchemeMapper().Map(corePalette);
+            Scheme<int> darkScheme = new DarkSchemeMapper().Map(corePalette);
+            lightScheme.Primary = corePalette.Primary[40];
+            darkScheme.Primary = corePalette.Primary[70];
             //TODO: Save color palette to single json
             // var colors = new Dictionary<string, string>();
 
@@ -153,35 +148,35 @@ class Program
             var primaryTones = new Dictionary<string, string>();
             for (int i = 0; i< 100; i++)
             {
-                int color = myCorePalette.Primary[i]!;
+                int color = corePalette.Primary[i]!;
                 primaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
             }
 
             var secondaryTones = new Dictionary<string, string>();
             for (int i = 0; i< 100; i++)
             {
-                int color = myCorePalette.Secondary[i]!;
+                int color = corePalette.Secondary[i]!;
                 secondaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
             }
 
             var tertiaryTones = new Dictionary<string, string>();
             for (int i = 0; i< 100; i++)
             {
-                int color = myCorePalette.Tertiary[i]!;
+                int color = corePalette.Tertiary[i]!;
                 tertiaryTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
             }
 
             var neutralTones = new Dictionary<string, string>();
             for (int i = 0; i< 100; i++)
             {
-                int color = myCorePalette.Neutral[i]!;
+                int color = corePalette.Neutral[i]!;
                 neutralTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
             }
 
             var neutralVariantTones = new Dictionary<string, string>();
             for (int i = 0; i< 100; i++)
             {
-                int color = myCorePalette.Neutral[i]!;
+                int color = corePalette.Neutral[i]!;
                 neutralVariantTones.Add(Convert.ToString(i), "#" + color.ToString("X")[2..]);
             }
 

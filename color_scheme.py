@@ -72,21 +72,22 @@ class ColorScheme:
         # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
         # since I don't know how to reaload it with code lets make a copy and switch between them
         # sadly color settings will show copies too
+        
+        with open (THEME_LIGHT_PATH+"2.colors", 'w', encoding='utf8') as light_scheme_file:
+                light_scheme_file.write(light_scheme)
+        with open (THEME_LIGHT_PATH+".colors", 'w', encoding='utf8') as light_scheme_file:
+            light_scheme_file.write(light_scheme)
+        with open (THEME_DARK_PATH+"2.colors", 'w', encoding='utf8') as dark_scheme_file:
+                dark_scheme_file.write(dark_scheme)
+        with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
+            dark_scheme_file.write(dark_scheme)
+                
         if light == True:
-            print("Setting light scheme")
-            with open (THEME_LIGHT_PATH+"2.colors", 'w', encoding='utf8') as light_scheme_file:
-                light_scheme_file.write(light_scheme)
-            with open (THEME_LIGHT_PATH+".colors", 'w', encoding='utf8') as light_scheme_file:
-                light_scheme_file.write(light_scheme)
             subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+".colors",
                                         shell=True, stderr=subprocess.PIPE)
         else:
-            with open (THEME_DARK_PATH+"2.colors", 'w', encoding='utf8') as dark_scheme_file:
-                dark_scheme_file.write(dark_scheme)
-            with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
-                dark_scheme_file.write(dark_scheme)
             subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
             subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",

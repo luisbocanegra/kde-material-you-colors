@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MaterialColorUtilities" Version="0.0.6" />
+    <PackageReference Include="MaterialColorUtilities" Version="0.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.3" />
