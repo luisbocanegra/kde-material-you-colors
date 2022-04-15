@@ -193,54 +193,59 @@ def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_ligh
         light (bool): wether use or not light scheme
         ncolor (int): Alternative color number flag passed to material-color-utility
     """
-    wallpaper_type = wallpaper[0]
-    wallpaper_data = wallpaper[1]
     if wallpaper != None:
+        materialYouColors = None
+        wallpaper_type = wallpaper[0]
+        wallpaper_data = wallpaper[1]
         if wallpaper_type == "image":
             use_flag = "-i"
             if os.path.exists(wallpaper_data):
-                # get colors from material-color-utility
-                materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
+                if not os.path.isdir(wallpaper_data):
+                    # get colors from material-color-utility
+                    materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
+                else:
+                    print(f"{wallpaper_data} is a directory, aborting :)")
         
         elif wallpaper_type == "color":
             use_flag = "-c"
             materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
             
-            
-        try:
-            # parse colors string to json
-            colors_json = json.loads(materialYouColors)
+        if materialYouColors != None:
+            try:
+                # parse colors string to json
+                colors_json = json.loads(materialYouColors)
 
-            if wallpaper_type != "color":
-                print(f'{BOLD_TEXT}Best colors:', end=' ')
-                for index, col in colors_json['bestColors'].items():
-                    if USER_HAS_COLR:
-                        print(
-                            f'{BOLD_TEXT}{index}:{color(col,fore=col)}', end=' ')
-                    else:
-                        print(f'{BOLD_TEXT}{index}:{col}', end=' ')
-                print(f'{BOLD_TEXT}')
+                if wallpaper_type != "color":
+                    print(f'{BOLD_TEXT}Best colors:', end=' ')
+                    for index, col in colors_json['bestColors'].items():
+                        if USER_HAS_COLR:
+                            print(
+                                f'{BOLD_TEXT}{index}:{color(col,fore=col)}', end=' ')
+                        else:
+                            print(f'{BOLD_TEXT}{index}:{col}', end=' ')
+                    print(f'{BOLD_TEXT}')
 
-            seed = colors_json['seedColor']
-            sedColor = list(seed.values())[0]
-            seedNo = list(seed.keys())[0]
-            if USER_HAS_COLR:
-                print(BOLD_TEXT+"Using seed: "+seedNo +
-                    ":"+color(sedColor, fore=sedColor))
-            else:
-                print(BOLD_TEXT+"Using seed: " +
-                    seedNo+":"+sedColor+RESET_TEXT)
+                seed = colors_json['seedColor']
+                sedColor = list(seed.values())[0]
+                seedNo = list(seed.keys())[0]
+                if USER_HAS_COLR:
+                    print(BOLD_TEXT+"Using seed: "+seedNo +
+                        ":"+color(sedColor, fore=sedColor))
+                else:
+                    print(BOLD_TEXT+"Using seed: " +
+                        seedNo+":"+sedColor+RESET_TEXT)
 
-            with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
-                current_scheme.write(json.dumps(
-                    colors_json, indent=4, sort_keys=False))
+                with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
+                    current_scheme.write(json.dumps(
+                        colors_json, indent=4, sort_keys=False))
 
-            # generate and apply Plasma color schemes
-            colors_schemes = ColorScheme(colors_json)
-            colors_schemes.make_color_schemes(light=light, pywal_light=pywal_light, wallpaper=wallpaper,use_pywal=pywal)
-            
-        except Exception as e:
-            print(f'Error:\n {e}')
+                # generate and apply Plasma color schemes
+                #print(f'Settting color schemes for {wallpaper_data}')
+                colors_schemes = ColorScheme(colors_json)
+                colors_schemes.make_color_schemes(light=light, pywal_light=pywal_light, wallpaper=wallpaper,use_pywal=pywal)
+                
+            except Exception as e:
+                print(f'Error:\n {e}')
 
     else:
         print(
@@ -476,6 +481,7 @@ if __name__ == '__main__':
     if wallpaper_old != None and wallpaper_old[1] != None:
         wallpaper_old_type = wallpaper_old[0]
         wallpaper_old_data = wallpaper_old[1]
+        print(f'Using wallpaper: {wallpaper_old_data}')
         
         # if wallpaper is image save time of last modification
         if wallpaper_old_type == "image":
@@ -483,7 +489,6 @@ if __name__ == '__main__':
         else: 
             wallpaper_mod_time_old = None
         
-        print(f'Settting color schemes for {wallpaper_old_data}')
         set_color_schemes(
                     wallpaper=wallpaper_old, light=options_old['light'], ncolor=options_old['ncolor'], pywal=options_old['pywal'], pywal_light=options_old['pywal_light'])
 
