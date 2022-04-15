@@ -2,10 +2,8 @@
 using SkiaSharp;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
-using MaterialColorUtilities.Quantize;
 using Newtonsoft.Json;
 using MaterialColorUtilities.Utils;
-using MaterialColorUtilities.Score;
 using CommandLine;
 
 class Options
@@ -122,7 +120,8 @@ class Program
             // A Scheme contains the named colors, like Primary or OnTertiaryContainer
             Scheme<int> lightScheme = new LightSchemeMapper().Map(corePalette);
             Scheme<int> darkScheme = new DarkSchemeMapper().Map(corePalette);
-
+            lightScheme.Primary = corePalette.Primary[40];
+            darkScheme.Primary = corePalette.Primary[70];
             //TODO: Save color palette to single json
             // var colors = new Dictionary<string, string>();
 
