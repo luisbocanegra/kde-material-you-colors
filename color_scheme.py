@@ -6,7 +6,6 @@ import os
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 if USER_HAS_PYWAL:
     import pywal
-from color_utils import blendColors
 import subprocess
 from schemeconfigs import ThemeConfig
 HOME_DIR = str(Path.home())
@@ -14,57 +13,20 @@ THEME_LIGHT_PATH = HOME_DIR+"/.local/share/color-schemes/MaterialYouLight"
 THEME_DARK_PATH = HOME_DIR+"/.local/share/color-schemes/MaterialYouDark"
 class ColorScheme:
 
-    def __init__(self, colors):
+    def __init__(self, colors, light_blend_multiplier, dark_blend_multiplier):
         self._colors = colors
-
+        self._light_blend_multiplier = light_blend_multiplier
+        self._dark_blend_multiplier =  dark_blend_multiplier
     def make_color_schemes(self, light=None, pywal_light=None, wallpaper=None, pywal_material=True, use_pywal=False):
         wallpaper_type = wallpaper[0]
         wallpaper_data = wallpaper[1]
         colors = self._colors
-
-        # Base text states taken from Breeze Color Scheme
-        base_text_states = {
-            "Link" : "#2980b9",
-            "Visited": "#9b59b6",
-            "Negative": "#da4453",
-            "Neutral": "#f67400",
-            "Positive": "#27ae60"
-        }
-
-        # Blend some extra colors by factor left(0.0) to right(1.0)
-        extras = {
-            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08),
-            "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05),
-            
-            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11),
-            "DarkSurface2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08),
-            
-            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .14),
-            "DarkSurface3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11),
-            
-            "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
-            "LinkVisitedOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Visited'], .8),
-            "NegativeOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Negative'], .8),
-            "PositiveOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Positive'], .8),
-            "NeutralOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Neutral'], .8),
-            
-            "LinkOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Link'], .5),
-            "LinkVisitedOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Visited'], .8),
-            "NegativeOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Negative'], .8),
-            "PositiveOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Positive'], .8),
-            "NeutralOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Neutral'], .8),
-            
-            "LightSelectionAlt": blendColors(colors['light']['Background'], colors['light']['Secondary'], .3),
-            "DarkSelectionAlt": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .3),
-            
-            "LightSelectionAltActive": blendColors(colors['light']['Background'], colors['light']['Secondary'], .5),
-            "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
-        }
-
+        light_blend_multiplier = self._light_blend_multiplier
+        dark_blend_multiplier = self._dark_blend_multiplier
         # Load themes config on the go for now
         importlib.reload(sys.modules['schemeconfigs'])
         from schemeconfigs import ThemeConfig
-        schemes = ThemeConfig(colors, extras, base_text_states,wallpaper_data)
+        schemes = ThemeConfig(colors,wallpaper_data,light_blend_multiplier=light_blend_multiplier, dark_blend_multiplier=dark_blend_multiplier)
 
         light_scheme=schemes.get_light_scheme()
         dark_scheme=schemes.get_dark_scheme()
@@ -130,4 +92,3 @@ class ColorScheme:
                         if light == True:
                             use_flag = "-l"
                     subprocess.Popen("/usr/bin/wal -i "+wallpaper_data +" "+use_flag , shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-                

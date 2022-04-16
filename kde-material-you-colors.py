@@ -9,6 +9,7 @@ import importlib.util
 from color_scheme import ColorScheme
 from pathlib import Path
 from color_utils import rgb2hex
+import numpy as np
 
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
@@ -183,7 +184,7 @@ def get_material_you_colors(wallpaper_data, ncolor, flag):
         print(f'Error trying to get colors from {wallpaper_data}')
         return None
 
-def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_light=None):
+def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_light=None,lbmult=1,dbmult=1):
 
     """ Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
@@ -241,7 +242,7 @@ def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_ligh
 
                 # generate and apply Plasma color schemes
                 #print(f'Settting color schemes for {wallpaper_data}')
-                colors_schemes = ColorScheme(colors_json)
+                colors_schemes = ColorScheme(colors_json,lbmult,dbmult)
                 colors_schemes.make_color_schemes(light=light, pywal_light=pywal_light, wallpaper=wallpaper,use_pywal=pywal)
                 
             except Exception as e:
@@ -278,7 +279,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = None
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier= None 
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -312,44 +313,51 @@ class Configs():
         else:
             config = configparser.ConfigParser()
             if os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
-                config.read(USER_CONFIG_PATH+CONFIG_FILE)
+                try:
+                    config.read(USER_CONFIG_PATH+CONFIG_FILE)
+                    if 'CUSTOM' in config:
+                        custom = config['CUSTOM']
 
-                if 'CUSTOM' in config:
-                    custom = config['CUSTOM']
+                        if 'light' in custom:
+                            c_light = custom.getboolean('light')
 
-                    if 'light' in custom:
-                        c_light = custom.getboolean('light')
+                        if 'file' in custom:
+                            c_file = custom['file']
 
-                    if 'file' in custom:
-                        c_file = custom['file']
+                        if 'monitor' in custom:
+                            c_monitor = custom.getint('monitor')
+                            if c_monitor < 0:
+                                raise ValueError(
+                                    'Config for monitor must be a positive integer')
 
-                    if 'monitor' in custom:
-                        c_monitor = custom.getint('monitor')
-                        if c_monitor < 0:
-                            raise ValueError(
-                                'Config for monitor must be a positive integer')
+                        if 'ncolor' in custom:
+                            c_ncolor = custom.getint('ncolor')
+                            if c_ncolor < 0:
+                                raise ValueError(
+                                    'Config for ncolor must be a positive integer')
 
-                    if 'ncolor' in custom:
-                        c_ncolor = custom.getint('ncolor')
-                        if c_ncolor < 0:
-                            raise ValueError(
-                                'Config for ncolor must be a positive integer')
+                        if 'plugin' in custom:
+                            c_plugin = custom['plugin']
 
-                    if 'plugin' in custom:
-                        c_plugin = custom['plugin']
+                        if 'iconslight' in custom:
+                            c_iconslight = custom['iconslight']
 
-                    if 'iconslight' in custom:
-                        c_iconslight = custom['iconslight']
-
-                    if 'iconsdark' in custom:
-                        c_iconsdark = custom['iconsdark']
+                        if 'iconsdark' in custom:
+                            c_iconsdark = custom['iconsdark']
+                            
+                        if 'pywal' in custom:
+                            c_pywal = custom.getboolean('pywal')
                         
-                    if 'pywal' in custom:
-                        c_pywal = custom.getboolean('pywal')
-                    
-                    if 'pywal_light' in custom:
-                        c_pywal_light = custom.getboolean('pywal_light')
-
+                        if 'pywal_light' in custom:
+                            c_pywal_light = custom.getboolean('pywal_light')
+                            
+                        if 'light_blend_multiplier' in custom:
+                            c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
+                            
+                        if 'dark_blend_multiplier' in custom:
+                            c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                except Exception as e:
+                    print(f"Please fix your settings file:\n {e}\n")
             if args.dark == True:
                 c_light = False
             elif args.light == True:
@@ -369,6 +377,16 @@ class Configs():
             else:
                 c_pywal_light = c_pywal_light
 
+            if args.lbmultiplier != None:
+                c_light_blend_multiplier = np.clip(args.lbmultiplier, 0, 4)
+            elif c_light_blend_multiplier != None:
+                c_light_blend_multiplier = np.clip(c_light_blend_multiplier, 0, 4)
+                
+            if args.dbmultiplier != None:
+                c_dark_blend_multiplier = np.clip(args.dbmultiplier, 0, 4)
+            elif c_dark_blend_multiplier != None:
+                c_dark_blend_multiplier = np.clip(c_dark_blend_multiplier, 0, 4)
+                
             if args.file != None:
                 c_file = args.file
             elif c_file == None:
@@ -422,7 +440,9 @@ class Configs():
                 'iconslight': c_iconslight,
                 'iconsdark': c_iconsdark,
                 "pywal": c_pywal,
-                "pywal_light":  c_pywal_light
+                "pywal_light":  c_pywal_light,
+                "lbm": c_light_blend_multiplier,
+                "dbm": c_dark_blend_multiplier
             }
 
     @property
@@ -461,11 +481,15 @@ if __name__ == '__main__':
     parser.add_argument('--iconsdark', type=str,
                         help='Icons for Light scheme', default=None)
     parser.add_argument('--pywal', '-wal', action='store_true',
-                        help='Use wall to theme other apps')
+                        help='Use pywal to theme other apps with Material You')
     parser.add_argument('--pywallight', '-wall', action='store_true',
-                        help='Use mode for pywall controlled apps')
+                        help='Use Light mode for pywal controlled apps')
     parser.add_argument('--pywaldark', '-wald', action='store_true',
-                        help='Use dark mode for pywall controlled apps')
+                        help='Use Dark mode for pywal controlled apps')
+    parser.add_argument('--lbmultiplier', '-lbm', type=float,
+                        help='The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)',default=None)
+    parser.add_argument('--dbmultiplier', '-dbm', type=float,
+                        help='The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)',default=None)
 
     # Get arguments
     args = parser.parse_args()
@@ -490,7 +514,7 @@ if __name__ == '__main__':
             wallpaper_mod_time_old = None
         
         set_color_schemes(
-                    wallpaper=wallpaper_old, light=options_old['light'], ncolor=options_old['ncolor'], pywal=options_old['pywal'], pywal_light=options_old['pywal_light'])
+                    wallpaper=wallpaper_old, light=options_old['light'], ncolor=options_old['ncolor'], pywal=options_old['pywal'], pywal_light=options_old['pywal_light'],lbmult=options_old['lbm'],dbmult=options_old['dbm'])
 
     set_icons(icons_light=options_old['iconslight'],
              icons_dark=options_old['iconsdark'], light=options_old['light'])
@@ -534,7 +558,7 @@ if __name__ == '__main__':
                     print(f'Wallpaper changed: {wallpaper_new_data}')
                 
                 set_color_schemes(
-                    wallpaper=wallpaper_new, light=options_new['light'], ncolor=options_new['ncolor'], pywal=options_new['pywal'], pywal_light=options_new['pywal_light'])
+                    wallpaper=wallpaper_new, light=options_new['light'], ncolor=options_new['ncolor'], pywal=options_new['pywal'], pywal_light=options_new['pywal_light'],lbmult=options_new['lbm'],dbmult=options_new['dbm'])
                 #fix borked terminal idk...
                 print("---------------------")
                 
