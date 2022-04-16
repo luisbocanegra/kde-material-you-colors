@@ -33,6 +33,7 @@ PICTURE_OF_DAY_PLUGIN_IMGS_DIR = HOME+'/.cache/plasma_engine_potd/'
 PICTURE_OF_DAY_UNSPLASH_PROVIDER = 'unsplash'
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
+KDE_GLOBALS = HOME+"/.config/kdeglobals"
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
 
@@ -128,7 +129,7 @@ class Configs():
                 c_light = False
             elif args.light == True:
                 c_light = args.light
-            else:
+            elif c_light != None:
                 c_light = c_light
                 
             if args.pywal == True:
@@ -364,7 +365,7 @@ def get_material_you_colors(wallpaper_data, ncolor, flag):
         print(f'Error trying to get colors from {wallpaper_data}')
         return None
 
-def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_light=None,lbmult=1,dbmult=1):
+def get_color_schemes(wallpaper, ncolor=None):
 
     """ Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
@@ -422,15 +423,17 @@ def set_color_schemes(wallpaper, light=None, ncolor=None, pywal=None, pywal_ligh
 
                 # generate and apply Plasma color schemes
                 #print(f'Settting color schemes for {wallpaper_data}')
-                schemes = ThemeConfig(colors_json,wallpaper_data,light_blend_multiplier=lbmult, dark_blend_multiplier=dbmult)
-                apply_color_schemes(light=light, pywal_light=pywal_light,use_pywal=pywal, schemes=schemes)
+                
+                return colors_json
                 
             except Exception as e:
                 print(f'Error:\n {e}')
+                return None
 
     else:
         print(
             f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
+        return None
 
 
 def set_icons(icons_light, icons_dark, light):
@@ -452,11 +455,9 @@ def set_icons(icons_light, icons_dark, light):
 def currentWallpaper(options):
     return get_wallpaper_data(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
 
-def apply_color_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
-    
+def make_plasma_scheme(schemes=None):
     light_scheme=schemes.get_light_scheme()
     dark_scheme=schemes.get_dark_scheme()
-
     # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
     # since I don't know how to reaload it with code lets make a copy and switch between them
     # sadly color settings will show copies too
@@ -469,40 +470,72 @@ def apply_color_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
             dark_scheme_file.write(dark_scheme)
     with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
-            
-    if light == True:
-        subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+"2.colors",
-                                    shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-        subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+".colors",
-                                    shell=True, stderr=subprocess.PIPE)
+        
+def apply_color_schemes(light=None):
+    
+    if light != None:
+        if light == True:
+            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+"2.colors",
+                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+".colors",
+                                        shell=True, stderr=subprocess.PIPE)
+        elif light == False:
+            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
+                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
+                                        shell=True, stderr=subprocess.PIPE)
     else:
         subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
-                                    shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
         subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
-                                    shell=True, stderr=subprocess.PIPE)
-    if use_pywal != None and use_pywal == True:
-        if USER_HAS_PYWAL:
-            if pywal_light != None:
-                if pywal_light  == True:
-                    pywal_colors=schemes.get_wal_light_scheme()
-                else:
-                    pywal_colors=schemes.get_wal_dark_scheme()
-            elif light != None:
-                if light  == True:
-                    pywal_colors=schemes.get_wal_light_scheme()
-                else:
-                    pywal_colors=schemes.get_wal_dark_scheme()
+                                        shell=True, stderr=subprocess.PIPE)
+                
+def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
+        if use_pywal != None and use_pywal == True:
+            pywal_colors = None
+            if USER_HAS_PYWAL:
+                if pywal_light != None:
+                    if pywal_light  == True:
+                        pywal_colors=schemes.get_wal_light_scheme()
+                    else:
+                        pywal_colors=schemes.get_wal_dark_scheme()
+                elif light != None:
+                    if light  == True:
+                        pywal_colors=schemes.get_wal_light_scheme()
+                    elif light  == False:
+                        pywal_colors=schemes.get_wal_dark_scheme()
+                        
+                if pywal_colors != None:
+                    #use material you colors for pywal
+                    # Apply the palette to all open terminals.
+                    # Second argument is a boolean for VTE terminals.
+                    # Set it to true if the terminal you're using is
+                    # VTE based. (xfce4-terminal, termite, gnome-terminal.)
+                    #print(pywal_colors)
+                    pywal.sequences.send(pywal_colors, vte_fix=False)
                     
-            #use material you colors for pywal
-            # Apply the palette to all open terminals.
-            # Second argument is a boolean for VTE terminals.
-            # Set it to true if the terminal you're using is
-            # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-            #print(pywal_colors)
-            pywal.sequences.send(pywal_colors, vte_fix=False)
-            
-            # Export all template files.
-            pywal.export.every(pywal_colors)
+                    # Export all template files.
+                    pywal.export.every(pywal_colors)
 
-            # Reload xrdb, i3 and polybar.
-            pywal.reload.env()
+                    # Reload xrdb, i3 and polybar.
+                    pywal.reload.env()
+
+def kde_globals_light():
+    kdeglobals = configparser.ConfigParser()
+    if os.path.exists(KDE_GLOBALS):
+        try:
+            kdeglobals.read(KDE_GLOBALS)
+            if 'General' in kdeglobals:
+                general = kdeglobals['General']
+                if 'ColorScheme' in general:
+                    if "MaterialYouDark" in general['ColorScheme']:
+                        return False
+                    elif "MaterialYouLight" in general['ColorScheme']:
+                        return True
+            else:
+                return None
+        except Exception as e:
+            print(e)
+            return None
+    else:
+        return None
