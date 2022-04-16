@@ -90,6 +90,7 @@ sudo ./install-fedora-based.sh
 `--pywaldark -wald`&emsp; Use pywal Dark scheme
 
 `--lbmultiplier [NUMBER], -lbm [NUMBER]`&emsp; The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)
+
 `--dbmultiplier [NUMBER], -dbm [NUMBER]`&emsp; The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)
 
 # Startup script:
@@ -157,7 +158,9 @@ plugin = org.kde.image
 #file = /tmp/000_eDP-1_current_wallpaper
 
 # Enable Light mode
+# Accepted values are True or False
 # Default is False
+# Comment out to follow System Color Setting instead  (MaterialYou schemes only)
 light = False
 
 # Alternative color mode (default is 0), some images return more than one color, this will use either the matched or last color
@@ -173,7 +176,7 @@ ncolor = 0
 #iconsdark = Papirus-Dark
 
 # Use pywal to theme other programs using Material You colors (experimental)
-# You need to install pywal python module first ($ pip install pywal)
+# You need to install pywal python module first
 # Accepted values are True or False
 # Commented by default
 #pywal=True
@@ -184,14 +187,14 @@ ncolor = 0
 #pywal_light = False
 
 # The amount of perceptible color for backgrounds in dark mode
-# A value from 0 to 4.0 (limited for accessibility purposes)
+# A number between 0 and 4.0 (limited for accessibility purposes)
 # Defaults to 1 if not set
-#light_blend_multiplier = 1.0
+light_blend_multiplier = 1.0
 
 # The amount of perceptible color for backgrounds in dark mode
-# A value from 0 to 4.0 (limited for accessibility purposes)
+# A number between 0 and 4.0 (limited for accessibility purposes)
 # Defaults to 1 if not set
-#dark_blend_multiplier = 1
+dark_blend_multiplier = 1.0
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
