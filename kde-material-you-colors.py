@@ -59,8 +59,7 @@ if __name__ == '__main__':
         wallpaper_old_data = wallpaper_old[1]
         print(f'Using wallpaper: {wallpaper_old_data}')
         colors = utils.get_color_schemes(wallpaper_old,options_old['ncolor'])
-        schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'])
-        utils.make_plasma_scheme(schemes=schemes)
+        
         # if wallpaper is image save time of last modification
         if wallpaper_old_type == "image":
             wallpaper_mod_time_old = utils.get_last_modification(wallpaper_old_data)
@@ -72,17 +71,19 @@ if __name__ == '__main__':
                 light=kde_globals_light_old
         else:
             light = options_old['light']
-            
-        utils.apply_color_schemes(
-                    light=light)
-        utils.apply_pywal_schemes(
-                    light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
+        if colors != None:
+            schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'])
+            utils.make_plasma_scheme(schemes=schemes)
+            utils.apply_color_schemes(
+                        light=light)
+            utils.apply_pywal_schemes(
+                        light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
 
-        utils.set_icons(icons_light=options_old['iconslight'],
-             icons_dark=options_old['iconsdark'], light=options_old['light'])
-        utils.run_hook(options_old['on_change_hook'])
-    #fix borked terminal idk...
-    print("---------------------")
+            utils.set_icons(icons_light=options_old['iconslight'],
+                icons_dark=options_old['iconsdark'], light=options_old['light'])
+            utils.run_hook(options_old['on_change_hook'])
+            #fix borked terminal idk...
+            print("---------------------")
 
     # check wallpaper change
     while True:
@@ -118,27 +119,28 @@ if __name__ == '__main__':
                     light=kde_globals_light_new
             else:
                 light = options_new['light']
-
             if wallpaper_changed or options_changed or wallpaper_modified:
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
-                schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
-                utils.make_plasma_scheme(schemes=schemes)
-                if options_changed:
-                    print(f"New Config: {options_new}")
-                    if icons_changed or light_changed:
-                        utils.set_icons(
-                            icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=light)
-                
-                if wallpaper_changed or wallpaper_modified:
-                    print(f'Wallpaper changed: {wallpaper_new_data}')
-                
-                utils.apply_color_schemes(
-                    light=light)
-                utils.apply_pywal_schemes(
-                    light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
-                utils.run_hook(options_new['on_change_hook'])
-                print("---------------------")
+                if colors != None:
+                    schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
+                    utils.make_plasma_scheme(schemes=schemes)
+                    if options_changed:
+                        print(f"New Config: {options_new}")
+                        if icons_changed or light_changed:
+                            utils.set_icons(
+                                icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=light)
+                    
+                    if wallpaper_changed or wallpaper_modified:
+                        print(f'Wallpaper changed: {wallpaper_new_data}')
+                    
+                    utils.apply_color_schemes(
+                        light=light)
+                    utils.apply_pywal_schemes(
+                        light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
+                    utils.run_hook(options_new['on_change_hook'])
+                    print("---------------------")
             elif kde_globals_light_changed and kde_globals_light_new != None:
+                if colors != None:
                     utils.apply_pywal_schemes(
                         light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.set_icons(icons_light=options_new['iconslight'],
