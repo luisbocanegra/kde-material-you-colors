@@ -93,6 +93,8 @@ sudo ./install-fedora-based.sh
 
 `--dbmultiplier [NUMBER], -dbm [NUMBER]`&emsp; The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)
 
+`--on-change-hook [COMMAND]`&emsp; A script/command that will be executed on start or wallpaper/dark/light/settings change
+
 # Startup script:
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
