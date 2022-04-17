@@ -195,6 +195,11 @@ light_blend_multiplier = 1.0
 # A number between 0 and 4.0 (limited for accessibility purposes)
 # Defaults to 1 if not set
 dark_blend_multiplier = 1.0
+
+# A script/command that will be executed on start or wallpaper/dark/light/settings change
+# Commented by default
+# example below using https://github.com/vlevit/notify-send.sh to send a desktop notification
+#on_change_hook = notify-send.sh "kde-material-you-colors" "This is a test" -t 2000
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.

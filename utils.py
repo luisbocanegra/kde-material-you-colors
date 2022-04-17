@@ -7,7 +7,6 @@ import numpy as np
 import dbus
 from color_utils import rgb2hex
 import importlib.util
-from schemeconfigs import ThemeConfig
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
@@ -46,7 +45,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier= None 
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook =  None 
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -123,6 +122,10 @@ class Configs():
                             
                         if 'dark_blend_multiplier' in custom:
                             c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                            
+                        if 'on_change_hook' in custom:
+                            c_on_change_hook = custom['on_change_hook']
+                            
                 except Exception as e:
                     print(f"Please fix your settings file:\n {e}\n")
             if args.dark == True:
@@ -134,8 +137,8 @@ class Configs():
                 
             if args.pywal == True:
                 c_pywal = args.pywal
-            elif c_pywal != None:
-                c_pywal = c_pywal
+            elif c_pywal == None:
+                c_pywal = args.pywal
                 
             if args.pywaldark == True:
                 c_pywal_light = False
@@ -197,6 +200,11 @@ class Configs():
                 c_iconsdark = args.iconsdark
             elif c_iconsdark == None:
                 c_iconsdark = args.iconsdark
+                
+            if args.on_change_hook != None:
+                c_on_change_hook = args.on_change_hook
+            elif c_on_change_hook == None:
+                c_on_change_hook = args.on_change_hook
 
             self._options = {
                 'light': c_light,
@@ -209,7 +217,8 @@ class Configs():
                 "pywal": c_pywal,
                 "pywal_light":  c_pywal_light,
                 "lbm": c_light_blend_multiplier,
-                "dbm": c_dark_blend_multiplier
+                "dbm": c_dark_blend_multiplier,
+                "on_change_hook": c_on_change_hook
             }
 
     @property
@@ -539,3 +548,7 @@ def kde_globals_light():
             return None
     else:
         return None
+
+def run_hook(hook):
+    if hook != None:
+        subprocess.Popen(hook,shell=True)
