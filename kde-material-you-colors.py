@@ -39,6 +39,8 @@ if __name__ == '__main__':
                         help='The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)',default=None)
     parser.add_argument('--dbmultiplier', '-dbm', type=float,
                         help='The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)',default=None)
+    parser.add_argument('--on-change-hook', type=str,
+                        help='A script/command that will be executed on start or wallpaper/dark/light/settings change',default=None)
 
     # Get arguments
     args = parser.parse_args()
@@ -78,6 +80,7 @@ if __name__ == '__main__':
 
         utils.set_icons(icons_light=options_old['iconslight'],
              icons_dark=options_old['iconsdark'], light=options_old['light'])
+        utils.run_hook(options_old['on_change_hook'])
     #fix borked terminal idk...
     print("---------------------")
 
@@ -133,12 +136,14 @@ if __name__ == '__main__':
                     light=light)
                 utils.apply_pywal_schemes(
                     light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
+                utils.run_hook(options_new['on_change_hook'])
                 print("---------------------")
             elif kde_globals_light_changed and kde_globals_light_new != None:
                     utils.apply_pywal_schemes(
                         light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.set_icons(icons_light=options_new['iconslight'],
                         icons_dark=options_new['iconsdark'], light=kde_globals_light_new)
+                    utils.run_hook(options_new['on_change_hook'])
 
             wallpaper_old = wallpaper_new
             wallpaper_mod_time_old = wallpaper_mod_time_new
