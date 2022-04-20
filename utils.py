@@ -148,14 +148,14 @@ class Configs():
                 c_pywal_light = c_pywal_light
 
             if args.lbmultiplier != None:
-                c_light_blend_multiplier = np.clip(args.lbmultiplier, 0, 4)
+                c_light_blend_multiplier = range_check(args.lbmultiplier, 0, 4)
             elif c_light_blend_multiplier != None:
-                c_light_blend_multiplier = np.clip(c_light_blend_multiplier, 0, 4)
+                c_light_blend_multiplier = range_check(c_light_blend_multiplier, 0, 4)
                 
             if args.dbmultiplier != None:
-                c_dark_blend_multiplier = np.clip(args.dbmultiplier, 0, 4)
+                c_dark_blend_multiplier = range_check(args.dbmultiplier, 0, 4)
             elif c_dark_blend_multiplier != None:
-                c_dark_blend_multiplier = np.clip(c_dark_blend_multiplier, 0, 4)
+                c_dark_blend_multiplier = range_check(c_dark_blend_multiplier, 0, 4)
                 
             if args.file != None:
                 c_file = args.file
@@ -552,3 +552,9 @@ def kde_globals_light():
 def run_hook(hook):
     if hook != None:
         subprocess.Popen(hook,shell=True)
+
+def range_check(x,min,max):
+    if x != None:
+        return np.clip(x,min,max)
+    else:
+        return 1

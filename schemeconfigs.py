@@ -1,14 +1,13 @@
 from color_utils import blendColors
-import numpy as np
-
+from utils import range_check
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1):
         colors_best = colors['bestColors']
         tones_primary = colors['primaryTones']
         tones_neutral = colors['neutralTones']
         
-        light_blend_multiplier = multipler_check(light_blend_multiplier)
-        dark_blend_multiplier = multipler_check(dark_blend_multiplier)
+        light_blend_multiplier = range_check(light_blend_multiplier,0,4)
+        dark_blend_multiplier = range_check(dark_blend_multiplier,0,4)
             
         tone = 30
         pywal_colors_dark = ()
@@ -376,8 +375,3 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
     def get_wal_dark_scheme(self):
         return (self._wal_dark_scheme)
     
-def multipler_check(multiplier):
-    if multiplier != None:
-        return np.clip(multiplier,1,4)
-    else:
-        return 1
