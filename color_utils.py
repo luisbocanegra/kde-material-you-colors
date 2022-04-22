@@ -111,19 +111,6 @@ def blendColors(colorA, colorB, ratio):
 
     return rgb2hex(r, g, b)
 
-
-# Blend two colors by an amount
-# def blendColors(colorA, colorB, amount):
-#     [rA, gA, bA] = hex2rgb(colorA)
-#     [rB, gB, bB] = hex2rgb(colorB)
-#     r = numpy.int(rA + (rB - rA) * amount)
-#     g = numpy.int(gA + (gB - gA) * amount)
-#     b = numpy.int(bA + (bB - bA) * amount)
-#     color = rgb2hex(r, g, b)
-#     print(color)
-#     return color
-
-
 # Tests
 if __name__ == '__main__':
     # Test color blend

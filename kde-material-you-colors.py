@@ -41,6 +41,8 @@ if __name__ == '__main__':
                         help='The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)',default=None)
     parser.add_argument('--on-change-hook', type=str,
                         help='A script/command that will be executed on start or wallpaper/dark/light/settings change',default=None)
+    parser.add_argument('--sierra-breeze-buttons-color', '-sbb', action='store_true',
+                        help='Tint SierraBreeze decoration buttons')
 
     # Get arguments
     args = parser.parse_args()
@@ -65,26 +67,28 @@ if __name__ == '__main__':
             wallpaper_mod_time_old = utils.get_last_modification(wallpaper_old_data)
         else: 
             wallpaper_mod_time_old = None
+            
         light = None
         if options_old['light'] == None:
             if kde_globals_light_old != None:
                 light=kde_globals_light_old
         else:
             light = options_old['light']
+            
         if colors != None:
             schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'])
             utils.make_plasma_scheme(schemes=schemes)
             utils.apply_color_schemes(
                         light=light)
+            if options_old['sierra_breeze_buttons_color'] == True:
+                utils.sierra_breeze_button_colors(schemes,light)
             utils.apply_pywal_schemes(
                         light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
 
             utils.set_icons(icons_light=options_old['iconslight'],
                 icons_dark=options_old['iconsdark'], light=options_old['light'])
             utils.run_hook(options_old['on_change_hook'])
-            #fix borked terminal idk...
             print("---------------------")
-
     # check wallpaper change
     while True:
         # reload config file
@@ -94,9 +98,11 @@ if __name__ == '__main__':
         wallpaper_new = utils.currentWallpaper(options_new)
         kde_globals_light_new=utils.kde_globals_light()
         pywal_light_new=options_new['pywal_light']
+        
         if wallpaper_new != None and wallpaper_new[1] != None:
             wallpaper_new_type = wallpaper_new[0]
             wallpaper_new_data = wallpaper_new[1]
+            
             # if wallpaper is image save time of last modification
             if wallpaper_new_type == "image":
                 wallpaper_mod_time_new = utils.get_last_modification(wallpaper_new_data)
@@ -119,7 +125,10 @@ if __name__ == '__main__':
                     light=kde_globals_light_new
             else:
                 light = options_new['light']
+                
             if wallpaper_changed or options_changed or wallpaper_modified:
+                if wallpaper_changed or wallpaper_modified:
+                        print(f'Wallpaper changed: {wallpaper_new_data}')
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
                 if colors != None:
                     schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
@@ -130,22 +139,23 @@ if __name__ == '__main__':
                             utils.set_icons(
                                 icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=light)
                     
-                    if wallpaper_changed or wallpaper_modified:
-                        print(f'Wallpaper changed: {wallpaper_new_data}')
-                    
-                    utils.apply_color_schemes(
-                        light=light)
+                    utils.apply_color_schemes(light=light)
+                    if options_new['sierra_breeze_buttons_color'] == True:
+                        utils.sierra_breeze_button_colors(schemes,light)
                     utils.apply_pywal_schemes(
                         light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.run_hook(options_new['on_change_hook'])
                     print("---------------------")
             elif kde_globals_light_changed and kde_globals_light_new != None:
                 if colors != None:
+                    if options_new['sierra_breeze_buttons_color'] == True:
+                        utils.sierra_breeze_button_colors(schemes,kde_globals_light_new)
                     utils.apply_pywal_schemes(
                         light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.set_icons(icons_light=options_new['iconslight'],
                         icons_dark=options_new['iconsdark'], light=kde_globals_light_new)
                     utils.run_hook(options_new['on_change_hook'])
+                    print("---------------------")
 
             wallpaper_old = wallpaper_new
             wallpaper_mod_time_old = wallpaper_mod_time_new

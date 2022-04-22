@@ -1,13 +1,13 @@
-from color_utils import blendColors
-from utils import range_check
+from color_utils import blendColors, hex2rgb
+from utils import range_check, tup2str
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1):
         colors_best = colors['bestColors']
         tones_primary = colors['primaryTones']
         tones_neutral = colors['neutralTones']
         
-        light_blend_multiplier = range_check(light_blend_multiplier,0,4)
-        dark_blend_multiplier = range_check(dark_blend_multiplier,0,4)
+        lbm = range_check(light_blend_multiplier,0,4)
+        dbm = range_check(dark_blend_multiplier,0,4)
             
         tone = 30
         pywal_colors_dark = ()
@@ -48,17 +48,17 @@ class ThemeConfig:
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
         extras = {
-            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08*light_blend_multiplier),
-            "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05*dark_blend_multiplier),
+            "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08*lbm),
+            "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05*dbm),
 
-            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11*light_blend_multiplier),
-            "DarkSurface2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dark_blend_multiplier),
+            "LightSurface2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11*lbm),
+            "DarkSurface2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dbm),
 
-            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .14*light_blend_multiplier),
-            "DarkSurface3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11*dark_blend_multiplier),
+            "LightSurface3": blendColors(colors['light']['Background'], colors['light']['Primary'], .14*lbm),
+            "DarkSurface3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11*dbm),
 
-            "LightSurface": blendColors(colors['light']['Surface'], colors['light']['Primary'], 0.05*light_blend_multiplier),
-            "DarkSurface": blendColors(colors['dark']['Surface'], colors['dark']['Primary'], 0.02*dark_blend_multiplier),
+            "LightSurface": blendColors(colors['light']['Surface'], colors['light']['Primary'], 0.05*lbm),
+            "DarkSurface": blendColors(colors['dark']['Surface'], colors['dark']['Primary'], 0.02*dbm),
 
             "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
             "LinkVisitedOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Visited'], .8),
@@ -72,8 +72,8 @@ class ThemeConfig:
             "PositiveOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Positive'], .8),
             "NeutralOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Neutral'], .8),
 
-            "LightSelectionAlt": blendColors(colors['light']['Surface'], colors['light']['Secondary'], .02*light_blend_multiplier),
-            "DarkSelectionAlt": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .3*dark_blend_multiplier),
+            "LightSelectionAlt": blendColors(colors['light']['Surface'], colors['light']['Secondary'], .02*lbm),
+            "DarkSelectionAlt": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .3*dbm),
 
             "LightSelectionAltActive": blendColors(colors['light']['Background'], colors['light']['Secondary'], .5),
             "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
@@ -362,6 +362,33 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
                 "color15": pywal_colors_dark[7]
             }
         }
+        dark_active=colors['dark']['OnBackground']
+        dark_inactive=extras['DarkSurface3']
+        
+        light_active=colors['light']['OnBackground']
+        light_inactive=extras['LightSurface3']
+    
+        self._sierra_breeze_dark_colors = {
+            "btn_close_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['80'], .7))),
+            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['70'], .7))),
+            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['55'], .7))),
+            "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#118cff", .7))),
+            "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#5d00b9", .7))),
+            "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#00b9b9", .7))),
+            "btn_shade_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#b900b6", .7))),
+            "btn_inactive_color" : tup2str(hex2rgb(blendColors(dark_inactive, colors['dark']['Secondary'], .32)))
+        }
+        
+        self._sierra_breeze_light_colors = {
+            "btn_close_active_color" : tup2str(hex2rgb(blendColors(tones_primary['50'],light_active, .05*lbm))),
+            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(tones_primary['60'],light_active, .05*lbm))),
+            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(tones_primary['70'],light_active, .05*lbm))),
+            "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors("#118cff", light_active, .05*lbm))),
+            "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors("#5d00b9", light_active, .05*lbm))),
+            "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors("#00b9b9", light_active, .05*lbm))),
+            "btn_shade_active_color" : tup2str(hex2rgb(blendColors("#b900b6", light_active, .05*lbm))),
+            "btn_inactive_color" : tup2str(hex2rgb(blendColors(light_inactive, colors['light']['Secondary'], .32)))
+        }
 
     def get_light_scheme(self):
         return(self._light_scheme)
@@ -375,3 +402,8 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
     def get_wal_dark_scheme(self):
         return (self._wal_dark_scheme)
     
+    def get_sierra_breeze_dark_colors(self):
+        return (self._sierra_breeze_dark_colors)
+    
+    def get_sierra_breeze_light_colors(self):
+        return (self._sierra_breeze_light_colors)
