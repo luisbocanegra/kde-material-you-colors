@@ -82,11 +82,10 @@ if __name__ == '__main__':
                         light=light)
             if options_old['sierra_breeze_buttons_color'] == True:
                 utils.sierra_breeze_button_colors(schemes,light)
-            utils.apply_pywal_schemes(
-                        light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
-
             utils.set_icons(icons_light=options_old['iconslight'],
                 icons_dark=options_old['iconsdark'], light=options_old['light'])
+            utils.apply_pywal_schemes(
+                        light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
             utils.run_hook(options_old['on_change_hook'])
             print("---------------------")
     # check wallpaper change
@@ -150,10 +149,10 @@ if __name__ == '__main__':
                 if colors != None:
                     if options_new['sierra_breeze_buttons_color'] == True:
                         utils.sierra_breeze_button_colors(schemes,kde_globals_light_new)
-                    utils.apply_pywal_schemes(
-                        light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.set_icons(icons_light=options_new['iconslight'],
                         icons_dark=options_new['iconsdark'], light=kde_globals_light_new)
+                    utils.apply_pywal_schemes(
+                        light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.run_hook(options_new['on_change_hook'])
                     print("---------------------")
 

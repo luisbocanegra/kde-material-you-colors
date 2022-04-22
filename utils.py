@@ -517,6 +517,7 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                     if pywal_light  == True:
                         pywal_colors=schemes.get_wal_light_scheme()
                     else:
+                        pywal_light=False
                         pywal_colors=schemes.get_wal_dark_scheme()
                 elif light != None:
                     if light  == True:
@@ -530,6 +531,7 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                     # Second argument is a boolean for VTE terminals.
                     # Set it to true if the terminal you're using is
                     # VTE based. (xfce4-terminal, termite, gnome-terminal.)
+                    print("pywal: applying color scheme")
                     pywal.sequences.send(pywal_colors, vte_fix=False)
                     
                     # Export all template files.
@@ -537,6 +539,8 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
 
                     # Reload xrdb, i3 and polybar.
                     pywal.reload.env()
+                    # print palette
+                    print_pywal_palette(schemes, pywal_light)
 
 def kde_globals_light():
     kdeglobals = configparser.ConfigParser()
@@ -613,3 +617,25 @@ def sierra_breeze_button_colors(schemes,light=None):
 
 def tup2str(tup):
     return ','.join(map(str,tup))
+
+def print_pywal_palette(schemes, pywal_light):
+    if USER_HAS_COLR:
+        # print color palette with colr
+        if pywal_light == None:
+            pywal_colors=schemes.get_wal_dark_scheme()['colors']
+        if pywal_light == True:
+            pywal_colors=schemes.get_wal_light_scheme()['colors']
+        elif pywal_light  == False:
+            pywal_colors=schemes.get_wal_dark_scheme()['colors']
+        
+        i=0
+        for index, col in pywal_colors.items():
+            if i % 8 == 0:
+                    print()
+            print(f'{color("    ",back=hex2rgb(col))}', end='')
+            i+=1
+        print(f'{BOLD_TEXT}')
+    else:
+        # Print color palette with pywal
+        pywal.colors.palette()
+        
