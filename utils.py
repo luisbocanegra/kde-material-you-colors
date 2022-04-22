@@ -5,7 +5,7 @@ import json
 import configparser
 import numpy as np
 import dbus
-from color_utils import rgb2hex
+from color_utils import hex2rgb, rgb2hex
 import importlib.util
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
@@ -33,6 +33,7 @@ PICTURE_OF_DAY_UNSPLASH_PROVIDER = 'unsplash'
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
 KDE_GLOBALS = HOME+"/.config/kdeglobals"
+BREEZE_RC = HOME+"/.config/breezerc"
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
 
@@ -45,7 +46,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook =  None 
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = None 
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -126,6 +127,9 @@ class Configs():
                         if 'on_change_hook' in custom:
                             c_on_change_hook = custom['on_change_hook']
                             
+                        if 'sierra_breeze_buttons_color' in custom:
+                            c_sierra_breeze_buttons_color = custom.getboolean('sierra_breeze_buttons_color')
+                            
                 except Exception as e:
                     print(f"Please fix your settings file:\n {e}\n")
             if args.dark == True:
@@ -205,6 +209,11 @@ class Configs():
                 c_on_change_hook = args.on_change_hook
             elif c_on_change_hook == None:
                 c_on_change_hook = args.on_change_hook
+                
+            if args.sierra_breeze_buttons_color == True:
+                c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
+            elif c_sierra_breeze_buttons_color != None:
+                c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
 
             self._options = {
                 'light': c_light,
@@ -218,7 +227,8 @@ class Configs():
                 "pywal_light":  c_pywal_light,
                 "lbm": c_light_blend_multiplier,
                 "dbm": c_dark_blend_multiplier,
-                "on_change_hook": c_on_change_hook
+                "on_change_hook": c_on_change_hook,
+                "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color
             }
 
     @property
@@ -520,7 +530,6 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                     # Second argument is a boolean for VTE terminals.
                     # Set it to true if the terminal you're using is
                     # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                    #print(pywal_colors)
                     pywal.sequences.send(pywal_colors, vte_fix=False)
                     
                     # Export all template files.
@@ -558,3 +567,49 @@ def range_check(x,min,max):
         return np.clip(x,min,max)
     else:
         return 1
+
+def kwin_reload():
+    subprocess.Popen("qdbus org.kde.KWin /KWin reconfigure",shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+    
+def sierra_breeze_button_colors(schemes,light=None):
+    if light == True:
+        colors = schemes.get_sierra_breeze_light_colors()
+    elif light == False:
+        colors = schemes.get_sierra_breeze_dark_colors()
+    
+    breezerc = configparser.ConfigParser()
+    # preserve case
+    breezerc.optionxform = str
+    if os.path.exists(BREEZE_RC):
+        try:
+            breezerc.read(BREEZE_RC)
+            if 'Windeco' in breezerc:
+                breezerc['Windeco']['ButtonCloseActiveColor'] = colors['btn_close_active_color']
+                breezerc['Windeco']['ButtonMaximizeActiveColor'] = colors['btn_maximize_active_color']
+                breezerc['Windeco']['ButtonMinimizeActiveColor'] = colors['btn_minimize_active_color']
+                breezerc['Windeco']['ButtonKeepAboveActiveColor'] = colors['btn_keep_above_active_color']
+                breezerc['Windeco']['ButtonKeepBelowActiveColor'] = colors['btn_keep_below_active_color']
+                breezerc['Windeco']['ButtonOnAllDesktopsActiveColor'] = colors['btn_on_all_desktops_active_color']
+                breezerc['Windeco']['ButtonShadeActiveColor'] = colors['btn_shade_active_color']
+                
+                # Inactive
+                breezerc['Windeco']['ButtonCloseInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonMaximizeInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonMinimizeInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonKeepAboveInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonKeepBelowInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonOnAllDesktopsInactiveColor'] = colors['btn_inactive_color']
+                breezerc['Windeco']['ButtonShadeInactiveColor'] = colors['btn_inactive_color']
+                reload = True
+            else:
+                reload = False
+            if reload == True:
+                print(f"Applying SierraBreeze window button colors")
+                with open(BREEZE_RC, 'w') as configfile:
+                    breezerc.write(configfile,space_around_delimiters=False)
+                kwin_reload()
+        except Exception as e:
+            print(f"Error writing breeze window button colors: \n {e}")
+
+def tup2str(tup):
+    return ','.join(map(str,tup))

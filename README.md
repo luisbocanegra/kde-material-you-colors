@@ -27,6 +27,7 @@ https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-
 - Dark and Light Icon theme
 - Multiple wallpaper plugins supported
 - [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
+- Tint [SierraBreeze](https://github.com/ishovkun/SierraBreeze) decoration window buttons
 
 # Installing:
 ### Arch Linux:
@@ -94,6 +95,8 @@ sudo ./install-fedora-based.sh
 `--dbmultiplier [NUMBER], -dbm [NUMBER]`&emsp; The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)
 
 `--on-change-hook [COMMAND]`&emsp; A script/command that will be executed on start or wallpaper/dark/light/settings change
+
+`--sierra-breeze-buttons-color, -sbb`&emsp; Tint SierraBreeze decoration buttons
 
 # Startup script:
 
@@ -202,6 +205,13 @@ dark_blend_multiplier = 1.0
 # Commented by default
 # example below using https://github.com/vlevit/notify-send.sh to send a desktop notification
 #on_change_hook = notify-send.sh "kde-material-you-colors" "This is a test" -t 2000
+
+# Tint SierraBreeze decoration buttons https://github.com/ishovkun/SierraBreeze
+# Accepted values are True or False
+# Default is False
+# NOTE:
+# This WILL OVERWRITE any set colors and reload KWin
+#sierra_breeze_buttons_color = True
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
