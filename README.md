@@ -28,6 +28,7 @@ https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-
 - Multiple wallpaper plugins supported
 - [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
 - Tint [SierraBreeze](https://github.com/ishovkun/SierraBreeze) decoration window buttons
+- Dynamically update Konsole color scheme (check Configuration section for instructions)
 
 # Installing:
 ### Arch Linux:
@@ -97,6 +98,8 @@ sudo ./install-fedora-based.sh
 `--on-change-hook [COMMAND]`&emsp; A script/command that will be executed on start or wallpaper/dark/light/settings change
 
 `--sierra-breeze-buttons-color, -sbb`&emsp; Tint SierraBreeze decoration buttons
+
+`--konsole-profile [KONSOLE_PROFILE], -kp [KONSOLE_PROFILE]`&emsp; The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles
 
 # Startup script:
 
@@ -212,6 +215,16 @@ dark_blend_multiplier = 1.0
 # NOTE:
 # This WILL OVERWRITE any set colors and reload KWin
 #sierra_breeze_buttons_color = True
+
+# Dynamically update Konsole color scheme by switching profiles
+# The name of your Konsole profile (except TempMyou as its reserved for this to work)
+# you can get a list of your profiles with the command konsole --list-profiles
+# Default is commented (disabled)
+# NOTE:
+# This will edit your profile, from ~/.local/share/konsole/
+# and make a temp named TempMyou.profile to switch between them to update color schemes
+# It is recommended to backup that folder before enabling this
+#konsole_profile = Profile 1
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
