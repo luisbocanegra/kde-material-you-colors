@@ -34,6 +34,11 @@ PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
 KDE_GLOBALS = HOME+"/.config/kdeglobals"
 BREEZE_RC = HOME+"/.config/breezerc"
+KONSOLE_DIR = HOME+"/.local/share/konsole/"
+KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
+KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
+KONSOLE_TEMPLATE_PATH = HOME+"/.cache/wal/KonsoleTemplate.colorscheme"
+KONSOLE_TEMP_PROFILE=KONSOLE_DIR+"TempMyou.profile"
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
 
@@ -46,7 +51,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = None 
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = None 
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -130,6 +135,9 @@ class Configs():
                         if 'sierra_breeze_buttons_color' in custom:
                             c_sierra_breeze_buttons_color = custom.getboolean('sierra_breeze_buttons_color')
                             
+                        if 'konsole_profile' in custom:
+                            c_konsole_profile = custom['konsole_profile']
+
                 except Exception as e:
                     print(f"Please fix your settings file:\n {e}\n")
             if args.dark == True:
@@ -214,6 +222,12 @@ class Configs():
                 c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
             elif c_sierra_breeze_buttons_color != None:
                 c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
+                
+            if args.konsole_profile != None:
+                c_konsole_profile = args.konsole_profile
+            elif c_konsole_profile == None:
+                c_konsole_profile = args.konsole_profile
+
 
             self._options = {
                 'light': c_light,
@@ -228,8 +242,9 @@ class Configs():
                 "lbm": c_light_blend_multiplier,
                 "dbm": c_dark_blend_multiplier,
                 "on_change_hook": c_on_change_hook,
-                "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color
-            }
+                "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
+                "konsole_profile" : c_konsole_profile
+                }
 
     @property
     def options(self):
@@ -509,23 +524,23 @@ def apply_color_schemes(light=None):
         subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
                                         shell=True, stderr=subprocess.PIPE)
                 
-def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
-        if use_pywal != None and use_pywal == True:
-            pywal_colors = None
-            if USER_HAS_PYWAL:
-                if pywal_light != None:
-                    if pywal_light  == True:
-                        pywal_colors=schemes.get_wal_light_scheme()
-                    else:
-                        pywal_light=False
-                        pywal_colors=schemes.get_wal_dark_scheme()
-                elif light != None:
-                    if light  == True:
-                        pywal_colors=schemes.get_wal_light_scheme()
-                    elif light  == False:
-                        pywal_colors=schemes.get_wal_dark_scheme()
-                        
-                if pywal_colors != None:
+def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None, konsole_light=None):
+    if use_pywal != None and use_pywal == True:
+        pywal_colors = None
+        if pywal_light != None:
+            if pywal_light  == True:
+                pywal_colors=schemes.get_wal_light_scheme()
+            else:
+                pywal_light=False
+                pywal_colors=schemes.get_wal_dark_scheme()
+        elif light != None:
+            if light  == True:
+                pywal_colors=schemes.get_wal_light_scheme()
+            elif light  == False:
+                pywal_colors=schemes.get_wal_dark_scheme()
+                
+        if pywal_colors != None:
+                if USER_HAS_PYWAL:
                     #use material you colors for pywal
                     # Apply the palette to all open terminals.
                     # Second argument is a boolean for VTE terminals.
@@ -539,8 +554,11 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
 
                     # Reload xrdb, i3 and polybar.
                     pywal.reload.env()
-                    # print palette
-                    print_pywal_palette(schemes, pywal_light)
+                else:
+                    print(f"{BOLD_TEXT}[W] pywal: pywal option enabled but module is not installed{RESET_TEXT}")
+                # print palette
+                print_pywal_palette(pywal_colors)
+
 
 def kde_globals_light():
     kdeglobals = configparser.ConfigParser()
@@ -618,24 +636,170 @@ def sierra_breeze_button_colors(schemes,light=None):
 def tup2str(tup):
     return ','.join(map(str,tup))
 
-def print_pywal_palette(schemes, pywal_light):
+def print_pywal_palette(pywal_colors):
     if USER_HAS_COLR:
-        # print color palette with colr
-        if pywal_light == None:
-            pywal_colors=schemes.get_wal_dark_scheme()['colors']
-        if pywal_light == True:
-            pywal_colors=schemes.get_wal_light_scheme()['colors']
-        elif pywal_light  == False:
-            pywal_colors=schemes.get_wal_dark_scheme()['colors']
-        
         i=0
-        for index, col in pywal_colors.items():
+        for index, col in pywal_colors['colors'].items():
             if i % 8 == 0:
                     print()
             print(f'{color("    ",back=hex2rgb(col))}', end='')
             i+=1
         print(f'{BOLD_TEXT}')
-    else:
+    elif USER_HAS_PYWAL:
+        print(f"{BOLD_TEXT}[I] Install colr python module to keep prior color palettes")
         # Print color palette with pywal
         pywal.colors.palette()
+    else:
+        print(f"{BOLD_TEXT}[I] Install pywal or colr python module to show color schemes")
+
+def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
+    if pywal_light != None:
+        if pywal_light  == True:
+            pywal_colors=schemes.get_wal_light_scheme()
+        else:
+            pywal_light=False
+            pywal_colors=schemes.get_wal_dark_scheme()
+    elif light != None:
+        if light  == True:
+            pywal_colors=schemes.get_wal_light_scheme()
+        elif light  == False:
+            pywal_colors=schemes.get_wal_dark_scheme()
+                        
+    config = configparser.ConfigParser()
+    config.optionxform = str
+    if os.path.exists(KONSOLE_COLOR_SCHEME_PATH):
+        config.read(KONSOLE_COLOR_SCHEME_PATH)
+
+    sections = ['Background',
+                'BackgroundIntense',
+                'BackgroundFaint',
+                'Color',
+                'Foreground',
+                'ForegroundIntense',
+                'ForegroundFaint',
+                'General']
+    exp = []
+    for section in sections:
+        if section == 'Color':
+            for n in range(8):
+                exp.append(str(f'Color{n}'))
+                exp.append(str(f'Color{n}Intense'))
+                exp.append(str(f'Color{n}Faint'))
+        else:
+            exp.append(section)
+
+    for section in exp:
+        if not config.has_section(section):
+                    config.add_section(section)
+    config['Background']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
+    config['BackgroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
+    config['BackgroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
+    config['Color0']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color0']))
+    config['Color1']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color1']))
+    config['Color2']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color2']))
+    config['Color3']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color3']))
+    config['Color4']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color4']))
+    config['Color5']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color5']))
+    config['Color6']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color6']))
+    config['Color7']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color7']))
+    
+    config['Color0Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color8']))
+    config['Color1Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color9']))
+    config['Color2Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color10']))
+    config['Color3Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color11']))
+    config['Color4Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color12']))
+    config['Color5Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color13']))
+    config['Color6Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color14']))
+    config['Color7Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color15']))
+    
+    config['Color0Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color8']))
+    config['Color1Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color9']))
+    config['Color2Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color10']))
+    config['Color3Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color11']))
+    config['Color4Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color12']))
+    config['Color5Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color13']))
+    config['Color6Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color14']))
+    config['Color7Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color15']))
+    
+    config['Foreground']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
+    config['ForegroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
+    config['ForegroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
+    
+    config['General']['Description'] = "MaterialYou"
+    
+    if not config.has_option('General','Blur'):
+        config['General']['Blur'] = "true"
+    if not config.has_option('General','Opacity'):
+        config['General']['Opacity'] = "0.9"
+    
+    with open(KONSOLE_COLOR_SCHEME_PATH,'w') as configfile:
+        config.write(configfile,space_around_delimiters=False)
         
+    config['General']['Description'] = "MaterialYouAlt"
+    
+    with open(KONSOLE_COLOR_SCHEME_ALT_PATH,'w') as configfile:
+        config.write(configfile,space_around_delimiters=False)
+
+def make_konsole_mirror_profile(profile=None):
+    if profile != None:
+        profile_path = KONSOLE_DIR+profile+".profile"
+        if os.path.exists(profile_path):
+            print(f"konsole: mirror profile ({profile})")
+            subprocess.check_output("cp -f '"+profile_path+"' "+KONSOLE_TEMP_PROFILE, shell=True)
+            profile = configparser.ConfigParser()
+            # preserve case
+            profile.optionxform = str
+            if os.path.exists(profile_path):
+                try:
+                    profile.read(profile_path)
+                    if 'Appearance' in profile:
+                        if profile['Appearance']['ColorScheme'] != "MaterialYou":
+                            profile['Appearance']['ColorScheme'] = "MaterialYou"
+                            with open(profile_path, 'w') as configfile:
+                                profile.write(configfile,space_around_delimiters=False)
+                except Exception as e:
+                    print(f"Error applying Konsole profile:\n{e}")
+                    
+            #Mirror profile
+            profile = configparser.ConfigParser()
+            profile.optionxform = str
+            if os.path.exists(KONSOLE_TEMP_PROFILE):
+                try:
+                    profile.read(KONSOLE_TEMP_PROFILE)
+                    if 'Appearance' in profile:
+                            profile['Appearance']['ColorScheme'] = "MaterialYouAlt"
+                            profile['General']['Name'] = "TempMyou"
+                except Exception as e:
+                    print(f"Error applying Konsole profile:\n{e}")
+                with open(KONSOLE_TEMP_PROFILE, 'w') as configfile:
+                        profile.write(configfile,space_around_delimiters=False)
+
+
+def konsole_reload_profile(profile=None):
+    if profile != None:
+        print(f"konsole: reload profile ({profile})")
+        konsole_dbus_services=subprocess.check_output("qdbus org.kde.konsole*",shell=True,universal_newlines=True).strip().splitlines()
+        if konsole_dbus_services:
+            for service in konsole_dbus_services:
+                try:
+                    konsole_sessions=subprocess.check_output("qdbus "+service+" | grep 'Sessions/'",shell=True,universal_newlines=True).strip().splitlines()
+                    for session in konsole_sessions:
+                        #print(f"service: {service} -> {session}")
+                        current_profile=subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.profile",shell=True,universal_newlines=True).strip()
+                        #print(current_profile)
+                        if current_profile == profile:
+                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'",shell=True)
+                        else:
+                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'",shell=True)
+                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile '"+profile+ "'",shell=True)
+                except:
+                    pass
+                
+def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profile=None):
+    if profile != None:
+        profile_path = KONSOLE_DIR+profile+".profile"
+        if os.path.exists(profile_path):
+            konsole_export_scheme(light, pywal_light, schemes)
+            konsole_reload_profile(profile)
+        else:
+            print(f"{BOLD_TEXT}Konsole Profile: {profile_path} does not exist{RESET_TEXT}")

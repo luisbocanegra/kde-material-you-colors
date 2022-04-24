@@ -43,6 +43,8 @@ if __name__ == '__main__':
                         help='A script/command that will be executed on start or wallpaper/dark/light/settings change',default=None)
     parser.add_argument('--sierra-breeze-buttons-color', '-sbb', action='store_true',
                         help='Tint SierraBreeze decoration buttons')
+    parser.add_argument('--konsole-profile', '-kp', type=str,
+                        help='The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles', default=None)
 
     # Get arguments
     args = parser.parse_args()
@@ -56,6 +58,11 @@ if __name__ == '__main__':
     wallpaper_old = utils.currentWallpaper(options_old)
     kde_globals_light_old=utils.kde_globals_light()
     pywal_light_old=options_old['pywal_light']
+    konsole_profile_old=options_old['konsole_profile']
+    print(konsole_profile_old)
+    konsole_profile_mod_time_old = None
+    if konsole_profile_old != None:
+        konsole_profile_mod_time_old = utils.get_last_modification(utils.KONSOLE_DIR+konsole_profile_old+".profile")
     if wallpaper_old != None and wallpaper_old[1] != None:
         wallpaper_old_type = wallpaper_old[0]
         wallpaper_old_data = wallpaper_old[1]
@@ -84,6 +91,8 @@ if __name__ == '__main__':
                 utils.sierra_breeze_button_colors(schemes,light)
             utils.set_icons(icons_light=options_old['iconslight'],
                 icons_dark=options_old['iconsdark'], light=options_old['light'])
+            utils.make_konsole_mirror_profile(konsole_profile_old)
+            utils.konsole_apply_color_scheme(light,options_old['pywal_light'],schemes,options_old['konsole_profile'])
             utils.apply_pywal_schemes(
                         light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
             utils.run_hook(options_old['on_change_hook'])
@@ -93,11 +102,13 @@ if __name__ == '__main__':
         # reload config file
         config = utils.Configs(args)
         options_new = config.options
-        #print(f"pywal: {options_new['pywal']}")
         wallpaper_new = utils.currentWallpaper(options_new)
         kde_globals_light_new=utils.kde_globals_light()
         pywal_light_new=options_new['pywal_light']
-        
+        konsole_profile_new=options_new['konsole_profile']
+        konsole_profile_mod_time_new = None
+        if konsole_profile_new != None:
+            konsole_profile_mod_time_new = utils.get_last_modification(utils.KONSOLE_DIR+konsole_profile_new+".profile")
         if wallpaper_new != None and wallpaper_new[1] != None:
             wallpaper_new_type = wallpaper_new[0]
             wallpaper_new_data = wallpaper_new[1]
@@ -118,16 +129,22 @@ if __name__ == '__main__':
             light_changed = light_new != light_old
             kde_globals_light_changed = kde_globals_light_old != kde_globals_light_new
             pywal_light_changed = pywal_light_old != pywal_light_new
+            konsole_profile_changed = konsole_profile_old != konsole_profile_new
+            konsole_profile_modified = konsole_profile_mod_time_new != konsole_profile_mod_time_old
             
             if options_new['light'] == None:
                 if kde_globals_light_new != None:
                     light=kde_globals_light_new
             else:
                 light = options_new['light']
-                
+            if konsole_profile_modified == True or konsole_profile_changed == True:
+                    utils.make_konsole_mirror_profile(konsole_profile_new)
+                    konsole_profile_mod_time_old = konsole_profile_mod_time_new
+                    
             if wallpaper_changed or options_changed or wallpaper_modified:
                 if wallpaper_changed or wallpaper_modified:
                         print(f'Wallpaper changed: {wallpaper_new_data}')
+                    
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
                 if colors != None:
                     schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
@@ -141,6 +158,7 @@ if __name__ == '__main__':
                     utils.apply_color_schemes(light=light)
                     if options_new['sierra_breeze_buttons_color'] == True:
                         utils.sierra_breeze_button_colors(schemes,light)
+                    utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'])
                     utils.apply_pywal_schemes(
                         light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.run_hook(options_new['on_change_hook'])
@@ -151,11 +169,12 @@ if __name__ == '__main__':
                         utils.sierra_breeze_button_colors(schemes,kde_globals_light_new)
                     utils.set_icons(icons_light=options_new['iconslight'],
                         icons_dark=options_new['iconsdark'], light=kde_globals_light_new)
+                    utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'])
                     utils.apply_pywal_schemes(
                         light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
+
                     utils.run_hook(options_new['on_change_hook'])
                     print("---------------------")
-
             wallpaper_old = wallpaper_new
             wallpaper_mod_time_old = wallpaper_mod_time_new
             options_old = options_new
@@ -163,4 +182,6 @@ if __name__ == '__main__':
             light_old = light_new
             kde_globals_light_old = kde_globals_light_new
             pywal_light_old = pywal_light_new
+            konsole_profile_old = konsole_profile_new
+            konsole_profile_mod_time_old = konsole_profile_mod_time_new
         time.sleep(1)
