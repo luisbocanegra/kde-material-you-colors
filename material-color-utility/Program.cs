@@ -80,13 +80,18 @@ class Program
 
             byte[] brgb = { Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b) };
 
-            uint a = ColorUtils.IntFromRgb(brgb);
+            uint a = IntFromRgb(brgb);
 
             seedColor = (int)a;
             bestColors.Add("0", hexColor);
         }
         return seedColor;
     }
+    public static uint IntFromRgb(byte[] rgb) =>
+        0xFF000000 |
+        ((uint)rgb[0] & 255) << 16 |
+        ((uint)rgb[1] & 255) << 8 |
+        (uint)rgb[2] & 255;
 
     // Main Method
     static void Main(string[] args)
