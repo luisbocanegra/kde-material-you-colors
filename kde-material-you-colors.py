@@ -144,13 +144,13 @@ if __name__ == '__main__':
             if wallpaper_changed or options_changed or wallpaper_modified:
                 if wallpaper_changed or wallpaper_modified:
                         print(f'Wallpaper changed: {wallpaper_new_data}')
-                    
+                if options_changed:
+                        print(f"New Config: {options_new}")
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
                 if colors != None:
                     schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
                     utils.make_plasma_scheme(schemes=schemes)
                     if options_changed:
-                        print(f"New Config: {options_new}")
                         if icons_changed or light_changed:
                             utils.set_icons(
                                 icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=light)
