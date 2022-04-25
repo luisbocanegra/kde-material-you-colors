@@ -13,7 +13,8 @@ if USER_HAS_COLR:
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 if USER_HAS_PYWAL:
     import pywal
-    
+import logging
+logging.basicConfig(format='pywal:%(module)s: %(message)s',level=logging.DEBUG)
 HOME = str(Path.home())
 THEME_LIGHT_PATH = HOME+"/.local/share/color-schemes/MaterialYouLight"
 THEME_DARK_PATH = HOME+"/.local/share/color-schemes/MaterialYouDark"
@@ -37,7 +38,6 @@ BREEZE_RC = HOME+"/.config/breezerc"
 KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
-KONSOLE_TEMPLATE_PATH = HOME+"/.cache/wal/KonsoleTemplate.colorscheme"
 KONSOLE_TEMP_PROFILE=KONSOLE_DIR+"TempMyou.profile"
 BOLD_TEXT = "\033[1m"
 RESET_TEXT = "\033[0;0m"
@@ -546,16 +546,15 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                     # Second argument is a boolean for VTE terminals.
                     # Set it to true if the terminal you're using is
                     # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                    print("pywal: applying color scheme")
                     pywal.sequences.send(pywal_colors, vte_fix=False)
                     
                     # Export all template files.
                     pywal.export.every(pywal_colors)
-
+                    
                     # Reload xrdb, i3 and polybar.
                     pywal.reload.env()
                 else:
-                    print(f"{BOLD_TEXT}[W] pywal: pywal option enabled but module is not installed{RESET_TEXT}")
+                    print(f"{BOLD_TEXT}[W] pywal option enabled but module is not installed{RESET_TEXT}")
                 # print palette
                 print_pywal_palette(pywal_colors)
 
@@ -648,7 +647,7 @@ def print_pywal_palette(pywal_colors):
     elif USER_HAS_PYWAL:
         print(f"{BOLD_TEXT}[I] Install colr python module to keep prior color palettes")
         # Print color palette with pywal
-        pywal.colors.palette()
+        pywal.colors.palette() 
     else:
         print(f"{BOLD_TEXT}[I] Install pywal or colr python module to show color schemes")
 
