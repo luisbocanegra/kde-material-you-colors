@@ -520,7 +520,7 @@ def get_color_schemes(wallpaper, ncolor=None):
         return None
 
 
-def set_icons(icons_light, icons_dark, light):
+def set_icons(icons_light, icons_dark, light=False):
     """ Set icon theme with plasma-changeicons for light and dark schemes
 
     Args:
@@ -530,11 +530,14 @@ def set_icons(icons_light, icons_dark, light):
     """
     if light and icons_light != None:
         icons=icons_light
-    if not light and icons_dark != None:
+    elif not light and icons_dark != None:
         icons=icons_dark
-    changeicons_error=subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
+    else:
+        icons=None
+    if icons!=None:
+        changeicons_error=subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
                     shell=True,stderr=subprocess.STDOUT,universal_newlines=True).strip()
-    logging.info(changeicons_error)
+        logging.info(f'{icons} {changeicons_error}')
 
 
 def currentWallpaper(options):
