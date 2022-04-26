@@ -1,3 +1,4 @@
+import logging
 import time
 import os
 import argparse
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     # Get config from file
     config = utils.Configs(args)
     options_old = config.options
-    print(f"Config: {options_old}")
+    logging.debug(f"Config: {options_old}")
     icons_old = [options_old['iconslight'], options_old['iconsdark']]
     light_old = options_old['light']
     # Get the current wallpaper on startup
@@ -59,14 +60,13 @@ if __name__ == '__main__':
     kde_globals_light_old=utils.kde_globals_light()
     pywal_light_old=options_old['pywal_light']
     konsole_profile_old=options_old['konsole_profile']
-    print(konsole_profile_old)
     konsole_profile_mod_time_old = None
     if konsole_profile_old != None:
         konsole_profile_mod_time_old = utils.get_last_modification(utils.KONSOLE_DIR+konsole_profile_old+".profile")
     if wallpaper_old != None and wallpaper_old[1] != None:
         wallpaper_old_type = wallpaper_old[0]
         wallpaper_old_data = wallpaper_old[1]
-        print(f'Using wallpaper: {wallpaper_old_data}')
+        logging.info(f'Using wallpaper: {wallpaper_old_data}')
         colors = utils.get_color_schemes(wallpaper_old,options_old['ncolor'])
         
         # if wallpaper is image save time of last modification
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         else: 
             wallpaper_mod_time_old = None
             
-        light = None
+        light = False
         if options_old['light'] == None:
             if kde_globals_light_old != None:
                 light=kde_globals_light_old
@@ -131,7 +131,7 @@ if __name__ == '__main__':
             pywal_light_changed = pywal_light_old != pywal_light_new
             konsole_profile_changed = konsole_profile_old != konsole_profile_new
             konsole_profile_modified = konsole_profile_mod_time_new != konsole_profile_mod_time_old
-            
+            light=False
             if options_new['light'] == None:
                 if kde_globals_light_new != None:
                     light=kde_globals_light_new
@@ -143,9 +143,9 @@ if __name__ == '__main__':
                     
             if wallpaper_changed or options_changed or wallpaper_modified:
                 if wallpaper_changed or wallpaper_modified:
-                        print(f'Wallpaper changed: {wallpaper_new_data}')
+                        logging.info(f'Wallpaper changed: {wallpaper_new_data}')
                 if options_changed:
-                        print(f"New Config: {options_new}")
+                        logging.debug(f"New Config: {options_new}")
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
                 if colors != None:
                     schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])

@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import json
 import configparser
+import sys
 import numpy as np
 import dbus
 from color_utils import hex2rgb, rgb2hex
@@ -14,7 +15,6 @@ USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 if USER_HAS_PYWAL:
     import pywal
 import logging
-logging.basicConfig(format='pywal:%(module)s: %(message)s',level=logging.DEBUG)
 HOME = str(Path.home())
 THEME_LIGHT_PATH = HOME+"/.local/share/color-schemes/MaterialYouLight"
 THEME_DARK_PATH = HOME+"/.local/share/color-schemes/MaterialYouDark"
@@ -39,9 +39,58 @@ KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
 KONSOLE_TEMP_PROFILE=KONSOLE_DIR+"TempMyou.profile"
-BOLD_TEXT = "\033[1m"
-RESET_TEXT = "\033[0;0m"
+BOLD = "\033[1m"
+COLOR_RESET = "\033[0;0m"
+COLOR_ERROR = '\033[91m'
+COLOR_WARN = '\033[93m'
+COLOR_DEBUG = '\033[94m'
+COLOR_INFO = '\033[90m'
+LOG_HINT= BOLD+'\033[97m'
 
+# Custom logging format (adapted from https://stackoverflow.com/a/14859558)
+class MyFormatter(logging.Formatter):
+
+    dbg_fmt  = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_DEBUG)
+    info_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_INFO)
+    warn_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_WARN)
+    err_fmt  = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_ERROR)
+
+    def __init__(self):
+        super().__init__(fmt="%(levelno)d: %(msg)s", datefmt=None, style='%')  
+    
+    def format(self, record):
+
+        # Save the original format configured by the user
+        # when the logger formatter was instantiated
+        format_orig = self._style._fmt
+
+        # Replace the original format with one customized by logging level
+        if record.levelno == logging.DEBUG:
+            self._style._fmt = MyFormatter.dbg_fmt
+
+        elif record.levelno == logging.INFO:
+            self._style._fmt = MyFormatter.info_fmt
+
+        elif record.levelno == logging.WARNING:
+            self._style._fmt = MyFormatter.warn_fmt
+
+        elif record.levelno == logging.ERROR:
+            self._style._fmt = MyFormatter.err_fmt
+
+        # Call the original formatter class to do the grunt work
+        result = logging.Formatter.format(self, record)
+
+        # Restore the original format configured by the user
+        self._style._fmt = format_orig
+
+        return result
+
+fmt = MyFormatter()
+hdlr = logging.StreamHandler(sys.stdout)
+
+hdlr.setFormatter(fmt)
+logging.root.addHandler(hdlr)
+logging.root.setLevel(logging.DEBUG)
 
 class Configs():
     """
@@ -60,13 +109,11 @@ class Configs():
                 try:
                     subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
                                             shell=True)
-                    print(
-                        f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                    logging.info(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
                 except Exception:
                     quit(1)
             else:
-                print(
-                    f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                logging.error(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
             quit(0)
         elif args.copyconfig == True:
             if not os.path.exists(USER_CONFIG_PATH):
@@ -75,12 +122,11 @@ class Configs():
                 try:
                     subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
                                             shell=True)
-                    print(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+                    logging.info(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
                 except Exception:
                     quit(1)
             else:
-                print(
-                    f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
+                logging.error(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
             quit(0)
         else:
             config = configparser.ConfigParser()
@@ -100,13 +146,13 @@ class Configs():
                             c_monitor = custom.getint('monitor')
                             if c_monitor < 0:
                                 raise ValueError(
-                                    'Config for monitor must be a positive integer')
+                                    'Value for monitor must be a positive integer')
 
                         if 'ncolor' in custom:
                             c_ncolor = custom.getint('ncolor')
                             if c_ncolor < 0:
                                 raise ValueError(
-                                    'Config for ncolor must be a positive integer')
+                                    'Value for ncolor must be a positive integer')
 
                         if 'plugin' in custom:
                             c_plugin = custom['plugin']
@@ -124,10 +170,18 @@ class Configs():
                             c_pywal_light = custom.getboolean('pywal_light')
                             
                         if 'light_blend_multiplier' in custom:
-                            c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
+                            try:
+                                c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
+                            except:
+                                raise ValueError(
+                                    'Value for light_blend_multiplier must be a positive number, using default 1.0')
                             
                         if 'dark_blend_multiplier' in custom:
-                            c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                            try:
+                                c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                            except:
+                                raise ValueError(
+                                    'Value for dark_blend_multiplier must be a positive number, using default 1.0')
                             
                         if 'on_change_hook' in custom:
                             c_on_change_hook = custom['on_change_hook']
@@ -139,7 +193,7 @@ class Configs():
                             c_konsole_profile = custom['konsole_profile']
 
                 except Exception as e:
-                    print(f"Please fix your settings file:\n {e}\n")
+                    logging.error(f"Please fix your settings file:\n{e}\n")
             if args.dark == True:
                 c_light = False
             elif args.light == True:
@@ -176,8 +230,8 @@ class Configs():
 
             if args.monitor != None:
                 if args.monitor < 0:
-                    raise ValueError(
-                        'Value for --monitor must be a positive integer')
+                    logging.error('Value for --monitor must be a positive integer')
+                    raise ValueError
                 else:
                     c_monitor = args.monitor
             elif args.monitor == None and c_monitor == None:
@@ -187,8 +241,8 @@ class Configs():
 
             if args.ncolor != None:
                 if args.ncolor < 0:
-                    raise ValueError(
-                        'Value for --ncolor must be a positive integer')
+                    logging.error('Value for --ncolor must be a positive integer')
+                    raise ValueError
                 else:
                     c_ncolor = args.ncolor
             elif args.ncolor == None and c_ncolor == None:
@@ -272,7 +326,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 else:
                     return None
         else:
-            print(f'File "{file}" does not exist')
+            logging.error(f'File "{file}" does not exist')
             return None
     else:
         # special case for picture of the day plugin that requires a
@@ -362,7 +416,7 @@ def evaluate_script(script, monitor, plugin):
             script % (monitor, plugin, plugin))).replace('file://', '')
         return wallpaper_data
     except Exception as e:
-        print(f'Error getting wallpaper from dbus:\n{e}')
+        logging.error(f'Error getting wallpaper from dbus:\n{e}')
         return None
     
     
@@ -396,7 +450,7 @@ def get_material_you_colors(wallpaper_data, ncolor, flag):
                                                     shell=True, universal_newlines=True).strip()
         return materialYouColors
     except Exception as e:
-        print(f'Error trying to get colors from {wallpaper_data}')
+        logging.error(f'Error trying to get colors from {wallpaper_data}')
         return None
 
 def get_color_schemes(wallpaper, ncolor=None):
@@ -420,7 +474,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                     # get colors from material-color-utility
                     materialYouColors = get_material_you_colors(wallpaper_data,ncolor=ncolor,flag=use_flag)
                 else:
-                    print(f"{wallpaper_data} is a directory, aborting :)")
+                    logging.warning(f'"{wallpaper_data}" is a directory, aborting')
         
         elif wallpaper_type == "color":
             use_flag = "-c"
@@ -432,41 +486,36 @@ def get_color_schemes(wallpaper, ncolor=None):
                 colors_json = json.loads(materialYouColors)
 
                 if wallpaper_type != "color":
-                    print(f'{BOLD_TEXT}Best colors:', end=' ')
+                    best_colors = f'Best colors: '
+                    
                     for index, col in colors_json['bestColors'].items():
                         if USER_HAS_COLR:
-                            print(
-                                f'{BOLD_TEXT}{index}:{color(col,fore=col)}', end=' ')
+                            best_colors+=f'{COLOR_RESET}{BOLD}{index}:{color(col,fore=col)}'
                         else:
-                            print(f'{BOLD_TEXT}{index}:{col}', end=' ')
-                    print(f'{BOLD_TEXT}')
+                            best_colors+=f'{BOLD}{index}:{col}'
+                    logging.info(best_colors)
 
                 seed = colors_json['seedColor']
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 if USER_HAS_COLR:
-                    print(BOLD_TEXT+"Using seed: "+seedNo +
-                        ":"+color(sedColor, fore=sedColor))
+                    logging.info(f'Using seed: {COLOR_RESET}{BOLD}{seedNo}:{color(sedColor, fore=sedColor)}')
                 else:
-                    print(BOLD_TEXT+"Using seed: " +
-                        seedNo+":"+sedColor+RESET_TEXT)
+                    print(BOLD+"Using seed: " +
+                        seedNo+":"+sedColor+COLOR_RESET)
 
                 with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
                     current_scheme.write(json.dumps(
                         colors_json, indent=4, sort_keys=False))
-
-                # generate and apply Plasma color schemes
-                #print(f'Settting color schemes for {wallpaper_data}')
                 
                 return colors_json
                 
             except Exception as e:
-                print(f'Error:\n {e}')
+                logging.error(f'Error:\n{e}')
                 return None
 
     else:
-        print(
-            f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
+        logging.error(f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
         return None
 
 
@@ -479,11 +528,12 @@ def set_icons(icons_light, icons_dark, light):
         light (bool): wether using light or dark mode
     """
     if light and icons_light != None:
-        subprocess.run("/usr/lib/plasma-changeicons "+icons_light,
-                       shell=True)
+        icons=icons_light
     if not light and icons_dark != None:
-        subprocess.run("/usr/lib/plasma-changeicons "+icons_dark,
-                       shell=True)
+        icons=icons_dark
+    changeicons_error=subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
+                    shell=True,stderr=subprocess.STDOUT,universal_newlines=True).strip()
+    logging.info(changeicons_error)
 
 
 def currentWallpaper(options):
@@ -505,26 +555,21 @@ def make_plasma_scheme(schemes=None):
     with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
         
-def apply_color_schemes(light=None):
+def apply_color_schemes(light=False):
     
     if light != None:
         if light == True:
-            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+"2.colors",
-                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-            subprocess.run("plasma-apply-colorscheme "+THEME_LIGHT_PATH+".colors",
-                                        shell=True, stderr=subprocess.PIPE)
+            color_scheme = THEME_LIGHT_PATH
         elif light == False:
-            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
+            color_scheme = THEME_DARK_PATH
+            
+        subprocess.run("plasma-apply-colorscheme "+color_scheme+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-            subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
-                                        shell=True, stderr=subprocess.PIPE)
-    else:
-        subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+"2.colors",
-                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-        subprocess.run("plasma-apply-colorscheme "+THEME_DARK_PATH+".colors",
-                                        shell=True, stderr=subprocess.PIPE)
-                
-def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None, konsole_light=None):
+        colorscheme_out = subprocess.check_output("plasma-apply-colorscheme "+color_scheme+".colors",
+                                        shell=True, stderr=subprocess.PIPE,universal_newlines=True).strip()
+        logging.info(colorscheme_out)
+            
+def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
     if use_pywal != None and use_pywal == True:
         pywal_colors = None
         if pywal_light != None:
@@ -540,23 +585,20 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                 pywal_colors=schemes.get_wal_dark_scheme()
                 
         if pywal_colors != None:
-                if USER_HAS_PYWAL:
-                    #use material you colors for pywal
-                    # Apply the palette to all open terminals.
-                    # Second argument is a boolean for VTE terminals.
-                    # Set it to true if the terminal you're using is
-                    # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                    pywal.sequences.send(pywal_colors, vte_fix=False)
-                    
-                    # Export all template files.
-                    pywal.export.every(pywal_colors)
-                    
-                    # Reload xrdb, i3 and polybar.
-                    pywal.reload.env()
-                else:
-                    print(f"{BOLD_TEXT}[W] pywal option enabled but module is not installed{RESET_TEXT}")
-                # print palette
-                print_pywal_palette(pywal_colors)
+            if USER_HAS_PYWAL:
+                # Apply the palette to all open terminals.
+                # Second argument is a boolean for VTE terminals.
+                # Set it to true if the terminal you're using is
+                # VTE based. (xfce4-terminal, termite, gnome-terminal.)
+                pywal.sequences.send(pywal_colors, vte_fix=False)
+                # Export all template files.
+                pywal.export.every(pywal_colors)
+                # Reload xrdb, i3 and polybar.
+                pywal.reload.env()
+            else:
+                logging.warning("pywal option enabled but python module is not installed")
+            # print palette
+            print_pywal_palette(pywal_colors)
 
 
 def kde_globals_light():
@@ -574,7 +616,7 @@ def kde_globals_light():
             else:
                 return None
         except Exception as e:
-            print(e)
+            logging.error(f"Error:\n{e}")
             return None
     else:
         return None
@@ -625,12 +667,12 @@ def sierra_breeze_button_colors(schemes,light=None):
             else:
                 reload = False
             if reload == True:
-                print(f"Applying SierraBreeze window button colors")
+                logging.info(f"Applying SierraBreeze window button colors")
                 with open(BREEZE_RC, 'w') as configfile:
                     breezerc.write(configfile,space_around_delimiters=False)
                 kwin_reload()
         except Exception as e:
-            print(f"Error writing breeze window button colors: \n {e}")
+            logging.error(f"Error writing breeze window button colors:\n{e}")
 
 def tup2str(tup):
     return ','.join(map(str,tup))
@@ -643,13 +685,13 @@ def print_pywal_palette(pywal_colors):
                     print()
             print(f'{color("    ",back=hex2rgb(col))}', end='')
             i+=1
-        print(f'{BOLD_TEXT}')
+        print(f'{BOLD}')
     elif USER_HAS_PYWAL:
-        print(f"{BOLD_TEXT}[I] Install colr python module to keep prior color palettes")
+        logging.debug("Install colr python module to tint color codes and palette as they update")
         # Print color palette with pywal
         pywal.colors.palette() 
     else:
-        print(f"{BOLD_TEXT}[I] Install pywal or colr python module to show color schemes")
+        logging.info("Install pywal or colr python module to show color schemes")
 
 def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
     if pywal_light != None:
@@ -727,9 +769,9 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
     config['General']['Description'] = "MaterialYou"
     
     if not config.has_option('General','Blur'):
-        config['General']['Blur'] = "true"
+        config['General']['Blur'] = "false"
     if not config.has_option('General','Opacity'):
-        config['General']['Opacity'] = "0.9"
+        config['General']['Opacity'] = "1"
     
     with open(KONSOLE_COLOR_SCHEME_PATH,'w') as configfile:
         config.write(configfile,space_around_delimiters=False)
@@ -743,7 +785,7 @@ def make_konsole_mirror_profile(profile=None):
     if profile != None:
         profile_path = KONSOLE_DIR+profile+".profile"
         if os.path.exists(profile_path):
-            print(f"konsole: mirror profile ({profile})")
+            logging.debug(f"konsole: mirror profile ({profile})")
             subprocess.check_output("cp -f '"+profile_path+"' "+KONSOLE_TEMP_PROFILE, shell=True)
             profile = configparser.ConfigParser()
             # preserve case
@@ -757,7 +799,7 @@ def make_konsole_mirror_profile(profile=None):
                             with open(profile_path, 'w') as configfile:
                                 profile.write(configfile,space_around_delimiters=False)
                 except Exception as e:
-                    print(f"Error applying Konsole profile:\n{e}")
+                    logging.error(f"Error applying Konsole profile:\n{e}")
                     
             #Mirror profile
             profile = configparser.ConfigParser()
@@ -769,14 +811,14 @@ def make_konsole_mirror_profile(profile=None):
                             profile['Appearance']['ColorScheme'] = "MaterialYouAlt"
                             profile['General']['Name'] = "TempMyou"
                 except Exception as e:
-                    print(f"Error applying Konsole profile:\n{e}")
+                    logging.error(f"Error applying Konsole profile:\n{e}")
                 with open(KONSOLE_TEMP_PROFILE, 'w') as configfile:
                         profile.write(configfile,space_around_delimiters=False)
 
 
 def konsole_reload_profile(profile=None):
     if profile != None:
-        print(f"konsole: reload profile ({profile})")
+        logging.info(f"konsole: reload profile ({profile})")
         konsole_dbus_services=subprocess.check_output("qdbus org.kde.konsole*",shell=True,universal_newlines=True).strip().splitlines()
         if konsole_dbus_services:
             for service in konsole_dbus_services:
@@ -801,4 +843,4 @@ def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profi
             konsole_export_scheme(light, pywal_light, schemes)
             konsole_reload_profile(profile)
         else:
-            print(f"{BOLD_TEXT}Konsole Profile: {profile_path} does not exist{RESET_TEXT}")
+            logging.error(f"Konsole Profile: {profile_path} does not exist")
