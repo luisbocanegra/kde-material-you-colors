@@ -15,6 +15,7 @@ USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 if USER_HAS_PYWAL:
     import pywal
 import logging
+import signal
 HOME = str(Path.home())
 THEME_LIGHT_PATH = HOME+"/.local/share/color-schemes/MaterialYouLight"
 THEME_DARK_PATH = HOME+"/.local/share/color-schemes/MaterialYouDark"
@@ -586,15 +587,22 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                 
         if pywal_colors != None:
             if USER_HAS_PYWAL:
-                # Apply the palette to all open terminals.
-                # Second argument is a boolean for VTE terminals.
-                # Set it to true if the terminal you're using is
-                # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                pywal.sequences.send(pywal_colors, vte_fix=False)
-                # Export all template files.
-                pywal.export.every(pywal_colors)
-                # Reload xrdb, i3 and polybar.
-                pywal.reload.env()
+                # On very rare occassions pywal will hang, add a timeout to it
+                timeout_set(3)
+                try:
+                    # Apply the palette to all open terminals.
+                    # Second argument is a boolean for VTE terminals.
+                    # Set it to true if the terminal you're using is
+                    # VTE based. (xfce4-terminal, termite, gnome-terminal.)
+                    pywal.sequences.send(pywal_colors, vte_fix=False)
+                    # Export all template files.
+                    pywal.export.every(pywal_colors)
+                    # Reload xrdb, i3 and polybar.
+                    pywal.reload.env()
+                except Exception as e:
+                    pass
+                finally:
+                    timeout_reset()
             else:
                 logging.warning("pywal option enabled but python module is not installed")
             # print palette
@@ -844,3 +852,23 @@ def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profi
             konsole_reload_profile(profile)
         else:
             logging.error(f"Konsole Profile: {profile_path} does not exist")
+
+#Current function name from https://stackoverflow.com/a/31615605
+# for current func name, specify 0 or no argument.
+# for name of caller of current func, specify 1.
+# for name of caller of caller of current func, specify 2. etc.
+currentFuncName = lambda n=0: sys._getframe(n + 1).f_code.co_name
+
+# Register a timeout handler
+def timeout_handler(signum, frame):
+    logging.error(f"{currentFuncName(1)}: took too much time, aborted, reboot if the problem persists")
+    raise TimeoutError
+
+def timeout_set(time_s=3):
+    # Register the signal handler
+    signal.signal(signal.SIGALRM, timeout_handler)
+    # Define a timeout for the function
+    signal.alarm(time_s)
+
+def timeout_reset():
+    signal.alarm(0)
