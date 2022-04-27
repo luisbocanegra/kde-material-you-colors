@@ -11,9 +11,6 @@ import importlib.util
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
-USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
-if USER_HAS_PYWAL:
-    import pywal
 import logging
 import signal
 HOME = str(Path.home())
@@ -47,6 +44,7 @@ COLOR_WARN = '\033[93m'
 COLOR_DEBUG = '\033[94m'
 COLOR_INFO = '\033[90m'
 LOG_HINT= BOLD+'\033[97m'
+BOLD_RESET= COLOR_RESET+BOLD
 
 # Custom logging format (adapted from https://stackoverflow.com/a/14859558)
 class MyFormatter(logging.Formatter):
@@ -487,23 +485,22 @@ def get_color_schemes(wallpaper, ncolor=None):
                 colors_json = json.loads(materialYouColors)
 
                 if wallpaper_type != "color":
-                    best_colors = f'Best colors: '
+                    best_colors = f'Best colors:'
                     
                     for index, col in colors_json['bestColors'].items():
                         if USER_HAS_COLR:
-                            best_colors+=f'{COLOR_RESET}{BOLD}{index}:{color(col,fore=col)}'
+                            best_colors+=f' {BOLD_RESET}{index}:{color(col,fore=col)}'
                         else:
-                            best_colors+=f'{BOLD}{index}:{col}'
+                            best_colors+=f' {BOLD_RESET}{index}:{COLOR_INFO}{col}'
                     logging.info(best_colors)
 
                 seed = colors_json['seedColor']
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 if USER_HAS_COLR:
-                    logging.info(f'Using seed: {COLOR_RESET}{BOLD}{seedNo}:{color(sedColor, fore=sedColor)}')
+                    logging.info(f'Using seed: {BOLD_RESET}{seedNo}:{color(sedColor, fore=sedColor)}')
                 else:
-                    print(BOLD+"Using seed: " +
-                        seedNo+":"+sedColor+COLOR_RESET)
+                    logging.info(f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
 
                 with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
                     current_scheme.write(json.dumps(
@@ -572,24 +569,25 @@ def apply_color_schemes(light=False):
         colorscheme_out = subprocess.check_output("plasma-apply-colorscheme "+color_scheme+".colors",
                                         shell=True, stderr=subprocess.PIPE,universal_newlines=True).strip()
         logging.info(colorscheme_out)
-            
+
 def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
-    if use_pywal != None and use_pywal == True:
-        pywal_colors = None
-        if pywal_light != None:
-            if pywal_light  == True:
-                pywal_colors=schemes.get_wal_light_scheme()
-            else:
-                pywal_light=False
-                pywal_colors=schemes.get_wal_dark_scheme()
-        elif light != None:
-            if light  == True:
-                pywal_colors=schemes.get_wal_light_scheme()
-            elif light  == False:
-                pywal_colors=schemes.get_wal_dark_scheme()
-                
-        if pywal_colors != None:
-            if USER_HAS_PYWAL:
+    pywal_colors = None
+    if pywal_light != None:
+        if pywal_light  == True:
+            pywal_colors=schemes.get_wal_light_scheme()
+        else:
+            pywal_light=False
+            pywal_colors=schemes.get_wal_dark_scheme()
+    elif light != None:
+        if light  == True:
+            pywal_colors=schemes.get_wal_light_scheme()
+        elif light  == False:
+            pywal_colors=schemes.get_wal_dark_scheme()
+
+    if pywal_colors != None:
+        if use_pywal != None and use_pywal == True:
+            if importlib.util.find_spec("pywal") is not None:
+                import pywal
                 # On very rare occassions pywal will hang, add a timeout to it
                 timeout_set(3)
                 try:
@@ -608,8 +606,8 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                     timeout_reset()
             else:
                 logging.warning("pywal option enabled but python module is not installed")
-            # print palette
-            print_pywal_palette(pywal_colors)
+        # print palette
+        print_color_palette(pywal_colors)
 
 
 def kde_globals_light():
@@ -688,7 +686,7 @@ def sierra_breeze_button_colors(schemes,light=None):
 def tup2str(tup):
     return ','.join(map(str,tup))
 
-def print_pywal_palette(pywal_colors):
+def print_color_palette(pywal_colors):
     if USER_HAS_COLR:
         i=0
         for index, col in pywal_colors['colors'].items():
@@ -697,12 +695,19 @@ def print_pywal_palette(pywal_colors):
             print(f'{color("    ",back=hex2rgb(col))}', end='')
             i+=1
         print(f'{BOLD}')
-    elif USER_HAS_PYWAL:
-        logging.debug("Install colr python module to tint color codes and palette as they update")
-        # Print color palette with pywal
-        pywal.colors.palette() 
     else:
-        logging.info("Install pywal or colr python module to show color schemes")
+        logging.debug("Install colr python module to tint color codes and palette as they update")
+        #Print color palette from pywal.colors.palette
+        for i in range(0, 16):
+            if i % 8 == 0:
+                print()
+
+            if i > 7:
+                i = "8;5;%s" % i
+
+            print("\033[4%sm%s\033[0m" % (i, " " * (80 // 20)), end="")
+        print("\n",end="")
+
 
 def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
     if pywal_light != None:
