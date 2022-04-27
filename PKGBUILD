@@ -23,13 +23,13 @@ package() {
   cd "${pkgname}-${pkgver}"
   install -Dm644 kde-material-you-colors.desktop ${pkgdir}/usr/lib/${pkgname}/kde-material-you-colors.desktop
   install -Dm644 sample_config.conf ${pkgdir}/usr/lib/${pkgname}/sample_config.conf
-  install -Dm755 kde-material-you-colors.py ${pkgdir}/usr/lib/${pkgname}/kde-material-you-colors.py
-  install -Dm755 kde-material-you-colors ${pkgdir}/usr/bin/kde-material-you-colors
+  install -Dm755 kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
   install -Dm755 color_utils.py ${pkgdir}/usr/lib/${pkgname}/color_utils.py
   install -Dm755 utils.py ${pkgdir}/usr/lib/${pkgname}/utils.py
   install -Dm755 schemeconfigs.py ${pkgdir}/usr/lib/${pkgname}/schemeconfigs.py
   install -Dm755 material-color-utility-bin ${pkgdir}/usr/lib/${pkgname}/material-color-utility-bin
   install -Dm755 libSkiaSharp.so ${pkgdir}/usr/lib/${pkgname}/libSkiaSharp.so
+  ln -s /usr/lib/${pkgname}/kde-material-you-colors ${pkgdir}/usr/bin/kde-material-you-colors
   ln -s /usr/lib/${pkgname}/material-color-utility-bin ${pkgdir}/usr/bin/material-color-utility
   install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }
