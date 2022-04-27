@@ -875,3 +875,13 @@ def timeout_set(time_s=3):
 
 def timeout_reset():
     signal.alarm(0)
+
+def kill_existing():
+    get_pids=subprocess.check_output("ps -e -f | grep [/]usr/bin/kde-material-you-colors | awk '{print $2}'",
+                                        shell=True, stderr=subprocess.PIPE,universal_newlines=True).strip().splitlines()
+    current_pid = os.getpid()
+    for pid in get_pids:
+        pid = int(pid)
+        if pid != current_pid:
+            logging.debug(f"Found existing process with PID: '{pid}' killing...")
+            subprocess.Popen("kill -9 "+str(pid),shell=True)

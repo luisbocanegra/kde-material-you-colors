@@ -6,6 +6,8 @@ import argparse
 import utils
 from schemeconfigs import ThemeConfig
 if __name__ == '__main__':
+    #kill existing instance if found
+    utils.kill_existing()
     # Make sure the schemes path exists
     if not os.path.exists(utils.USER_SCHEMES_PATH):
         os.makedirs(utils.USER_SCHEMES_PATH)
