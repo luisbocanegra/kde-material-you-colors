@@ -6,8 +6,6 @@ import argparse
 import utils
 from schemeconfigs import ThemeConfig
 if __name__ == '__main__':
-    #kill existing instance if found
-    utils.kill_existing()
     # Make sure the schemes path exists
     if not os.path.exists(utils.USER_SCHEMES_PATH):
         os.makedirs(utils.USER_SCHEMES_PATH)
@@ -54,6 +52,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # Get config from file
     config = utils.Configs(args)
+    #kill existing instance if found
+    utils.kill_existing()
     options_old = config.options
     logging.debug(f"Config: {options_old}")
     icons_old = [options_old['iconslight'], options_old['iconsdark']]
