@@ -27,7 +27,7 @@ https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-
 - Dark and Light Icon theme
 - Multiple wallpaper plugins supported
 - [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
-- Tint [SierraBreeze](https://github.com/ishovkun/SierraBreeze) decoration window buttons
+- Tint [SierraBreeze](https://github.com/ishovkun/SierraBreeze) decoration buttons
 - Dynamically update Konsole color scheme (check Configuration section for instructions)
 
 # Installing:
@@ -51,7 +51,7 @@ chmod +x install-fedora-based.sh
 sudo ./install-fedora-based.sh
 ```
 ### Optional features
-- Install the [Colr](https://pypi.org/project/Colr/) python module to display colored seed colors from terminal
+- Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
   - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) for scripts to theme supported programs 
 
