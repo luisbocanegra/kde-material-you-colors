@@ -48,6 +48,7 @@ LOG_HINT= BOLD+'\033[97m'+COLOR_RESET
 BOLD_RESET= COLOR_RESET+BOLD
 LOG_FILE_PATH = HOME+"/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
+MATERIAL_YOU_COLORS_JSON="/tmp/kde-material-you-colors.json"
 # Custom logging format (adapted from https://stackoverflow.com/a/14859558)
 class MyFormatter(logging.Formatter):
     
@@ -521,7 +522,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                 else:
                     logging.info(f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
 
-                with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
+                with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as current_scheme:
                     current_scheme.write(json.dumps(
                         colors_json, indent=4, sort_keys=False))
                 
@@ -909,3 +910,23 @@ def kill_existing():
         if pid != current_pid:
             logging.debug(f"Found existing process with PID: '{pid}' killing...")
             subprocess.Popen("kill -9 "+str(pid),shell=True)
+
+def append_schemes(schemes):
+    """Append generated schemes to MATERIAL_YOU_COLORS_JSON
+    
+    Args:
+        schemes (ThemeConfig): generated color schemes
+    """
+    extras = {"extras" : schemes.get_extras()}
+    wal_light = { "pywal_light" :schemes.get_wal_light_scheme()}
+    wal_dark = { "pywal_dark" :schemes.get_wal_dark_scheme()}
+
+    with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
+        colors = json.load(material_you_colors)
+        
+    colors.update(extras)
+    colors.update(wal_light)
+    colors.update(wal_dark)
+    
+    with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
+        json.dump(colors,material_you_colors)

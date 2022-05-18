@@ -47,7 +47,7 @@ class ThemeConfig:
         }
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
-        extras = {
+        self._extras = {
             "LightSurface1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08*lbm),
             "DarkSurface1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05*dbm),
 
@@ -78,6 +78,7 @@ class ThemeConfig:
             "LightSelectionAltActive": blendColors(colors['light']['Background'], colors['light']['Secondary'], .5),
             "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
         }
+        extras = self._extras
 
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['LightSurface1']}
@@ -390,6 +391,9 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
             "btn_inactive_color" : tup2str(hex2rgb(blendColors(light_inactive, colors['light']['Secondary'], .32)))
         }
 
+    def get_extras(self):
+        return self._extras
+    
     def get_light_scheme(self):
         return(self._light_scheme)
 
