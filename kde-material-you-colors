@@ -99,6 +99,7 @@ if __name__ == '__main__':
             utils.apply_pywal_schemes(
                         light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
             utils.run_hook(options_old['on_change_hook'])
+            utils.append_schemes(schemes)
             print("---------------------")
     # check wallpaper change
     while True:
@@ -166,6 +167,7 @@ if __name__ == '__main__':
                         light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
                     utils.run_hook(options_new['on_change_hook'])
                     print("---------------------")
+                    utils.append_schemes(schemes)
             elif kde_globals_light_changed and kde_globals_light_new != None:
                 if colors != None:
                     if options_new['sierra_breeze_buttons_color'] == True:

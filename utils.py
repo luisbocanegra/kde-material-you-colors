@@ -12,6 +12,7 @@ USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
 import logging
+from logging.handlers import RotatingFileHandler
 import signal
 HOME = str(Path.home())
 THEME_LIGHT_PATH = HOME+"/.local/share/color-schemes/MaterialYouLight"
@@ -43,39 +44,47 @@ COLOR_ERROR = '\033[91m'
 COLOR_WARN = '\033[93m'
 COLOR_DEBUG = '\033[94m'
 COLOR_INFO = '\033[90m'
-LOG_HINT= BOLD+'\033[97m'
+LOG_HINT= BOLD+'\033[97m'+COLOR_RESET
 BOLD_RESET= COLOR_RESET+BOLD
-
+LOG_FILE_PATH = HOME+"/.local/share/kde-material-you-colors/"
+LOG_FILE_NAME = "kde-material-you-colors.log"
+MATERIAL_YOU_COLORS_JSON="/tmp/kde-material-you-colors.json"
 # Custom logging format (adapted from https://stackoverflow.com/a/14859558)
 class MyFormatter(logging.Formatter):
+    
+    term_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'
+    file_fmt = '%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s'
+    dbg_fmt  = term_fmt.format(LOG_HINT,COLOR_DEBUG)
+    info_fmt = term_fmt.format(LOG_HINT,COLOR_INFO)
+    warn_fmt = term_fmt.format(LOG_HINT,COLOR_WARN)
+    err_fmt  = term_fmt.format(LOG_HINT,COLOR_ERROR)
 
-    dbg_fmt  = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_DEBUG)
-    info_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_INFO)
-    warn_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_WARN)
-    err_fmt  = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'.format(LOG_HINT,COLOR_ERROR)
-
-    def __init__(self):
-        super().__init__(fmt="%(levelno)d: %(msg)s", datefmt=None, style='%')  
+    def __init__(self,to_file):
+        self.to_file = to_file
+        super().__init__(fmt="%(levelno)d: %(msg)s", datefmt="%Y-%m-%d %H:%M:%S", style='%')
+        
     
     def format(self, record):
-
+        
         # Save the original format configured by the user
         # when the logger formatter was instantiated
         format_orig = self._style._fmt
-
+        
         # Replace the original format with one customized by logging level
-        if record.levelno == logging.DEBUG:
-            self._style._fmt = MyFormatter.dbg_fmt
+        if self.to_file == False:
+            if record.levelno == logging.DEBUG:
+                self._style._fmt = MyFormatter.dbg_fmt
 
-        elif record.levelno == logging.INFO:
-            self._style._fmt = MyFormatter.info_fmt
+            elif record.levelno == logging.INFO:
+                self._style._fmt = MyFormatter.info_fmt
 
-        elif record.levelno == logging.WARNING:
-            self._style._fmt = MyFormatter.warn_fmt
+            elif record.levelno == logging.WARNING:
+                self._style._fmt = MyFormatter.warn_fmt
 
-        elif record.levelno == logging.ERROR:
-            self._style._fmt = MyFormatter.err_fmt
-
+            elif record.levelno == logging.ERROR:
+                self._style._fmt = MyFormatter.err_fmt
+        else:
+            self._style._fmt = MyFormatter.file_fmt
         # Call the original formatter class to do the grunt work
         result = logging.Formatter.format(self, record)
 
@@ -84,11 +93,22 @@ class MyFormatter(logging.Formatter):
 
         return result
 
-fmt = MyFormatter()
+# Format for terminal
+term_fmt = MyFormatter(to_file=False)
 hdlr = logging.StreamHandler(sys.stdout)
+hdlr.setFormatter(term_fmt)
 
-hdlr.setFormatter(fmt)
+# make sure that the folder for log exists
+if not os.path.exists(LOG_FILE_PATH):
+    os.makedirs(LOG_FILE_PATH)
+
+# Format for log file
+file_fmt = MyFormatter(to_file=True)
+fh = RotatingFileHandler(LOG_FILE_PATH+LOG_FILE_NAME, mode='a', maxBytes=1*1024*1024, backupCount=1, encoding=None, delay=0)
+fh.setFormatter(file_fmt)
+
 logging.root.addHandler(hdlr)
+logging.root.addHandler(fh)
 logging.root.setLevel(logging.DEBUG)
 
 class Configs():
@@ -502,7 +522,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                 else:
                     logging.info(f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
 
-                with open('/tmp/kde-material-you-colors.json', 'w', encoding='utf8') as current_scheme:
+                with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as current_scheme:
                     current_scheme.write(json.dumps(
                         colors_json, indent=4, sort_keys=False))
                 
@@ -890,3 +910,23 @@ def kill_existing():
         if pid != current_pid:
             logging.debug(f"Found existing process with PID: '{pid}' killing...")
             subprocess.Popen("kill -9 "+str(pid),shell=True)
+
+def append_schemes(schemes):
+    """Append generated schemes to MATERIAL_YOU_COLORS_JSON
+    
+    Args:
+        schemes (ThemeConfig): generated color schemes
+    """
+    extras = {"extras" : schemes.get_extras()}
+    wal_light = { "pywal_light" :schemes.get_wal_light_scheme()}
+    wal_dark = { "pywal_dark" :schemes.get_wal_dark_scheme()}
+
+    with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
+        colors = json.load(material_you_colors)
+        
+    colors.update(extras)
+    colors.update(wal_light)
+    colors.update(wal_dark)
+    
+    with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
+        json.dump(colors,material_you_colors)
