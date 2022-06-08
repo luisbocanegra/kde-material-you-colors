@@ -769,8 +769,8 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
         if not config.has_section(section):
                     config.add_section(section)
     config['Background']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
-    config['BackgroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
-    config['BackgroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
+    config['BackgroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['backgroundIntense']))
+    config['BackgroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['backgroundFaint']))
     config['Color0']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color0']))
     config['Color1']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color1']))
     config['Color2']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color2']))
@@ -789,18 +789,18 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
     config['Color6Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color14']))
     config['Color7Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color15']))
     
-    config['Color0Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color8']))
-    config['Color1Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color9']))
-    config['Color2Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color10']))
-    config['Color3Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color11']))
-    config['Color4Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color12']))
-    config['Color5Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color13']))
-    config['Color6Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color14']))
-    config['Color7Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color15']))
+    config['Color0Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color16']))
+    config['Color1Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color17']))
+    config['Color2Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color18']))
+    config['Color3Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color19']))
+    config['Color4Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color20']))
+    config['Color5Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color21']))
+    config['Color6Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color22']))
+    config['Color7Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color23']))
     
     config['Foreground']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
-    config['ForegroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
-    config['ForegroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
+    config['ForegroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foregroundIntense']))
+    config['ForegroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foregroundFaint']))
     
     config['General']['Description'] = "MaterialYou"
     
