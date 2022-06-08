@@ -10,31 +10,56 @@ class ThemeConfig:
         dbm = range_check(dark_blend_multiplier,0,4)
             
         tone = 30
-        pywal_colors_dark = ()
+        
         pywal_colors_dark = (blendColors(
             tones_neutral['8'], colors['dark']['Primary'], .01),)
+        pywal_colors_dark_intense = (blendColors(
+            colors['dark']['OnSurface'], colors['dark']['Secondary'], .7),)
+        pywal_colors_dark_faint =  (blendColors(
+            colors['dark']['OnSurface'], colors['dark']['Secondary'], .35),)
+        
         for x in range(7):
             str_x = str(x)
             if str_x in colors_best.keys():
                 pywal_colors_dark += (blendColors(
                     colors['dark']['OnSurface'], colors_best[str_x], .55),)
+                pywal_colors_dark_intense += (blendColors(
+                    colors['dark']['OnSurface'], colors_best[str_x], .70),)
+                pywal_colors_dark_faint += (blendColors(
+                    colors['dark']['OnSurface'], colors_best[str_x], .35),)
             else:
                 pywal_colors_dark += (blendColors(
                     colors['dark']['OnSurface'], tones_primary[str(tone)], .58),)
+                pywal_colors_dark_intense += (blendColors(
+                    colors['dark']['OnSurface'], tones_primary[str(tone)], .73),)
+                pywal_colors_dark_faint += (blendColors(
+                    colors['dark']['OnSurface'], tones_primary[str(tone)], .38),)
                 tone += 10
 
         tone = 30
-        pywal_colors_light = ()
         pywal_colors_light = (blendColors(
-            tones_neutral['98'], colors['light']['Primary'], .01),)
+            tones_neutral['92'], colors['light']['Primary'], .01),)
+        pywal_colors_light_intense = (blendColors(
+            colors['light']['OnSurface'], colors['light']['Secondary'], .35),)
+        pywal_colors_light_faint = (blendColors(
+            colors['light']['OnSurface'], colors['light']['Secondary'], .7),)
+        
         for x in range(7):
             str_x = str(x)
             if str_x in colors_best.keys():
                 pywal_colors_light += (blendColors(
-                    colors['light']['OnSurface'], colors_best[str_x], .70),)
+                    colors['light']['OnSurface'], colors_best[str_x], .85),)
+                pywal_colors_light_intense += (blendColors(
+                    colors['light']['OnSurface'], colors_best[str_x], .80),)
+                pywal_colors_light_faint += (blendColors(
+                    colors['light']['OnSurface'], colors_best[str_x], .99),)
             else:
                 pywal_colors_light += (blendColors(
-                    colors['light']['OnSurface'], tones_primary[str(tone)], .8),)
+                    colors['light']['OnSurface'], tones_primary[str(tone)], .88),)
+                pywal_colors_light_intense += (blendColors(
+                    colors['light']['OnSurface'], tones_primary[str(tone)], .83),)
+                pywal_colors_light_faint += (blendColors(
+                    colors['light']['OnSurface'], tones_primary[str(tone)], .92),)
                 tone += 10
 
         # Base text states taken from Breeze Color Scheme
@@ -403,9 +428,19 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
 
             "special": {
                 "background": pywal_colors_light[0],
+                "backgroundIntense": blendColors(
+            tones_neutral['8'], colors['light']['Primary'], .0),
+                "backgroundFaint": blendColors(
+            tones_neutral['8'], colors['light']['Primary'], .35),
                 "foreground": colors['light']['OnSurface'],
-                "cursor": colors['light']['OnSurface'],
+                "foregroundIntense": blendColors(
+            colors['light']['OnSurface'], colors['light']['Secondary'], .7),
+                "foregroundFaint": blendColors(
+            colors['light']['OnSurface'], colors['light']['Secondary'], .35),
+                
+                "cursor": colors['dark']['OnSurface'],
             },
+            
             "colors": {
                 "color0": pywal_colors_light[0],
                 "color1": pywal_colors_light[1],
@@ -415,14 +450,22 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
                 "color5": pywal_colors_light[5],
                 "color6": pywal_colors_light[6],
                 "color7": pywal_colors_light[7],
-                "color8": colors['light']['Secondary'],
-                "color9": pywal_colors_light[1],
-                "color10": pywal_colors_light[2],
-                "color11": pywal_colors_light[3],
-                "color12": pywal_colors_light[4],
-                "color13": pywal_colors_light[5],
-                "color14": pywal_colors_light[6],
-                "color15": pywal_colors_light[7]
+                "color8": pywal_colors_light_intense[0],
+                "color9": pywal_colors_light_intense[1],
+                "color10": pywal_colors_light_intense[2],
+                "color11": pywal_colors_light_intense[3],
+                "color12": pywal_colors_light_intense[4],
+                "color13": pywal_colors_light_intense[5],
+                "color14": pywal_colors_light_intense[6],
+                "color15": pywal_colors_light_intense[7],
+                "color16": pywal_colors_light_faint[0],
+                "color17": pywal_colors_light_faint[1],
+                "color18": pywal_colors_light_faint[2],
+                "color19": pywal_colors_light_faint[3],
+                "color20": pywal_colors_light_faint[4],
+                "color21": pywal_colors_light_faint[5],
+                "color22": pywal_colors_light_faint[6],
+                "color23": pywal_colors_light_faint[7]
             }
         }
 
@@ -432,9 +475,18 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
 
             "special": {
                 "background": pywal_colors_dark[0],
+                "backgroundIntense": blendColors(
+            tones_neutral['8'], colors['dark']['Primary'], .0),
+                "backgroundFaint": blendColors(
+            tones_neutral['8'], colors['dark']['Primary'], .35),
                 "foreground": colors['dark']['OnSurface'],
+                "foregroundIntense": blendColors(
+            colors['dark']['OnSurface'], colors['dark']['Secondary'], .7),
+                "foregroundFaint": blendColors(
+            colors['dark']['OnSurface'], colors['dark']['Secondary'], .35),
                 "cursor": colors['dark']['OnSurface'],
             },
+            
             "colors": {
                 "color0": pywal_colors_dark[0],
                 "color1": pywal_colors_dark[1],
@@ -444,14 +496,22 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
                 "color5": pywal_colors_dark[5],
                 "color6": pywal_colors_dark[6],
                 "color7": pywal_colors_dark[7],
-                "color8": colors['dark']['Secondary'],
-                "color9": pywal_colors_dark[1],
-                "color10": pywal_colors_dark[2],
-                "color11": pywal_colors_dark[3],
-                "color12": pywal_colors_dark[4],
-                "color13": pywal_colors_dark[5],
-                "color14": pywal_colors_dark[6],
-                "color15": pywal_colors_dark[7]
+                "color8": pywal_colors_dark_intense[0],
+                "color9": pywal_colors_dark_intense[1],
+                "color10": pywal_colors_dark_intense[2],
+                "color11": pywal_colors_dark_intense[3],
+                "color12": pywal_colors_dark_intense[4],
+                "color13": pywal_colors_dark_intense[5],
+                "color14": pywal_colors_dark_intense[6],
+                "color15": pywal_colors_dark_intense[7],
+                "color16": pywal_colors_dark_faint[0],
+                "color17": pywal_colors_dark_faint[1],
+                "color18": pywal_colors_dark_faint[2],
+                "color19": pywal_colors_dark_faint[3],
+                "color20": pywal_colors_dark_faint[4],
+                "color21": pywal_colors_dark_faint[5],
+                "color22": pywal_colors_dark_faint[6],
+                "color23": pywal_colors_dark_faint[7]
             }
         }
         dark_active=colors['dark']['OnBackground']
