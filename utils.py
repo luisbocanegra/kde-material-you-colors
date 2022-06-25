@@ -583,7 +583,7 @@ def apply_color_schemes(light=False):
             color_scheme = THEME_LIGHT_PATH
         elif light == False:
             color_scheme = THEME_DARK_PATH
-            
+        kwin_blend_changes()
         subprocess.run("plasma-apply-colorscheme "+color_scheme+"2.colors",
                                         shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
         colorscheme_out = subprocess.check_output("plasma-apply-colorscheme "+color_scheme+".colors",
@@ -930,3 +930,12 @@ def append_schemes(schemes):
     
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
         json.dump(colors,material_you_colors)
+        
+def kwin_blend_changes():
+    try:
+        bus = dbus.SessionBus()
+        kwin = dbus.Interface(bus.get_object('org.kde.KWin', '/org/kde/KWin/BlendChanges'), dbus_interface='org.kde.KWin.BlendChanges')
+        kwin.start()
+    except Exception as e:
+        logging.warning(f'Could not start blend effect (requires Plasma 5.25 or later):\n{e}')
+        return None
