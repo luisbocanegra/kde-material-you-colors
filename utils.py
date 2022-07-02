@@ -34,6 +34,7 @@ PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
 KDE_GLOBALS = HOME+"/.config/kdeglobals"
 BREEZE_RC = HOME+"/.config/breezerc"
+SBE_RC = HOME+"/.config/sierrabreezeenhancedrc"
 KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
@@ -119,7 +120,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = None 
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_sbe_titlebar_opacity = c_toolbar_opacity = None
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -210,6 +211,18 @@ class Configs():
                             
                         if 'konsole_profile' in custom:
                             c_konsole_profile = custom['konsole_profile']
+                            
+                        if 'sbe_titlebar_opacity' in custom:
+                            c_sbe_titlebar_opacity = custom.getint('sbe_titlebar_opacity')
+                            if c_sbe_titlebar_opacity < 0 or c_sbe_titlebar_opacity > 100:
+                                raise ValueError(
+                                    'Value for sbe_titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
+                        
+                        if 'toolbar_opacity' in custom:
+                            c_toolbar_opacity = custom.getint('toolbar_opacity')
+                            if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
+                                raise ValueError(
+                                    'Value for toolbar_opacity must be an integer betwritten 0 and 100, using default 100')
 
                 except Exception as e:
                     logging.error(f"Please fix your settings file:\n{e}\n")
@@ -267,7 +280,7 @@ class Configs():
             elif args.ncolor == None and c_ncolor == None:
                 c_ncolor = 0
             else:
-                c_ncolor = c_ncolor
+                    c_ncolor = c_ncolor
 
             if args.plugin != None:
                 c_plugin = args.plugin
@@ -300,7 +313,24 @@ class Configs():
                 c_konsole_profile = args.konsole_profile
             elif c_konsole_profile == None:
                 c_konsole_profile = args.konsole_profile
-
+                
+            if args.sbe_titlebar_opacity != None:
+                if args.sbe_titlebar_opacity < 0 or args.sbe_titlebar_opacity > 100:
+                    logging.error('Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
+                    raise ValueError
+                else:
+                    c_sbe_titlebar_opacity = args.sbe_titlebar_opacity
+            elif args.sbe_titlebar_opacity == None and c_sbe_titlebar_opacity == None:
+                c_sbe_titlebar_opacity = None
+                
+            if args.toolbar_opacity != None:
+                if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
+                    logging.error('Value for --toolbar-opacity must be an integer betwritten 0 and 100')
+                    raise ValueError
+                else:
+                    c_toolbar_opacity = args.toolbar_opacity
+            elif args.toolbar_opacity == None and c_toolbar_opacity == None:
+                c_toolbar_opacity = None
 
             self._options = {
                 'light': c_light,
@@ -316,7 +346,9 @@ class Configs():
                 "dbm": c_dark_blend_multiplier,
                 "on_change_hook": c_on_change_hook,
                 "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
-                "konsole_profile" : c_konsole_profile
+                "konsole_profile" : c_konsole_profile,
+                "sbe_titlebar_opacity" : c_sbe_titlebar_opacity,
+                "toolbar_opacity" : c_toolbar_opacity
                 }
 
     @property
@@ -939,3 +971,25 @@ def kwin_blend_changes():
     except Exception as e:
         logging.warning(f'Could not start blend effect (requires Plasma 5.25 or later):\n{e}')
         return None
+
+def sierra_breeze_enhanced_titlebar_opacity(opacity):
+    if opacity != None:
+        opacity = range_check(opacity,0,100)
+        sberc = configparser.ConfigParser()
+        # preserve case
+        sberc.optionxform = str
+        if os.path.exists(SBE_RC):
+            try:
+                sberc.read(SBE_RC)
+                if 'Windeco' in sberc:
+                    sberc['Windeco']['BackgroundOpacity'] = str(int(opacity))
+                    reload = True
+                else:
+                    reload = False
+                if reload == True:
+                    logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
+                    with open(SBE_RC, 'w') as configfile:
+                        sberc.write(configfile,space_around_delimiters=False)
+                    kwin_reload()
+            except Exception as e:
+                logging.error(f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}")

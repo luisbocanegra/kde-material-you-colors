@@ -44,9 +44,13 @@ if __name__ == '__main__':
     parser.add_argument('--on-change-hook', type=str,
                         help='A script/command that will be executed on start or wallpaper/dark/light/settings change',default=None)
     parser.add_argument('--sierra-breeze-buttons-color', '-sbb', action='store_true',
-                        help='Tint SierraBreeze decoration buttons')
+                        help='Tint Sierra Breeze decoration buttons')
     parser.add_argument('--konsole-profile', '-kp', type=str,
                         help='The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles', default=None)
+    parser.add_argument('--sbe-titlebar-opacity', '-sbeto', type=int,
+                        help='Sierra Breeze Enhanced titlebar opacity (value from 0 to 100, default is None)', default=None)
+    parser.add_argument('--toolbar-opacity', '-to', type=int,
+                        help='ToolBar opacity, needs Lightly Application Style (value from 0 to 100, default is None)', default=None)
 
     # Get arguments
     args = parser.parse_args()
@@ -86,12 +90,13 @@ if __name__ == '__main__':
             light = options_old['light']
             
         if colors != None:
-            schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'])
+            schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'], toolbar_opacity=options_old['toolbar_opacity'])
             utils.make_plasma_scheme(schemes=schemes)
             utils.apply_color_schemes(
                         light=light)
             if options_old['sierra_breeze_buttons_color'] == True:
                 utils.sierra_breeze_button_colors(schemes,light)
+            utils.sierra_breeze_enhanced_titlebar_opacity(options_old['sbe_titlebar_opacity'])
             utils.set_icons(icons_light=options_old['iconslight'],
                 icons_dark=options_old['iconsdark'], light=options_old['light'])
             utils.make_konsole_mirror_profile(konsole_profile_old)
@@ -152,7 +157,7 @@ if __name__ == '__main__':
                         logging.debug(f"New Config: {options_new}")
                 colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
                 if colors != None:
-                    schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'])
+                    schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'],toolbar_opacity=options_new['toolbar_opacity'])
                     utils.make_plasma_scheme(schemes=schemes)
                     if options_changed:
                         if icons_changed or light_changed:
@@ -162,6 +167,7 @@ if __name__ == '__main__':
                     utils.apply_color_schemes(light=light)
                     if options_new['sierra_breeze_buttons_color'] == True:
                         utils.sierra_breeze_button_colors(schemes,light)
+                    utils.sierra_breeze_enhanced_titlebar_opacity(options_new['sbe_titlebar_opacity'])
                     utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'])
                     utils.apply_pywal_schemes(
                         light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
