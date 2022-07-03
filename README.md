@@ -106,6 +106,8 @@ sudo ./install-fedora-based.sh
 `--toolbar-opacity [OPACITY], -to [OPACITY]`&emsp; ToolBar opacity, needs Lightly Application Style (value from 0 to 100,
                         default is None)
 
+`--konsole-opacity [OPACITY], -ko [OPACITY]`&emsp; Konsole background opacity (value from 0 to 100, default is None)
+
 # Startup script:
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
@@ -233,19 +235,24 @@ ncolor = 0
 # I recommend you to backup the ~/.local/share/konsole/ folder before trying this because it will edit your profiles 
 #konsole_profile = Profile 1
 
+# Konsole background opacity 
+# An integer between 0 and 100
+# Default is commented (disabled)
+#konsole_opacity = 75
+
 # Sierra Breeze Enhanced Title Bar opacity https://github.com/kupiqu/SierraBreezeEnhanced
 # An integer between 0 and 100
 # Default is commented (disabled)
 # NOTE:
 # This will reload KWin (screen will blink on x11)
-#sbe_titlebar_opacity = 100
+#sbe_titlebar_opacity = 50
 
 # ToolBar opacity needs Lightly Application Style to work https://github.com/Luwx/Lightly
 # An integer between 0 and 100
 # Default is commented (disabled)
 # NOTE:
 # kirigami ToolBar opacity is not affected by this option https://github.com/Luwx/Lightly/issues/128
-#toolbar_opacity = 100
+#toolbar_opacity = 75
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.

@@ -120,7 +120,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_sbe_titlebar_opacity = c_toolbar_opacity = None
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_sbe_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = None
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -223,6 +223,12 @@ class Configs():
                             if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
                                 raise ValueError(
                                     'Value for toolbar_opacity must be an integer betwritten 0 and 100, using default 100')
+                                
+                        if 'konsole_opacity' in custom:
+                            c_konsole_opacity = custom.getint('konsole_opacity')
+                            if c_konsole_opacity < 0 or c_konsole_opacity > 100:
+                                raise ValueError(
+                                    'Value for konsole_opacity must be an integer betwritten 0 and 100, using default 100')
 
                 except Exception as e:
                     logging.error(f"Please fix your settings file:\n{e}\n")
@@ -331,6 +337,15 @@ class Configs():
                     c_toolbar_opacity = args.toolbar_opacity
             elif args.toolbar_opacity == None and c_toolbar_opacity == None:
                 c_toolbar_opacity = None
+                
+            if args.konsole_opacity != None:
+                if args.konsole_opacity < 0 or args.konsole_opacity > 100:
+                    logging.error('Value for --konsole-opacity must be an integer betwritten 0 and 100')
+                    raise ValueError
+                else:
+                    c_konsole_opacity = args.konsole_opacity
+            elif args.konsole_opacity == None and c_konsole_opacity == None:
+                c_konsole_opacity = None
 
             self._options = {
                 'light': c_light,
@@ -348,7 +363,8 @@ class Configs():
                 "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
                 "konsole_profile" : c_konsole_profile,
                 "sbe_titlebar_opacity" : c_sbe_titlebar_opacity,
-                "toolbar_opacity" : c_toolbar_opacity
+                "toolbar_opacity" : c_toolbar_opacity,
+                "konsole_opacity" : c_konsole_opacity
                 }
 
     @property
@@ -761,7 +777,13 @@ def print_color_palette(pywal_colors):
         print("\n",end="")
 
 
-def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
+def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=100):
+    if konsole_opacity == None:
+        konsole_opacity = 1.0
+    else:
+        konsole_opacity = float(konsole_opacity/100)
+    konsole_opacity = range_check(konsole_opacity,0.0,1.0)
+    # print(f"konsole_opacity: {konsole_opacity}")
     if pywal_light != None:
         if pywal_light  == True:
             pywal_colors=schemes.get_wal_light_scheme()
@@ -840,6 +862,8 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None):
         config['General']['Blur'] = "false"
     if not config.has_option('General','Opacity'):
         config['General']['Opacity'] = "1"
+    else :
+        config['General']['Opacity'] = str(konsole_opacity)
     
     with open(KONSOLE_COLOR_SCHEME_PATH,'w') as configfile:
         config.write(configfile,space_around_delimiters=False)
@@ -904,11 +928,11 @@ def konsole_reload_profile(profile=None):
                 except:
                     pass
                 
-def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profile=None):
+def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profile=None, konsole_opacity=None):
     if profile != None:
         profile_path = KONSOLE_DIR+profile+".profile"
         if os.path.exists(profile_path):
-            konsole_export_scheme(light, pywal_light, schemes)
+            konsole_export_scheme(light, pywal_light, schemes, konsole_opacity)
             konsole_reload_profile(profile)
         else:
             logging.error(f"Konsole Profile: {profile_path} does not exist")
