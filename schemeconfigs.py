@@ -1,14 +1,16 @@
-from color_utils import blendColors, hex2rgb
+from color_utils import blendColors, hex2rgb, hex2alpha
 from utils import range_check, tup2str
 class ThemeConfig:
-    def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1):
+    def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
+        if toolbar_opacity == None:
+            toolbar_opacity = 100
         colors_best = colors['bestColors']
         tones_primary = colors['primaryTones']
         tones_neutral = colors['neutralTones']
         
         lbm = range_check(light_blend_multiplier,0,4)
         dbm = range_check(dark_blend_multiplier,0,4)
-            
+        toolbar_opacity = range_check(toolbar_opacity,0,100)
         tone = 30
         
         pywal_colors_dark = (blendColors(
@@ -261,10 +263,10 @@ shadeSortColumn=true
 contrast=4
 
 [WM]
-activeBackground={extras['SurfaceLight3']}
+activeBackground={hex2alpha(extras['SurfaceLight3'],toolbar_opacity)}
 activeBlend=227,229,231
 activeForeground={colors['light']['OnSurface']}
-inactiveBackground={colors['light']['SecondaryContainer']}
+inactiveBackground={hex2alpha(colors['light']['SecondaryContainer'],toolbar_opacity)}
 inactiveBlend=239,240,241
 inactiveForeground={colors['light']['OnSurfaceVariant']}
         """
@@ -414,10 +416,10 @@ shadeSortColumn=true
 contrast=4
 
 [WM]
-activeBackground={extras['SurfaceDark3']}
+activeBackground={hex2alpha(extras['SurfaceDark3'],toolbar_opacity)}
 activeBlend=252,252,252
 activeForeground={colors['dark']['OnSurface']}
-inactiveBackground={colors['dark']['SecondaryContainer']}
+inactiveBackground={hex2alpha(colors['dark']['SecondaryContainer'],toolbar_opacity)}
 inactiveBlend=161,169,177
 inactiveForeground={colors['dark']['OnSecondaryContainer']}
         """

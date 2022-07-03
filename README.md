@@ -97,9 +97,14 @@ sudo ./install-fedora-based.sh
 
 `--on-change-hook [COMMAND]`&emsp; A script/command that will be executed on start or wallpaper/dark/light/settings change
 
-`--sierra-breeze-buttons-color, -sbb`&emsp; Tint SierraBreeze decoration buttons
+`--sierra-breeze-buttons-color, -sbb`&emsp; Tint Sierra Breeze decoration buttons
 
 `--konsole-profile [KONSOLE_PROFILE], -kp [KONSOLE_PROFILE]`&emsp; The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles
+
+`--sbe-titlebar-opacity [OPACITY], -sbeto [OPACITY]`&emsp; Sierra Breeze Enhanced titlebar opacity (value from 0 to 100, default is None)
+
+`--toolbar-opacity [OPACITY], -to [OPACITY]`&emsp; ToolBar opacity, needs Lightly Application Style (value from 0 to 100,
+                        default is None)
 
 # Startup script:
 
@@ -211,7 +216,7 @@ ncolor = 0
 # example below using https://github.com/vlevit/notify-send.sh to send a desktop notification:
 #on_change_hook = notify-send.sh "kde-material-you-colors" "This is a test" -t 2000
 
-# Tint SierraBreeze decoration buttons https://github.com/ishovkun/SierraBreeze
+# Tint Sierra Breeze decoration buttons https://github.com/ishovkun/SierraBreeze
 # Accepted values are True or False
 # Default is False
 # NOTE:
@@ -227,6 +232,20 @@ ncolor = 0
 # WARNING: 
 # I recommend you to backup the ~/.local/share/konsole/ folder before trying this because it will edit your profiles 
 #konsole_profile = Profile 1
+
+# Sierra Breeze Enhanced Title Bar opacity https://github.com/kupiqu/SierraBreezeEnhanced
+# An integer between 0 and 100
+# Default is commented (disabled)
+# NOTE:
+# This will reload KWin (screen will blink on x11)
+#sbe_titlebar_opacity = 100
+
+# ToolBar opacity needs Lightly Application Style to work https://github.com/Luwx/Lightly
+# An integer between 0 and 100
+# Default is commented (disabled)
+# NOTE:
+# kirigami ToolBar opacity is not affected by this option https://github.com/Luwx/Lightly/issues/128
+#toolbar_opacity = 100
 ```
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.

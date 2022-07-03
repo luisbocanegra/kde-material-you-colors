@@ -111,6 +111,25 @@ def blendColors(colorA, colorB, ratio):
 
     return rgb2hex(r, g, b)
 
+def hex2alpha(solid_color,opacity):
+    opacity = int(numpy.ceil(opacity*2.55))
+    aa = f'{opacity:x}'
+    if len(aa) == 1:
+        aa = f'0{aa}'
+    argb = solid_color.replace('#',f'#{aa}')
+    return argb
+
+def rgb2alpha(rgb,opacity):
+    opacity = int(numpy.ceil(opacity*2.55))
+    rgba = (rgb[0],rgb[1],rgb[2],opacity)
+    return rgba
+
+def hex2rgba(hex, opacity):
+    hex = hex.lstrip('#')
+    rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+    rgba = rgb2alpha(rgb,opacity)
+    return rgba
+
 # Tests
 if __name__ == '__main__':
     # Test color blend
@@ -119,3 +138,12 @@ if __name__ == '__main__':
     print(blendColors('#ff0000', "#00ff00", .5))
     print(blendColors('#ff0000', "#00ff00", .75))
     print(blendColors('#ff0000', "#00ff00", .99))
+    
+    print(hex2alpha('#ff0000',128))
+    color1hex = '#ff0000'
+    color1rgb = hex2rgb(color1hex)
+    color1rgb_alpha= rgb2alpha(color1rgb,200)
+    print(color1rgb_alpha)
+    
+    color1rgba = hex2rgba(color1hex,200)
+    print(color1rgba)
