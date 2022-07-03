@@ -1,4 +1,4 @@
-# KDE Material You Colors (beta)
+# KDE Material You Colors
 ### Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
 
 This is a Python program that uses the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
@@ -6,7 +6,6 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 </img>
 <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg"></img>
 <img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
-<img src=https://img.shields.io/badge/Status-beta-red.svg></img>
 </div>
 <div>
 <img src="https://user-images.githubusercontent.com/15076387/163059211-e5e56e10-e841-487e-83ea-60a97497bd6e.png"  alt="Screenshot">
@@ -22,12 +21,12 @@ https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-
 - Update automatically on wallpaper change
 - Configurarion file
 - Support for selecting Wallpaper plugin from seconday monitors (check Configuration section)
-- Alternative Material You color (mostly random)
+- Alternative Material You color selection
 - Dark an Light Color schemes
 - Dark and Light Icon theme
 - Multiple wallpaper plugins supported
 - [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
-- Tint [SierraBreeze](https://github.com/ishovkun/SierraBreeze) decoration buttons
+- Tint [SierraBreeze](https://github.com/kay0u/SierraBreeze) decoration buttons
 - Dynamically update Konsole color scheme (check Configuration section for instructions)
 
 # Installing:
@@ -218,7 +217,7 @@ ncolor = 0
 # example below using https://github.com/vlevit/notify-send.sh to send a desktop notification:
 #on_change_hook = notify-send.sh "kde-material-you-colors" "This is a test" -t 2000
 
-# Tint Sierra Breeze decoration buttons https://github.com/ishovkun/SierraBreeze
+# Tint Sierra Breeze decoration buttons https://github.com/kay0u/SierraBreeze
 # Accepted values are True or False
 # Default is False
 # NOTE:
