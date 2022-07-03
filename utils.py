@@ -236,8 +236,6 @@ class Configs():
                 c_light = False
             elif args.light == True:
                 c_light = args.light
-            elif c_light != None:
-                c_light = c_light
                 
             if args.pywal == True:
                 c_pywal = args.pywal
@@ -248,8 +246,6 @@ class Configs():
                 c_pywal_light = False
             elif args.pywallight == True:
                 c_pywal_light = args.pywallight
-            else:
-                c_pywal_light = c_pywal_light
 
             if args.lbmultiplier != None:
                 c_light_blend_multiplier = range_check(args.lbmultiplier, 0, 4)
@@ -274,8 +270,6 @@ class Configs():
                     c_monitor = args.monitor
             elif args.monitor == None and c_monitor == None:
                 c_monitor = 0
-            else:
-                c_monitor = c_monitor
 
             if args.ncolor != None:
                 if args.ncolor < 0:
@@ -285,15 +279,11 @@ class Configs():
                     c_ncolor = args.ncolor
             elif args.ncolor == None and c_ncolor == None:
                 c_ncolor = 0
-            else:
-                    c_ncolor = c_ncolor
 
             if args.plugin != None:
                 c_plugin = args.plugin
             elif args.plugin == None and c_plugin == None:
                 c_plugin = DEFAULT_PLUGIN
-            else:
-                c_plugin = c_plugin
 
             if args.iconslight != None:
                 c_iconslight = args.iconslight
@@ -625,7 +615,8 @@ def make_plasma_scheme(schemes=None):
         dark_scheme_file.write(dark_scheme)
         
 def apply_color_schemes(light=False):
-    
+    if light == None:
+        light = False
     if light != None:
         if light == True:
             color_scheme = THEME_LIGHT_PATH
