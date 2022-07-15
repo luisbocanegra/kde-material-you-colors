@@ -127,6 +127,7 @@ class Program
             Scheme<int> darkScheme = new DarkSchemeMapper().Map(corePalette);
             lightScheme.Primary = corePalette.Primary[40];
             darkScheme.Primary = corePalette.Primary[70];
+            darkScheme.Error = corePalette.Error[70];
             //TODO: Save color palette to single json
             // var colors = new Dictionary<string, string>();
 
