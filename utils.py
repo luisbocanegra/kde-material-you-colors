@@ -848,13 +848,7 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_op
     config['ForegroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foregroundFaint']))
     
     config['General']['Description'] = "MaterialYou"
-    
-    if not config.has_option('General','Blur'):
-        config['General']['Blur'] = "false"
-    if not config.has_option('General','Opacity'):
-        config['General']['Opacity'] = "1"
-    else :
-        config['General']['Opacity'] = str(konsole_opacity)
+    config['General']['Opacity'] = str(konsole_opacity)
     
     with open(KONSOLE_COLOR_SCHEME_PATH,'w') as configfile:
         config.write(configfile,space_around_delimiters=False)

@@ -11,57 +11,7 @@ class ThemeConfig:
         lbm = range_check(light_blend_multiplier,0,4)
         dbm = range_check(dark_blend_multiplier,0,4)
         toolbar_opacity = range_check(toolbar_opacity,0,100)
-        tone = 30
         
-        pywal_colors_dark = (blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11*dbm),)
-        pywal_colors_dark_intense = (blendColors(
-            colors['dark']['OnBackground'], colors['dark']['Secondary'], .7),)
-        pywal_colors_dark_faint =  (blendColors(
-            colors['dark']['OnBackground'], colors['dark']['Secondary'], .35),)
-        
-        for x in range(7):
-            str_x = str(x)
-            if str_x in colors_best.keys():
-                pywal_colors_dark += (blendColors(
-                    colors['dark']['OnBackground'], colors_best[str_x], .55),)
-                pywal_colors_dark_intense += (blendColors(
-                    colors['dark']['OnBackground'], colors_best[str_x], .70),)
-                pywal_colors_dark_faint += (blendColors(
-                    colors['dark']['OnBackground'], colors_best[str_x], .35),)
-            else:
-                pywal_colors_dark += (blendColors(
-                    colors['dark']['OnBackground'], tones_primary[str(tone)], .58),)
-                pywal_colors_dark_intense += (blendColors(
-                    colors['dark']['OnBackground'], tones_primary[str(tone)], .73),)
-                pywal_colors_dark_faint += (blendColors(
-                    colors['dark']['OnBackground'], tones_primary[str(tone)], .38),)
-                tone += 10
-
-        tone = 30
-        pywal_colors_light = (blendColors(colors['light']['Background'], colors['light']['Primary'], .14*lbm),)
-        pywal_colors_light_intense = (blendColors(
-            colors['light']['OnBackground'], colors['light']['Secondary'], .35),)
-        pywal_colors_light_faint = (blendColors(
-            colors['light']['OnBackground'], colors['light']['Secondary'], .7),)
-        
-        for x in range(7):
-            str_x = str(x)
-            if str_x in colors_best.keys():
-                pywal_colors_light += (blendColors(
-                    colors['light']['OnBackground'], colors_best[str_x], .85),)
-                pywal_colors_light_intense += (blendColors(
-                    colors['light']['OnBackground'], colors_best[str_x], .80),)
-                pywal_colors_light_faint += (blendColors(
-                    colors['light']['OnBackground'], colors_best[str_x], .99),)
-            else:
-                pywal_colors_light += (blendColors(
-                    colors['light']['OnBackground'], tones_primary[str(tone)], .88),)
-                pywal_colors_light_intense += (blendColors(
-                    colors['light']['OnBackground'], tones_primary[str(tone)], .83),)
-                pywal_colors_light_faint += (blendColors(
-                    colors['light']['OnBackground'], tones_primary[str(tone)], .92),)
-                tone += 10
-
         # Base text states taken from Breeze Color Scheme
         base_text_states = {
             "Link": "#2980b9",
@@ -74,7 +24,7 @@ class ThemeConfig:
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
             "SurfaceLight": blendColors(colors['light']['Surface'], colors['light']['Primary'], 0.05*lbm),
-            "SurfaceDark": blendColors(colors['dark']['Surface'], colors['dark']['Primary'], 0.02*dbm),
+            "SurfaceDark": blendColors(tones_neutral['5'], colors['dark']['Primary'], 0.08*dbm),
             
             "SurfaceLight1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08*lbm),
             "SurfaceDark1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05*dbm),
@@ -82,8 +32,8 @@ class ThemeConfig:
             "SurfaceLight2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11*lbm),
             "SurfaceDark2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dbm),
 
-            "SurfaceLight3": blendColors(colors['light']['Background'], colors['light']['Primary'], .14*lbm),
-            "SurfaceDark3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .11*dbm),
+            "SurfaceLight3": blendColors(colors['light']['Background'], colors['light']['Primary'], .16*lbm),
+            "SurfaceDark3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dbm),
 
             "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
             "LinkVisitedOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Visited'], .8),
@@ -116,6 +66,57 @@ class ThemeConfig:
             "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
         }
         extras = self._extras
+        
+        
+        tone = 30
+        pywal_colors_dark = (extras['SurfaceDark'],)
+        pywal_colors_dark_intense = (blendColors(
+            tones_neutral['45'], colors['dark']['Secondary'], .6*dbm),)
+        pywal_colors_dark_faint =  (blendColors(
+            tones_neutral['80'], colors['dark']['Secondary'], .6*dbm),)
+        
+        for x in range(7):
+            str_x = str(x)
+            if str_x in colors_best.keys():
+                pywal_colors_dark += (blendColors(
+                    tones_neutral['60'], colors_best[str_x], .6*dbm),)
+                pywal_colors_dark_intense += (blendColors(
+                    tones_neutral['45'], colors_best[str_x], .6*dbm),)
+                pywal_colors_dark_faint += (blendColors(
+                    tones_neutral['80'], colors_best[str_x], .6*dbm),)
+            else:
+                pywal_colors_dark += (blendColors(
+                    tones_neutral['60'], tones_primary[str(tone)], .6*dbm),)
+                pywal_colors_dark_intense += (blendColors(
+                    tones_neutral['45'], tones_primary[str(tone)], .6*dbm),)
+                pywal_colors_dark_faint += (blendColors(
+                    tones_neutral['80'], tones_primary[str(tone)], .6*dbm),)
+                tone += 10
+
+        tone = 30
+        pywal_colors_light = (extras['SurfaceLight'],)
+        pywal_colors_light_intense = (blendColors(
+            tones_neutral['20'], colors['light']['Secondary'], .6*lbm),)
+        pywal_colors_light_faint = (blendColors(
+            tones_neutral['55'], colors['light']['Secondary'], .6*lbm),)
+        
+        for x in range(7):
+            str_x = str(x)
+            if str_x in colors_best.keys():
+                pywal_colors_light += (blendColors(
+                    tones_neutral['30'], colors_best[str_x], .6*lbm),)
+                pywal_colors_light_intense += (blendColors(
+                    tones_neutral['20'], colors_best[str_x], .6*lbm),)
+                pywal_colors_light_faint += (blendColors(
+                    tones_neutral['55'], colors_best[str_x],.6*lbm),)
+            else:
+                pywal_colors_light += (blendColors(
+                    tones_neutral['30'], tones_primary[str(tone)], .6*lbm),)
+                pywal_colors_light_intense += (blendColors(
+                    tones_neutral['20'], tones_primary[str(tone)], .6*lbm),)
+                pywal_colors_light_faint += (blendColors(
+                    tones_neutral['55'], tones_primary[str(tone)], .6*lbm),)
+                tone += 10
 
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['SurfaceLight1']}
