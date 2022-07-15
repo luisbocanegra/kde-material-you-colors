@@ -1,7 +1,7 @@
 # KDE Material You Colors
 ### Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
 
-This is a Python program that uses the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
+This is a Python script that uses the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
 <div>
 </img>
 <img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg"></img>
@@ -17,6 +17,25 @@ This is a Python program that uses the [C# implementation](https://github.com/al
 https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-b594-83b80436c802.mp4
 
 
+Table of Contents
+=================
+
+- [Features](#features)
+- [Installing](#installing)
+    - [Arch Linux](#arch-linux)
+    - [Other distributions](#other-distributions)
+    - [Optional features](#optional-features)
+- [Running from terminal](#running-from-terminal)
+    - [Options](#options)
+- [Startup script](#startup-script)
+    - [Removing the autostart script](#removing-the-autostart-script)
+- [Changing Current Wallpaper plugin](#changing-current-wallpaper-plugin)
+- [Working Wallpaper plugins](#working-wallpaper-plugins)
+- [Configuration](#configuration)
+- [Notes](#notes)
+  - [Bug reporting / Feature requests](#bug-reporting--feature-requests)
+- [Thanks & Credits](#thanks--credits)
+
 # Features
 - Update automatically on wallpaper change
 - Configurarion file
@@ -25,12 +44,12 @@ https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-
 - Dark an Light Color schemes
 - Dark and Light Icon theme
 - Multiple wallpaper plugins supported
-- [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors (Experimental)
+- [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors
 - Tint [SierraBreeze](https://github.com/kay0u/SierraBreeze) decoration buttons
 - Dynamically update Konsole color scheme (check Configuration section for instructions)
 
-# Installing:
-### Arch Linux:
+# Installing
+### Arch Linux
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors)
 ### Other distributions
 1. Clone/download this repository and cd to it
@@ -107,7 +126,7 @@ sudo ./install-fedora-based.sh
 
 `--konsole-opacity [OPACITY], -ko [OPACITY]`&emsp; Konsole background opacity (value from 0 to 100, default is None)
 
-# Startup script:
+# Startup script
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
 
@@ -120,6 +139,10 @@ sudo ./install-fedora-based.sh
 3. Reboot or logout/login to see the changes,
 
 **NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
+
+## Removing the autostart script
+1. Open `System Settings` > `Startup and Shutdown`
+2. Remove `kde-material-you-colors` by clicking on the `-` button.
 
 # Changing Current Wallpaper plugin
 
@@ -138,8 +161,9 @@ This is a list of compatible Plasma Wallpaper Plugins
 | Picture of the day | `org.kde.potd` |
 | Slideshow | `org.kde.slideshow` |
 | Plain color | `org.kde.color` |
+| Inactive Blur | `com.github.zren.inactiveblur` ([latest](https://github.com/Zren/plasma-wallpapers))|
 
-# Configuration:
+# Configuration
 
 Open ~/.config/kde-material-you-colors/config.conf
 
@@ -165,6 +189,9 @@ monitor = 0
 # Picture of the day is:   org.kde.potd
 # Slideshow:               org.kde.slideshow
 # Plain color:             org.kde.color
+# Inactive Blur:           com.github.zren.inactiveblur 
+# Note: Inactive Blur requires latest from https://github.com/Zren/plasma-wallpapers for kde plasma 5.25+
+
 plugin = org.kde.image
 
 # File containing absolute path of an image (Takes precedence over the above options as they are no longer needed)
@@ -256,19 +283,15 @@ ncolor = 0
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
 
-# Removing the autostart script
-1. Open `System Settings` > `Startup and Shutdown`
-2. Remove `kde-material-you-colors` by clicking on the `-` button.
-
 &emsp;&emsp;**OR** Manually delete ~/.config/autostart/kde-material-you-colors.desktop
 
-3. Logout/Reboot
+1. Logout/Reboot
 
-# Bugs
-- As throwaway6560192 pointed out, the `evaluateScript` DBus call doesn't return any output, to get the current wallpaper, I'm using `print()`, but the journal gets spammed by plasmashell with the wallpaper path. If you know a better way of doing this please tell me.
+# Notes
+- As throwaway6560192 pointed out, the `evaluateScript` DBus call doesn't return any output, to get the current wallpaper this script uses `print()`, but the journal gets spammed by plasmashell with the wallpaper data. If you know a better way of doing this please tell me.
 - To update color with `plasma-apply-colorscheme`, the file containing the new color scheme must have a different name than the current one, to workaround this it creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
-- If you encounter a problem (sure there will be) don't hesitate to open an issue.
-- This is not a bug but I'm a noob developer, so expect spaggeti code, PRs to improve it are very wellcomed.
+## Bug reporting / Feature requests
+- If you encounter a problem or have an idea for a cool feature don't hesitate to open an issue using the **issue templates**, pull requests are also welcomed.
 
 # Thanks & Credits
 - [@albi005 (Albert Ragány-Németh)](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities which I found the easiest to work with.
