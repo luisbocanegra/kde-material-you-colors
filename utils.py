@@ -970,7 +970,7 @@ def append_schemes(schemes):
     colors.update(wal_dark)
     
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
-        json.dump(colors,material_you_colors)
+        json.dump(colors,material_you_colors, indent=4, ensure_ascii=False)
         
 def kwin_blend_changes():
     try:
