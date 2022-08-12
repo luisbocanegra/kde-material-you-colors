@@ -1,3 +1,4 @@
+import operator
 import numpy
 def hex2rgb(hex):
     hex = hex.lstrip('#')
@@ -130,20 +131,93 @@ def hex2rgba(hex, opacity):
     rgba = rgb2alpha(rgb,opacity)
     return rgba
 
+def color_luminance(color):
+    r, g, b = hex2rgb(color)
+    lum = 0.2126 * srgbRed(r) + 0.7152 * srgbGreen(g) + 0.0722 * srgbBlue(b)
+    #print("Luminance:", lum)
+    return (color,lum)
+    
+def sort_colors_luminance(colors,reverse=False):
+    first_color = colors[0]
+    all_colors = colors
+    # print(f"Sorting colors by luminance: {colors}")
+    colors_with_luminance =[]
+    sorted_colors = ()
+    for color in colors:
+        colors_with_luminance.append(color_luminance(color))
+    colors_with_luminance.sort(key=operator.itemgetter(1),reverse=reverse)
+    
+    for color in colors_with_luminance:
+        #print(color[0], color[1])
+        sorted_colors+=color[0],
+    # print(colors_with_luminance)
+    # print(sorted_colors)
+    # print(f"Sorted colors: {sorted_colors}")
+    return sorted_colors
+    
+def contrast_ratio(lighter_color, darker_color):
+    l1 = float(color_luminance(lighter_color)[1])
+    l2 = float(color_luminance(darker_color)[1])
+    contrast_ratio= (l1+0.05)/(l2+0.05)
+    return contrast_ratio
+
+def blend2contrast(lighter_color, darker_color, blend_color, min_contrast, blend_step, dark=True):
+    # print(f"Test blend2contrast {lighter_color} {darker_color} {blend_color} 4.5 0.1")
+    
+    if dark:
+        contrast = contrast_ratio(lighter_color, darker_color)
+    else:
+        contrast = contrast_ratio(darker_color, lighter_color)
+        
+    if contrast < min_contrast:
+        blend_ratio = 0.0
+        
+        while contrast < 4.5:
+            blend_ratio += blend_step
+            if dark:
+                new = blendColors(lighter_color, blend_color, blend_ratio)
+                contrast = contrast_ratio(new, darker_color)
+            else:
+                new = blendColors(lighter_color ,blend_color, blend_ratio)
+                contrast = contrast_ratio(darker_color, new)
+            #time.sleep(1)
+            # print(f"new: {new} vs {darker_color} blend: {blend_ratio} contrast: {contrast}")
+        return new
+    else:
+        return blendColors(lighter_color, blend_color, .12)
+
+
 # Tests
 if __name__ == '__main__':
     # Test color blend
+    print("Test color blend")
     print(blendColors('#ff0000', "#00ff00", .01))
     print(blendColors('#ff0000', "#00ff00", .25))
     print(blendColors('#ff0000', "#00ff00", .5))
     print(blendColors('#ff0000', "#00ff00", .75))
     print(blendColors('#ff0000', "#00ff00", .99))
     
+    print("Test color hex2alpha")
     print(hex2alpha('#ff0000',128))
-    color1hex = '#ff0000'
+    color1hex = '#082523'
     color1rgb = hex2rgb(color1hex)
     color1rgb_alpha= rgb2alpha(color1rgb,200)
+    print("Test color rgb2alpha")
     print(color1rgb_alpha)
-    
+    print("Test color hex2rgba")
     color1rgba = hex2rgba(color1hex,200)
     print(color1rgba)
+    print("Test color_luminance")
+    print(color_luminance(color1hex))
+
+    colors_list = ('#f96767','#ff8400','#ffd500','#00fffb','#c1f7fb','#00eeff')
+    print(">Test sort_colors_luminance")
+    sort_colors_luminance(colors_list)
+    
+    print("Test contrast_ratio")
+    contrast_ratio('#475AC6','#1A1A22')
+    
+    print(blend2contrast('#475AC6','#1A1A22','#c1f7fb',4.5,0.1, True))
+
+    print(blend2contrast('#e1ffb4','#FEFCF5','#060605', 4.5, 0.01, False)) 
+    

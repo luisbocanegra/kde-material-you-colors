@@ -1,4 +1,4 @@
-from color_utils import blendColors, hex2rgb, hex2alpha
+from color_utils import blendColors, color_luminance, hex2rgb, hex2alpha, sort_colors_luminance, contrast_ratio, blend2contrast
 from utils import range_check, tup2str
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
@@ -7,6 +7,7 @@ class ThemeConfig:
         colors_best = colors['bestColors']
         tones_primary = colors['primaryTones']
         tones_neutral = colors['neutralTones']
+        tones_tertiary = colors['tertiaryTones']
         
         lbm = range_check(light_blend_multiplier,0,4)
         dbm = range_check(dark_blend_multiplier,0,4)
@@ -67,57 +68,73 @@ class ThemeConfig:
         }
         extras = self._extras
         
+        best_colors_count = len(colors_best)
+        best_colors_count = best_colors_count if best_colors_count > 7 else 8
         
-        tone = 30
         pywal_colors_dark = (extras['SurfaceDark'],)
         pywal_colors_dark_intense = (blendColors(
-            tones_neutral['45'], colors['dark']['Secondary'], .6*dbm),)
+            extras['SurfaceDark'], colors['dark']['Secondary'], .8),)
         pywal_colors_dark_faint =  (blendColors(
-            tones_neutral['80'], colors['dark']['Secondary'], .6*dbm),)
-        
-        for x in range(7):
-            str_x = str(x)
-            if str_x in colors_best.keys():
-                pywal_colors_dark += (blendColors(
-                    tones_neutral['60'], colors_best[str_x], .6*dbm),)
-                pywal_colors_dark_intense += (blendColors(
-                    tones_neutral['45'], colors_best[str_x], .6*dbm),)
-                pywal_colors_dark_faint += (blendColors(
-                    tones_neutral['80'], colors_best[str_x], .6*dbm),)
-            else:
-                pywal_colors_dark += (blendColors(
-                    tones_neutral['60'], tones_primary[str(tone)], .6*dbm),)
-                pywal_colors_dark_intense += (blendColors(
-                    tones_neutral['45'], tones_primary[str(tone)], .6*dbm),)
-                pywal_colors_dark_faint += (blendColors(
-                    tones_neutral['80'], tones_primary[str(tone)], .6*dbm),)
-                tone += 10
+            extras['SurfaceDark'], colors['dark']['Secondary'], .9),)
+        tone = 38
 
-        tone = 30
+        for x in range(best_colors_count):
+            str_x = str(x)
+            if str_x in colors_best.keys() and color_luminance(colors_best[str_x])[1] > .15:
+                pywal_colors_dark += (blend2contrast(colors_best[str_x], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
+            else:
+                pywal_colors_dark += (blend2contrast(tones_primary[str(tone)], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
+                pywal_colors_dark += (blend2contrast(tones_tertiary[str(tone)], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
+                tone += 8
+
+        all = pywal_colors_dark
+        pywal_colors_dark = (pywal_colors_dark[0],)
+        sorted_colors = sort_colors_luminance(all)[-8:]
+        for n in range(len(sorted_colors)):
+            pywal_colors_dark += (sorted_colors[n],)
+            pywal_colors_dark_intense += (blendColors(
+                    tones_neutral['1'], sorted_colors[n], .96),)
+            pywal_colors_dark_faint += (blendColors(
+                    tones_neutral['99'], sorted_colors[n], .85),)
+
+
+        tone = 38
         pywal_colors_light = (extras['SurfaceLight'],)
         pywal_colors_light_intense = (blendColors(
             tones_neutral['20'], colors['light']['Secondary'], .6*lbm),)
         pywal_colors_light_faint = (blendColors(
             tones_neutral['55'], colors['light']['Secondary'], .6*lbm),)
         
-        for x in range(7):
+        for x in range(best_colors_count):
             str_x = str(x)
-            if str_x in colors_best.keys():
-                pywal_colors_light += (blendColors(
-                    tones_neutral['30'], colors_best[str_x], .6*lbm),)
-                pywal_colors_light_intense += (blendColors(
-                    tones_neutral['20'], colors_best[str_x], .6*lbm),)
-                pywal_colors_light_faint += (blendColors(
-                    tones_neutral['55'], colors_best[str_x],.6*lbm),)
+            if str_x in colors_best.keys() : #and contrast_ratio(pywal_colors_light[0],colors_best[str_x]) > .8
+                pywal_colors_light += (blend2contrast(colors_best[str_x], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
             else:
-                pywal_colors_light += (blendColors(
-                    tones_neutral['30'], tones_primary[str(tone)], .6*lbm),)
-                pywal_colors_light_intense += (blendColors(
-                    tones_neutral['20'], tones_primary[str(tone)], .6*lbm),)
-                pywal_colors_light_faint += (blendColors(
-                    tones_neutral['55'], tones_primary[str(tone)], .6*lbm),)
-                tone += 10
+                pywal_colors_light += (blend2contrast(tones_primary[str(tone)], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
+                pywal_colors_light += (blend2contrast(tones_tertiary[str(tone)], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
+                tone += 8
+        
+        all = pywal_colors_light
+        pywal_colors_light = (pywal_colors_light[0],)
+        sorted_colors = sort_colors_luminance(sort_colors_luminance(all,reverse=True)[-8:])
 
+        for n in range(len(sorted_colors)):
+            pywal_colors_light_intense += (sorted_colors[n],)
+            pywal_colors_light += (blendColors(
+                    tones_neutral['40'], sorted_colors[n], .75*dbm),)
+            pywal_colors_light_faint += (blendColors(
+                    tones_neutral['40'], sorted_colors[n], .6*dbm),)
+
+
+        ''' print("CONTRAST CHECK DARK")
+        for color in pywal_colors_dark:
+            c = contrast_ratio(color, pywal_colors_dark[0])
+            print(f"{color} - {c}")
+        print("CONTRAST CHECK LIGHT")
+        for color in pywal_colors_light:
+            c = contrast_ratio(pywal_colors_light[0],color)
+            print(f"{color} - {c}") '''
+            
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['SurfaceLight1']}
 ColorAmount=0.55
