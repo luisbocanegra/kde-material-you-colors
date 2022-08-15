@@ -1,13 +1,15 @@
-from color_utils import blendColors, color_luminance, hex2rgb, hex2alpha, sort_colors_luminance, contrast_ratio, blend2contrast
+from color_utils import blendColors, color_luminance, hex2rgb, hex2alpha, sort_colors_luminance, blend2contrast, lighteen_color
 from utils import range_check, tup2str
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
         if toolbar_opacity == None:
             toolbar_opacity = 100
         colors_best = colors['bestColors']
-        tones_primary = colors['primaryTones']
-        tones_neutral = colors['neutralTones']
-        tones_tertiary = colors['tertiaryTones']
+        tones_primary = colors['palettes']['primaryTones']
+        tones_neutral = colors['palettes']['neutralTones']
+        tones_tertiary = colors['palettes']['tertiaryTones']
+        colors_light = colors['schemes']['light']
+        colors_dark = colors['schemes']['dark']
         
         lbm = range_check(light_blend_multiplier,0,4)
         dbm = range_check(dark_blend_multiplier,0,4)
@@ -24,47 +26,47 @@ class ThemeConfig:
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
-            "SurfaceLight": blendColors(colors['light']['Surface'], colors['light']['Primary'], 0.05*lbm),
-            "SurfaceDark": blendColors(tones_neutral['5'], colors['dark']['Primary'], 0.08*dbm),
+            "SurfaceLight": blendColors(colors_light['surface'], colors_light['primary'], 0.05*lbm),
+            "SurfaceDark": blendColors(tones_neutral[5], colors_dark['primary'], 0.08*dbm),
             
-            "SurfaceLight1": blendColors(colors['light']['Background'], colors['light']['Primary'], .08*lbm),
-            "SurfaceDark1": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .05*dbm),
+            "SurfaceLight1": blendColors(colors_light['background'], colors_light['primary'], .08*lbm),
+            "SurfaceDark1": blendColors(colors_dark['background'], colors_dark['primary'], .05*dbm),
 
-            "SurfaceLight2": blendColors(colors['light']['Background'], colors['light']['Primary'], .11*lbm),
-            "SurfaceDark2": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dbm),
+            "SurfaceLight2": blendColors(colors_light['background'], colors_light['primary'], .11*lbm),
+            "SurfaceDark2": blendColors(colors_dark['background'], colors_dark['primary'], .08*dbm),
 
-            "SurfaceLight3": blendColors(colors['light']['Background'], colors['light']['Primary'], .16*lbm),
-            "SurfaceDark3": blendColors(colors['dark']['Background'], colors['dark']['Primary'], .08*dbm),
+            "SurfaceLight3": blendColors(colors_light['background'], colors_light['primary'], .16*lbm),
+            "SurfaceDark3": blendColors(colors_dark['background'], colors_dark['primary'], .08*dbm),
 
-            "LinkOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Link'], .5),
-            "LinkVisitedOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Visited'], .8),
-            "NegativeOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Negative'], .8),
-            "PositiveOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Positive'], .8),
-            "NeutralOnPrimaryLight": blendColors(colors['light']['OnPrimary'], base_text_states['Neutral'], .8),
+            "LinkOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Link'], .5),
+            "LinkVisitedOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Visited'], .8),
+            "NegativeOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Negative'], .8),
+            "PositiveOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Positive'], .8),
+            "NeutralOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Neutral'], .8),
 
-            "LinkOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Link'], .5),
-            "LinkVisitedOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Visited'], .8),
-            "NegativeOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Negative'], .8),
-            "PositiveOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Positive'], .8),
-            "NeutralOnPrimaryDark": blendColors(colors['dark']['OnPrimary'], base_text_states['Neutral'], .8),
+            "LinkOnPrimaryDark": blendColors(colors_dark['onPrimary'], base_text_states['Link'], .5),
+            "LinkVisitedOnPrimaryDark": blendColors(colors_dark['onPrimary'], base_text_states['Visited'], .8),
+            "NegativeOnPrimaryDark": blendColors(colors_dark['onPrimary'], base_text_states['Negative'], .8),
+            "PositiveOnPrimaryDark": blendColors(colors_dark['onPrimary'], base_text_states['Positive'], .8),
+            "NeutralOnPrimaryDark": blendColors(colors_dark['onPrimary'], base_text_states['Neutral'], .8),
             #View
-            "LinkOnSurfaceLight": blendColors(colors['light']['OnSurface'], base_text_states['Link'], .5),
-            "LinkVisitedOnSurfaceLight": blendColors(colors['light']['OnSurface'], base_text_states['Visited'], .8),
-            "NegativeOnSurfaceLight": blendColors(colors['light']['OnSurface'], base_text_states['Negative'], .8),
-            "PositiveOnSurfaceLight": blendColors(colors['light']['OnSurface'], base_text_states['Positive'], .8),
-            "NeutralOnSurfaceLight": blendColors(colors['light']['OnSurface'], base_text_states['Neutral'], .8),
+            "LinkOnSurfaceLight": blendColors(colors_light['onSurface'], base_text_states['Link'], .5),
+            "LinkVisitedOnSurfaceLight": blendColors(colors_light['onSurface'], base_text_states['Visited'], .8),
+            "NegativeOnSurfaceLight": blendColors(colors_light['onSurface'], base_text_states['Negative'], .8),
+            "PositiveOnSurfaceLight": blendColors(colors_light['onSurface'], base_text_states['Positive'], .8),
+            "NeutralOnSurfaceLight": blendColors(colors_light['onSurface'], base_text_states['Neutral'], .8),
 
-            "LinkOnSurfaceDark": blendColors(colors['dark']['OnSurface'], base_text_states['Link'], .8),
-            "LinkVisitedOnSurfaceDark": blendColors(colors['dark']['OnSurface'], base_text_states['Visited'], .8),
-            "NegativeOnSurfaceDark": blendColors(colors['dark']['OnSurface'], base_text_states['Negative'], .8),
-            "PositiveOnSurfaceDark": blendColors(colors['dark']['OnSurface'], base_text_states['Positive'], .8),
-            "NeutralOnSurfaceDark": blendColors(colors['dark']['OnSurface'], base_text_states['Neutral'], .8),
+            "LinkOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Link'], .8),
+            "LinkVisitedOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Visited'], .8),
+            "NegativeOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Negative'], .8),
+            "PositiveOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Positive'], .8),
+            "NeutralOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Neutral'], .8),
 
-            "LightSelectionAlt": blendColors(colors['light']['Surface'], colors['light']['Secondary'], .02*lbm),
-            "DarkSelectionAlt": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .3*dbm),
+            "LightSelectionAlt": blendColors(colors_light['surface'], colors_light['secondary'], .02*lbm),
+            "DarkSelectionAlt": blendColors(colors_dark['background'], colors_dark['secondary'], .3*dbm),
 
-            "LightSelectionAltActive": blendColors(colors['light']['Background'], colors['light']['Secondary'], .5),
-            "DarkSelectionAltActive": blendColors(colors['dark']['Background'], colors['dark']['Secondary'], .5),
+            "LightSelectionAltActive": blendColors(colors_light['background'], colors_light['secondary'], .5),
+            "DarkSelectionAltActive": blendColors(colors_dark['background'], colors_dark['secondary'], .5),
         }
         extras = self._extras
         
@@ -73,57 +75,67 @@ class ThemeConfig:
         
         pywal_colors_dark = (extras['SurfaceDark'],)
         pywal_colors_dark_intense = (blendColors(
-            extras['SurfaceDark'], colors['dark']['Secondary'], .8),)
+            extras['SurfaceDark'], colors_dark['secondary'], .8),)
         pywal_colors_dark_faint =  (blendColors(
-            extras['SurfaceDark'], colors['dark']['Secondary'], .9),)
-        tone = 38
+            extras['SurfaceDark'], colors_dark['secondary'], .9),)
+        tone = 50
 
-        for x in range(best_colors_count):
+        for x in range(7):
             str_x = str(x)
-            if str_x in colors_best.keys() and color_luminance(colors_best[str_x])[1] > .15:
-                pywal_colors_dark += (blend2contrast(colors_best[str_x], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
+            if (len(pywal_colors_dark) <= 7):
+                if str_x in colors_best.keys(): #and color_luminance(colors_best[str_x])[1] > .15
+                    c = lighteen_color(colors_best[str_x],.2,tones_neutral[99])
+                    pywal_colors_dark += (blend2contrast(c, pywal_colors_dark[0], tones_neutral[99], 4.5, .01, True),)
+                else:
+                    if (len(pywal_colors_dark) <= 7):
+                        c = lighteen_color(tones_primary[tone],.2,tones_neutral[99])
+                        pywal_colors_dark += (blend2contrast(c, pywal_colors_dark[0], tones_neutral[99], 4.5, .01, True),)
+                    if (len(pywal_colors_dark) <= 7):
+                        c = lighteen_color(tones_tertiary[tone],.2,tones_neutral[99])
+                        pywal_colors_dark += (blend2contrast(c, pywal_colors_dark[0], tones_neutral[99], 4.5, .01, True),)
+                    if tone < 91:
+                        tone += 8
             else:
-                pywal_colors_dark += (blend2contrast(tones_primary[str(tone)], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
-                pywal_colors_dark += (blend2contrast(tones_tertiary[str(tone)], pywal_colors_dark[0], tones_neutral['99'], 4.5, .01, True),)
-                tone += 8
+                break
 
         all = pywal_colors_dark
         pywal_colors_dark = (pywal_colors_dark[0],)
-        sorted_colors = sort_colors_luminance(all)[-8:]
+        sorted_colors = sort_colors_luminance(all)[-7:]
         for n in range(len(sorted_colors)):
             pywal_colors_dark += (sorted_colors[n],)
             pywal_colors_dark_intense += (blendColors(
-                    tones_neutral['1'], sorted_colors[n], .96),)
+                    tones_neutral[1], sorted_colors[n], .96),)
             pywal_colors_dark_faint += (blendColors(
-                    tones_neutral['99'], sorted_colors[n], .85),)
+                    tones_neutral[99], sorted_colors[n], .85),)
 
 
         tone = 38
         pywal_colors_light = (extras['SurfaceLight'],)
         pywal_colors_light_intense = (blendColors(
-            tones_neutral['20'], colors['light']['Secondary'], .6*lbm),)
+            tones_neutral[20], colors_light['secondary'], .6*lbm),)
         pywal_colors_light_faint = (blendColors(
-            tones_neutral['55'], colors['light']['Secondary'], .6*lbm),)
+            tones_neutral[55], colors_light['secondary'], .6*lbm),)
         
         for x in range(best_colors_count):
             str_x = str(x)
-            if str_x in colors_best.keys() : #and contrast_ratio(pywal_colors_light[0],colors_best[str_x]) > .8
-                pywal_colors_light += (blend2contrast(colors_best[str_x], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
+            if str_x in colors_best.keys()and color_luminance(colors_best[str_x])[1] > .15: #and contrast_ratio(pywal_colors_light[0],colors_best[str_x]) > .8
+                pywal_colors_light += (blend2contrast(colors_best[str_x], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
             else:
-                pywal_colors_light += (blend2contrast(tones_primary[str(tone)], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
-                pywal_colors_light += (blend2contrast(tones_tertiary[str(tone)], pywal_colors_light[0], tones_neutral['20'], 4.5, .01, False),)
-                tone += 8
+                pywal_colors_light += (blend2contrast(tones_primary[tone], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
+                pywal_colors_light += (blend2contrast(tones_tertiary[tone], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
+                if tone < 91:
+                    tone += 8
         
         all = pywal_colors_light
         pywal_colors_light = (pywal_colors_light[0],)
-        sorted_colors = sort_colors_luminance(sort_colors_luminance(all,reverse=True)[-8:])
+        sorted_colors = sort_colors_luminance(sort_colors_luminance(all,reverse=True)[-7:])
 
         for n in range(len(sorted_colors)):
             pywal_colors_light_intense += (sorted_colors[n],)
             pywal_colors_light += (blendColors(
-                    tones_neutral['40'], sorted_colors[n], .75*dbm),)
+                    tones_neutral[40], sorted_colors[n], .75*lbm),)
             pywal_colors_light_faint += (blendColors(
-                    tones_neutral['40'], sorted_colors[n], .6*dbm),)
+                    tones_neutral[40], sorted_colors[n], .6*lbm),)
 
 
         ''' print("CONTRAST CHECK DARK")
@@ -147,7 +159,7 @@ IntensityEffect=2
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=false
-Color={colors['light']['SurfaceVariant']}
+Color={colors_light['surfaceVariant']}
 ColorAmount=0.025
 ColorEffect=2
 ContrastAmount=0.1
@@ -157,116 +169,116 @@ IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
-BackgroundAlternate={colors['light']['SurfaceVariant']}
+BackgroundAlternate={colors_light['surfaceVariant']}
 BackgroundNormal={extras['LightSelectionAlt']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['OnSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['onSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
 ForegroundNegative={base_text_states['Negative']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['light']['OnSurface']}
+ForegroundNormal={colors_light['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Complementary]
 BackgroundAlternate={extras['SurfaceLight']}
 BackgroundNormal={extras['SurfaceLight3']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['InverseSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['inverseSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['light']['OnSurfaceVariant']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
 BackgroundAlternate={extras['SurfaceLight']}
 BackgroundNormal={extras['SurfaceLight3']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['InverseSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['inverseSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['light']['OnSurfaceVariant']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header][Inactive]
 BackgroundAlternate={extras['SurfaceLight']}
 BackgroundNormal={extras['SurfaceLight3']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['InverseSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['inverseSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['light']['OnSurfaceVariant']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Selection]
-BackgroundAlternate={colors['light']['Primary']}
-BackgroundNormal={colors['light']['Primary']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['OnPrimary']}
-ForegroundInactive={colors['light']['OnPrimary']}
+BackgroundAlternate={colors_light['primary']}
+BackgroundNormal={colors_light['primary']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['onPrimary']}
+ForegroundInactive={colors_light['onPrimary']}
 ForegroundLink={extras['LinkOnPrimaryLight']}
 ForegroundNegative={extras['NegativeOnPrimaryLight']}
 ForegroundNeutral={extras['NeutralOnPrimaryLight']}
-ForegroundNormal={colors['light']['OnPrimary']}
+ForegroundNormal={colors_light['onPrimary']}
 ForegroundPositive={extras['PositiveOnPrimaryLight']}
 ForegroundVisited={extras['LinkVisitedOnPrimaryLight']}
 
 [Colors:Tooltip]
-BackgroundAlternate={colors['light']['SurfaceVariant']}
+BackgroundAlternate={colors_light['surfaceVariant']}
 BackgroundNormal={extras['SurfaceLight']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['OnSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['onSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['light']['OnSurface']}
+ForegroundNormal={colors_light['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
 BackgroundAlternate={extras['SurfaceLight2']}
 BackgroundNormal={extras['SurfaceLight']}
-DecorationFocus={colors['light']['Primary']}
+DecorationFocus={colors_light['primary']}
 #-----------------------------------------------
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['InverseSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['inverseSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={extras['LinkOnSurfaceDark']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={extras['NeutralOnSurfaceDark']}
-ForegroundNormal={colors['light']['OnSurfaceVariant']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={extras['PositiveOnSurfaceDark']}
 ForegroundVisited={extras['LinkVisitedOnSurfaceDark']}
 
 [Colors:Window]
 BackgroundAlternate={extras['SurfaceLight']}
 BackgroundNormal={extras['SurfaceLight3']}
-DecorationFocus={colors['light']['Primary']}
-DecorationHover={colors['light']['Primary']}
-ForegroundActive={colors['light']['InverseSurface']}
-ForegroundInactive={colors['light']['Outline']}
+DecorationFocus={colors_light['primary']}
+DecorationHover={colors_light['primary']}
+ForegroundActive={colors_light['inverseSurface']}
+ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['light']['Error']}
+ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
 #--- Window titles, context icons
-ForegroundNormal={colors['light']['OnSurfaceVariant']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
@@ -281,10 +293,10 @@ contrast=4
 [WM]
 activeBackground={hex2alpha(extras['SurfaceLight3'],toolbar_opacity)}
 activeBlend=227,229,231
-activeForeground={colors['light']['OnSurface']}
-inactiveBackground={hex2alpha(colors['light']['SecondaryContainer'],toolbar_opacity)}
+activeForeground={colors_light['onSurface']}
+inactiveBackground={hex2alpha(colors_light['secondaryContainer'],toolbar_opacity)}
 inactiveBlend=239,240,241
-inactiveForeground={colors['light']['OnSurfaceVariant']}
+inactiveForeground={colors_light['onSurfaceVariant']}
         """
 
         self._dark_scheme = f"""[ColorEffects:Disabled]
@@ -298,7 +310,7 @@ IntensityEffect=2
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=false
-Color=Color={colors['dark']['SurfaceVariant']}
+Color=Color={colors_dark['surfaceVariant']}
 ColorAmount=0.025
 ColorEffect=2
 ContrastAmount=0.1
@@ -308,118 +320,118 @@ IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
-BackgroundAlternate={colors['dark']['SurfaceVariant']}
+BackgroundAlternate={colors_dark['surfaceVariant']}
 BackgroundNormal={extras['DarkSelectionAlt']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['OnSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['onSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['dark']['OnSurface']}
+ForegroundNormal={colors_dark['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Complementary]
 BackgroundAlternate={extras['SurfaceDark']}
 BackgroundNormal={extras['SurfaceDark3']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['InverseSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['inverseSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['dark']['OnSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
 BackgroundAlternate={extras['SurfaceDark']}
 BackgroundNormal={extras['SurfaceDark3']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['InverseSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['inverseSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['dark']['OnSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header][Inactive]
 BackgroundAlternate={extras['SurfaceDark']}
 BackgroundNormal={extras['SurfaceDark3']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['InverseSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['inverseSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['dark']['OnSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Selection]
-BackgroundAlternate={colors['dark']['Primary']}
-BackgroundNormal={colors['dark']['Primary']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['OnPrimary']}
-ForegroundInactive={colors['dark']['OnPrimary']}
+BackgroundAlternate={colors_dark['primary']}
+BackgroundNormal={colors_dark['primary']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['onPrimary']}
+ForegroundInactive={colors_dark['onPrimary']}
 ForegroundLink={extras['LinkOnPrimaryDark']}
 ForegroundNegative={extras['NegativeOnPrimaryDark']}
 ForegroundNeutral={extras['NeutralOnPrimaryDark']}
-ForegroundNormal={colors['dark']['OnPrimary']}
+ForegroundNormal={colors_dark['onPrimary']}
 ForegroundPositive={extras['PositiveOnPrimaryDark']}
 ForegroundVisited={extras['LinkVisitedOnPrimaryDark']}
 
 
 
 [Colors:Tooltip]
-BackgroundAlternate={colors['dark']['SurfaceVariant']}
+BackgroundAlternate={colors_dark['surfaceVariant']}
 BackgroundNormal={extras['SurfaceDark']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['OnSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['onSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors['dark']['OnSurface']}
+ForegroundNormal={colors_dark['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
 BackgroundAlternate={extras['SurfaceDark2']}
 BackgroundNormal={extras['SurfaceDark']}
-DecorationFocus={colors['dark']['Primary']}
+DecorationFocus={colors_dark['primary']}
 #-----------------------------------------------
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['InverseSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['inverseSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={extras['LinkOnSurfaceDark']}
 ForegroundNegative={extras['NegativeOnSurfaceDark']}
 ForegroundNeutral={extras['NeutralOnSurfaceDark']}
-ForegroundNormal={colors['dark']['OnSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={extras['PositiveOnSurfaceDark']}
 ForegroundVisited={extras['LinkVisitedOnSurfaceDark']}
 
 [Colors:Window]
 BackgroundAlternate={extras['SurfaceDark']}
 BackgroundNormal={extras['SurfaceDark3']}
-DecorationFocus={colors['dark']['Primary']}
-DecorationHover={colors['dark']['Primary']}
-ForegroundActive={colors['dark']['InverseSurface']}
-ForegroundInactive={colors['dark']['Outline']}
+DecorationFocus={colors_dark['primary']}
+DecorationHover={colors_dark['primary']}
+ForegroundActive={colors_dark['inverseSurface']}
+ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={colors['dark']['Error']}
+ForegroundNegative={colors_dark['error']}
 ForegroundNeutral={base_text_states['Neutral']}
 #--- Window titles, context icons
-ForegroundNormal={colors['dark']['OnSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
@@ -434,10 +446,10 @@ contrast=4
 [WM]
 activeBackground={hex2alpha(extras['SurfaceDark3'],toolbar_opacity)}
 activeBlend=252,252,252
-activeForeground={colors['dark']['OnSurface']}
-inactiveBackground={hex2alpha(colors['dark']['SecondaryContainer'],toolbar_opacity)}
+activeForeground={colors_dark['onSurface']}
+inactiveBackground={hex2alpha(colors_dark['secondaryContainer'],toolbar_opacity)}
 inactiveBlend=161,169,177
-inactiveForeground={colors['dark']['OnSecondaryContainer']}
+inactiveForeground={colors_dark['onSecondaryContainer']}
         """
 
         self._wal_light_scheme = {
@@ -447,16 +459,16 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
             "special": {
                 "background": pywal_colors_light[0],
                 "backgroundIntense": blendColors(
-            tones_neutral['8'], colors['light']['Primary'], .0),
+            tones_neutral[8], colors_light['primary'], .0),
                 "backgroundFaint": blendColors(
-            tones_neutral['8'], colors['light']['Primary'], .35),
-                "foreground": colors['light']['OnSurface'],
+            tones_neutral[8], colors_light['primary'], .35),
+                "foreground": colors_light['onSurface'],
                 "foregroundIntense": blendColors(
-            colors['light']['OnSurface'], colors['light']['Secondary'], .7),
+            colors_light['onSurface'], colors_light['secondary'], .7),
                 "foregroundFaint": blendColors(
-            colors['light']['OnSurface'], colors['light']['Secondary'], .35),
+            colors_light['onSurface'], colors_light['secondary'], .35),
                 
-                "cursor": colors['dark']['OnSurface'],
+                "cursor": colors_dark['onSurface'],
             },
             
             "colors": {
@@ -494,15 +506,15 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
             "special": {
                 "background": pywal_colors_dark[0],
                 "backgroundIntense": blendColors(
-            tones_neutral['8'], colors['dark']['Primary'], .0),
+            tones_neutral[8], colors_dark['primary'], .0),
                 "backgroundFaint": blendColors(
-            tones_neutral['8'], colors['dark']['Primary'], .35),
-                "foreground": colors['dark']['OnSurface'],
+            tones_neutral[8], colors_dark['primary'], .35),
+                "foreground": colors_dark['onSurface'],
                 "foregroundIntense": blendColors(
-            colors['dark']['OnSurface'], colors['dark']['Secondary'], .7),
+            colors_dark['onSurface'], colors_dark['secondary'], .7),
                 "foregroundFaint": blendColors(
-            colors['dark']['OnSurface'], colors['dark']['Secondary'], .35),
-                "cursor": colors['dark']['OnSurface'],
+            colors_dark['onSurface'], colors_dark['secondary'], .35),
+                "cursor": colors_dark['onSurface'],
             },
             
             "colors": {
@@ -532,32 +544,32 @@ inactiveForeground={colors['dark']['OnSecondaryContainer']}
                 "color23": pywal_colors_dark_faint[7]
             }
         }
-        dark_active=colors['dark']['OnBackground']
+        dark_active=colors_dark['onBackground']
         dark_inactive=extras['SurfaceDark3']
         
-        light_active=colors['light']['OnBackground']
+        light_active=colors_light['onBackground']
         light_inactive=extras['SurfaceLight3']
     
         self._sierra_breeze_dark_colors = {
-            "btn_close_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['80'], .7))),
-            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['70'], .7))),
-            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary['55'], .7))),
+            "btn_close_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[80], .7))),
+            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
+            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
             "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#118cff", .7))),
             "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#5d00b9", .7))),
             "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#00b9b9", .7))),
             "btn_shade_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#b900b6", .7))),
-            "btn_inactive_color" : tup2str(hex2rgb(blendColors(dark_inactive, colors['dark']['Secondary'], .32)))
+            "btn_inactive_color" : tup2str(hex2rgb(blendColors(dark_inactive, colors_dark['secondary'], .32)))
         }
         
         self._sierra_breeze_light_colors = {
-            "btn_close_active_color" : tup2str(hex2rgb(blendColors(tones_primary['50'],light_active, .05*lbm))),
-            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(tones_primary['60'],light_active, .05*lbm))),
-            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(tones_primary['70'],light_active, .05*lbm))),
+            "btn_close_active_color" : tup2str(hex2rgb(blendColors(tones_primary[50],light_active, .05*lbm))),
+            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(tones_primary[60],light_active, .05*lbm))),
+            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(tones_primary[70],light_active, .05*lbm))),
             "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors("#118cff", light_active, .05*lbm))),
             "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors("#5d00b9", light_active, .05*lbm))),
             "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors("#00b9b9", light_active, .05*lbm))),
             "btn_shade_active_color" : tup2str(hex2rgb(blendColors("#b900b6", light_active, .05*lbm))),
-            "btn_inactive_color" : tup2str(hex2rgb(blendColors(light_inactive, colors['light']['Secondary'], .32)))
+            "btn_inactive_color" : tup2str(hex2rgb(blendColors(light_inactive, colors_light['secondary'], .32)))
         }
 
     def get_extras(self):
