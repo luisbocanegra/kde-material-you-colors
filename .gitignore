@@ -129,11 +129,3 @@ dmypy.json
 .pyre/
 .fake
 .ionide
-
-### DotnetCore ###
-# .NET Core build folders
-material-color-utility/bin/
-material-color-utility/obj/
-
-# Ship libSkiaSharp.so
-!libSkiaSharp.so
