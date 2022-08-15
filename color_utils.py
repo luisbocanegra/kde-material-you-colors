@@ -1,5 +1,7 @@
 import operator
-import numpy
+import numpy, colorsys
+from material_color_utilities_python.utils.theme_utils import *
+
 def hex2rgb(hex):
     hex = hex.lstrip('#')
     rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
@@ -180,44 +182,93 @@ def blend2contrast(lighter_color, darker_color, blend_color, min_contrast, blend
             else:
                 new = blendColors(lighter_color ,blend_color, blend_ratio)
                 contrast = contrast_ratio(darker_color, new)
-            #time.sleep(1)
             # print(f"new: {new} vs {darker_color} blend: {blend_ratio} contrast: {contrast}")
         return new
     else:
         return blendColors(lighter_color, blend_color, .12)
 
+def scale_lightness(hex_color, amount):
+    r, g, b = hex2rgb(hex_color)
+    # convert rgb to hls
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    # manipulate value and convert back to rgb
+    r, g, b = colorsys.hsv_to_rgb(h, s, amount)
+    o_hex = rgb2hex(int(r), int(g), int(b))
+    # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
+    return o_hex
+
+def lighteen_color(hex_color, min, blend):
+    current_luminance = color_luminance(hex_color)[1]
+    # print(f"original luminance: {current_luminance}")
+    if current_luminance < min:
+        new_lightness = 255.0*(1.0-current_luminance)
+        # print(f increase lightness to {new_lightness}")
+        new_color = scale_lightness(hex_color, new_lightness)
+    else:
+        new_color = hex_color
+    o = blendColors(new_color,blend,0.2)
+    # print(f"result after blend: {o}")
+    return o
 
 # Tests
 if __name__ == '__main__':
     # Test color blend
-    print("Test color blend")
+    print("> Test color blend #ff0000 , #00ff00")
     print(blendColors('#ff0000', "#00ff00", .01))
     print(blendColors('#ff0000', "#00ff00", .25))
     print(blendColors('#ff0000', "#00ff00", .5))
     print(blendColors('#ff0000', "#00ff00", .75))
     print(blendColors('#ff0000', "#00ff00", .99))
     
-    print("Test color hex2alpha")
-    print(hex2alpha('#ff0000',128))
+    print("> Test color hex2alpha '#ff0000',50")
+    print(hex2alpha('#ff0000',50))
+    
     color1hex = '#082523'
     color1rgb = hex2rgb(color1hex)
     color1rgb_alpha= rgb2alpha(color1rgb,200)
-    print("Test color rgb2alpha")
+    
+    print("> Test color rgb2alpha")
     print(color1rgb_alpha)
-    print("Test color hex2rgba")
+    print("> Test color hex2rgba")
     color1rgba = hex2rgba(color1hex,200)
     print(color1rgba)
-    print("Test color_luminance")
+    print("> Test color_luminance")
     print(color_luminance(color1hex))
 
-    colors_list = ('#f96767','#ff8400','#ffd500','#00fffb','#c1f7fb','#00eeff')
-    print(">Test sort_colors_luminance")
-    sort_colors_luminance(colors_list)
+    colors_list = ('#f96767','#222250','#ff8400','#ffd500','#00fffb','#c1f7fb','#00eeff')
+    print("> Test sort_colors_luminance '#f96767','#222250','#ff8400','#ffd500','#00fffb','#c1f7fb','#00eeff'")
+    print(sort_colors_luminance(colors_list))
     
-    print("Test contrast_ratio")
-    contrast_ratio('#475AC6','#1A1A22')
+    print("> Test contrast_ratio '#475AC6','#1A1A22'")
+    print(contrast_ratio('#475AC6','#1A1A22'))
     
+    print("> Test blend2contrast '#475AC6','#1A1A22','#c1f7fb',4.5 ,0.1, True")
     print(blend2contrast('#475AC6','#1A1A22','#c1f7fb',4.5,0.1, True))
-
+    print("> Test blend2contrast '#e1ffb4','#FEFCF5','#060605', 4.5, 0.01, False")
     print(blend2contrast('#e1ffb4','#FEFCF5','#060605', 4.5, 0.01, False)) 
+
+    print("> Oklab vs cam16 blend '#ff0000', '#0000ff', .5")
+    print(f"oklab: {blendColors('#ff0000', '#0000ff', .5)}")
+    print(f"cam16: {hexFromArgb(Blend.cam16Ucs(argbFromHex('#ff0000'),argbFromHex('#0000ff'),0.5))}")
     
+    print("> lighteen_color '#b70708',.15,'#ffffff'")
+    print(lighteen_color('#b70708',.15,'#ffffff'))
+    
+    test_colors = [ '#000000',
+                    '#4141a6',
+                    '#1dc136',
+                    '#bbb13c',
+                    '#ed19cd',
+                    '#e40f0f',
+                    '#fe6c0b',
+                    '#fff000',
+                    '#36e5d3',
+                    '#131aed',
+                    '#ff0000',
+                    '#00ff00',
+                    '#0000ff',
+                    '#ffffff'
+                ]
+    
+    for color in test_colors:
+        print(color_luminance(color))
