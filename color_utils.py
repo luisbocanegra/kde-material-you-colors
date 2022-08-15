@@ -210,6 +210,16 @@ def lighteen_color(hex_color, min, blend):
     # print(f"result after blend: {o}")
     return o
 
+def scale_saturation(hex_color, amount):
+    r, g, b = hex2rgb(hex_color)
+    # convert rgb to hls
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    # manipulate value and convert back to rgb
+    r, g, b = colorsys.hsv_to_rgb(h, amount, v)
+    o_hex = rgb2hex(int(r), int(g), int(b))
+    # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
+    return o_hex
+
 # Tests
 if __name__ == '__main__':
     # Test color blend
