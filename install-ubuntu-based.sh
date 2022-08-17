@@ -10,11 +10,11 @@ fi;
 
 echo -e "${BGreen}Installing dependencies${clean}"
 apt update
-apt install python3 python3-dbus python3-numpy python3-pillow python3-pip
+apt install python3 python3-dbus python3-numpy python3-pillow python3-pip python3-regex
 
-echo -e "${BGreen}Installing python PIP package material_color_utilities_python as user $SUDO_USER ${clean}"
+echo -e "${BGreen}Installing python PIP package material-color-utilities-python as user $SUDO_USER ${clean}"
 
-sudo -u $SUDO_USER pip3 install monet/material_color_utilities_python-0.1.0-py3-none-any.whl
+pip3 install material-color-utilities-python
 
 echo -e "${BGreen}Installing kde-material-you-colors${clean}"
 # Cleanup
