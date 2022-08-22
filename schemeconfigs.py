@@ -173,7 +173,7 @@ IntensityAmount=0.1
 IntensityEffect=2
 
 [ColorEffects:Inactive]
-ChangeSelectionColor=false
+ChangeSelectionColor=true
 Color={colors_light['surfaceVariant']}
 ColorAmount=0.025
 ColorEffect=2
@@ -324,7 +324,7 @@ IntensityAmount=0.1
 IntensityEffect=2
 
 [ColorEffects:Inactive]
-ChangeSelectionColor=false
+ChangeSelectionColor=true
 Color=Color={colors_dark['surfaceVariant']}
 ColorAmount=0.025
 ColorEffect=2
