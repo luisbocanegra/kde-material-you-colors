@@ -8,9 +8,8 @@ This is a Python script that uses the [C# implementation](https://github.com/alb
 <img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
 </div>
 <div>
-<img src="https://user-images.githubusercontent.com/15076387/163059211-e5e56e10-e841-487e-83ea-60a97497bd6e.png"  alt="Screenshot">
+<img src="https://user-images.githubusercontent.com/15076387/185829703-fd3f889a-3a20-41a9-8069-e050af273038.png"  alt="Screenshot">
 </div>
-
 
 ### Video demo:
 
@@ -294,7 +293,8 @@ And run `kde-material-you-colors` with no arguments from terminal to test it.
 - If you encounter a problem or have an idea for a cool feature don't hesitate to open an issue using the **issue templates**, pull requests are also welcomed.
 
 # Thanks & Credits
-- [@albi005 (Albert Ragány-Németh)](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities which I found the easiest to work with.
+- [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities used in this script.
+- [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities that was used until v0.8.0.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
 - [Pywal](https://github.com/dylanaraps/pywal) developers 
