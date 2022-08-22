@@ -66,7 +66,10 @@ class ThemeConfig:
         self._extras.update(
                 {
                 "DarkSelectionAlt": blendColors(tones_secondary[30], self._extras['SurfaceDark3'], .05*dbm),
-                "LightSelectionAlt": blendColors(self._extras['SurfaceLight3'], tones_primary[30], .05*lbm)
+                "LightSelectionAlt": blendColors(self._extras['SurfaceLight3'], tones_primary[30], .05*lbm),
+                
+                "DarkSelectionHover": blendColors(tones_secondary[50], self._extras['SurfaceDark3'], .1*dbm),
+                "LightSelectionHover": blendColors(self._extras['SurfaceLight3'], tones_primary[50], .1*lbm),
                 }
             )
 
@@ -272,7 +275,7 @@ BackgroundAlternate={extras['SurfaceLight2']}
 BackgroundNormal={extras['SurfaceLight']}
 DecorationFocus={colors_light['primary']}
 #-----------------------------------------------
-DecorationHover={colors_light['primary']}
+DecorationHover={extras['LightSelectionHover']}
 ForegroundActive={colors_light['inverseSurface']}
 ForegroundInactive={colors_light['outline']}
 ForegroundLink={extras['LinkOnSurfaceDark']}
@@ -425,7 +428,7 @@ BackgroundAlternate={extras['SurfaceDark2']}
 BackgroundNormal={extras['SurfaceDark']}
 DecorationFocus={colors_dark['primary']}
 #-----------------------------------------------
-DecorationHover={colors_dark['primary']}
+DecorationHover={colors_dark['inversePrimary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={extras['LinkOnSurfaceDark']}
