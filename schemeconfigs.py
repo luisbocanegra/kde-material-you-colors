@@ -1,4 +1,4 @@
-from color_utils import blendColors, contrast_ratio, hex2rgb, hex2alpha, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
+from color_utils import blendColors, contrast_ratio, hex2rgb, hex2alpha, scale_lightness, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
 from utils import range_check, tup2str
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
@@ -6,6 +6,7 @@ class ThemeConfig:
             toolbar_opacity = 100
         colors_best = colors['bestColors']
         tones_primary = colors['palettes']['primaryTones']
+        tones_secondary = colors['palettes']['secondaryTones']
         tones_neutral = colors['palettes']['neutralTones']
         tones_tertiary = colors['palettes']['tertiaryTones']
         colors_light = colors['schemes']['light']
@@ -26,17 +27,15 @@ class ThemeConfig:
 
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
-            "SurfaceLight": blendColors(colors_light['surface'], colors_light['primary'], 0.05*lbm),
-            "SurfaceDark": blendColors(tones_neutral[5], colors_dark['primary'], 0.08*dbm),
+            "SurfaceLight": blendColors(colors_light['background'], tones_primary[70], 0.13*lbm),
+            "SurfaceLight1": blendColors(colors_light['background'], tones_primary[70], .18*lbm),
+            "SurfaceLight2": blendColors(colors_light['background'], tones_primary[70], .23*lbm),
+            "SurfaceLight3": blendColors(colors_light['background'], tones_primary[70], .20*lbm),
             
-            "SurfaceLight1": blendColors(colors_light['background'], colors_light['primary'], .08*lbm),
-            "SurfaceDark1": blendColors(colors_dark['background'], colors_dark['primary'], .05*dbm),
-
-            "SurfaceLight2": blendColors(colors_light['background'], colors_light['primary'], .11*lbm),
-            "SurfaceDark2": blendColors(colors_dark['background'], colors_dark['primary'], .08*dbm),
-
-            "SurfaceLight3": blendColors(colors_light['background'], colors_light['primary'], .16*lbm),
-            "SurfaceDark3": blendColors(colors_dark['background'], colors_dark['primary'], .08*dbm),
+            "SurfaceDark": blendColors(tones_neutral[5], tones_primary[40], 0.08*dbm),
+            "SurfaceDark1": blendColors(colors_dark['background'], tones_primary[40], .05*dbm),
+            "SurfaceDark2": blendColors(colors_dark['background'], tones_primary[40], .08*dbm),
+            "SurfaceDark3": blendColors(colors_dark['background'], tones_primary[40], .11*dbm),
 
             "LinkOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Link'], .5),
             "LinkVisitedOnPrimaryLight": blendColors(colors_light['onPrimary'], base_text_states['Visited'], .8),
@@ -61,13 +60,16 @@ class ThemeConfig:
             "NegativeOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Negative'], .8),
             "PositiveOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Positive'], .8),
             "NeutralOnSurfaceDark": blendColors(colors_dark['onSurface'], base_text_states['Neutral'], .8),
-
-            "LightSelectionAlt": blendColors(colors_light['surface'], colors_light['secondary'], .02*lbm),
-            "DarkSelectionAlt": blendColors(colors_dark['background'], colors_dark['secondary'], .3*dbm),
-
             "LightSelectionAltActive": blendColors(colors_light['background'], colors_light['secondary'], .5),
             "DarkSelectionAltActive": blendColors(colors_dark['background'], colors_dark['secondary'], .5),
         }
+        self._extras.update(
+                {
+                "DarkSelectionAlt": blendColors(tones_secondary[30], self._extras['SurfaceDark3'], .05*dbm),
+                "LightSelectionAlt": blendColors(self._extras['SurfaceLight3'], tones_primary[30], .05*lbm)
+                }
+            )
+
         extras = self._extras
         
         best_colors_count = len(colors_best)
@@ -112,33 +114,25 @@ class ThemeConfig:
         tone = 50
         pywal_colors_light = (extras['SurfaceLight'],)
         pywal_colors_light_intense = (blendColors(
-            tones_neutral[20], colors_light['secondary'], .8*lbm),)
+            tones_neutral[50], colors_light['secondary'], .8*lbm),)
         pywal_colors_light_faint = (blendColors(
-            tones_neutral[55], colors_light['secondary'], .8*lbm),)
+            tones_neutral[75], colors_light['secondary'], .8*lbm),)
         
-        # for x in range(7):
-        #     str_x = str(x)
-        #     if str_x in colors_best.keys()and color_luminance(colors_best[str_x])[1] > .15: #and contrast_ratio(pywal_colors_light[0],colors_best[str_x]) > .8
-        #         pywal_colors_light += (blend2contrast(colors_best[str_x], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
-        #     else:
-        #         pywal_colors_light += (blend2contrast(tones_primary[tone], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
-        #         pywal_colors_light += (blend2contrast(tones_tertiary[tone], pywal_colors_light[0], tones_neutral[20], 4.5, .01, False),)
-        #         if tone < 91:
-        #             tone += 8
-        
+
         for x in range(7):
             str_x = str(x)
             if (len(pywal_colors_light) <= 7):
                 if str_x in colors_best.keys():
-                    c = scale_saturation(colors_best[str_x],1)
-                    pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[20], 3, .01, False),)
+                    c =  scale_saturation(colors_best[str_x],1)
+                    c = lighteen_color(c,.2,tones_neutral[99])
+                    pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[10], 4.5, .01, False),)
                 else:
                     if (len(pywal_colors_light) <= 7):
-                        c = scale_saturation(tones_primary[tone],1)
-                        pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[20], 3, .01, False),)
+                        c =  scale_saturation(tones_primary[tone],1)
+                        pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[10], 4.5, .01, False),)
                     if (len(pywal_colors_light) <= 7):
-                        c = scale_saturation(tones_tertiary[tone],1)
-                        pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[20], 3, .01, False),)
+                        c =  scale_saturation(tones_tertiary[tone],1)
+                        pywal_colors_light += (blend2contrast(c, pywal_colors_light[0], tones_neutral[10], 4.5, .01, False),)
                     if tone < 91:
                         tone += 8
             else:
@@ -149,11 +143,14 @@ class ThemeConfig:
         sorted_colors = sort_colors_luminance(all,True)[-7:]
 
         for n in range(len(sorted_colors)):
-            pywal_colors_light_intense += (sorted_colors[n],)
             pywal_colors_light += (blendColors(
-                    tones_neutral[30], sorted_colors[n], .8*lbm),)
+                    tones_neutral[38], sorted_colors[n], .8*lbm),)
+            
+            pywal_colors_light_intense += (blendColors(
+                    tones_neutral[33], sorted_colors[n], .8*lbm),)
+            
             pywal_colors_light_faint += (blendColors(
-                    tones_neutral[60], sorted_colors[n], .8*lbm),)
+                    tones_neutral[23], sorted_colors[n], .8*lbm),)
 
 
         # print("CONTRAST CHECK DARK")
