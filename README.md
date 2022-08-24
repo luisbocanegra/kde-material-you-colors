@@ -54,26 +54,40 @@ Table of Contents
 - Dynamically update Konsole color scheme (check Configuration section for instructions)
 
 # Installing
-### Arch Linux
+## Arch Linux
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors)
-### Other distributions
+## Other distributions
 1. Clone/download this repository and cd to it
 ```sh
-git clone https://github.com/luisbocanegra/kde-material-you-colors
+git clone https://github.com/luisbocanegra/kde-material-you-colors --branch main --single-branch --depth 1
 cd kde-material-you-colors
 ```
 2. Make the installer executable and run it as root
-- For Ubuntu based distros:
+
+For Ubuntu based distros:
 ```sh
 chmod +x install-ubuntu-based.sh
 sudo ./install-ubuntu-based.sh
 ```
-- For Fedora based distros:
+For Fedora based distros:
 ```sh
 chmod +x install-fedora-based.sh
 sudo ./install-fedora-based.sh
 ```
-### Optional features
+### Updating
+
+Fetch latest changes:
+
+```sh
+cd kde-material-you-colors
+git fetch --depth 1
+git reset --hard origin/main
+git clean -dfx
+```
+
+Repeat step 2
+
+## Optional features
 - Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
   - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) for scripts to theme supported programs 
