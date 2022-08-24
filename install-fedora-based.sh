@@ -21,12 +21,12 @@ echo -e "${BGreen}Installing kde-material-you-colors${clean}"
 rm -rf /usr/lib/${pkgname}
 
 mkdir -p /usr/lib/${pkgname}
-cp -f *.{py,conf,desktop} /usr/lib/${pkgname}/
-cp -f kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
+cp -f src/*.{py,conf,desktop} /usr/lib/${pkgname}/
+cp -f src/kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
 chmod 755 /usr/lib/${pkgname}/*.py
 
 mkdir -p /usr/share/licenses/kde-material-you-colors/
-cp -f LICENSE /usr/share/licenses/${pkgname}/LICENSE
+cp -f src/LICENSE /usr/share/licenses/${pkgname}/LICENSE
 chmod 664 /usr/share/licenses/${pkgname}/LICENSE
 chmod 664 /usr/lib/${pkgname}/*.{desktop,conf}
 
