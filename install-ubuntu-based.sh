@@ -26,7 +26,7 @@ cp -f src/kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
 chmod 755 /usr/lib/${pkgname}/*.py
 
 mkdir -p /usr/share/licenses/kde-material-you-colors/
-cp -f src/LICENSE /usr/share/licenses/${pkgname}/LICENSE
+cp -f LICENSE /usr/share/licenses/${pkgname}/LICENSE
 chmod 664 /usr/share/licenses/${pkgname}/LICENSE
 chmod 664 /usr/lib/${pkgname}/*.{desktop,conf}
 
