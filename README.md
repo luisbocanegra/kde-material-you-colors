@@ -1,15 +1,21 @@
-# KDE Material You Colors
+<div align="center">  
+
+# 🎨 KDE Material You Colors
+
 ### Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
 
-This is a Python script that uses the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) by @albi005, to extract a color from an image and then generate a Material Design 3 color scheme. Which is used to generate both Light and Dark Color Themes for KDE.
-<div>
-</img>
-<img src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg"></img>
-<img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
+This is a Python script that uses the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) to generate a Material Design 3 color scheme. 
+Which is used to generate Light and Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, automatically.
+
+![](https://img.shields.io/static/v1?style=for-the-badge&label=Made%20with&message=Python&color=1f425f&logo=python&labelColor=2d333b)
+![](https://img.shields.io/static/v1?style=for-the-badge&label=Maintained&message=yes&color=1f425f&eColor=181818&labelColor=2d333b)
+![](https://img.shields.io/github/v/release/luisbocanegra/kde-material-you-colors?include_prereleases&style=for-the-badge&color=1f425f&labelColor=2d333b)
 </div>
+
 <div>
 <img src="https://user-images.githubusercontent.com/15076387/185829703-fd3f889a-3a20-41a9-8069-e050af273038.png"  alt="Screenshot">
 </div>
+
 
 ### Video demo:
 
@@ -293,8 +299,8 @@ And run `kde-material-you-colors` with no arguments from terminal to test it.
 - If you encounter a problem or have an idea for a cool feature don't hesitate to open an issue using the **issue templates**, pull requests are also welcomed.
 
 # Thanks & Credits
-- [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities used in this script.
-- [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities that was used until v0.8.0.
+- [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required in this script.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
 - [Pywal](https://github.com/dylanaraps/pywal) developers 
+- [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities (used until v0.8.0).
