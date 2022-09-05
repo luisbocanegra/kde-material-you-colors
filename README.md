@@ -302,10 +302,6 @@ ncolor = 0
 
 And run `kde-material-you-colors` with no arguments from terminal to test it.
 
-&emsp;&emsp;**OR** Manually delete ~/.config/autostart/kde-material-you-colors.desktop
-
-1. Logout/Reboot
-
 # Notes
 - As throwaway6560192 pointed out, the `evaluateScript` DBus call doesn't return any output, to get the current wallpaper this script uses `print()`, but the journal gets spammed by plasmashell with the wallpaper data. If you know a better way of doing this please tell me.
 - To update color with `plasma-apply-colorscheme`, the file containing the new color scheme must have a different name than the current one, to workaround this it creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
