@@ -36,6 +36,7 @@ PICTURE_OF_DAY_PLUGIN_IMGS_DIR = HOME+'/.cache/plasma_engine_potd/'
 PICTURE_OF_DAY_UNSPLASH_PROVIDER = 'unsplash'
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = '1065976'
 PICTURE_OF_DAY_DEFAULT_PROVIDER = 'apod'  # astronomy picture of the day
+PICTURE_OF_DAY_BING_PROVIDER = 'bing'
 KDE_GLOBALS = HOME+"/.config/kdeglobals"
 BREEZE_RC = HOME+"/.config/breezerc"
 SBE_RC = HOME+"/.config/sierrabreezeenhancedrc"
@@ -413,7 +414,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
             if img_provider:
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+img_provider
             else:
-                # default provider is astronomic photo of the day
+                # default provider is astronomic picture of the day
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+PICTURE_OF_DAY_DEFAULT_PROVIDER
 
             # unsplash also has a category
@@ -423,6 +424,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                     provider_category = PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
                 potd = f"{potd}:{provider_category}"
                 
+            # Bing file now has the wallpaper resolution in the name
+            if img_provider == PICTURE_OF_DAY_BING_PROVIDER:
+                # find and return files that start with bing and don't end with json and use the biggest one
+                potd = [file for file in os.listdir(PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
+                potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+max(potd)
+            
             if os.path.exists(potd):
                 return ("image",potd)
             else:
