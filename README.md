@@ -13,7 +13,7 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 </div>
 
 <div>
-<img src="https://user-images.githubusercontent.com/15076387/185829703-fd3f889a-3a20-41a9-8069-e050af273038.png"  alt="Screenshot">
+<img src="https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif"  alt="Screenshot">
 </div>
 
 
@@ -27,13 +27,14 @@ Table of Contents
 
 - [Features](#features)
 - [Installing](#installing)
-    - [Arch Linux](#arch-linux)
-    - [Other distributions](#other-distributions)
-    - [Optional features](#optional-features)
+  - [Arch Linux](#arch-linux)
+  - [Other distributions](#other-distributions)
+    - [Updating](#updating)
+  - [Optional features](#optional-features)
 - [Running from terminal](#running-from-terminal)
     - [Options](#options)
 - [Startup script](#startup-script)
-    - [Removing the autostart script](#removing-the-autostart-script)
+  - [Removing the autostart script](#removing-the-autostart-script)
 - [Changing Current Wallpaper plugin](#changing-current-wallpaper-plugin)
 - [Working Wallpaper plugins](#working-wallpaper-plugins)
 - [Configuration](#configuration)
@@ -44,14 +45,16 @@ Table of Contents
 # Features
 - Update automatically on wallpaper change
 - Configurarion file
-- Support for selecting Wallpaper plugin from seconday monitors (check Configuration section)
-- Alternative Material You color selection
+- Support for selecting Wallpaper plugin from seconday monitors (see [Configuration](#configuration))
+- Alternative Material You color selection if the wallpaper provides more than one
 - Dark an Light Color schemes
 - Dark and Light Icon theme
-- Multiple wallpaper plugins supported
+- Multiple wallpaper [plugins supported](#working-wallpaper-plugins)
 - [Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors
 - Tint [SierraBreeze](https://github.com/kay0u/SierraBreeze) decoration buttons
-- Dynamically update Konsole color scheme (check Configuration section for instructions)
+- Dynamically update Konsole color scheme (see [Configuration](#configuration))
+- TitleBar opacity control for [Klassy](https://github.com/paulmcauley/klassy) and [SierraBreezeEnhanced](https://github.com/kupiqu/SierraBreezeEnhanced) window decorations
+- ToolBar opacity control for [Lightly](https://github.com/Luwx/Lightly) Application style
 
 # Installing
 ## Arch Linux
@@ -138,9 +141,9 @@ Repeat step 2
 
 `--konsole-profile [KONSOLE_PROFILE], -kp [KONSOLE_PROFILE]`&emsp; The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles
 
-`--sbe-titlebar-opacity [OPACITY], -sbeto [OPACITY]`&emsp; Sierra Breeze Enhanced titlebar opacity (value from 0 to 100, default is None)
+`--titlebar-opacity [OPACITY], -tio [OPACITY]`&emsp; Titlebar opacity (value from 0 to 100, default is None)
 
-`--toolbar-opacity [OPACITY], -to [OPACITY]`&emsp; ToolBar opacity, needs Lightly Application Style (value from 0 to 100,
+`--toolbar-opacity [OPACITY], -too [OPACITY]`&emsp; ToolBar opacity, needs Lightly Application Style (value from 0 to 100,
                         default is None)
 
 `--konsole-opacity [OPACITY], -ko [OPACITY]`&emsp; Konsole background opacity (value from 0 to 100, default is None)
@@ -184,8 +187,9 @@ This is a list of compatible Plasma Wallpaper Plugins
 
 # Configuration
 
-Open ~/.config/kde-material-you-colors/config.conf
-
+- Copy default configuration: run `kde-material-you-colors -c`
+- Edit ~/.config/kde-material-you-colors/config.conf
+- Run `kde-material-you-colors` with no arguments from terminal to test it.
 
 ```ini
 [CUSTOM]
@@ -283,24 +287,25 @@ ncolor = 0
 # Konsole background opacity 
 # An integer between 0 and 100
 # Default is commented (disabled)
-#konsole_opacity = 75
+#konsole_opacity = 85
 
-# Sierra Breeze Enhanced Title Bar opacity https://github.com/kupiqu/SierraBreezeEnhanced
+# Title Bar opacity 
+# Klassy Title Bar opacity https://github.com/paulmcauley/klassy
+# Requires one of the following window decorations:
+# Klassy https://github.com/paulmcauley/klassy || Sierra Breeze Enhanced https://github.com/kupiqu/SierraBreezeEnhanced
 # An integer between 0 and 100
 # Default is commented (disabled)
 # NOTE:
 # This will reload KWin (screen will blink on x11)
-#sbe_titlebar_opacity = 50
+#titlebar_opacity = 85
 
 # ToolBar opacity needs Lightly Application Style to work https://github.com/Luwx/Lightly
 # An integer between 0 and 100
 # Default is commented (disabled)
 # NOTE:
 # kirigami ToolBar opacity is not affected by this option https://github.com/Luwx/Lightly/issues/128
-#toolbar_opacity = 75
+#toolbar_opacity = 85
 ```
-
-And run `kde-material-you-colors` with no arguments from terminal to test it.
 
 # Notes
 - As throwaway6560192 pointed out, the `evaluateScript` DBus call doesn't return any output, to get the current wallpaper this script uses `print()`, but the journal gets spammed by plasmashell with the wallpaper data. If you know a better way of doing this please tell me.
