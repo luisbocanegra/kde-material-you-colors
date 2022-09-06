@@ -358,7 +358,7 @@ class Configs():
                 "on_change_hook": c_on_change_hook,
                 "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
                 "konsole_profile" : c_konsole_profile,
-                "sbe_titlebar_opacity" : c_titlebar_opacity,
+                "titlebar_opacity" : c_titlebar_opacity,
                 "toolbar_opacity" : c_toolbar_opacity,
                 "konsole_opacity" : c_konsole_opacity
                 }
