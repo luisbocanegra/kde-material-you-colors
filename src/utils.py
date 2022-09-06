@@ -40,6 +40,7 @@ PICTURE_OF_DAY_BING_PROVIDER = 'bing'
 KDE_GLOBALS = HOME+"/.config/kdeglobals"
 BREEZE_RC = HOME+"/.config/breezerc"
 SBE_RC = HOME+"/.config/sierrabreezeenhancedrc"
+KLASSY_RC = HOME+"/.config/klassyrc"
 KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
@@ -125,7 +126,7 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_sbe_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = None
+        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = None
         # User may just want to set the startup script / default config, do that only and exit
         if args.autostart == True:
             if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
@@ -217,11 +218,11 @@ class Configs():
                         if 'konsole_profile' in custom:
                             c_konsole_profile = custom['konsole_profile']
                             
-                        if 'sbe_titlebar_opacity' in custom:
-                            c_sbe_titlebar_opacity = custom.getint('sbe_titlebar_opacity')
-                            if c_sbe_titlebar_opacity < 0 or c_sbe_titlebar_opacity > 100:
+                        if 'titlebar_opacity' in custom:
+                            c_titlebar_opacity = custom.getint('titlebar_opacity')
+                            if c_titlebar_opacity < 0 or c_titlebar_opacity > 100:
                                 raise ValueError(
-                                    'Value for sbe_titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
+                                    'Value for titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
                         
                         if 'toolbar_opacity' in custom:
                             c_toolbar_opacity = custom.getint('toolbar_opacity')
@@ -315,14 +316,14 @@ class Configs():
             elif c_konsole_profile == None:
                 c_konsole_profile = args.konsole_profile
                 
-            if args.sbe_titlebar_opacity != None:
-                if args.sbe_titlebar_opacity < 0 or args.sbe_titlebar_opacity > 100:
+            if args.titlebar_opacity != None:
+                if args.titlebar_opacity < 0 or args.titlebar_opacity > 100:
                     logging.error('Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
                     raise ValueError
                 else:
-                    c_sbe_titlebar_opacity = args.sbe_titlebar_opacity
-            elif args.sbe_titlebar_opacity == None and c_sbe_titlebar_opacity == None:
-                c_sbe_titlebar_opacity = None
+                    c_titlebar_opacity = args.titlebar_opacity
+            elif args.titlebar_opacity == None and c_titlebar_opacity == None:
+                c_titlebar_opacity = None
                 
             if args.toolbar_opacity != None:
                 if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
@@ -357,7 +358,7 @@ class Configs():
                 "on_change_hook": c_on_change_hook,
                 "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
                 "konsole_profile" : c_konsole_profile,
-                "sbe_titlebar_opacity" : c_sbe_titlebar_opacity,
+                "sbe_titlebar_opacity" : c_titlebar_opacity,
                 "toolbar_opacity" : c_toolbar_opacity,
                 "konsole_opacity" : c_konsole_opacity
                 }
@@ -1062,27 +1063,45 @@ def kwin_blend_changes():
         logging.warning(f'Could not start blend effect (requires Plasma 5.25 or later):\n{e}')
         return None
 
-def sierra_breeze_enhanced_titlebar_opacity(opacity):
+def titlebar_opacity(opacity):
     if opacity != None:
         opacity = range_check(opacity,0,100)
-        sberc = configparser.ConfigParser()
+        conf_file = configparser.ConfigParser()
         # preserve case
-        sberc.optionxform = str
+        conf_file.optionxform = str
+        
         if os.path.exists(SBE_RC):
             try:
-                sberc.read(SBE_RC)
-                if 'Windeco' in sberc:
-                    sberc['Windeco']['BackgroundOpacity'] = str(int(opacity))
+                conf_file.read(SBE_RC)
+                if 'Windeco' in conf_file:
+                    conf_file['Windeco']['BackgroundOpacity'] = str(int(opacity))
                     reload = True
                 else:
                     reload = False
                 if reload == True:
                     logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
                     with open(SBE_RC, 'w') as configfile:
-                        sberc.write(configfile,space_around_delimiters=False)
+                        conf_file.write(configfile,space_around_delimiters=False)
                     kwin_reload()
             except Exception as e:
                 logging.error(f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}")
+                
+        if os.path.exists(KLASSY_RC):
+            try:
+                conf_file.read(KLASSY_RC)
+                if 'Common' in conf_file:
+                    conf_file['Common']['ActiveTitlebarOpacity'] = str(int(opacity))
+                    conf_file['Common']['InactiveTitlebarOpacity'] = str(int(opacity))
+                    reload = True
+                else:
+                    reload = False
+                if reload == True:
+                    logging.info(f"Applying Klassy titlebar opacity")
+                    with open(KLASSY_RC, 'w') as configfile:
+                        conf_file.write(configfile,space_around_delimiters=False)
+                    kwin_reload()
+            except Exception as e:
+                logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
 
 def dict_to_rgb(dark_scheme):
         out = {}

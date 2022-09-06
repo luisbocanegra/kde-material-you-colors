@@ -47,9 +47,9 @@ if __name__ == '__main__':
                         help='Tint Sierra Breeze decoration buttons')
     parser.add_argument('--konsole-profile', '-kp', type=str,
                         help='The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole  --list-profiles', default=None)
-    parser.add_argument('--sbe-titlebar-opacity', '-sbeto', type=int,
-                        help='Sierra Breeze Enhanced titlebar opacity (value from 0 to 100, default is None)', default=None)
-    parser.add_argument('--toolbar-opacity', '-to', type=int,
+    parser.add_argument('--titlebar-opacity', '-tio', type=int,
+                        help='Titlebar opacity (value from 0 to 100, default is None)', default=None)
+    parser.add_argument('--toolbar-opacity', '-too', type=int,
                         help='ToolBar opacity, needs Lightly Application Style (value from 0 to 100, default is None)', default=None)
     parser.add_argument('--konsole-opacity', '-ko', type=int,
                         help='Konsole background opacity (value from 0 to 100, default is None)', default=None)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                         light=light)
             if options_old['sierra_breeze_buttons_color'] == True:
                 utils.sierra_breeze_button_colors(schemes,light)
-            utils.sierra_breeze_enhanced_titlebar_opacity(options_old['sbe_titlebar_opacity'])
+            utils.titlebar_opacity(options_old['titlebar_opacity'])
             utils.set_icons(icons_light=options_old['iconslight'],
                 icons_dark=options_old['iconsdark'], light=options_old['light'])
             utils.make_konsole_mirror_profile(konsole_profile_old)
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                     utils.apply_color_schemes(light=light)
                     if options_new['sierra_breeze_buttons_color'] == True:
                         utils.sierra_breeze_button_colors(schemes,light)
-                    utils.sierra_breeze_enhanced_titlebar_opacity(options_new['sbe_titlebar_opacity'])
+                    utils.titlebar_opacity(options_new['titlebar_opacity'])
                     utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'], konsole_opacity=options_new['konsole_opacity'])
                     utils.apply_pywal_schemes(
                         light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
