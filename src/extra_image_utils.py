@@ -10,6 +10,8 @@ from PIL import Image
 #  * @param top wether or not return only one color
 #  * @return Source color - the color most suitable for creating a UI theme
 #  */
+
+
 def sourceColorsFromImage(image, top=False):
     # // Convert Image data to Pixel Array
     # const imageBytes = await new Promise((resolve, reject) => {
