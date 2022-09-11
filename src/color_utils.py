@@ -1,5 +1,6 @@
 import operator
-import numpy, colorsys
+import numpy
+import colorsys
 from material_color_utilities_python.utils.theme_utils import *
 
 def hex2rgb(hex):

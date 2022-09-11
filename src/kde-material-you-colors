@@ -1,14 +1,8 @@
 #!/usr/bin/python3
-import logging
 import time
-import os
 import argparse
 import utils
-from schemeconfigs import ThemeConfig
 if __name__ == '__main__':
-    # Make sure the schemes path exists
-    if not os.path.exists(utils.USER_SCHEMES_PATH):
-        os.makedirs(utils.USER_SCHEMES_PATH)
     parser = argparse.ArgumentParser(
         description='Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop')
     parser.add_argument('--monitor', '-m', type=int,
@@ -54,147 +48,46 @@ if __name__ == '__main__':
     parser.add_argument('--konsole-opacity', '-ko', type=int,
                         help='Konsole background opacity (value from 0 to 100, default is None)', default=None)
 
-    # Get arguments
+    # Get commandline arguments
     args = parser.parse_args()
-    # Get config from file
-    config = utils.Configs(args)
-    #kill existing instance if found
+    # Check for one shot arguments
+    utils.one_shot_actions(args)
+    # Kill existing instance if found
     utils.kill_existing()
-    options_old = config.options
-    logging.debug(f"Config: {options_old}")
-    icons_old = [options_old['iconslight'], options_old['iconsdark']]
-    light_old = options_old['light']
-    # Get the current wallpaper on startup
-    wallpaper_old = utils.currentWallpaper(options_old)
-    kde_globals_light_old=utils.kde_globals_light()
-    pywal_light_old=options_old['pywal_light']
-    konsole_profile_old=options_old['konsole_profile']
-    konsole_profile_mod_time_old = None
-    if konsole_profile_old != None:
-        konsole_profile_mod_time_old = utils.get_last_modification(utils.KONSOLE_DIR+konsole_profile_old+".profile")
-    if wallpaper_old != None and wallpaper_old[1] != None:
-        wallpaper_old_type = wallpaper_old[0]
-        wallpaper_old_data = wallpaper_old[1]
-        logging.info(f'Using wallpaper: {wallpaper_old_data}')
-        colors = utils.get_color_schemes(wallpaper_old,options_old['ncolor'])
-        
-        # if wallpaper is image save time of last modification
-        if wallpaper_old_type == "image":
-            wallpaper_mod_time_old = utils.get_last_modification(wallpaper_old_data)
-        else: 
-            wallpaper_mod_time_old = None
-            
-        light = False
-        if options_old['light'] == None:
-            if kde_globals_light_old != None:
-                light=kde_globals_light_old
-        else:
-            light = options_old['light']
-            
-        if colors != None:
-            schemes = ThemeConfig(colors,wallpaper_old_data,light_blend_multiplier=options_old['lbm'], dark_blend_multiplier=options_old['dbm'], toolbar_opacity=options_old['toolbar_opacity'])
-            utils.make_plasma_scheme(schemes=schemes)
-            utils.apply_color_schemes(
-                        light=light)
-            if options_old['sierra_breeze_buttons_color'] == True:
-                utils.sierra_breeze_button_colors(schemes,light)
-            utils.titlebar_opacity(options_old['titlebar_opacity'])
-            utils.set_icons(icons_light=options_old['iconslight'],
-                icons_dark=options_old['iconsdark'], light=options_old['light'])
-            utils.make_konsole_mirror_profile(konsole_profile_old)
-            utils.konsole_apply_color_scheme(light,options_old['pywal_light'],schemes,options_old['konsole_profile'],konsole_opacity=options_old['konsole_opacity'])
-            utils.apply_pywal_schemes(
-                        light=light, use_pywal=options_old['pywal'], pywal_light=options_old['pywal_light'], schemes=schemes)
-            utils.run_hook(options_old['on_change_hook'])
-            utils.append_schemes(schemes)
-            print("---------------------")
-    # check wallpaper change
+
+    # at first settings are empty so first initial apply is done
+    config_watcher = utils.Watcher(None)
+    wallpaper_watcher = utils.Watcher(None)
+    wallpaper_modified = utils.Watcher(None)
+    light_mode_watcher = utils.Watcher(None)
+    icons_watcher = utils.Watcher(None)
+    titlebar_opacity_watcher = utils.Watcher(None)
+    group1_watcher = utils.Watcher(None)
+    schemes_watcher = utils.Watcher(None)
+    material_colors = utils.Watcher(None)
+    first_run_watcher = utils.Watcher(True)
+    konsole_profile_modified = utils.Watcher(None)
+    plasma_scheme_watcher = utils.Watcher(None)
     while True:
-        # reload config file
+        # Get config from file and compare it with passed args
         config = utils.Configs(args)
-        options_new = config.options
-        wallpaper_new = utils.currentWallpaper(options_new)
-        kde_globals_light_new=utils.kde_globals_light()
-        pywal_light_new=options_new['pywal_light']
-        konsole_profile_new=options_new['konsole_profile']
-        konsole_profile_mod_time_new = None
-        if konsole_profile_new != None:
-            konsole_profile_mod_time_new = utils.get_last_modification(utils.KONSOLE_DIR+konsole_profile_new+".profile")
-        if wallpaper_new != None and wallpaper_new[1] != None:
-            wallpaper_new_type = wallpaper_new[0]
-            wallpaper_new_data = wallpaper_new[1]
-            
-            # if wallpaper is image save time of last modification
-            if wallpaper_new_type == "image":
-                wallpaper_mod_time_new = utils.get_last_modification(wallpaper_new_data)
-            else: 
-                wallpaper_mod_time_new = None
-            
-            icons_new = [options_new['iconslight'], options_new['iconsdark']]
-            light_new = options_new['light']
+        # Get current options, pass to watcher
+        config_watcher.set_value(config.options)
+        # Get wallpaper
+        wallpaper_watcher.set_value(utils.currentWallpaper(config_watcher.get_new_value()))
+        # Get light/dark scheme status
+        plasma_scheme_watcher.set_value(utils.kde_globals_light())
 
-            wallpaper_changed = wallpaper_old != wallpaper_new
-            wallpaper_modified = wallpaper_mod_time_old != wallpaper_mod_time_new
-            options_changed = options_new != options_old
-            icons_changed = icons_new != icons_old
-            light_changed = light_new != light_old
-            kde_globals_light_changed = kde_globals_light_old != kde_globals_light_new
-            pywal_light_changed = pywal_light_old != pywal_light_new
-            konsole_profile_changed = konsole_profile_old != konsole_profile_new
-            konsole_profile_modified = konsole_profile_mod_time_new != konsole_profile_mod_time_old
-            light=False
-            if options_new['light'] == None:
-                if kde_globals_light_new != None:
-                    light=kde_globals_light_new
-            else:
-                light = options_new['light']
-            if konsole_profile_modified == True or konsole_profile_changed == True:
-                    utils.make_konsole_mirror_profile(konsole_profile_new)
-                    konsole_profile_mod_time_old = konsole_profile_mod_time_new
-                    
-            if wallpaper_changed or options_changed or wallpaper_modified:
-                if wallpaper_changed or wallpaper_modified:
-                        logging.info(f'Wallpaper changed: {wallpaper_new_data}')
-                if options_changed:
-                        logging.debug(f"New Config: {options_new}")
-                colors = utils.get_color_schemes(wallpaper_new,options_new['ncolor'])
-                if colors != None:
-                    schemes = ThemeConfig(colors,wallpaper_new_data,light_blend_multiplier=options_new['lbm'], dark_blend_multiplier=options_new['dbm'],toolbar_opacity=options_new['toolbar_opacity'])
-                    utils.make_plasma_scheme(schemes=schemes)
-                    if options_changed:
-                        if icons_changed or light_changed:
-                            utils.set_icons(
-                                icons_light=options_new['iconslight'], icons_dark=options_new['iconsdark'], light=light)
-                    
-                    utils.apply_color_schemes(light=light)
-                    if options_new['sierra_breeze_buttons_color'] == True:
-                        utils.sierra_breeze_button_colors(schemes,light)
-                    utils.titlebar_opacity(options_new['titlebar_opacity'])
-                    utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'], konsole_opacity=options_new['konsole_opacity'])
-                    utils.apply_pywal_schemes(
-                        light=light, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
-                    utils.run_hook(options_new['on_change_hook'])
-                    print("---------------------")
-                    utils.append_schemes(schemes)
-            elif kde_globals_light_changed and kde_globals_light_new != None:
-                if colors != None:
-                    if options_new['sierra_breeze_buttons_color'] == True:
-                        utils.sierra_breeze_button_colors(schemes,kde_globals_light_new)
-                    utils.set_icons(icons_light=options_new['iconslight'],
-                        icons_dark=options_new['iconsdark'], light=kde_globals_light_new)
-                    utils.konsole_apply_color_scheme(light,options_new['pywal_light'],schemes,options_new['konsole_profile'])
-                    utils.apply_pywal_schemes(
-                        light=kde_globals_light_new, use_pywal=options_new['pywal'], pywal_light=options_new['pywal_light'], schemes=schemes)
-
-                    utils.run_hook(options_new['on_change_hook'])
-                    print("---------------------")
-            wallpaper_old = wallpaper_new
-            wallpaper_mod_time_old = wallpaper_mod_time_new
-            options_old = options_new
-            icons_old = icons_new
-            light_old = light_new
-            kde_globals_light_old = kde_globals_light_new
-            pywal_light_old = pywal_light_new
-            konsole_profile_old = konsole_profile_new
-            konsole_profile_mod_time_old = konsole_profile_mod_time_new
+        utils.apply_themes(
+            config_watcher,
+            wallpaper_watcher,
+            wallpaper_modified,
+            group1_watcher,
+            light_mode_watcher,
+            schemes_watcher,
+            material_colors,
+            first_run_watcher,
+            konsole_profile_modified,
+            plasma_scheme_watcher)
+        #del config
         time.sleep(1)
