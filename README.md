@@ -148,7 +148,7 @@ Repeat step 2
 
 `--konsole-opacity [OPACITY], -ko [OPACITY]`&emsp; Konsole background opacity (value from 0 to 100, default is None)
 
-`--color [COLOR], -ko [COLOR]`&emsp; Custom color (hex or rgb) used to generate M3 color scheme (default is None)
+`--color [COLOR], -col [COLOR]`&emsp; Custom color (hex or rgb) used to generate M3 color scheme (default is None)
 
 # Startup script
 
