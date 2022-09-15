@@ -142,7 +142,7 @@ class Configs():
                 config.read(USER_CONFIG_PATH+CONFIG_FILE)
                 if 'CUSTOM' in config:
                     custom = config['CUSTOM']
-                    c_light = custom.getboolean('light', False)
+                    c_light = custom.getboolean('light', None)
                     c_file = custom.get('file')
 
                     c_monitor = custom.getint('monitor', 0)
