@@ -148,6 +148,8 @@ Repeat step 2
 
 `--konsole-opacity [OPACITY], -ko [OPACITY]`&emsp; Konsole background opacity (value from 0 to 100, default is None)
 
+`--color [COLOR], -ko [COLOR]`&emsp; Custom color (hex or rgb) used to generate M3 color scheme (default is None)
+
 # Startup script
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
@@ -220,6 +222,10 @@ plugin = org.kde.image
 # File containing absolute path of an image (Takes precedence over the above options as they are no longer needed)
 # Commented by default
 #file = /tmp/000_eDP-1_current_wallpaper
+
+# Custom color used to generate M3 color scheme (Takes precedence over the plugin, monitor and file options)
+# Accepted values are hex (e.g #ff0000) and rgb (e.g 255,0,0) colors (rgb is converted to hex)
+#color = 255,0,1
 
 # Enable Light mode
 # Accepted values are True or False
