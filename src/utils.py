@@ -1,3 +1,7 @@
+from schemeconfigs import ThemeConfig
+import signal
+from logging.handlers import RotatingFileHandler
+import logging
 import os
 from pathlib import Path
 import subprocess
@@ -15,10 +19,6 @@ if USER_HAS_COLR:
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 if USER_HAS_PYWAL:
     import pywal
-import logging
-from logging.handlers import RotatingFileHandler
-import signal
-from schemeconfigs import ThemeConfig
 # Set logging level for pillow
 logging.getLogger('PIL').setLevel(logging.WARNING)
 HOME = str(Path.home())
@@ -47,39 +47,40 @@ KLASSY_RC = HOME+"/.config/klassyrc"
 KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
-KONSOLE_TEMP_PROFILE=KONSOLE_DIR+"TempMyou.profile"
+KONSOLE_TEMP_PROFILE = KONSOLE_DIR+"TempMyou.profile"
 BOLD = "\033[1m"
 COLOR_RESET = "\033[0;0m"
 COLOR_ERROR = '\033[91m'
 COLOR_WARN = '\033[93m'
 COLOR_DEBUG = '\033[94m'
 COLOR_INFO = '\033[90m'
-LOG_HINT= BOLD+'\033[97m'+COLOR_RESET
-BOLD_RESET= COLOR_RESET+BOLD
+LOG_HINT = BOLD+'\033[97m'+COLOR_RESET
+BOLD_RESET = COLOR_RESET+BOLD
 LOG_FILE_PATH = HOME+"/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
-MATERIAL_YOU_COLORS_JSON="/tmp/kde-material-you-colors.json"
+MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors.json"
 # Custom logging format (adapted from https://stackoverflow.com/a/14859558)
+
+
 class MyFormatter(logging.Formatter):
-    
+
     term_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'
     file_fmt = '%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s'
-    dbg_fmt  = term_fmt.format(LOG_HINT,COLOR_DEBUG)
-    info_fmt = term_fmt.format(LOG_HINT,COLOR_INFO)
-    warn_fmt = term_fmt.format(LOG_HINT,COLOR_WARN)
-    err_fmt  = term_fmt.format(LOG_HINT,COLOR_ERROR)
+    dbg_fmt = term_fmt.format(LOG_HINT, COLOR_DEBUG)
+    info_fmt = term_fmt.format(LOG_HINT, COLOR_INFO)
+    warn_fmt = term_fmt.format(LOG_HINT, COLOR_WARN)
+    err_fmt = term_fmt.format(LOG_HINT, COLOR_ERROR)
 
-    def __init__(self,to_file):
+    def __init__(self, to_file):
         self.to_file = to_file
         super().__init__(fmt="%(levelno)d: %(msg)s", datefmt="%Y-%m-%d %H:%M:%S", style='%')
-        
-    
+
     def format(self, record):
-        
+
         # Save the original format configured by the user
         # when the logger formatter was instantiated
         format_orig = self._style._fmt
-        
+
         # Replace the original format with one customized by logging level
         if self.to_file == False:
             if record.levelno == logging.DEBUG:
@@ -103,6 +104,7 @@ class MyFormatter(logging.Formatter):
 
         return result
 
+
 # Format for terminal
 term_fmt = MyFormatter(to_file=False)
 hdlr = logging.StreamHandler(sys.stdout)
@@ -114,20 +116,23 @@ if not os.path.exists(LOG_FILE_PATH):
 
 # Format for log file
 file_fmt = MyFormatter(to_file=True)
-fh = RotatingFileHandler(LOG_FILE_PATH+LOG_FILE_NAME, mode='a', maxBytes=1*1024*1024, backupCount=1, encoding=None, delay=0)
+fh = RotatingFileHandler(LOG_FILE_PATH+LOG_FILE_NAME, mode='a',
+                         maxBytes=1*1024*1024, backupCount=1, encoding=None, delay=0)
 fh.setFormatter(file_fmt)
 
 logging.root.addHandler(hdlr)
 logging.root.addHandler(fh)
 logging.root.setLevel(logging.DEBUG)
 
+
 class Configs():
     """
     Select configuration based on arguments and config file
-    
+
     Returns:
         dict: Settings dictionary
     """
+
     def __init__(self, args):
 
         config = configparser.ConfigParser()
@@ -138,7 +143,7 @@ class Configs():
                     custom = config['CUSTOM']
                     c_light = custom.getboolean('light')
                     c_file = custom.get('file')
-                    
+
                     c_monitor = custom.getint('monitor')
                     if c_monitor < 0:
                         raise ValueError(
@@ -156,19 +161,22 @@ class Configs():
                     c_pywal_light = custom.getboolean('pywal_light')
 
                     try:
-                        c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
+                        c_light_blend_multiplier = custom.getfloat(
+                            'light_blend_multiplier')
                     except:
                         raise ValueError(
                             'Value for light_blend_multiplier must be a positive number, using default 1.0')
 
                     try:
-                        c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                        c_dark_blend_multiplier = custom.getfloat(
+                            'dark_blend_multiplier')
                     except:
                         raise ValueError(
                             'Value for dark_blend_multiplier must be a positive number, using default 1.0')
 
                     c_on_change_hook = custom.get('on_change_hook')
-                    c_sierra_breeze_buttons_color = custom.getboolean('sierra_breeze_buttons_color')
+                    c_sierra_breeze_buttons_color = custom.getboolean(
+                        'sierra_breeze_buttons_color')
                     c_konsole_profile = custom.get('konsole_profile')
 
                     c_titlebar_opacity = custom.getint('titlebar_opacity')
@@ -192,12 +200,12 @@ class Configs():
             c_light = False
         elif args.light == True:
             c_light = args.light
-            
+
         if args.pywal == True:
             c_pywal = args.pywal
         elif c_pywal == None:
             c_pywal = args.pywal
-            
+
         if args.pywaldark == True:
             c_pywal_light = False
         elif args.pywallight == True:
@@ -207,12 +215,12 @@ class Configs():
             c_light_blend_multiplier = clip(args.lbmultiplier, 0, 4, 1)
         elif c_light_blend_multiplier != None:
             c_light_blend_multiplier = clip(c_light_blend_multiplier, 0, 4, 1)
-            
+
         if args.dbmultiplier != None:
             c_dark_blend_multiplier = clip(args.dbmultiplier, 0, 4, 1)
         elif c_dark_blend_multiplier != None:
             c_dark_blend_multiplier = clip(c_dark_blend_multiplier, 0, 4, 1)
-            
+
         if args.file != None:
             c_file = args.file
         elif c_file == None:
@@ -250,43 +258,46 @@ class Configs():
             c_iconsdark = args.iconsdark
         elif c_iconsdark == None:
             c_iconsdark = args.iconsdark
-            
+
         if args.on_change_hook != None:
             c_on_change_hook = args.on_change_hook
         elif c_on_change_hook == None:
             c_on_change_hook = args.on_change_hook
-            
+
         if args.sierra_breeze_buttons_color == True:
             c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
         elif c_sierra_breeze_buttons_color != None:
             c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
-            
+
         if args.konsole_profile != None:
             c_konsole_profile = args.konsole_profile
         elif c_konsole_profile == None:
             c_konsole_profile = args.konsole_profile
-            
+
         if args.titlebar_opacity != None:
             if args.titlebar_opacity < 0 or args.titlebar_opacity > 100:
-                logging.error('Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
+                logging.error(
+                    'Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
                 raise ValueError
             else:
                 c_titlebar_opacity = args.titlebar_opacity
         elif args.titlebar_opacity == None and c_titlebar_opacity == None:
             c_titlebar_opacity = None
-            
+
         if args.toolbar_opacity != None:
             if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
-                logging.error('Value for --toolbar-opacity must be an integer betwritten 0 and 100')
+                logging.error(
+                    'Value for --toolbar-opacity must be an integer betwritten 0 and 100')
                 raise ValueError
             else:
                 c_toolbar_opacity = args.toolbar_opacity
         elif args.toolbar_opacity == None and c_toolbar_opacity == None:
             c_toolbar_opacity = None
-            
+
         if args.konsole_opacity != None:
             if args.konsole_opacity < 0 or args.konsole_opacity > 100:
-                logging.error('Value for --konsole-opacity must be an integer betwritten 0 and 100')
+                logging.error(
+                    'Value for --konsole-opacity must be an integer betwritten 0 and 100')
                 raise ValueError
             else:
                 c_konsole_opacity = args.konsole_opacity
@@ -306,18 +317,18 @@ class Configs():
             "lbm": c_light_blend_multiplier,
             "dbm": c_dark_blend_multiplier,
             "on_change_hook": c_on_change_hook,
-            "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
-            "konsole_profile" : c_konsole_profile,
-            "titlebar_opacity" : c_titlebar_opacity,
-            "toolbar_opacity" : c_toolbar_opacity,
-            "konsole_opacity" : c_konsole_opacity
-            }
+            "sierra_breeze_buttons_color": c_sierra_breeze_buttons_color,
+            "konsole_profile": c_konsole_profile,
+            "titlebar_opacity": c_titlebar_opacity,
+            "toolbar_opacity": c_toolbar_opacity,
+            "konsole_opacity": c_konsole_opacity
+        }
 
     @property
     def options(self):
         return self._options
-    
-    
+
+
 def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
@@ -335,7 +346,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
             with open(file) as file:
                 wallpaper = str(file.read()).replace('file://', '').strip()
                 if wallpaper:
-                    return ("image",wallpaper)
+                    return ("image", wallpaper)
                 else:
                     return None
         else:
@@ -356,12 +367,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
 
             try:
                 script_output = tuple(evaluate_script(
-                script, monitor, plugin).split(","))
+                    script, monitor, plugin).split(","))
             except:
-                script_output = ('','')
+                script_output = ('', '')
             img_provider = script_output[0]
             provider_category = script_output[1]
-            
+
             if img_provider:
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+img_provider
             else:
@@ -374,15 +385,16 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 if not provider_category:
                     provider_category = PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
                 potd = f"{potd}:{provider_category}"
-                
+
             # Bing file now has the wallpaper resolution in the name
             if img_provider == PICTURE_OF_DAY_BING_PROVIDER:
                 # find and return files that start with bing and don't end with json and use the biggest one
-                potd = [file for file in os.listdir(PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
+                potd = [file for file in os.listdir(PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(
+                    PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+max(potd)
-            
+
             if os.path.exists(potd):
-                return ("image",potd)
+                return ("image", potd)
             else:
                 return None
         elif plugin == PLAIN_COLOR_PLUGIN:
@@ -394,8 +406,9 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 print(d.readConfig("Color"));
             """
             try:
-                color_rgb = tuple((evaluate_script(script, monitor, plugin)).split(","))
-                return ("color",rgb2hex(int(r=color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
+                color_rgb = tuple(
+                    (evaluate_script(script, monitor, plugin)).split(","))
+                return ("color", rgb2hex(int(r=color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
             except:
                 return None
         else:
@@ -408,10 +421,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 print(d.readConfig("Image"));
             """
             try:
-                return ("image", evaluate_script(script, monitor, plugin))
+                wallpaper = evaluate_script(script, monitor, plugin)
+                return ("image", wallpaper)
             except:
                 return None
-            
+
+
 def evaluate_script(script, monitor, plugin):
     """Make a dbus call to org.kde.PlasmaShell.evaluateScript to get wallpaper data
 
@@ -425,15 +440,16 @@ def evaluate_script(script, monitor, plugin):
     """
     try:
         bus = dbus.SessionBus()
-        plasma = dbus.Interface(bus.get_object('org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
+        plasma = dbus.Interface(bus.get_object(
+            'org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
         wallpaper_data = str(plasma.evaluateScript(
             script % (monitor, plugin, plugin))).replace('file://', '')
         return wallpaper_data
     except Exception as e:
         logging.error(f'Error getting wallpaper from dbus:\n{e}')
-        return None
-    
-    
+        exit(1)
+
+
 def get_last_modification(file):
     """get time of last modification of passed file
 
@@ -447,7 +463,8 @@ def get_last_modification(file):
             return None
     else:
         return None
-    
+
+
 def get_material_you_colors(wallpaper_data, ncolor, source_type):
     """ Get material you colors from wallpaper or hex color using material-color-utility
 
@@ -461,7 +478,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
     """
 
     try:
-        seedColor = 0;
+        seedColor = 0
         if source_type == "image":
             # open image file
             img = Image.open(wallpaper_data)
@@ -469,23 +486,23 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             basewidth = 64
             wpercent = (basewidth/float(img.size[0]))
             hsize = int((float(img.size[1])*float(wpercent)))
-            img = img.resize((basewidth,hsize),Image.Resampling.LANCZOS)
+            img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
             # get best colors
-            source_colors = sourceColorsFromImage(img,top=False)
+            source_colors = sourceColorsFromImage(img, top=False)
             # close image file
             img.close()
             seed_color = source_colors[0]
         else:
             seed_color = argbFromHex(wallpaper_data)
             source_colors = [seed_color]
-            
+
         # best colors
         best_colors = {}
-        for i,color in enumerate(source_colors):
-            best_colors.update({ str(i): hexFromArgb(color) })
+        for i, color in enumerate(source_colors):
+            best_colors.update({str(i): hexFromArgb(color)})
         # generate theme from seed color
         theme = themeFromSourceColor(seed_color)
-            
+
         # Given a image, the alt color and hex color
         # return a selected color or a single color for hex code
         totalColors = len(best_colors)
@@ -493,7 +510,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             ncolor = ncolor
         else:
             ncolor = 0
-            
+
         if totalColors > ncolor:
             seedColor = hexFromArgb(source_colors[ncolor])
             seedNo = ncolor
@@ -530,18 +547,19 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
                 'neutralVariantTones': dict_to_rgb(tones_from_palette(neutral_variant_palete)),
                 'errorTones': dict_to_rgb(tones_from_palette(error_palette)),
             },
-                'customColors': [
+            'customColors': [
                 get_custom_colors(custom_colors)
             ]
         }
         return materialYouColors
-    
+
     except Exception as e:
-        logging.error(f'Error trying to get colors from {wallpaper_data}:\n{e}')
+        logging.error(
+            f'Error trying to get colors from {wallpaper_data}:\n{e}')
         return None
 
-def get_color_schemes(wallpaper, ncolor=None):
 
+def get_color_schemes(wallpaper, ncolor=None):
     """ Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
@@ -559,33 +577,38 @@ def get_color_schemes(wallpaper, ncolor=None):
             if os.path.exists(wallpaper_data):
                 if not os.path.isdir(wallpaper_data):
                     # get colors from material-color-utility
-                    materialYouColors = get_material_you_colors(wallpaper_data, ncolor=ncolor, source_type=source_type)
+                    materialYouColors = get_material_you_colors(
+                        wallpaper_data, ncolor=ncolor, source_type=source_type)
                 else:
-                    logging.warning(f'"{wallpaper_data}" is a directory, aborting')
-        
+                    logging.warning(
+                        f'"{wallpaper_data}" is a directory, aborting')
+
         elif wallpaper_type == "color":
             source_type = "color"
-            materialYouColors = get_material_you_colors(wallpaper_data, ncolor=ncolor, source_type=source_type)
-            
+            materialYouColors = get_material_you_colors(
+                wallpaper_data, ncolor=ncolor, source_type=source_type)
+
         if materialYouColors != None:
             try:
                 if wallpaper_type != "color":
                     best_colors = f'Best colors:'
-                    
+
                     for index, col in materialYouColors['bestColors'].items():
                         if USER_HAS_COLR:
-                            best_colors+=f' {BOLD_RESET}{index}:{color(col,fore=col)}'
+                            best_colors += f' {BOLD_RESET}{index}:{color(col,fore=col)}'
                         else:
-                            best_colors+=f' {BOLD_RESET}{index}:{COLOR_INFO}{col}'
+                            best_colors += f' {BOLD_RESET}{index}:{COLOR_INFO}{col}'
                     logging.info(best_colors)
 
                 seed = materialYouColors['seedColor']
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 if USER_HAS_COLR:
-                    logging.info(f'Using seed: {BOLD_RESET}{seedNo}:{color(sedColor, fore=sedColor)}')
+                    logging.info(
+                        f'Using seed: {BOLD_RESET}{seedNo}:{color(sedColor, fore=sedColor)}')
                 else:
-                    logging.info(f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
+                    logging.info(
+                        f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
 
                 with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as current_scheme:
                     current_scheme.write(json.dumps(
@@ -598,7 +621,8 @@ def get_color_schemes(wallpaper, ncolor=None):
                 return None
 
     else:
-        logging.error(f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
+        logging.error(
+            f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
         return None
 
 
@@ -611,39 +635,41 @@ def set_icons(icons_light, icons_dark, light=False):
         light (bool): wether using light or dark mode
     """
     if light and icons_light != None:
-        icons=icons_light
+        icons = icons_light
     elif not light and icons_dark != None:
-        icons=icons_dark
+        icons = icons_dark
     else:
-        icons=None
-    if icons!=None:
-        changeicons_error=subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
-                    shell=True,stderr=subprocess.STDOUT,universal_newlines=True).strip()
+        icons = None
+    if icons != None:
+        changeicons_error = subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
+                                                    shell=True, stderr=subprocess.STDOUT, universal_newlines=True).strip()
         logging.info(f'{icons} {changeicons_error}')
 
 
 def currentWallpaper(options):
     return get_wallpaper_data(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
 
+
 def make_plasma_scheme(schemes=None):
     # Make sure the schemes path exists
     if not os.path.exists(USER_SCHEMES_PATH):
         os.makedirs(USER_SCHEMES_PATH)
-    light_scheme=schemes.get_light_scheme()
-    dark_scheme=schemes.get_dark_scheme()
+    light_scheme = schemes.get_light_scheme()
+    dark_scheme = schemes.get_dark_scheme()
     # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
     # since I don't know how to reaload it with code lets make a copy and switch between them
     # sadly color settings will show copies too
-    
-    with open (THEME_LIGHT_PATH+"2.colors", 'w', encoding='utf8') as light_scheme_file:
-            light_scheme_file.write(light_scheme)
-    with open (THEME_LIGHT_PATH+".colors", 'w', encoding='utf8') as light_scheme_file:
+
+    with open(THEME_LIGHT_PATH+"2.colors", 'w', encoding='utf8') as light_scheme_file:
         light_scheme_file.write(light_scheme)
-    with open (THEME_DARK_PATH+"2.colors", 'w', encoding='utf8') as dark_scheme_file:
-            dark_scheme_file.write(dark_scheme)
-    with open (THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
+    with open(THEME_LIGHT_PATH+".colors", 'w', encoding='utf8') as light_scheme_file:
+        light_scheme_file.write(light_scheme)
+    with open(THEME_DARK_PATH+"2.colors", 'w', encoding='utf8') as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
-        
+    with open(THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
+        dark_scheme_file.write(dark_scheme)
+
+
 def apply_color_schemes(light=False):
     if light == None:
         light = False
@@ -654,26 +680,27 @@ def apply_color_schemes(light=False):
             color_scheme = THEME_DARK_PATH
         kwin_blend_changes()
         subprocess.run("plasma-apply-colorscheme "+color_scheme+"2.colors",
-                                        shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
+                       shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         colorscheme_out = subprocess.check_output("plasma-apply-colorscheme "+color_scheme+".colors",
-                                        shell=True, stderr=subprocess.PIPE,universal_newlines=True).strip()
+                                                  shell=True, stderr=subprocess.PIPE, universal_newlines=True).strip()
         logging.info(colorscheme_out)
+
 
 def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
     pywal_colors = None
     if pywal_light != None:
-        if pywal_light  == True:
-            pywal_colors=schemes.get_wal_light_scheme()
+        if pywal_light == True:
+            pywal_colors = schemes.get_wal_light_scheme()
         else:
-            pywal_light=False
-            pywal_colors=schemes.get_wal_dark_scheme()
+            pywal_light = False
+            pywal_colors = schemes.get_wal_dark_scheme()
     elif light != None:
-        if light  == True:
-            pywal_colors=schemes.get_wal_light_scheme()
-        elif light  == False:
-            pywal_colors=schemes.get_wal_dark_scheme()
+        if light == True:
+            pywal_colors = schemes.get_wal_light_scheme()
+        elif light == False:
+            pywal_colors = schemes.get_wal_dark_scheme()
     else:
-        pywal_colors=schemes.get_wal_dark_scheme()
+        pywal_colors = schemes.get_wal_dark_scheme()
     if pywal_colors != None:
         if use_pywal != None and use_pywal == True:
             if USER_HAS_PYWAL:
@@ -694,7 +721,8 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
                 finally:
                     timeout_reset()
             else:
-                logging.warning("pywal option enabled but python module is not installed")
+                logging.warning(
+                    "pywal option enabled but python module is not installed")
         # print palette
         print_color_palette(pywal_colors)
 
@@ -719,9 +747,11 @@ def kde_globals_light():
     else:
         return None
 
+
 def run_hook(hook):
     if hook != None:
-        subprocess.Popen(hook,shell=True)
+        subprocess.Popen(hook, shell=True)
+
 
 def clip(number, min, max, fallback):
     if number != None:
@@ -729,16 +759,19 @@ def clip(number, min, max, fallback):
     else:
         return fallback
 
+
 def kwin_reload():
     logging.info(f"Reloading KWin...")
-    subprocess.Popen("qdbus org.kde.KWin /KWin reconfigure",shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
-    
-def sierra_breeze_button_colors(schemes,light=None):
+    subprocess.Popen("qdbus org.kde.KWin /KWin reconfigure", shell=True,
+                     stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+
+
+def sierra_breeze_button_colors(schemes, light=None):
     if light == True:
         colors = schemes.get_sierra_breeze_light_colors()
     elif light == False:
         colors = schemes.get_sierra_breeze_dark_colors()
-    
+
     breezerc = configparser.ConfigParser()
     # preserve case
     breezerc.optionxform = str
@@ -753,7 +786,7 @@ def sierra_breeze_button_colors(schemes,light=None):
                 breezerc['Windeco']['ButtonKeepBelowActiveColor'] = colors['btn_keep_below_active_color']
                 breezerc['Windeco']['ButtonOnAllDesktopsActiveColor'] = colors['btn_on_all_desktops_active_color']
                 breezerc['Windeco']['ButtonShadeActiveColor'] = colors['btn_shade_active_color']
-                
+
                 # Inactive
                 breezerc['Windeco']['ButtonCloseInactiveColor'] = colors['btn_inactive_color']
                 breezerc['Windeco']['ButtonMaximizeInactiveColor'] = colors['btn_inactive_color']
@@ -768,27 +801,31 @@ def sierra_breeze_button_colors(schemes,light=None):
             if reload == True:
                 logging.info(f"Applying SierraBreeze window button colors")
                 with open(BREEZE_RC, 'w') as configfile:
-                    breezerc.write(configfile,space_around_delimiters=False)
+                    breezerc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing breeze window button colors:\n{e}")
     else:
-        logging.warning(f"SierraBreeze config '{BREEZE_RC}' not found, skipping")
+        logging.warning(
+            f"SierraBreeze config '{BREEZE_RC}' not found, skipping")
+
 
 def tup2str(tup):
-    return ','.join(map(str,tup))
+    return ','.join(map(str, tup))
+
 
 def print_color_palette(pywal_colors):
     if USER_HAS_COLR:
-        i=0
+        i = 0
         for index, col in pywal_colors['colors'].items():
             if i % 8 == 0:
-                    print()
+                print()
             print(f'{color("    ",back=hex2rgb(col))}', end='')
-            i+=1
+            i += 1
         print(f'{BOLD}')
     else:
-        logging.debug("Install colr python module to tint color codes and palette as they update")
-        #Print color palette from pywal.colors.palette
+        logging.debug(
+            "Install colr python module to tint color codes and palette as they update")
+        # Print color palette from pywal.colors.palette
         for i in range(0, 16):
             if i % 8 == 0:
                 print()
@@ -797,7 +834,7 @@ def print_color_palette(pywal_colors):
                 i = "8;5;%s" % i
 
             print("\033[4%sm%s\033[0m" % (i, " " * (80 // 20)), end="")
-        print("\n",end="")
+        print("\n", end="")
 
 
 def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=100):
@@ -805,20 +842,20 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_op
         konsole_opacity = 1.0
     else:
         konsole_opacity = float(konsole_opacity/100)
-    konsole_opacity = clip(konsole_opacity,0.0 ,1.0, 1.0)
+    konsole_opacity = clip(konsole_opacity, 0.0, 1.0, 1.0)
     # print(f"konsole_opacity: {konsole_opacity}")
     if pywal_light != None:
-        if pywal_light  == True:
-            pywal_colors=schemes.get_wal_light_scheme()
+        if pywal_light == True:
+            pywal_colors = schemes.get_wal_light_scheme()
         else:
-            pywal_colors=schemes.get_wal_dark_scheme()
+            pywal_colors = schemes.get_wal_dark_scheme()
     elif light != None:
-        if light  == True:
-            pywal_colors=schemes.get_wal_light_scheme()
-        elif light  == False:
-            pywal_colors=schemes.get_wal_dark_scheme()
+        if light == True:
+            pywal_colors = schemes.get_wal_light_scheme()
+        elif light == False:
+            pywal_colors = schemes.get_wal_dark_scheme()
     else:
-        pywal_colors=schemes.get_wal_dark_scheme()
+        pywal_colors = schemes.get_wal_dark_scheme()
     config = configparser.ConfigParser()
     config.optionxform = str
     if os.path.exists(KONSOLE_COLOR_SCHEME_PATH):
@@ -844,58 +881,90 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_op
 
     for section in exp:
         if not config.has_section(section):
-                    config.add_section(section)
-    config['Background']['Color'] = tup2str(hex2rgb(pywal_colors['special']['background']))
-    config['BackgroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['backgroundIntense']))
-    config['BackgroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['backgroundFaint']))
-    config['Color0']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color0']))
-    config['Color1']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color1']))
-    config['Color2']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color2']))
-    config['Color3']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color3']))
-    config['Color4']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color4']))
-    config['Color5']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color5']))
-    config['Color6']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color6']))
-    config['Color7']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color7']))
-    
-    config['Color0Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color8']))
-    config['Color1Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color9']))
-    config['Color2Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color10']))
-    config['Color3Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color11']))
-    config['Color4Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color12']))
-    config['Color5Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color13']))
-    config['Color6Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color14']))
-    config['Color7Intense']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color15']))
-    
-    config['Color0Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color16']))
-    config['Color1Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color17']))
-    config['Color2Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color18']))
-    config['Color3Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color19']))
-    config['Color4Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color20']))
-    config['Color5Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color21']))
-    config['Color6Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color22']))
-    config['Color7Faint']['Color'] = tup2str(hex2rgb(pywal_colors['colors']['color23']))
-    
-    config['Foreground']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foreground']))
-    config['ForegroundIntense']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foregroundIntense']))
-    config['ForegroundFaint']['Color'] = tup2str(hex2rgb(pywal_colors['special']['foregroundFaint']))
-    
+            config.add_section(section)
+    config['Background']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['background']))
+    config['BackgroundIntense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['backgroundIntense']))
+    config['BackgroundFaint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['backgroundFaint']))
+    config['Color0']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color0']))
+    config['Color1']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color1']))
+    config['Color2']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color2']))
+    config['Color3']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color3']))
+    config['Color4']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color4']))
+    config['Color5']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color5']))
+    config['Color6']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color6']))
+    config['Color7']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color7']))
+
+    config['Color0Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color8']))
+    config['Color1Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color9']))
+    config['Color2Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color10']))
+    config['Color3Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color11']))
+    config['Color4Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color12']))
+    config['Color5Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color13']))
+    config['Color6Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color14']))
+    config['Color7Intense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color15']))
+
+    config['Color0Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color16']))
+    config['Color1Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color17']))
+    config['Color2Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color18']))
+    config['Color3Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color19']))
+    config['Color4Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color20']))
+    config['Color5Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color21']))
+    config['Color6Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color22']))
+    config['Color7Faint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['colors']['color23']))
+
+    config['Foreground']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['foreground']))
+    config['ForegroundIntense']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['foregroundIntense']))
+    config['ForegroundFaint']['Color'] = tup2str(
+        hex2rgb(pywal_colors['special']['foregroundFaint']))
+
     config['General']['Description'] = "MaterialYou"
     config['General']['Opacity'] = str(konsole_opacity)
-    
-    with open(KONSOLE_COLOR_SCHEME_PATH,'w') as configfile:
-        config.write(configfile,space_around_delimiters=False)
-        
+
+    with open(KONSOLE_COLOR_SCHEME_PATH, 'w') as configfile:
+        config.write(configfile, space_around_delimiters=False)
+
     config['General']['Description'] = "MaterialYouAlt"
-    
-    with open(KONSOLE_COLOR_SCHEME_ALT_PATH,'w') as configfile:
-        config.write(configfile,space_around_delimiters=False)
+
+    with open(KONSOLE_COLOR_SCHEME_ALT_PATH, 'w') as configfile:
+        config.write(configfile, space_around_delimiters=False)
+
 
 def make_konsole_mirror_profile(profile=None):
     if profile != None:
         profile_path = KONSOLE_DIR+profile+".profile"
         if os.path.exists(profile_path):
             logging.debug(f"konsole: mirror profile ({profile})")
-            subprocess.check_output("cp -f '"+profile_path+"' "+KONSOLE_TEMP_PROFILE, shell=True)
+            subprocess.check_output(
+                "cp -f '"+profile_path+"' "+KONSOLE_TEMP_PROFILE, shell=True)
             profile = configparser.ConfigParser()
             # preserve case
             profile.optionxform = str
@@ -906,45 +975,53 @@ def make_konsole_mirror_profile(profile=None):
                         if profile['Appearance']['ColorScheme'] != "MaterialYou":
                             profile['Appearance']['ColorScheme'] = "MaterialYou"
                             with open(profile_path, 'w') as configfile:
-                                profile.write(configfile,space_around_delimiters=False)
+                                profile.write(
+                                    configfile, space_around_delimiters=False)
                 except Exception as e:
                     logging.error(f"Error applying Konsole profile:\n{e}")
-                    
-            #Mirror profile
+
+            # Mirror profile
             profile = configparser.ConfigParser()
             profile.optionxform = str
             if os.path.exists(KONSOLE_TEMP_PROFILE):
                 try:
                     profile.read(KONSOLE_TEMP_PROFILE)
                     if 'Appearance' in profile:
-                            profile['Appearance']['ColorScheme'] = "MaterialYouAlt"
-                            profile['General']['Name'] = "TempMyou"
+                        profile['Appearance']['ColorScheme'] = "MaterialYouAlt"
+                        profile['General']['Name'] = "TempMyou"
                 except Exception as e:
                     logging.error(f"Error applying Konsole profile:\n{e}")
                 with open(KONSOLE_TEMP_PROFILE, 'w') as configfile:
-                        profile.write(configfile,space_around_delimiters=False)
+                    profile.write(configfile, space_around_delimiters=False)
 
 
 def konsole_reload_profile(profile=None):
     if profile != None:
         logging.info(f"konsole: reload profile ({profile})")
-        konsole_dbus_services=subprocess.check_output("qdbus org.kde.konsole*",shell=True,universal_newlines=True).strip().splitlines()
+        konsole_dbus_services = subprocess.check_output(
+            "qdbus org.kde.konsole*", shell=True, universal_newlines=True).strip().splitlines()
         if konsole_dbus_services:
             for service in konsole_dbus_services:
                 try:
-                    konsole_sessions=subprocess.check_output("qdbus "+service+" | grep 'Sessions/'",shell=True,universal_newlines=True).strip().splitlines()
+                    konsole_sessions = subprocess.check_output(
+                        "qdbus "+service+" | grep 'Sessions/'", shell=True, universal_newlines=True).strip().splitlines()
                     for session in konsole_sessions:
                         #print(f"service: {service} -> {session}")
-                        current_profile=subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.profile",shell=True,universal_newlines=True).strip()
-                        #print(current_profile)
+                        current_profile = subprocess.check_output(
+                            "qdbus "+service+" "+session+" org.kde.konsole.Session.profile", shell=True, universal_newlines=True).strip()
+                        # print(current_profile)
                         if current_profile == profile:
-                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'",shell=True)
+                            subprocess.check_output(
+                                "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'", shell=True)
                         else:
-                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'",shell=True)
-                            subprocess.check_output("qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile '"+profile+ "'",shell=True)
+                            subprocess.check_output(
+                                "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'", shell=True)
+                            subprocess.check_output(
+                                "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile '"+profile + "'", shell=True)
                 except:
                     pass
-                
+
+
 def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profile=None, konsole_opacity=None):
     if profile != None:
         profile_path = KONSOLE_DIR+profile+".profile"
@@ -954,16 +1031,21 @@ def konsole_apply_color_scheme(light=None, pywal_light=None, schemes=None, profi
         else:
             logging.error(f"Konsole Profile: {profile_path} does not exist")
 
-#Current function name from https://stackoverflow.com/a/31615605
+
+# Current function name from https://stackoverflow.com/a/31615605
 # for current func name, specify 0 or no argument.
 # for name of caller of current func, specify 1.
 # for name of caller of caller of current func, specify 2. etc.
-currentFuncName = lambda n=0: sys._getframe(n + 1).f_code.co_name
+def currentFuncName(n=0): return sys._getframe(n + 1).f_code.co_name
 
 # Register a timeout handler
+
+
 def timeout_handler(signum, frame):
-    logging.error(f"{currentFuncName(1)}: took too much time, aborted, reboot if the problem persists")
+    logging.error(
+        f"{currentFuncName(1)}: took too much time, aborted, reboot if the problem persists")
     raise TimeoutError
+
 
 def timeout_set(time_s=3):
     # Register the signal handler
@@ -971,97 +1053,115 @@ def timeout_set(time_s=3):
     # Define a timeout for the function
     signal.alarm(time_s)
 
+
 def timeout_reset():
     signal.alarm(0)
 
+
 def kill_existing():
-    get_pids=subprocess.check_output("ps -e -f | grep [/]usr/bin/kde-material-you-colors | awk '{print $2}'",
-                                        shell=True, stderr=subprocess.PIPE,universal_newlines=True).strip().splitlines()
+    get_pids = subprocess.check_output("ps -e -f | grep [/]usr/bin/kde-material-you-colors | awk '{print $2}'",
+                                       shell=True, stderr=subprocess.PIPE, universal_newlines=True).strip().splitlines()
     current_pid = os.getpid()
     for pid in get_pids:
         pid = int(pid)
         if pid != current_pid:
-            logging.debug(f"Found existing process with PID: '{pid}' killing...")
-            subprocess.Popen("kill -9 "+str(pid),shell=True)
+            logging.debug(
+                f"Found existing process with PID: '{pid}' killing...")
+            subprocess.Popen("kill -9 "+str(pid), shell=True)
+
 
 def append_schemes(schemes):
     """Append generated schemes to MATERIAL_YOU_COLORS_JSON
-    
+
     Args:
         schemes (ThemeConfig): generated color schemes
     """
-    extras = {"extras" : schemes.get_extras()}
-    wal_light = { "pywal_light" :schemes.get_wal_light_scheme()}
-    wal_dark = { "pywal_dark" :schemes.get_wal_dark_scheme()}
+    extras = {"extras": schemes.get_extras()}
+    wal_light = {"pywal_light": schemes.get_wal_light_scheme()}
+    wal_dark = {"pywal_dark": schemes.get_wal_dark_scheme()}
 
     with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
         colors = json.load(material_you_colors)
-        
+
     colors.update(extras)
     colors.update(wal_light)
     colors.update(wal_dark)
-    
+
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
-        json.dump(colors,material_you_colors, indent=4, ensure_ascii=False)
-        
+        json.dump(colors, material_you_colors, indent=4, ensure_ascii=False)
+
+
 def kwin_blend_changes():
     try:
         bus = dbus.SessionBus()
-        kwin = dbus.Interface(bus.get_object('org.kde.KWin', '/org/kde/KWin/BlendChanges'), dbus_interface='org.kde.KWin.BlendChanges')
+        kwin = dbus.Interface(bus.get_object(
+            'org.kde.KWin', '/org/kde/KWin/BlendChanges'), dbus_interface='org.kde.KWin.BlendChanges')
         kwin.start()
     except Exception as e:
-        logging.warning(f'Could not start blend effect (requires Plasma 5.25 or later):\n{e}')
+        logging.warning(
+            f'Could not start blend effect (requires Plasma 5.25 or later):\n{e}')
         return None
+
 
 def titlebar_opacity(opacity):
     if opacity != None:
-        opacity = clip(opacity,0,100, 100)
+        opacity = clip(opacity, 0, 100, 100)
         conf_file = configparser.ConfigParser()
         # preserve case
         conf_file.optionxform = str
-        
+
         if os.path.exists(SBE_RC):
             try:
                 conf_file.read(SBE_RC)
                 if 'Windeco' in conf_file:
-                    conf_file['Windeco']['BackgroundOpacity'] = str(int(opacity))
+                    conf_file['Windeco']['BackgroundOpacity'] = str(
+                        int(opacity))
                     reload = True
                 else:
                     reload = False
                 if reload == True:
-                    logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
+                    logging.info(
+                        f"Applying SierraBreezeEnhanced titlebar opacity")
                     with open(SBE_RC, 'w') as configfile:
-                        conf_file.write(configfile,space_around_delimiters=False)
+                        conf_file.write(
+                            configfile, space_around_delimiters=False)
             except Exception as e:
-                logging.error(f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}")
-                
+                logging.error(
+                    f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}")
+
         if os.path.exists(KLASSY_RC):
             try:
                 conf_file.read(KLASSY_RC)
                 if 'Common' in conf_file:
-                    conf_file['Common']['ActiveTitlebarOpacity'] = str(int(opacity))
-                    conf_file['Common']['InactiveTitlebarOpacity'] = str(int(opacity))
+                    conf_file['Common']['ActiveTitlebarOpacity'] = str(
+                        int(opacity))
+                    conf_file['Common']['InactiveTitlebarOpacity'] = str(
+                        int(opacity))
                     reload = True
                 else:
                     reload = False
                 if reload == True:
                     logging.info(f"Applying Klassy titlebar opacity")
                     with open(KLASSY_RC, 'w') as configfile:
-                        conf_file.write(configfile,space_around_delimiters=False)
+                        conf_file.write(
+                            configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
 
+
 def dict_to_rgb(dark_scheme):
-        out = {}
-        for key,color in dark_scheme.items():
-            out.update({ key : hexFromArgb(color) })
-        return out
+    out = {}
+    for key, color in dark_scheme.items():
+        out.update({key: hexFromArgb(color)})
+    return out
+
 
 def tones_from_palette(palette):
     tones = {}
     for x in range(100):
         tones.update({x: palette.tone(x)})
     return tones
+
 
 def get_custom_colors(custom_colors):
     colors = {}
@@ -1079,43 +1179,50 @@ def get_custom_colors(custom_colors):
         )
     return colors
 
+
 def one_shot_actions(args):
     # User may just want to set the startup script / default config, do that only and terminate the script
-        if args.autostart == True:
-            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
-                os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
-            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
-                try:
-                    subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
-                                            shell=True)
-                    logging.info(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
-                except Exception:
-                    quit(1)
-            else:
-                logging.error(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
-            quit(0)
-        elif args.copyconfig == True:
-            if not os.path.exists(USER_CONFIG_PATH):
-                os.makedirs(USER_CONFIG_PATH)
-            if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
-                try:
-                    subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
-                                            shell=True)
-                    logging.info(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
-                except Exception:
-                    quit(1)
-            else:
-                logging.error(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
-            quit(0)
+    if args.autostart == True:
+        if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
+            os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
+        if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
+            try:
+                subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
+                                        shell=True)
+                logging.info(
+                    f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+            except Exception:
+                quit(1)
+        else:
+            logging.error(
+                f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+        quit(0)
+    elif args.copyconfig == True:
+        if not os.path.exists(USER_CONFIG_PATH):
+            os.makedirs(USER_CONFIG_PATH)
+        if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
+            try:
+                subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
+                                        shell=True)
+                logging.info(
+                    f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+            except Exception:
+                quit(1)
+        else:
+            logging.error(
+                f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
+        quit(0)
 
-def get_config_value(config,config_name:str):
+
+def get_config_value(config, config_name: str):
     if config != None:
         if config_name in config:
             return config[config_name]
 
+
 class Watcher:
     """ A simple class to watch variable changes."""
-    
+
     def __init__(self, value: any):
         self.value = value
         self.has_changed = False
@@ -1128,65 +1235,68 @@ class Watcher:
             self.has_changed = True
         else:
             self.has_changed = False
-            
+
     def has_changed(self):
         return self.has_changed
-    
+
     def get_old_value(self):
         return self.old_value
-    
+
     def get_new_value(self):
         return self.value
-    
+
+
 def apply_themes(
-    config_watcher:Watcher,
-    wallpaper_watcher:Watcher,
-    wallpaper_modified:Watcher,
-    group1_watcher:Watcher,
-    light_mode_watcher:Watcher,
-    schemes_watcher:Watcher,
-    material_colors:Watcher,
-    first_run_watcher:Watcher,
-    konsole_profile_modified:Watcher,
-    plasma_scheme_watcher:Watcher):
+        config_watcher: Watcher,
+        wallpaper_watcher: Watcher,
+        wallpaper_modified: Watcher,
+        group1_watcher: Watcher,
+        light_mode_watcher: Watcher,
+        schemes_watcher: Watcher,
+        material_colors: Watcher,
+        first_run_watcher: Watcher,
+        konsole_profile_modified: Watcher,
+        plasma_scheme_watcher: Watcher):
     # Print new config after change
     if config_watcher.has_changed:
         logging.debug(f"New Config: {config_watcher.get_new_value()}")
-    needs_kwin_reload=False
+    needs_kwin_reload = False
     group1_watcher.set_value([
-        get_config_value(config_watcher.get_new_value(),'ncolor'),
-        get_config_value(config_watcher.get_new_value(),'lbm'),
-        get_config_value(config_watcher.get_new_value(),'dbm'),
-        ])
+        get_config_value(config_watcher.get_new_value(), 'ncolor'),
+        get_config_value(config_watcher.get_new_value(), 'lbm'),
+        get_config_value(config_watcher.get_new_value(), 'dbm'),
+    ])
 
-    light_mode_watcher.set_value(get_config_value(config_watcher.get_new_value(),'light'))
+    light_mode_watcher.set_value(get_config_value(
+        config_watcher.get_new_value(), 'light'))
 
-    if wallpaper_watcher.get_new_value != None:
-            # Get wallpaper type and data
-            if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
-                wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
-                wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
-            # if wallpaper is image save time of last modification
-            if wallpaper_new_type == "image":
-                wallpaper_modified.set_value(get_last_modification(wallpaper_new_data))
-            else: 
-                wallpaper_modified.set_value(None)
+    # Get wallpaper type and data
+    if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
+        wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
+        wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
+    # if wallpaper is image save time of last modification
+    if wallpaper_new_type == "image":
+        wallpaper_modified.set_value(
+            get_last_modification(wallpaper_new_data))
+    else:
+        wallpaper_modified.set_value(None)
 
     if config_watcher.get_new_value()['konsole_profile'] != None:
         konsole_profile_modified.set_value(get_last_modification(
             KONSOLE_DIR+config_watcher.get_new_value()['konsole_profile']+".profile"))
-        
-    # decide light or dark 
+
+    # decide light or dark
     dark_light = False
     if light_mode_watcher.get_new_value() == None:
         if plasma_scheme_watcher.get_new_value() != None:
             dark_light = plasma_scheme_watcher.get_new_value()
     else:
         dark_light = light_mode_watcher.get_new_value()
-    
+
     if wallpaper_watcher.has_changed or group1_watcher.has_changed or wallpaper_modified.has_changed:
         if wallpaper_watcher.has_changed:
-            logging.info(f'Wallpaper changed: ({wallpaper_new_type}) {wallpaper_new_data}')
+            logging.info(
+                f'Wallpaper changed: ({wallpaper_new_type}) {wallpaper_new_data}')
         material_colors.set_value(get_color_schemes(
             wallpaper_watcher.get_new_value(),
             config_watcher.get_new_value()['ncolor']))
@@ -1211,20 +1321,21 @@ def apply_themes(
                     config_watcher.get_new_value()['pywal_light'],
                     schemes_watcher.get_new_value(),
                     config_watcher.get_new_value()['konsole_profile'],
-                    konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+                    konsole_opacity=config_watcher.get_new_value()[
+                        'konsole_opacity']
                 )
 
             set_icons(
                 config_watcher.get_new_value()['iconslight'],
                 config_watcher.get_new_value()['iconsdark'],
                 light_mode_watcher.get_new_value())
-            
+
             if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
                 needs_kwin_reload = True
                 sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
-                
+
             if first_run_watcher.get_new_value() == True:
                 if config_watcher.get_new_value()['titlebar_opacity'] != None:
                     needs_kwin_reload = True
@@ -1250,57 +1361,60 @@ def apply_themes(
             apply_color_schemes(dark_light)
             # Export and apply color scheme to konsole profile
             konsole_apply_color_scheme(
-                            dark_light,
-                            config_watcher.get_new_value()['pywal_light'],
-                            schemes_watcher.get_new_value(),
-                            config_watcher.get_new_value()['konsole_profile'],
-                            konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
-                        )
+                dark_light,
+                config_watcher.get_new_value()['pywal_light'],
+                schemes_watcher.get_new_value(),
+                config_watcher.get_new_value()['konsole_profile'],
+                konsole_opacity=config_watcher.get_new_value()[
+                    'konsole_opacity']
+            )
             set_icons(
-                    config_watcher.get_new_value()['iconslight'],
-                    config_watcher.get_new_value()['iconsdark'],
-                    light_mode_watcher.get_new_value())
+                config_watcher.get_new_value()['iconslight'],
+                config_watcher.get_new_value()['iconsdark'],
+                light_mode_watcher.get_new_value())
             if config_watcher.get_new_value()['pywal'] == True:
                 if config_watcher.get_new_value()['pywal_light'] == None:
                     apply_pywal_schemes(
                         dark_light,
                         use_pywal=config_watcher.get_new_value()['pywal'],
-                        pywal_light=config_watcher.get_new_value()['pywal_light'],
+                        pywal_light=config_watcher.get_new_value()[
+                            'pywal_light'],
                         schemes=schemes_watcher.get_new_value())
             print("---------------------")
 
     if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None:
-        make_konsole_mirror_profile(config_watcher.get_new_value()['konsole_profile'])
+        make_konsole_mirror_profile(
+            config_watcher.get_new_value()['konsole_profile'])
 
     if config_watcher.has_changed and config_watcher.get_old_value() != None:
         icons_new = [
-            get_config_value(config_watcher.get_new_value(),'iconslight'),
-            get_config_value(config_watcher.get_new_value(),'iconsdark')
+            get_config_value(config_watcher.get_new_value(), 'iconslight'),
+            get_config_value(config_watcher.get_new_value(), 'iconsdark')
         ]
         icons_old = [
-            get_config_value(config_watcher.get_old_value(),'iconslight'),
-            get_config_value(config_watcher.get_old_value(),'iconsdark')
+            get_config_value(config_watcher.get_old_value(), 'iconslight'),
+            get_config_value(config_watcher.get_old_value(), 'iconsdark')
         ]
 
         if icons_new != icons_old:
-            set_icons(icons_new[0],icons_new[1])
+            set_icons(icons_new[0], icons_new[1])
 
-        if get_config_value(config_watcher.get_new_value(),'pywal') != get_config_value(config_watcher.get_old_value(),'pywal') and get_config_value(config_watcher.get_new_value(),'pywal') != None:
+        if get_config_value(config_watcher.get_new_value(), 'pywal') != get_config_value(config_watcher.get_old_value(), 'pywal') and get_config_value(config_watcher.get_new_value(), 'pywal') != None:
             if config_watcher.get_new_value()['pywal'] == True:
                 apply_pywal_schemes(
                     dark_light,
                     use_pywal=config_watcher.get_new_value()['pywal'],
                     pywal_light=config_watcher.get_new_value()['pywal_light'],
                     schemes=schemes_watcher.get_new_value())
-                
 
-        if get_config_value(config_watcher.get_new_value(),'pywal_light') != get_config_value(config_watcher.get_old_value(),'pywal_light'):
+        if get_config_value(config_watcher.get_new_value(), 'pywal_light') != get_config_value(config_watcher.get_old_value(), 'pywal_light'):
             konsole_apply_color_scheme(
                 dark_light,
                 config_watcher.get_new_value()['pywal_light'],
                 schemes_watcher.get_new_value(),
                 config_watcher.get_new_value()['konsole_profile'],
-                konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+                konsole_opacity=config_watcher.get_new_value()[
+                    'konsole_opacity']
             )
             if config_watcher.get_new_value()['pywal'] == True:
                 apply_pywal_schemes(
@@ -1308,23 +1422,24 @@ def apply_themes(
                     use_pywal=config_watcher.get_new_value()['pywal'],
                     pywal_light=config_watcher.get_new_value()['pywal_light'],
                     schemes=schemes_watcher.get_new_value())
-        
-        if get_config_value(config_watcher.get_new_value(),'konsole_opacity') != get_config_value(config_watcher.get_old_value(),'konsole_opacity') or get_config_value(config_watcher.get_new_value(),'konsole_profile') != get_config_value(config_watcher.get_old_value(),'konsole_profile'):
+
+        if get_config_value(config_watcher.get_new_value(), 'konsole_opacity') != get_config_value(config_watcher.get_old_value(), 'konsole_opacity') or get_config_value(config_watcher.get_new_value(), 'konsole_profile') != get_config_value(config_watcher.get_old_value(), 'konsole_profile'):
             if config_watcher.get_new_value()['konsole_opacity'] != None:
                 konsole_apply_color_scheme(
-                dark_light,
-                config_watcher.get_new_value()['pywal_light'],
-                schemes_watcher.get_new_value(),
-                config_watcher.get_new_value()['konsole_profile'],
-                konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
-            )
-        if get_config_value(config_watcher.get_new_value(),'titlebar_opacity') != get_config_value(config_watcher.get_old_value(),'titlebar_opacity'):
-            if get_config_value(config_watcher.get_new_value(),'titlebar_opacity') != None:
+                    dark_light,
+                    config_watcher.get_new_value()['pywal_light'],
+                    schemes_watcher.get_new_value(),
+                    config_watcher.get_new_value()['konsole_profile'],
+                    konsole_opacity=config_watcher.get_new_value()[
+                        'konsole_opacity']
+                )
+        if get_config_value(config_watcher.get_new_value(), 'titlebar_opacity') != get_config_value(config_watcher.get_old_value(), 'titlebar_opacity'):
+            if get_config_value(config_watcher.get_new_value(), 'titlebar_opacity') != None:
                 needs_kwin_reload = True
                 titlebar_opacity(
                     config_watcher.get_new_value()['titlebar_opacity'])
 
-        if get_config_value(config_watcher.get_new_value(),'toolbar_opacity') != get_config_value(config_watcher.get_old_value(),'toolbar_opacity'):
+        if get_config_value(config_watcher.get_new_value(), 'toolbar_opacity') != get_config_value(config_watcher.get_old_value(), 'toolbar_opacity'):
             if config_watcher.get_new_value()['toolbar_opacity'] != None:
                 material_colors.set_value(get_color_schemes(
                     wallpaper_watcher.get_new_value(),
@@ -1343,14 +1458,14 @@ def apply_themes(
                 make_plasma_scheme(schemes_watcher.get_new_value())
                 # Apply plasma color schemes
                 apply_color_schemes(dark_light)
-        
-        if get_config_value(config_watcher.get_new_value(),'sierra_breeze_buttons_color') != get_config_value(config_watcher.get_old_value(),'sierra_breeze_buttons_color'):
+
+        if get_config_value(config_watcher.get_new_value(), 'sierra_breeze_buttons_color') != get_config_value(config_watcher.get_old_value(), 'sierra_breeze_buttons_color'):
             if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
                 needs_kwin_reload = True
                 sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
-                
+
         run_hook(config_watcher.get_new_value()['on_change_hook'])
 
         if needs_kwin_reload == True:

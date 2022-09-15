@@ -32,11 +32,11 @@ if __name__ == '__main__':
     parser.add_argument('--pywaldark', '-wald', action='store_true',
                         help='Use Dark mode for pywal controlled apps')
     parser.add_argument('--lbmultiplier', '-lbm', type=float,
-                        help='The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)',default=None)
+                        help='The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)', default=None)
     parser.add_argument('--dbmultiplier', '-dbm', type=float,
-                        help='The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)',default=None)
+                        help='The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)', default=None)
     parser.add_argument('--on-change-hook', type=str,
-                        help='A script/command that will be executed on start or wallpaper/dark/light/settings change',default=None)
+                        help='A script/command that will be executed on start or wallpaper/dark/light/settings change', default=None)
     parser.add_argument('--sierra-breeze-buttons-color', '-sbb', action='store_true',
                         help='Tint Sierra Breeze decoration buttons')
     parser.add_argument('--konsole-profile', '-kp', type=str,
@@ -74,20 +74,22 @@ if __name__ == '__main__':
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
         # Get wallpaper
-        wallpaper_watcher.set_value(utils.currentWallpaper(config_watcher.get_new_value()))
-        # Get light/dark scheme status
-        plasma_scheme_watcher.set_value(utils.kde_globals_light())
+        wallpaper_watcher.set_value(
+            utils.currentWallpaper(config_watcher.get_new_value()))
 
-        utils.apply_themes(
-            config_watcher,
-            wallpaper_watcher,
-            wallpaper_modified,
-            group1_watcher,
-            light_mode_watcher,
-            schemes_watcher,
-            material_colors,
-            first_run_watcher,
-            konsole_profile_modified,
-            plasma_scheme_watcher)
-        #del config
+        if wallpaper_watcher.get_new_value() != None:
+            # Get light/dark scheme status
+            plasma_scheme_watcher.set_value(utils.kde_globals_light())
+
+            utils.apply_themes(
+                config_watcher,
+                wallpaper_watcher,
+                wallpaper_modified,
+                group1_watcher,
+                light_mode_watcher,
+                schemes_watcher,
+                material_colors,
+                first_run_watcher,
+                konsole_profile_modified,
+                plasma_scheme_watcher)
         time.sleep(1)
