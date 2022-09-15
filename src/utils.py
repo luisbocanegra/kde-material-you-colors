@@ -421,7 +421,8 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 print(d.readConfig("Image"));
             """
             try:
-                return ("image", evaluate_script(script, monitor, plugin))
+                wallpaper = evaluate_script(script, monitor, plugin)
+                return ("image", wallpaper)
             except:
                 return None
 
@@ -446,7 +447,7 @@ def evaluate_script(script, monitor, plugin):
         return wallpaper_data
     except Exception as e:
         logging.error(f'Error getting wallpaper from dbus:\n{e}')
-        return None
+        exit(1)
 
 
 def get_last_modification(file):
@@ -1269,17 +1270,16 @@ def apply_themes(
     light_mode_watcher.set_value(get_config_value(
         config_watcher.get_new_value(), 'light'))
 
-    if wallpaper_watcher.get_new_value != None:
-        # Get wallpaper type and data
-        if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
-            wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
-            wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
-        # if wallpaper is image save time of last modification
-        if wallpaper_new_type == "image":
-            wallpaper_modified.set_value(
-                get_last_modification(wallpaper_new_data))
-        else:
-            wallpaper_modified.set_value(None)
+    # Get wallpaper type and data
+    if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
+        wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
+        wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
+    # if wallpaper is image save time of last modification
+    if wallpaper_new_type == "image":
+        wallpaper_modified.set_value(
+            get_last_modification(wallpaper_new_data))
+    else:
+        wallpaper_modified.set_value(None)
 
     if config_watcher.get_new_value()['konsole_profile'] != None:
         konsole_profile_modified.set_value(get_last_modification(

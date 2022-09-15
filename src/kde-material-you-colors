@@ -76,19 +76,20 @@ if __name__ == '__main__':
         # Get wallpaper
         wallpaper_watcher.set_value(
             utils.currentWallpaper(config_watcher.get_new_value()))
-        # Get light/dark scheme status
-        plasma_scheme_watcher.set_value(utils.kde_globals_light())
 
-        utils.apply_themes(
-            config_watcher,
-            wallpaper_watcher,
-            wallpaper_modified,
-            group1_watcher,
-            light_mode_watcher,
-            schemes_watcher,
-            material_colors,
-            first_run_watcher,
-            konsole_profile_modified,
-            plasma_scheme_watcher)
-        #del config
+        if wallpaper_watcher.get_new_value() != None:
+            # Get light/dark scheme status
+            plasma_scheme_watcher.set_value(utils.kde_globals_light())
+
+            utils.apply_themes(
+                config_watcher,
+                wallpaper_watcher,
+                wallpaper_modified,
+                group1_watcher,
+                light_mode_watcher,
+                schemes_watcher,
+                material_colors,
+                first_run_watcher,
+                konsole_profile_modified,
+                plasma_scheme_watcher)
         time.sleep(1)
