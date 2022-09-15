@@ -51,11 +51,12 @@ KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
 KONSOLE_TEMP_PROFILE = KONSOLE_DIR+"TempMyou.profile"
 BOLD = "\033[1m"
 COLOR_RESET = "\033[0;0m"
-COLOR_ERROR = '\033[91m'
-COLOR_WARN = '\033[93m'
-COLOR_DEBUG = '\033[94m'
-COLOR_INFO = '\033[90m'
-LOG_HINT = BOLD+'\033[97m'+COLOR_RESET
+LOG_HINT = '\033[31m'
+LOG_WHERE = BOLD+'\033[37m'
+COLOR_ERROR = COLOR_RESET+'\033[36m'
+COLOR_WARN = COLOR_RESET+'\033[35m'
+COLOR_DEBUG = COLOR_RESET+'\033[34m'
+COLOR_INFO = COLOR_RESET+'\033[33m'
 BOLD_RESET = COLOR_RESET+BOLD
 LOG_FILE_PATH = HOME+"/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
@@ -65,12 +66,12 @@ MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors.json"
 
 class MyFormatter(logging.Formatter):
 
-    term_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: %(message)s'
+    term_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: {}%(message)s'
     file_fmt = '%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s'
-    dbg_fmt = term_fmt.format(LOG_HINT, COLOR_DEBUG)
-    info_fmt = term_fmt.format(LOG_HINT, COLOR_INFO)
-    warn_fmt = term_fmt.format(LOG_HINT, COLOR_WARN)
-    err_fmt = term_fmt.format(LOG_HINT, COLOR_ERROR)
+    dbg_fmt = term_fmt.format(LOG_HINT, LOG_WHERE, COLOR_DEBUG)
+    info_fmt = term_fmt.format(LOG_HINT, LOG_WHERE, COLOR_INFO)
+    warn_fmt = term_fmt.format(LOG_HINT, LOG_WHERE, COLOR_WARN)
+    err_fmt = term_fmt.format(LOG_HINT, LOG_WHERE, COLOR_ERROR)
 
     def __init__(self, to_file):
         self.to_file = to_file
