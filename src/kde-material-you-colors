@@ -49,6 +49,8 @@ if __name__ == '__main__':
                         help='Konsole background opacity (value from 0 to 100, default is None)', default=None)
     parser.add_argument('--color', '-col', type=str,
                         help='Custom color (hex or rgb) used to generate M3 color scheme', default=None)
+    parser.add_argument('--stop', action='store_true',
+                        help='Kill an existing instance of kde-material-you-colors and exit')
 
     # Get commandline arguments
     args = parser.parse_args()
