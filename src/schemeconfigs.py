@@ -125,9 +125,9 @@ class ThemeConfig:
         tone = 50
         pywal_colors_light = (extras['SurfaceLight'],)
         pywal_colors_light_intense = (blendColors(
-            tones_neutral[50], colors_light['secondary'], .8*lbm),)
-        pywal_colors_light_faint = (blendColors(
             tones_neutral[75], colors_light['secondary'], .8*lbm),)
+        pywal_colors_light_faint = (blendColors(
+            tones_neutral[50], colors_light['secondary'], .8*lbm),)
 
         for x in range(7):
             str_x = str(x)
