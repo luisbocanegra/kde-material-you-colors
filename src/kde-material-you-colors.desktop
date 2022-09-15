@@ -2,6 +2,7 @@
 Exec=/usr/bin/kde-material-you-colors
 Icon=colors
 Name=KDE Material You Colors
+Comment=Starts/Restarts the Script
 Path=
 Type=Application
 X-KDE-AutostartScript=true

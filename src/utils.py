@@ -1239,6 +1239,9 @@ def one_shot_actions(args):
             logging.error(
                 f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
         quit(0)
+    elif args.stop == True:
+        kill_existing()
+        quit(0)
 
 
 def get_config_value(config, config_name: str):
