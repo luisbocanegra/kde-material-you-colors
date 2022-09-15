@@ -16,7 +16,6 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 <img src="https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif"  alt="Screenshot">
 </div>
 
-
 ### Video demo:
 
 https://user-images.githubusercontent.com/15076387/163064257-c3e9c50e-6728-4e9f-b594-83b80436c802.mp4
@@ -31,7 +30,8 @@ Table of Contents
   - [Other distributions](#other-distributions)
     - [Updating](#updating)
   - [Optional features](#optional-features)
-- [Running from terminal](#running-from-terminal)
+- [Running](#running)
+  - [From terminal to debug your configuration](#from-terminal-to-debug-your-configuration)
     - [Options](#options)
 - [Startup script](#startup-script)
   - [Removing the autostart script](#removing-the-autostart-script)
@@ -44,6 +44,7 @@ Table of Contents
 
 # Features
 - Update automatically on wallpaper change
+- Custom color to generate Material You color schemes
 - Configurarion file
 - Support for selecting Wallpaper plugin from seconday monitors (see [Configuration](#configuration))
 - Alternative Material You color selection if the wallpaper provides more than one
@@ -97,10 +98,12 @@ Repeat step 2
 
 <span style="color:#ff6568"> **You may need to update to latest Plasma 5.24 due to a BUG related to [this one](https://bugs.kde.org/show_bug.cgi?id=445058) that blocks this program from getting the current wallpaper.** </span>
 
-
-# Running from terminal
-- Run `kde-material-you-colors` from terminal, if you use the default wallpaper plugin on your main screen (0) this should change your Desktop colors right after.
-
+# Running
+### From terminal to debug your configuration
+- Run `kde-material-you-colors` from terminal, this should change your Desktop colors right after.
+### Desktop entries
+- To start/restart the script launch **KDE Material You Colors** from your applications list
+- To stop the script launch **Stop KDE Material You Colors** from your applications list
 
 **NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
 
@@ -151,6 +154,7 @@ Repeat step 2
 `--color [COLOR], -col [COLOR]`&emsp; Custom color (hex or rgb) used to generate M3 color scheme (default is None)
 
 # Startup script
+After finishing the setup, you can make it run automatically on bot
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
 
@@ -160,7 +164,7 @@ Repeat step 2
 
 `kde-material-you-colors -a` 
 
-3. Reboot or logout/login to see the changes,
+3. Reboot or logout/login and test the changes,
 
 **NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
 
@@ -174,8 +178,6 @@ Repeat step 2
 
 Using Plasma Wallpaper Settings may Crash Plasmashell and will set again the plugin from Configuration file
 
-
-
 # Working Wallpaper plugins
 This is a list of compatible Plasma Wallpaper Plugins
 
@@ -187,7 +189,7 @@ This is a list of compatible Plasma Wallpaper Plugins
 | Plain color | `org.kde.color` |
 | Inactive Blur | `com.github.zren.inactiveblur` ([latest](https://github.com/Zren/plasma-wallpapers))|
 
-# Configuration
+# Configuration file
 
 - Copy default configuration: run `kde-material-you-colors -c`
 - Edit ~/.config/kde-material-you-colors/config.conf
