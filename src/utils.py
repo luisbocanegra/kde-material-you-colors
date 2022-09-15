@@ -4,7 +4,6 @@ import subprocess
 import json
 import configparser
 import sys
-import numpy as np
 import dbus
 from color_utils import hex2rgb, rgb2hex
 import importlib.util
@@ -13,19 +12,23 @@ from extra_image_utils import sourceColorsFromImage
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 if USER_HAS_COLR:
     from colr import color
+USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
+if USER_HAS_PYWAL:
+    import pywal
 import logging
 from logging.handlers import RotatingFileHandler
 import signal
+from schemeconfigs import ThemeConfig
 # Set logging level for pillow
 logging.getLogger('PIL').setLevel(logging.WARNING)
 HOME = str(Path.home())
-THEME_LIGHT_PATH = HOME+"/.local/share/color-schemes/MaterialYouLight"
-THEME_DARK_PATH = HOME+"/.local/share/color-schemes/MaterialYouDark"
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
 SAMPLE_CONFIG_PATH = "/usr/lib/kde-material-you-colors/"
 USER_CONFIG_PATH = HOME+"/.config/kde-material-you-colors/"
-USER_SCHEMES_PATH = HOME+"/.local/share/color-schemes/"
+USER_SCHEMES_PATH = HOME+"/.local/share/color-schemes"
+THEME_LIGHT_PATH = USER_SCHEMES_PATH+"/MaterialYouLight"
+THEME_DARK_PATH = USER_SCHEMES_PATH+"/MaterialYouDark"
 AUTOSTART_SCRIPT = "kde-material-you-colors.desktop"
 SAMPLE_AUTOSTART_SCRIPT_PATH = "/usr/lib/kde-material-you-colors/"
 USER_AUTOSTART_SCRIPT_PATH = HOME+"/.config/autostart/"
@@ -126,242 +129,189 @@ class Configs():
         dict: Settings dictionary
     """
     def __init__(self, args):
-        c_light = c_monitor = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = None
-        # User may just want to set the startup script / default config, do that only and exit
-        if args.autostart == True:
-            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
-                os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
-            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
-                try:
-                    subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
-                                            shell=True)
-                    logging.info(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
-                except Exception:
-                    quit(1)
+
+        config = configparser.ConfigParser()
+        if os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
+            try:
+                config.read(USER_CONFIG_PATH+CONFIG_FILE)
+                if 'CUSTOM' in config:
+                    custom = config['CUSTOM']
+                    c_light = custom.getboolean('light')
+                    c_file = custom.get('file')
+                    
+                    c_monitor = custom.getint('monitor')
+                    if c_monitor < 0:
+                        raise ValueError(
+                            'Value for monitor must be a positive integer')
+
+                    c_ncolor = custom.getint('ncolor')
+                    if c_ncolor < 0:
+                        raise ValueError(
+                            'Value for ncolor must be a positive integer')
+
+                    c_plugin = custom.get('plugin')
+                    c_iconslight = custom.get('iconslight')
+                    c_iconsdark = custom.get('iconsdark')
+                    c_pywal = custom.getboolean('pywal')
+                    c_pywal_light = custom.getboolean('pywal_light')
+
+                    try:
+                        c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
+                    except:
+                        raise ValueError(
+                            'Value for light_blend_multiplier must be a positive number, using default 1.0')
+
+                    try:
+                        c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
+                    except:
+                        raise ValueError(
+                            'Value for dark_blend_multiplier must be a positive number, using default 1.0')
+
+                    c_on_change_hook = custom.get('on_change_hook')
+                    c_sierra_breeze_buttons_color = custom.getboolean('sierra_breeze_buttons_color')
+                    c_konsole_profile = custom.get('konsole_profile')
+
+                    c_titlebar_opacity = custom.getint('titlebar_opacity')
+                    if c_titlebar_opacity < 0 or c_titlebar_opacity > 100:
+                        raise ValueError(
+                            'Value for titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
+
+                    c_toolbar_opacity = custom.getint('toolbar_opacity')
+                    if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
+                        raise ValueError(
+                            'Value for toolbar_opacity must be an integer betwritten 0 and 100, using default 100')
+
+                    c_konsole_opacity = custom.getint('konsole_opacity')
+                    if c_konsole_opacity < 0 or c_konsole_opacity > 100:
+                        raise ValueError(
+                            'Value for konsole_opacity must be an integer betwritten 0 and 100, using default 100')
+
+            except Exception as e:
+                logging.error(f"Please fix your settings file:\n{e}\n")
+        if args.dark == True:
+            c_light = False
+        elif args.light == True:
+            c_light = args.light
+            
+        if args.pywal == True:
+            c_pywal = args.pywal
+        elif c_pywal == None:
+            c_pywal = args.pywal
+            
+        if args.pywaldark == True:
+            c_pywal_light = False
+        elif args.pywallight == True:
+            c_pywal_light = args.pywallight
+
+        if args.lbmultiplier != None:
+            c_light_blend_multiplier = clip(args.lbmultiplier, 0, 4, 1)
+        elif c_light_blend_multiplier != None:
+            c_light_blend_multiplier = clip(c_light_blend_multiplier, 0, 4, 1)
+            
+        if args.dbmultiplier != None:
+            c_dark_blend_multiplier = clip(args.dbmultiplier, 0, 4, 1)
+        elif c_dark_blend_multiplier != None:
+            c_dark_blend_multiplier = clip(c_dark_blend_multiplier, 0, 4, 1)
+            
+        if args.file != None:
+            c_file = args.file
+        elif c_file == None:
+            c_file = args.file
+
+        if args.monitor != None:
+            if args.monitor < 0:
+                logging.error('Value for --monitor must be a positive integer')
+                raise ValueError
             else:
-                logging.error(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
-            quit(0)
-        elif args.copyconfig == True:
-            if not os.path.exists(USER_CONFIG_PATH):
-                os.makedirs(USER_CONFIG_PATH)
-            if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
-                try:
-                    subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
-                                            shell=True)
-                    logging.info(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
-                except Exception:
-                    quit(1)
+                c_monitor = args.monitor
+        elif args.monitor == None and c_monitor == None:
+            c_monitor = 0
+
+        if args.ncolor != None:
+            if args.ncolor < 0:
+                logging.error('Value for --ncolor must be a positive integer')
+                raise ValueError
             else:
-                logging.error(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
-            quit(0)
-        else:
-            config = configparser.ConfigParser()
-            if os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
-                try:
-                    config.read(USER_CONFIG_PATH+CONFIG_FILE)
-                    if 'CUSTOM' in config:
-                        custom = config['CUSTOM']
+                c_ncolor = args.ncolor
+        elif args.ncolor == None and c_ncolor == None:
+            c_ncolor = 0
 
-                        if 'light' in custom:
-                            c_light = custom.getboolean('light')
+        if args.plugin != None:
+            c_plugin = args.plugin
+        elif args.plugin == None and c_plugin == None:
+            c_plugin = DEFAULT_PLUGIN
 
-                        if 'file' in custom:
-                            c_file = custom['file']
+        if args.iconslight != None:
+            c_iconslight = args.iconslight
+        elif c_iconslight == None:
+            c_iconslight = args.iconslight
 
-                        if 'monitor' in custom:
-                            c_monitor = custom.getint('monitor')
-                            if c_monitor < 0:
-                                raise ValueError(
-                                    'Value for monitor must be a positive integer')
+        if args.iconsdark != None:
+            c_iconsdark = args.iconsdark
+        elif c_iconsdark == None:
+            c_iconsdark = args.iconsdark
+            
+        if args.on_change_hook != None:
+            c_on_change_hook = args.on_change_hook
+        elif c_on_change_hook == None:
+            c_on_change_hook = args.on_change_hook
+            
+        if args.sierra_breeze_buttons_color == True:
+            c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
+        elif c_sierra_breeze_buttons_color != None:
+            c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
+            
+        if args.konsole_profile != None:
+            c_konsole_profile = args.konsole_profile
+        elif c_konsole_profile == None:
+            c_konsole_profile = args.konsole_profile
+            
+        if args.titlebar_opacity != None:
+            if args.titlebar_opacity < 0 or args.titlebar_opacity > 100:
+                logging.error('Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
+                raise ValueError
+            else:
+                c_titlebar_opacity = args.titlebar_opacity
+        elif args.titlebar_opacity == None and c_titlebar_opacity == None:
+            c_titlebar_opacity = None
+            
+        if args.toolbar_opacity != None:
+            if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
+                logging.error('Value for --toolbar-opacity must be an integer betwritten 0 and 100')
+                raise ValueError
+            else:
+                c_toolbar_opacity = args.toolbar_opacity
+        elif args.toolbar_opacity == None and c_toolbar_opacity == None:
+            c_toolbar_opacity = None
+            
+        if args.konsole_opacity != None:
+            if args.konsole_opacity < 0 or args.konsole_opacity > 100:
+                logging.error('Value for --konsole-opacity must be an integer betwritten 0 and 100')
+                raise ValueError
+            else:
+                c_konsole_opacity = args.konsole_opacity
+        elif args.konsole_opacity == None and c_konsole_opacity == None:
+            c_konsole_opacity = None
 
-                        if 'ncolor' in custom:
-                            c_ncolor = custom.getint('ncolor')
-                            if c_ncolor < 0:
-                                raise ValueError(
-                                    'Value for ncolor must be a positive integer')
-
-                        if 'plugin' in custom:
-                            c_plugin = custom['plugin']
-
-                        if 'iconslight' in custom:
-                            c_iconslight = custom['iconslight']
-
-                        if 'iconsdark' in custom:
-                            c_iconsdark = custom['iconsdark']
-                            
-                        if 'pywal' in custom:
-                            c_pywal = custom.getboolean('pywal')
-                        
-                        if 'pywal_light' in custom:
-                            c_pywal_light = custom.getboolean('pywal_light')
-                            
-                        if 'light_blend_multiplier' in custom:
-                            try:
-                                c_light_blend_multiplier = custom.getfloat('light_blend_multiplier')
-                            except:
-                                raise ValueError(
-                                    'Value for light_blend_multiplier must be a positive number, using default 1.0')
-                            
-                        if 'dark_blend_multiplier' in custom:
-                            try:
-                                c_dark_blend_multiplier = custom.getfloat('dark_blend_multiplier')
-                            except:
-                                raise ValueError(
-                                    'Value for dark_blend_multiplier must be a positive number, using default 1.0')
-                            
-                        if 'on_change_hook' in custom:
-                            c_on_change_hook = custom['on_change_hook']
-                            
-                        if 'sierra_breeze_buttons_color' in custom:
-                            c_sierra_breeze_buttons_color = custom.getboolean('sierra_breeze_buttons_color')
-                            
-                        if 'konsole_profile' in custom:
-                            c_konsole_profile = custom['konsole_profile']
-                            
-                        if 'titlebar_opacity' in custom:
-                            c_titlebar_opacity = custom.getint('titlebar_opacity')
-                            if c_titlebar_opacity < 0 or c_titlebar_opacity > 100:
-                                raise ValueError(
-                                    'Value for titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
-                        
-                        if 'toolbar_opacity' in custom:
-                            c_toolbar_opacity = custom.getint('toolbar_opacity')
-                            if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
-                                raise ValueError(
-                                    'Value for toolbar_opacity must be an integer betwritten 0 and 100, using default 100')
-                                
-                        if 'konsole_opacity' in custom:
-                            c_konsole_opacity = custom.getint('konsole_opacity')
-                            if c_konsole_opacity < 0 or c_konsole_opacity > 100:
-                                raise ValueError(
-                                    'Value for konsole_opacity must be an integer betwritten 0 and 100, using default 100')
-
-                except Exception as e:
-                    logging.error(f"Please fix your settings file:\n{e}\n")
-            if args.dark == True:
-                c_light = False
-            elif args.light == True:
-                c_light = args.light
-                
-            if args.pywal == True:
-                c_pywal = args.pywal
-            elif c_pywal == None:
-                c_pywal = args.pywal
-                
-            if args.pywaldark == True:
-                c_pywal_light = False
-            elif args.pywallight == True:
-                c_pywal_light = args.pywallight
-
-            if args.lbmultiplier != None:
-                c_light_blend_multiplier = range_check(args.lbmultiplier, 0, 4)
-            elif c_light_blend_multiplier != None:
-                c_light_blend_multiplier = range_check(c_light_blend_multiplier, 0, 4)
-                
-            if args.dbmultiplier != None:
-                c_dark_blend_multiplier = range_check(args.dbmultiplier, 0, 4)
-            elif c_dark_blend_multiplier != None:
-                c_dark_blend_multiplier = range_check(c_dark_blend_multiplier, 0, 4)
-                
-            if args.file != None:
-                c_file = args.file
-            elif c_file == None:
-                c_file = args.file
-
-            if args.monitor != None:
-                if args.monitor < 0:
-                    logging.error('Value for --monitor must be a positive integer')
-                    raise ValueError
-                else:
-                    c_monitor = args.monitor
-            elif args.monitor == None and c_monitor == None:
-                c_monitor = 0
-
-            if args.ncolor != None:
-                if args.ncolor < 0:
-                    logging.error('Value for --ncolor must be a positive integer')
-                    raise ValueError
-                else:
-                    c_ncolor = args.ncolor
-            elif args.ncolor == None and c_ncolor == None:
-                c_ncolor = 0
-
-            if args.plugin != None:
-                c_plugin = args.plugin
-            elif args.plugin == None and c_plugin == None:
-                c_plugin = DEFAULT_PLUGIN
-
-            if args.iconslight != None:
-                c_iconslight = args.iconslight
-            elif c_iconslight == None:
-                c_iconslight = args.iconslight
-
-            if args.iconsdark != None:
-                c_iconsdark = args.iconsdark
-            elif c_iconsdark == None:
-                c_iconsdark = args.iconsdark
-                
-            if args.on_change_hook != None:
-                c_on_change_hook = args.on_change_hook
-            elif c_on_change_hook == None:
-                c_on_change_hook = args.on_change_hook
-                
-            if args.sierra_breeze_buttons_color == True:
-                c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
-            elif c_sierra_breeze_buttons_color != None:
-                c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
-                
-            if args.konsole_profile != None:
-                c_konsole_profile = args.konsole_profile
-            elif c_konsole_profile == None:
-                c_konsole_profile = args.konsole_profile
-                
-            if args.titlebar_opacity != None:
-                if args.titlebar_opacity < 0 or args.titlebar_opacity > 100:
-                    logging.error('Value for --sbe-titlebar-opacity must be an integer betwritten 0 and 100')
-                    raise ValueError
-                else:
-                    c_titlebar_opacity = args.titlebar_opacity
-            elif args.titlebar_opacity == None and c_titlebar_opacity == None:
-                c_titlebar_opacity = None
-                
-            if args.toolbar_opacity != None:
-                if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
-                    logging.error('Value for --toolbar-opacity must be an integer betwritten 0 and 100')
-                    raise ValueError
-                else:
-                    c_toolbar_opacity = args.toolbar_opacity
-            elif args.toolbar_opacity == None and c_toolbar_opacity == None:
-                c_toolbar_opacity = None
-                
-            if args.konsole_opacity != None:
-                if args.konsole_opacity < 0 or args.konsole_opacity > 100:
-                    logging.error('Value for --konsole-opacity must be an integer betwritten 0 and 100')
-                    raise ValueError
-                else:
-                    c_konsole_opacity = args.konsole_opacity
-            elif args.konsole_opacity == None and c_konsole_opacity == None:
-                c_konsole_opacity = None
-
-            self._options = {
-                'light': c_light,
-                'file': c_file,
-                'monitor': c_monitor,
-                'plugin': c_plugin,
-                'ncolor': c_ncolor,
-                'iconslight': c_iconslight,
-                'iconsdark': c_iconsdark,
-                "pywal": c_pywal,
-                "pywal_light":  c_pywal_light,
-                "lbm": c_light_blend_multiplier,
-                "dbm": c_dark_blend_multiplier,
-                "on_change_hook": c_on_change_hook,
-                "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
-                "konsole_profile" : c_konsole_profile,
-                "titlebar_opacity" : c_titlebar_opacity,
-                "toolbar_opacity" : c_toolbar_opacity,
-                "konsole_opacity" : c_konsole_opacity
-                }
+        self._options = {
+            'light': c_light,
+            'file': c_file,
+            'monitor': c_monitor,
+            'plugin': c_plugin,
+            'ncolor': c_ncolor,
+            'iconslight': c_iconslight,
+            'iconsdark': c_iconsdark,
+            "pywal": c_pywal,
+            "pywal_light":  c_pywal_light,
+            "lbm": c_light_blend_multiplier,
+            "dbm": c_dark_blend_multiplier,
+            "on_change_hook": c_on_change_hook,
+            "sierra_breeze_buttons_color" : c_sierra_breeze_buttons_color,
+            "konsole_profile" : c_konsole_profile,
+            "titlebar_opacity" : c_titlebar_opacity,
+            "toolbar_opacity" : c_toolbar_opacity,
+            "konsole_opacity" : c_konsole_opacity
+            }
 
     @property
     def options(self):
@@ -444,12 +394,8 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 print(d.readConfig("Color"));
             """
             try:
-                color_rgb =  tuple((evaluate_script(script, monitor, plugin)).split(","))
-                r = int(color_rgb[0])
-                g = int(color_rgb[1])
-                b = int(color_rgb[2])
-                
-                return ("color",rgb2hex(r, g, b))
+                color_rgb = tuple((evaluate_script(script, monitor, plugin)).split(","))
+                return ("color",rgb2hex(int(r=color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
             except:
                 return None
         else:
@@ -462,8 +408,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
                 print(d.readConfig("Image"));
             """
             try:
-                wallpaper =  evaluate_script(script, monitor, plugin)
-                return ("image",wallpaper)
+                return ("image", evaluate_script(script, monitor, plugin))
             except:
                 return None
             
@@ -681,6 +626,9 @@ def currentWallpaper(options):
     return get_wallpaper_data(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
 
 def make_plasma_scheme(schemes=None):
+    # Make sure the schemes path exists
+    if not os.path.exists(USER_SCHEMES_PATH):
+        os.makedirs(USER_SCHEMES_PATH)
     light_scheme=schemes.get_light_scheme()
     dark_scheme=schemes.get_dark_scheme()
     # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
@@ -724,11 +672,11 @@ def apply_pywal_schemes(light=None, pywal_light=None, use_pywal=False, schemes=N
             pywal_colors=schemes.get_wal_light_scheme()
         elif light  == False:
             pywal_colors=schemes.get_wal_dark_scheme()
-
+    else:
+        pywal_colors=schemes.get_wal_dark_scheme()
     if pywal_colors != None:
         if use_pywal != None and use_pywal == True:
-            if importlib.util.find_spec("pywal") is not None:
-                import pywal
+            if USER_HAS_PYWAL:
                 # On very rare occassions pywal will hang, add a timeout to it
                 timeout_set(3)
                 try:
@@ -775,13 +723,14 @@ def run_hook(hook):
     if hook != None:
         subprocess.Popen(hook,shell=True)
 
-def range_check(x,min,max):
-    if x != None:
-        return np.clip(x,min,max)
+def clip(number, min, max, fallback):
+    if number != None:
+        return min if number < min else max if number > max else number
     else:
-        return 1
+        return fallback
 
 def kwin_reload():
+    logging.info(f"Reloading KWin...")
     subprocess.Popen("qdbus org.kde.KWin /KWin reconfigure",shell=True, stderr=subprocess.DEVNULL,stdout=subprocess.DEVNULL)
     
 def sierra_breeze_button_colors(schemes,light=None):
@@ -820,9 +769,10 @@ def sierra_breeze_button_colors(schemes,light=None):
                 logging.info(f"Applying SierraBreeze window button colors")
                 with open(BREEZE_RC, 'w') as configfile:
                     breezerc.write(configfile,space_around_delimiters=False)
-                kwin_reload()
         except Exception as e:
             logging.error(f"Error writing breeze window button colors:\n{e}")
+    else:
+        logging.warning(f"SierraBreeze config '{BREEZE_RC}' not found, skipping")
 
 def tup2str(tup):
     return ','.join(map(str,tup))
@@ -855,20 +805,20 @@ def konsole_export_scheme(light=None, pywal_light=None, schemes=None, konsole_op
         konsole_opacity = 1.0
     else:
         konsole_opacity = float(konsole_opacity/100)
-    konsole_opacity = range_check(konsole_opacity,0.0,1.0)
+    konsole_opacity = clip(konsole_opacity,0.0 ,1.0, 1.0)
     # print(f"konsole_opacity: {konsole_opacity}")
     if pywal_light != None:
         if pywal_light  == True:
             pywal_colors=schemes.get_wal_light_scheme()
         else:
-            pywal_light=False
             pywal_colors=schemes.get_wal_dark_scheme()
     elif light != None:
         if light  == True:
             pywal_colors=schemes.get_wal_light_scheme()
         elif light  == False:
             pywal_colors=schemes.get_wal_dark_scheme()
-                        
+    else:
+        pywal_colors=schemes.get_wal_dark_scheme()
     config = configparser.ConfigParser()
     config.optionxform = str
     if os.path.exists(KONSOLE_COLOR_SCHEME_PATH):
@@ -1065,7 +1015,7 @@ def kwin_blend_changes():
 
 def titlebar_opacity(opacity):
     if opacity != None:
-        opacity = range_check(opacity,0,100)
+        opacity = clip(opacity,0,100, 100)
         conf_file = configparser.ConfigParser()
         # preserve case
         conf_file.optionxform = str
@@ -1082,7 +1032,6 @@ def titlebar_opacity(opacity):
                     logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
                     with open(SBE_RC, 'w') as configfile:
                         conf_file.write(configfile,space_around_delimiters=False)
-                    kwin_reload()
             except Exception as e:
                 logging.error(f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}")
                 
@@ -1099,7 +1048,6 @@ def titlebar_opacity(opacity):
                     logging.info(f"Applying Klassy titlebar opacity")
                     with open(KLASSY_RC, 'w') as configfile:
                         conf_file.write(configfile,space_around_delimiters=False)
-                    kwin_reload()
             except Exception as e:
                 logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
 
@@ -1130,3 +1078,282 @@ def get_custom_colors(custom_colors):
             },
         )
     return colors
+
+def one_shot_actions(args):
+    # User may just want to set the startup script / default config, do that only and terminate the script
+        if args.autostart == True:
+            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH):
+                os.makedirs(USER_AUTOSTART_SCRIPT_PATH)
+            if not os.path.exists(USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT):
+                try:
+                    subprocess.check_output("cp "+SAMPLE_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT+" "+USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT,
+                                            shell=True)
+                    logging.info(f"Autostart script copied to: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+                except Exception:
+                    quit(1)
+            else:
+                logging.error(f"Autostart script already exists in: {USER_AUTOSTART_SCRIPT_PATH+AUTOSTART_SCRIPT}")
+            quit(0)
+        elif args.copyconfig == True:
+            if not os.path.exists(USER_CONFIG_PATH):
+                os.makedirs(USER_CONFIG_PATH)
+            if not os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
+                try:
+                    subprocess.check_output("cp "+SAMPLE_CONFIG_PATH+SAMPLE_CONFIG_FILE+" "+USER_CONFIG_PATH+CONFIG_FILE,
+                                            shell=True)
+                    logging.info(f"Config copied to: {USER_CONFIG_PATH+CONFIG_FILE}")
+                except Exception:
+                    quit(1)
+            else:
+                logging.error(f"Config already exists in: {USER_CONFIG_PATH+CONFIG_FILE}")
+            quit(0)
+
+def get_config_value(config,config_name:str):
+    if config != None:
+        if config_name in config:
+            return config[config_name]
+
+class Watcher:
+    """ A simple class to watch variable changes."""
+    
+    def __init__(self, value: any):
+        self.value = value
+        self.has_changed = False
+        self.old_value = None
+
+    def set_value(self, new_value: any) -> None:
+        if self.value != new_value:
+            self.old_value = self.value
+            self.value = new_value
+            self.has_changed = True
+        else:
+            self.has_changed = False
+            
+    def has_changed(self):
+        return self.has_changed
+    
+    def get_old_value(self):
+        return self.old_value
+    
+    def get_new_value(self):
+        return self.value
+    
+def apply_themes(
+    config_watcher:Watcher,
+    wallpaper_watcher:Watcher,
+    wallpaper_modified:Watcher,
+    group1_watcher:Watcher,
+    light_mode_watcher:Watcher,
+    schemes_watcher:Watcher,
+    material_colors:Watcher,
+    first_run_watcher:Watcher,
+    konsole_profile_modified:Watcher,
+    plasma_scheme_watcher:Watcher):
+    # Print new config after change
+    if config_watcher.has_changed:
+        logging.debug(f"New Config: {config_watcher.get_new_value()}")
+    needs_kwin_reload=False
+    group1_watcher.set_value([
+        get_config_value(config_watcher.get_new_value(),'ncolor'),
+        get_config_value(config_watcher.get_new_value(),'lbm'),
+        get_config_value(config_watcher.get_new_value(),'dbm'),
+        ])
+
+    light_mode_watcher.set_value(get_config_value(config_watcher.get_new_value(),'light'))
+
+    if wallpaper_watcher.get_new_value != None:
+            # Get wallpaper type and data
+            if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
+                wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
+                wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
+            # if wallpaper is image save time of last modification
+            if wallpaper_new_type == "image":
+                wallpaper_modified.set_value(get_last_modification(wallpaper_new_data))
+            else: 
+                wallpaper_modified.set_value(None)
+
+    if config_watcher.get_new_value()['konsole_profile'] != None:
+        konsole_profile_modified.set_value(get_last_modification(
+            KONSOLE_DIR+config_watcher.get_new_value()['konsole_profile']+".profile"))
+        
+    # decide light or dark 
+    dark_light = False
+    if light_mode_watcher.get_new_value() == None:
+        if plasma_scheme_watcher.get_new_value() != None:
+            dark_light = plasma_scheme_watcher.get_new_value()
+    else:
+        dark_light = light_mode_watcher.get_new_value()
+    
+    if wallpaper_watcher.has_changed or group1_watcher.has_changed or wallpaper_modified.has_changed:
+        if wallpaper_watcher.has_changed:
+            logging.info(f'Wallpaper changed: ({wallpaper_new_type}) {wallpaper_new_data}')
+        material_colors.set_value(get_color_schemes(
+            wallpaper_watcher.get_new_value(),
+            config_watcher.get_new_value()['ncolor']))
+        if material_colors.get_new_value() != None:
+            # Genrate color schemes from MYou colors
+            schemes_watcher.set_value(ThemeConfig(
+                material_colors.get_new_value(),
+                wallpaper_new_data,
+                config_watcher.get_new_value()['lbm'],
+                config_watcher.get_new_value()['dbm'],
+                config_watcher.get_new_value()['toolbar_opacity']))
+            # Append generated schemes to output file
+            append_schemes(schemes_watcher.get_new_value())
+            # Make plasma color schemes
+            make_plasma_scheme(schemes_watcher.get_new_value())
+            # Apply plasma color schemes
+            apply_color_schemes(dark_light)
+            # Export and apply color scheme to konsole profile
+            if config_watcher.get_new_value()['konsole_profile'] != None:
+                konsole_apply_color_scheme(
+                    dark_light,
+                    config_watcher.get_new_value()['pywal_light'],
+                    schemes_watcher.get_new_value(),
+                    config_watcher.get_new_value()['konsole_profile'],
+                    konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+                )
+
+            set_icons(
+                config_watcher.get_new_value()['iconslight'],
+                config_watcher.get_new_value()['iconsdark'],
+                light_mode_watcher.get_new_value())
+            
+            if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
+                needs_kwin_reload = True
+                sierra_breeze_button_colors(
+                    schemes_watcher.get_new_value(),
+                    light_mode_watcher.get_new_value())
+                
+            if first_run_watcher.get_new_value() == True:
+                if config_watcher.get_new_value()['titlebar_opacity'] != None:
+                    needs_kwin_reload = True
+                    titlebar_opacity(
+                        config_watcher.get_new_value()['titlebar_opacity'])
+            if needs_kwin_reload == True:
+                kwin_reload()
+                needs_kwin_reload == False
+            # Apply pywal color scheme with MYou colors
+            if config_watcher.get_new_value()['pywal'] == True:
+                apply_pywal_schemes(
+                    dark_light,
+                    use_pywal=config_watcher.get_new_value()['pywal'],
+                    pywal_light=config_watcher.get_new_value()['pywal_light'],
+                    schemes=schemes_watcher.get_new_value())
+            print("---------------------")
+            run_hook(config_watcher.get_new_value()['on_change_hook'])
+
+    if first_run_watcher.get_new_value() == False:
+        if light_mode_watcher.has_changed or plasma_scheme_watcher.has_changed and plasma_scheme_watcher.get_old_value() != None and light_mode_watcher.get_new_value() != plasma_scheme_watcher.get_new_value():
+
+            # Apply plasma color schemes
+            apply_color_schemes(dark_light)
+            # Export and apply color scheme to konsole profile
+            konsole_apply_color_scheme(
+                            dark_light,
+                            config_watcher.get_new_value()['pywal_light'],
+                            schemes_watcher.get_new_value(),
+                            config_watcher.get_new_value()['konsole_profile'],
+                            konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+                        )
+            set_icons(
+                    config_watcher.get_new_value()['iconslight'],
+                    config_watcher.get_new_value()['iconsdark'],
+                    light_mode_watcher.get_new_value())
+            if config_watcher.get_new_value()['pywal'] == True:
+                if config_watcher.get_new_value()['pywal_light'] == None:
+                    apply_pywal_schemes(
+                        dark_light,
+                        use_pywal=config_watcher.get_new_value()['pywal'],
+                        pywal_light=config_watcher.get_new_value()['pywal_light'],
+                        schemes=schemes_watcher.get_new_value())
+            print("---------------------")
+
+    if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None:
+        make_konsole_mirror_profile(config_watcher.get_new_value()['konsole_profile'])
+
+    if config_watcher.has_changed and config_watcher.get_old_value() != None:
+        icons_new = [
+            get_config_value(config_watcher.get_new_value(),'iconslight'),
+            get_config_value(config_watcher.get_new_value(),'iconsdark')
+        ]
+        icons_old = [
+            get_config_value(config_watcher.get_old_value(),'iconslight'),
+            get_config_value(config_watcher.get_old_value(),'iconsdark')
+        ]
+
+        if icons_new != icons_old:
+            set_icons(icons_new[0],icons_new[1])
+
+        if get_config_value(config_watcher.get_new_value(),'pywal') != get_config_value(config_watcher.get_old_value(),'pywal') and get_config_value(config_watcher.get_new_value(),'pywal') != None:
+            if config_watcher.get_new_value()['pywal'] == True:
+                apply_pywal_schemes(
+                    dark_light,
+                    use_pywal=config_watcher.get_new_value()['pywal'],
+                    pywal_light=config_watcher.get_new_value()['pywal_light'],
+                    schemes=schemes_watcher.get_new_value())
+                
+
+        if get_config_value(config_watcher.get_new_value(),'pywal_light') != get_config_value(config_watcher.get_old_value(),'pywal_light'):
+            konsole_apply_color_scheme(
+                dark_light,
+                config_watcher.get_new_value()['pywal_light'],
+                schemes_watcher.get_new_value(),
+                config_watcher.get_new_value()['konsole_profile'],
+                konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+            )
+            if config_watcher.get_new_value()['pywal'] == True:
+                apply_pywal_schemes(
+                    dark_light,
+                    use_pywal=config_watcher.get_new_value()['pywal'],
+                    pywal_light=config_watcher.get_new_value()['pywal_light'],
+                    schemes=schemes_watcher.get_new_value())
+        
+        if get_config_value(config_watcher.get_new_value(),'konsole_opacity') != get_config_value(config_watcher.get_old_value(),'konsole_opacity') or get_config_value(config_watcher.get_new_value(),'konsole_profile') != get_config_value(config_watcher.get_old_value(),'konsole_profile'):
+            if config_watcher.get_new_value()['konsole_opacity'] != None:
+                konsole_apply_color_scheme(
+                dark_light,
+                config_watcher.get_new_value()['pywal_light'],
+                schemes_watcher.get_new_value(),
+                config_watcher.get_new_value()['konsole_profile'],
+                konsole_opacity=config_watcher.get_new_value()['konsole_opacity']
+            )
+        if get_config_value(config_watcher.get_new_value(),'titlebar_opacity') != get_config_value(config_watcher.get_old_value(),'titlebar_opacity'):
+            if get_config_value(config_watcher.get_new_value(),'titlebar_opacity') != None:
+                needs_kwin_reload = True
+                titlebar_opacity(
+                    config_watcher.get_new_value()['titlebar_opacity'])
+
+        if get_config_value(config_watcher.get_new_value(),'toolbar_opacity') != get_config_value(config_watcher.get_old_value(),'toolbar_opacity'):
+            if config_watcher.get_new_value()['toolbar_opacity'] != None:
+                material_colors.set_value(get_color_schemes(
+                    wallpaper_watcher.get_new_value(),
+                    config_watcher.get_new_value()['ncolor']))
+            if material_colors.get_new_value() != None:
+                # Genrate color schemes from MYou colors
+                schemes_watcher.set_value(ThemeConfig(
+                    material_colors.get_new_value(),
+                    wallpaper_new_data,
+                    config_watcher.get_new_value()['lbm'],
+                    config_watcher.get_new_value()['dbm'],
+                    config_watcher.get_new_value()['toolbar_opacity']))
+                # Append generated schemes to output file
+                append_schemes(schemes_watcher.get_new_value())
+                # Make plasma color schemes
+                make_plasma_scheme(schemes_watcher.get_new_value())
+                # Apply plasma color schemes
+                apply_color_schemes(dark_light)
+        
+        if get_config_value(config_watcher.get_new_value(),'sierra_breeze_buttons_color') != get_config_value(config_watcher.get_old_value(),'sierra_breeze_buttons_color'):
+            if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
+                needs_kwin_reload = True
+                sierra_breeze_button_colors(
+                    schemes_watcher.get_new_value(),
+                    light_mode_watcher.get_new_value())
+                
+        run_hook(config_watcher.get_new_value()['on_change_hook'])
+
+        if needs_kwin_reload == True:
+            kwin_reload()
+            needs_kwin_reload == False
+    first_run_watcher.set_value(False)

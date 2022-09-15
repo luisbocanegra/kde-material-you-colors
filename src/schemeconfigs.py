@@ -1,5 +1,5 @@
-from color_utils import blendColors, contrast_ratio, hex2rgb, hex2alpha, scale_lightness, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
-from utils import range_check, tup2str
+from color_utils import blendColors, hex2rgb, hex2alpha, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
+import utils
 class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
         if toolbar_opacity == None:
@@ -13,9 +13,9 @@ class ThemeConfig:
         colors_light = colors['schemes']['light']
         colors_dark = colors['schemes']['dark']
         
-        lbm = range_check(light_blend_multiplier,0,4)
-        dbm = range_check(dark_blend_multiplier,0,4)
-        toolbar_opacity = range_check(toolbar_opacity,0,100)
+        lbm = utils.clip(light_blend_multiplier,0,4, 1.0)
+        dbm = utils.clip(dark_blend_multiplier,0,4, 1.0)
+        toolbar_opacity = utils.clip(toolbar_opacity,0,100, 100)
         
         # Base text states taken from Breeze Color Scheme
         base_text_states = {
@@ -570,25 +570,25 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
         light_inactive=extras['SurfaceLight3']
     
         self._sierra_breeze_dark_colors = {
-            "btn_close_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[80], .7))),
-            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
-            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
-            "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#118cff", .7))),
-            "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#5d00b9", .7))),
-            "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#00b9b9", .7))),
-            "btn_shade_active_color" : tup2str(hex2rgb(blendColors(dark_active, "#b900b6", .7))),
-            "btn_inactive_color" : tup2str(hex2rgb(blendColors(dark_inactive, colors_dark['secondary'], .32)))
+            "btn_close_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, tones_primary[80], .7))),
+            "btn_minimize_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
+            "btn_maximize_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, tones_primary[70], .7))),
+            "btn_keep_above_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, "#118cff", .7))),
+            "btn_keep_below_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, "#5d00b9", .7))),
+            "btn_on_all_desktops_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, "#00b9b9", .7))),
+            "btn_shade_active_color" : utils.tup2str(hex2rgb(blendColors(dark_active, "#b900b6", .7))),
+            "btn_inactive_color" : utils.tup2str(hex2rgb(blendColors(dark_inactive, colors_dark['secondary'], .32)))
         }
         
         self._sierra_breeze_light_colors = {
-            "btn_close_active_color" : tup2str(hex2rgb(blendColors(tones_primary[50],light_active, .05*lbm))),
-            "btn_minimize_active_color" : tup2str(hex2rgb(blendColors(tones_primary[60],light_active, .05*lbm))),
-            "btn_maximize_active_color" : tup2str(hex2rgb(blendColors(tones_primary[70],light_active, .05*lbm))),
-            "btn_keep_above_active_color" : tup2str(hex2rgb(blendColors("#118cff", light_active, .05*lbm))),
-            "btn_keep_below_active_color" : tup2str(hex2rgb(blendColors("#5d00b9", light_active, .05*lbm))),
-            "btn_on_all_desktops_active_color" : tup2str(hex2rgb(blendColors("#00b9b9", light_active, .05*lbm))),
-            "btn_shade_active_color" : tup2str(hex2rgb(blendColors("#b900b6", light_active, .05*lbm))),
-            "btn_inactive_color" : tup2str(hex2rgb(blendColors(light_inactive, colors_light['secondary'], .32)))
+            "btn_close_active_color" : utils.tup2str(hex2rgb(blendColors(tones_primary[50],light_active, .05*lbm))),
+            "btn_minimize_active_color" : utils.tup2str(hex2rgb(blendColors(tones_primary[60],light_active, .05*lbm))),
+            "btn_maximize_active_color" : utils.tup2str(hex2rgb(blendColors(tones_primary[70],light_active, .05*lbm))),
+            "btn_keep_above_active_color" : utils.tup2str(hex2rgb(blendColors("#118cff", light_active, .05*lbm))),
+            "btn_keep_below_active_color" : utils.tup2str(hex2rgb(blendColors("#5d00b9", light_active, .05*lbm))),
+            "btn_on_all_desktops_active_color" : utils.tup2str(hex2rgb(blendColors("#00b9b9", light_active, .05*lbm))),
+            "btn_shade_active_color" : utils.tup2str(hex2rgb(blendColors("#b900b6", light_active, .05*lbm))),
+            "btn_inactive_color" : utils.tup2str(hex2rgb(blendColors(light_inactive, colors_light['secondary'], .32)))
         }
 
     def get_extras(self):
