@@ -47,6 +47,8 @@ if __name__ == '__main__':
                         help='ToolBar opacity, needs Lightly Application Style (value from 0 to 100, default is None)', default=None)
     parser.add_argument('--konsole-opacity', '-ko', type=int,
                         help='Konsole background opacity (value from 0 to 100, default is None)', default=None)
+    parser.add_argument('--color', '-col', type=str,
+                        help='Custom color (hex or rgb) used to generate M3 color scheme', default=None)
 
     # Get commandline arguments
     args = parser.parse_args()
@@ -75,7 +77,11 @@ if __name__ == '__main__':
         config_watcher.set_value(config.options)
         # Get wallpaper
         wallpaper_watcher.set_value(
-            utils.currentWallpaper(config_watcher.get_new_value()))
+            utils.get_wallpaper_data(
+                plugin=config_watcher.get_new_value()['plugin'],
+                monitor=config_watcher.get_new_value()['monitor'],
+                color=config_watcher.get_new_value()['color']
+            ))
 
         if wallpaper_watcher.get_new_value() != None:
             # Get light/dark scheme status

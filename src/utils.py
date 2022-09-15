@@ -1,3 +1,4 @@
+import re
 from schemeconfigs import ThemeConfig
 import signal
 from logging.handlers import RotatingFileHandler
@@ -141,20 +142,21 @@ class Configs():
                 config.read(USER_CONFIG_PATH+CONFIG_FILE)
                 if 'CUSTOM' in config:
                     custom = config['CUSTOM']
-                    c_light = custom.getboolean('light')
+                    c_light = custom.getboolean('light', False)
                     c_file = custom.get('file')
 
-                    c_monitor = custom.getint('monitor')
+                    c_monitor = custom.getint('monitor', 0)
                     if c_monitor < 0:
                         raise ValueError(
                             'Value for monitor must be a positive integer')
 
-                    c_ncolor = custom.getint('ncolor')
+                    c_ncolor = custom.getint('ncolor', 0)
                     if c_ncolor < 0:
                         raise ValueError(
                             'Value for ncolor must be a positive integer')
 
                     c_plugin = custom.get('plugin')
+                    c_color = custom.get('color')
                     c_iconslight = custom.get('iconslight')
                     c_iconsdark = custom.get('iconsdark')
                     c_pywal = custom.getboolean('pywal')
@@ -179,17 +181,18 @@ class Configs():
                         'sierra_breeze_buttons_color')
                     c_konsole_profile = custom.get('konsole_profile')
 
-                    c_titlebar_opacity = custom.getint('titlebar_opacity')
+                    c_titlebar_opacity = custom.getint('titlebar_opacity', 100)
                     if c_titlebar_opacity < 0 or c_titlebar_opacity > 100:
                         raise ValueError(
                             'Value for titlebar_opacity must be an integer betwritten 0 and 100, using default 100')
 
-                    c_toolbar_opacity = custom.getint('toolbar_opacity')
+                    c_toolbar_opacity = custom.getint('toolbar_opacity', 100)
                     if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
                         raise ValueError(
                             'Value for toolbar_opacity must be an integer betwritten 0 and 100, using default 100')
 
-                    c_konsole_opacity = custom.getint('konsole_opacity')
+                    c_konsole_opacity = custom.getint('konsole_opacity', 100)
+
                     if c_konsole_opacity < 0 or c_konsole_opacity > 100:
                         raise ValueError(
                             'Value for konsole_opacity must be an integer betwritten 0 and 100, using default 100')
@@ -223,8 +226,6 @@ class Configs():
 
         if args.file != None:
             c_file = args.file
-        elif c_file == None:
-            c_file = args.file
 
         if args.monitor != None:
             if args.monitor < 0:
@@ -232,8 +233,6 @@ class Configs():
                 raise ValueError
             else:
                 c_monitor = args.monitor
-        elif args.monitor == None and c_monitor == None:
-            c_monitor = 0
 
         if args.ncolor != None:
             if args.ncolor < 0:
@@ -241,37 +240,26 @@ class Configs():
                 raise ValueError
             else:
                 c_ncolor = args.ncolor
-        elif args.ncolor == None and c_ncolor == None:
-            c_ncolor = 0
 
         if args.plugin != None:
             c_plugin = args.plugin
-        elif args.plugin == None and c_plugin == None:
-            c_plugin = DEFAULT_PLUGIN
+
+        if args.color != None:
+            c_color = args.color
 
         if args.iconslight != None:
-            c_iconslight = args.iconslight
-        elif c_iconslight == None:
             c_iconslight = args.iconslight
 
         if args.iconsdark != None:
             c_iconsdark = args.iconsdark
-        elif c_iconsdark == None:
-            c_iconsdark = args.iconsdark
 
         if args.on_change_hook != None:
-            c_on_change_hook = args.on_change_hook
-        elif c_on_change_hook == None:
             c_on_change_hook = args.on_change_hook
 
         if args.sierra_breeze_buttons_color == True:
             c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
-        elif c_sierra_breeze_buttons_color != None:
-            c_sierra_breeze_buttons_color = c_sierra_breeze_buttons_color
 
         if args.konsole_profile != None:
-            c_konsole_profile = args.konsole_profile
-        elif c_konsole_profile == None:
             c_konsole_profile = args.konsole_profile
 
         if args.titlebar_opacity != None:
@@ -281,8 +269,6 @@ class Configs():
                 raise ValueError
             else:
                 c_titlebar_opacity = args.titlebar_opacity
-        elif args.titlebar_opacity == None and c_titlebar_opacity == None:
-            c_titlebar_opacity = None
 
         if args.toolbar_opacity != None:
             if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
@@ -291,8 +277,6 @@ class Configs():
                 raise ValueError
             else:
                 c_toolbar_opacity = args.toolbar_opacity
-        elif args.toolbar_opacity == None and c_toolbar_opacity == None:
-            c_toolbar_opacity = None
 
         if args.konsole_opacity != None:
             if args.konsole_opacity < 0 or args.konsole_opacity > 100:
@@ -321,7 +305,8 @@ class Configs():
             "konsole_profile": c_konsole_profile,
             "titlebar_opacity": c_titlebar_opacity,
             "toolbar_opacity": c_toolbar_opacity,
-            "konsole_opacity": c_konsole_opacity
+            "konsole_opacity": c_konsole_opacity,
+            "color": c_color
         }
 
     @property
@@ -329,7 +314,7 @@ class Configs():
         return self._options
 
 
-def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
+def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
 
@@ -341,6 +326,8 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
     Returns:
         tuple: (type (int), data (str))
     """
+    if plugin == None:
+        plugin = DEFAULT_PLUGIN
     if file:
         if os.path.exists(file):
             with open(file) as file:
@@ -352,6 +339,11 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None):
         else:
             logging.error(f'File "{file}" does not exist')
             return None
+    elif color:
+        if validate_color(color):
+            return ("color", color)
+        else:
+            logging.error(f'Error: Color format "{color}" is incorrect')
     else:
         # special case for picture of the day plugin that requires a
         # directory, provider and a category
@@ -585,12 +577,13 @@ def get_color_schemes(wallpaper, ncolor=None):
 
         elif wallpaper_type == "color":
             source_type = "color"
+            wallpaper_data = color2hex(wallpaper_data)
             materialYouColors = get_material_you_colors(
                 wallpaper_data, ncolor=ncolor, source_type=source_type)
 
         if materialYouColors != None:
             try:
-                if wallpaper_type != "color":
+                if len(materialYouColors['bestColors']) > 1:
                     best_colors = f'Best colors:'
 
                     for index, col in materialYouColors['bestColors'].items():
@@ -644,10 +637,6 @@ def set_icons(icons_light, icons_dark, light=False):
         changeicons_error = subprocess.check_output("/usr/lib/plasma-changeicons "+icons,
                                                     shell=True, stderr=subprocess.STDOUT, universal_newlines=True).strip()
         logging.info(f'{icons} {changeicons_error}')
-
-
-def currentWallpaper(options):
-    return get_wallpaper_data(plugin=options['plugin'], monitor=options['monitor'], file=options['file'])
 
 
 def make_plasma_scheme(schemes=None):
@@ -1296,10 +1285,12 @@ def apply_themes(
     if wallpaper_watcher.has_changed or group1_watcher.has_changed or wallpaper_modified.has_changed:
         if wallpaper_watcher.has_changed:
             logging.info(
-                f'Wallpaper changed: ({wallpaper_new_type}) {wallpaper_new_data}')
-        material_colors.set_value(get_color_schemes(
-            wallpaper_watcher.get_new_value(),
-            config_watcher.get_new_value()['ncolor']))
+                f'Source changed: ({wallpaper_new_type}) {wallpaper_new_data}')
+        material_colors.set_value(
+            get_color_schemes(
+                wallpaper_watcher.get_new_value(),
+                config_watcher.get_new_value()['ncolor'])
+        )
         if material_colors.get_new_value() != None:
             # Genrate color schemes from MYou colors
             schemes_watcher.set_value(ThemeConfig(
@@ -1472,3 +1463,33 @@ def apply_themes(
             kwin_reload()
             needs_kwin_reload == False
     first_run_watcher.set_value(False)
+
+
+def validate_color(color):
+    """check if a color is either a valid hex or rgb format
+
+    Args:
+        color (str): Hex or rgb color
+
+    Returns:
+        int: color type rgb(1) or hex(2)
+        None: for invalid color
+    """
+    is_hex = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
+    is_rgb = re.search(
+        r'^(?:(?:^|,\s*)([01]?\d\d?|2[0-4]\d|25[0-5])){3}$', color)
+    if is_rgb:
+        return 1
+    elif is_hex:
+        return 2
+    else:
+        return None
+
+
+def color2hex(color):
+    format = validate_color(color)
+    if format == 1:
+        r, g, b = [int(c) for c in color.split(",")]
+        return rgb2hex(r, g, b)
+    elif format == 2:
+        return color
