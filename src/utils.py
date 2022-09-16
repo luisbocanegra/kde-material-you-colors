@@ -136,7 +136,9 @@ class Configs():
     """
 
     def __init__(self, args):
-
+        c_monitor = 0
+        c_plugin = DEFAULT_PLUGIN
+        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = None
         config = configparser.ConfigParser()
         if os.path.exists(USER_CONFIG_PATH+CONFIG_FILE):
             try:
