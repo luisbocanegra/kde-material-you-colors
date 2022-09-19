@@ -28,6 +28,8 @@ class ThemeConfig:
             "Positive": "#27ae60"
         }
 
+        self._material_you_schemes = colors
+
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
             "dark": {
@@ -609,6 +611,9 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             "btn_shade_active_color": utils.tup2str(hex2rgb(blendColors("#b900b6", light_active, .05*lbm))),
             "btn_inactive_color": utils.tup2str(hex2rgb(blendColors(light_inactive, colors_light['secondary'], .32)))
         }
+
+    def get_material_schemes(self):
+        return self._material_you_schemes
 
     def get_extras(self):
         return self._extras

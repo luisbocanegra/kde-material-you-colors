@@ -643,10 +643,6 @@ def get_color_schemes(wallpaper, ncolor=None):
                     logging.info(
                         f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
 
-                with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as current_scheme:
-                    current_scheme.write(json.dumps(
-                        materialYouColors, indent=4, sort_keys=False))
-
                 return materialYouColors
 
             except Exception as e:
@@ -1099,25 +1095,20 @@ def kill_existing():
             subprocess.Popen("kill -9 "+str(pid), shell=True)
 
 
-def append_schemes(schemes):
-    """Append generated schemes to MATERIAL_YOU_COLORS_JSON
+def export_schemes(schemes):
+    """Export generated schemes to MATERIAL_YOU_COLORS_JSON
 
     Args:
         schemes (ThemeConfig): generated color schemes
     """
-    extras = {"extras": schemes.get_extras()}
-    pywal = {
+    colors = schemes.get_material_schemes()
+    colors.update({
+        "extras": schemes.get_extras(),
         "pywal": {
-            "dark": schemes.get_wal_light_scheme(),
-            "light": schemes.get_wal_dark_scheme()
+            "light": schemes.get_wal_light_scheme(),
+            "dark": schemes.get_wal_dark_scheme()
         }
-    }
-
-    with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
-        colors = json.load(material_you_colors)
-
-    colors.update(extras)
-    colors.update(pywal)
+    })
 
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
         json.dump(colors, material_you_colors, indent=4, ensure_ascii=False)
@@ -1345,8 +1336,8 @@ def apply_themes(
                 config_watcher.get_new_value()['lbm'],
                 config_watcher.get_new_value()['dbm'],
                 config_watcher.get_new_value()['toolbar_opacity']))
-            # Append generated schemes to output file
-            append_schemes(schemes_watcher.get_new_value())
+            # Export generated schemes to output file
+            export_schemes(schemes_watcher.get_new_value())
             # Make plasma color schemes
             make_plasma_scheme(schemes_watcher.get_new_value())
             # Apply plasma color schemes
@@ -1489,8 +1480,8 @@ def apply_themes(
                     config_watcher.get_new_value()['lbm'],
                     config_watcher.get_new_value()['dbm'],
                     config_watcher.get_new_value()['toolbar_opacity']))
-                # Append generated schemes to output file
-                append_schemes(schemes_watcher.get_new_value())
+                # Export generated schemes to output file
+                export_schemes(schemes_watcher.get_new_value())
                 # Make plasma color schemes
                 make_plasma_scheme(schemes_watcher.get_new_value())
                 # Apply plasma color schemes
