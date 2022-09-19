@@ -563,8 +563,8 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         custom_colors = theme['customColors']
 
         materialYouColors = {
-            'bestColors': best_colors,
-            'seedColor': {
+            'best': best_colors,
+            'seed': {
                 seedNo: hexFromArgb(theme['source']),
             },
             'schemes': {
@@ -572,14 +572,14 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
                 'dark': dict_to_rgb(dark_scheme),
             },
             'palettes': {
-                'primaryTones': dict_to_rgb(tones_from_palette(primary_palete)),
-                'secondaryTones': dict_to_rgb(tones_from_palette(secondary_palete)),
-                'tertiaryTones': dict_to_rgb(tones_from_palette(tertiary_palete)),
-                'neutralTones': dict_to_rgb(tones_from_palette(neutral_palete)),
-                'neutralVariantTones': dict_to_rgb(tones_from_palette(neutral_variant_palete)),
-                'errorTones': dict_to_rgb(tones_from_palette(error_palette)),
+                'primary': dict_to_rgb(tones_from_palette(primary_palete)),
+                'secondary': dict_to_rgb(tones_from_palette(secondary_palete)),
+                'tertiary': dict_to_rgb(tones_from_palette(tertiary_palete)),
+                'neutral': dict_to_rgb(tones_from_palette(neutral_palete)),
+                'neutralVariant': dict_to_rgb(tones_from_palette(neutral_variant_palete)),
+                'error': dict_to_rgb(tones_from_palette(error_palette)),
             },
-            'customColors': [
+            'custom': [
                 get_custom_colors(custom_colors)
             ]
         }
@@ -623,17 +623,17 @@ def get_color_schemes(wallpaper, ncolor=None):
 
         if materialYouColors != None:
             try:
-                if len(materialYouColors['bestColors']) > 1:
+                if len(materialYouColors['best']) > 1:
                     best_colors = f'Best colors:'
 
-                    for index, col in materialYouColors['bestColors'].items():
+                    for index, col in materialYouColors['best'].items():
                         if USER_HAS_COLR:
                             best_colors += f' {BOLD_RESET}{index}:{color(col,fore=col)}'
                         else:
                             best_colors += f' {BOLD_RESET}{index}:{COLOR_INFO}{col}'
                     logging.info(best_colors)
 
-                seed = materialYouColors['seedColor']
+                seed = materialYouColors['seed']
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 if USER_HAS_COLR:
@@ -1106,15 +1106,18 @@ def append_schemes(schemes):
         schemes (ThemeConfig): generated color schemes
     """
     extras = {"extras": schemes.get_extras()}
-    wal_light = {"pywal_light": schemes.get_wal_light_scheme()}
-    wal_dark = {"pywal_dark": schemes.get_wal_dark_scheme()}
+    pywal = {
+        "pywal": {
+            "dark": schemes.get_wal_light_scheme(),
+            "light": schemes.get_wal_dark_scheme()
+        }
+    }
 
     with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
         colors = json.load(material_you_colors)
 
     colors.update(extras)
-    colors.update(wal_light)
-    colors.update(wal_dark)
+    colors.update(pywal)
 
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
         json.dump(colors, material_you_colors, indent=4, ensure_ascii=False)
