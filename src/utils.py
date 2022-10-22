@@ -440,8 +440,9 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
             try:
                 color_rgb = tuple(
                     (evaluate_script(script, monitor, plugin)).split(","))
-                return ("color", rgb2hex(int(r=color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
-            except:
+                return ("color", rgb2hex(r=int(color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
+            except Exception as e:
+                logging.error(f'Plain color error: {e}')
                 return None
         else:
             # wallpaper plugin that stores current image
