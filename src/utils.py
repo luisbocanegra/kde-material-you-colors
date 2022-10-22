@@ -420,7 +420,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
 
             # Bing file now has the wallpaper resolution in the name
             if img_provider == PICTURE_OF_DAY_BING_PROVIDER:
-                # find and return files that start with bing and don't end with json and use the biggest one
+                # find and return files that start with bing and don't end with json and use the largest one
                 potd = [file for file in os.listdir(PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(
                     PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+max(potd)
@@ -454,6 +454,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
             """
             try:
                 wallpaper = evaluate_script(script, monitor, plugin)
+                # if script returns a directory
+                if os.path.isdir(wallpaper):
+                    # return largest file based on name
+                    if os.path.exists(wallpaper+"contents/images"):
+                        wallpaper = max(
+                            [wallpaper+"contents/images/"+file for file in os.listdir(wallpaper+"contents/images")])
                 return ("image", wallpaper)
             except:
                 return None
