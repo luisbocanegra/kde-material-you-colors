@@ -354,7 +354,7 @@ class Configs():
         return self._options
 
 
-def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
+def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
 
@@ -456,8 +456,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
                 wallpaper = evaluate_script(script, monitor, plugin)
                 # if script returns a directory
                 if os.path.isdir(wallpaper):
-                    # return largest file based on name
-                    if os.path.exists(wallpaper+"contents/images"):
+                    # check for mormal/dark variant and return largest file based on name
+                    if os.path.exists(wallpaper+"contents/images_dark") and light == False:
+                        wallpaper = max(
+                            [wallpaper+"contents/images_dark/"+file for file in os.listdir(wallpaper+"contents/images_dark")])
+
+                    elif os.path.exists(wallpaper+"contents/images"):
                         wallpaper = max(
                             [wallpaper+"contents/images/"+file for file in os.listdir(wallpaper+"contents/images")])
                 return ("image", wallpaper)
@@ -1390,31 +1394,31 @@ def apply_themes(
 
     if first_run_watcher.get_new_value() == False:
         if light_mode_watcher.has_changed or plasma_scheme_watcher.has_changed and plasma_scheme_watcher.get_old_value() != None and light_mode_watcher.get_new_value() != plasma_scheme_watcher.get_new_value():
-
-            # Apply plasma color schemes
-            apply_color_schemes(dark_light)
-            # Export and apply color scheme to konsole profile
-            konsole_apply_color_scheme(
-                dark_light,
-                config_watcher.get_new_value()['pywal_light'],
-                schemes_watcher.get_new_value(),
-                config_watcher.get_new_value()['konsole_profile'],
-                konsole_opacity=config_watcher.get_new_value()[
-                    'konsole_opacity']
-            )
-            set_icons(
-                config_watcher.get_new_value()['iconslight'],
-                config_watcher.get_new_value()['iconsdark'],
-                light_mode_watcher.get_new_value())
-            if config_watcher.get_new_value()['pywal'] == True:
-                if config_watcher.get_new_value()['pywal_light'] == None:
-                    apply_pywal_schemes(
-                        dark_light,
-                        use_pywal=config_watcher.get_new_value()['pywal'],
-                        pywal_light=config_watcher.get_new_value()[
-                            'pywal_light'],
-                        schemes=schemes_watcher.get_new_value())
-            print("---------------------")
+            if not wallpaper_watcher.has_changed:
+                # Apply plasma color schemes
+                apply_color_schemes(dark_light)
+                # Export and apply color scheme to konsole profile
+                konsole_apply_color_scheme(
+                    dark_light,
+                    config_watcher.get_new_value()['pywal_light'],
+                    schemes_watcher.get_new_value(),
+                    config_watcher.get_new_value()['konsole_profile'],
+                    konsole_opacity=config_watcher.get_new_value()[
+                        'konsole_opacity']
+                )
+                set_icons(
+                    config_watcher.get_new_value()['iconslight'],
+                    config_watcher.get_new_value()['iconsdark'],
+                    light_mode_watcher.get_new_value())
+                if config_watcher.get_new_value()['pywal'] == True:
+                    if config_watcher.get_new_value()['pywal_light'] == None:
+                        apply_pywal_schemes(
+                            dark_light,
+                            use_pywal=config_watcher.get_new_value()['pywal'],
+                            pywal_light=config_watcher.get_new_value()[
+                                'pywal_light'],
+                            schemes=schemes_watcher.get_new_value())
+                print("---------------------")
 
     if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None:
         make_konsole_mirror_profile(
