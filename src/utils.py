@@ -354,7 +354,7 @@ class Configs():
         return self._options
 
 
-def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
+def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
 
@@ -456,8 +456,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
                 wallpaper = evaluate_script(script, monitor, plugin)
                 # if script returns a directory
                 if os.path.isdir(wallpaper):
-                    # return largest file based on name
-                    if os.path.exists(wallpaper+"contents/images"):
+                    # check for mormal/dark variant and return largest file based on name
+                    if os.path.exists(wallpaper+"contents/images_dark") and light == False:
+                        wallpaper = max(
+                            [wallpaper+"contents/images_dark/"+file for file in os.listdir(wallpaper+"contents/images_dark")])
+
+                    elif os.path.exists(wallpaper+"contents/images"):
                         wallpaper = max(
                             [wallpaper+"contents/images/"+file for file in os.listdir(wallpaper+"contents/images")])
                 return ("image", wallpaper)
