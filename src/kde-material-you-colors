@@ -82,7 +82,8 @@ if __name__ == '__main__':
             utils.get_wallpaper_data(
                 plugin=config_watcher.get_new_value()['plugin'],
                 monitor=config_watcher.get_new_value()['monitor'],
-                color=config_watcher.get_new_value()['color']
+                color=config_watcher.get_new_value()['color'],
+                light=config_watcher.get_new_value()['light']
             ))
 
         if wallpaper_watcher.get_new_value() != None:

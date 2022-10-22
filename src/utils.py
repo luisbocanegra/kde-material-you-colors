@@ -354,7 +354,7 @@ class Configs():
         return self._options
 
 
-def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
+def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
 
@@ -420,7 +420,7 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
 
             # Bing file now has the wallpaper resolution in the name
             if img_provider == PICTURE_OF_DAY_BING_PROVIDER:
-                # find and return files that start with bing and don't end with json and use the biggest one
+                # find and return files that start with bing and don't end with json and use the largest one
                 potd = [file for file in os.listdir(PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(
                     PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
                 potd = PICTURE_OF_DAY_PLUGIN_IMGS_DIR+max(potd)
@@ -454,6 +454,16 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None):
             """
             try:
                 wallpaper = evaluate_script(script, monitor, plugin)
+                # if script returns a directory
+                if os.path.isdir(wallpaper):
+                    # check for mormal/dark variant and return largest file based on name
+                    if os.path.exists(wallpaper+"contents/images_dark") and light == False:
+                        wallpaper = max(
+                            [wallpaper+"contents/images_dark/"+file for file in os.listdir(wallpaper+"contents/images_dark")])
+
+                    elif os.path.exists(wallpaper+"contents/images"):
+                        wallpaper = max(
+                            [wallpaper+"contents/images/"+file for file in os.listdir(wallpaper+"contents/images")])
                 return ("image", wallpaper)
             except:
                 return None
@@ -563,8 +573,8 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         custom_colors = theme['customColors']
 
         materialYouColors = {
-            'bestColors': best_colors,
-            'seedColor': {
+            'best': best_colors,
+            'seed': {
                 seedNo: hexFromArgb(theme['source']),
             },
             'schemes': {
@@ -572,14 +582,14 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
                 'dark': dict_to_rgb(dark_scheme),
             },
             'palettes': {
-                'primaryTones': dict_to_rgb(tones_from_palette(primary_palete)),
-                'secondaryTones': dict_to_rgb(tones_from_palette(secondary_palete)),
-                'tertiaryTones': dict_to_rgb(tones_from_palette(tertiary_palete)),
-                'neutralTones': dict_to_rgb(tones_from_palette(neutral_palete)),
-                'neutralVariantTones': dict_to_rgb(tones_from_palette(neutral_variant_palete)),
-                'errorTones': dict_to_rgb(tones_from_palette(error_palette)),
+                'primary': dict_to_rgb(tones_from_palette(primary_palete)),
+                'secondary': dict_to_rgb(tones_from_palette(secondary_palete)),
+                'tertiary': dict_to_rgb(tones_from_palette(tertiary_palete)),
+                'neutral': dict_to_rgb(tones_from_palette(neutral_palete)),
+                'neutralVariant': dict_to_rgb(tones_from_palette(neutral_variant_palete)),
+                'error': dict_to_rgb(tones_from_palette(error_palette)),
             },
-            'customColors': [
+            'custom': [
                 get_custom_colors(custom_colors)
             ]
         }
@@ -623,17 +633,17 @@ def get_color_schemes(wallpaper, ncolor=None):
 
         if materialYouColors != None:
             try:
-                if len(materialYouColors['bestColors']) > 1:
+                if len(materialYouColors['best']) > 1:
                     best_colors = f'Best colors:'
 
-                    for index, col in materialYouColors['bestColors'].items():
+                    for index, col in materialYouColors['best'].items():
                         if USER_HAS_COLR:
                             best_colors += f' {BOLD_RESET}{index}:{color(col,fore=col)}'
                         else:
                             best_colors += f' {BOLD_RESET}{index}:{COLOR_INFO}{col}'
                     logging.info(best_colors)
 
-                seed = materialYouColors['seedColor']
+                seed = materialYouColors['seed']
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 if USER_HAS_COLR:
@@ -642,10 +652,6 @@ def get_color_schemes(wallpaper, ncolor=None):
                 else:
                     logging.info(
                         f'{BOLD}Using seed: {BOLD_RESET}{seedNo}:{COLOR_INFO}{sedColor}')
-
-                with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as current_scheme:
-                    current_scheme.write(json.dumps(
-                        materialYouColors, indent=4, sort_keys=False))
 
                 return materialYouColors
 
@@ -1099,22 +1105,20 @@ def kill_existing():
             subprocess.Popen("kill -9 "+str(pid), shell=True)
 
 
-def append_schemes(schemes):
-    """Append generated schemes to MATERIAL_YOU_COLORS_JSON
+def export_schemes(schemes):
+    """Export generated schemes to MATERIAL_YOU_COLORS_JSON
 
     Args:
         schemes (ThemeConfig): generated color schemes
     """
-    extras = {"extras": schemes.get_extras()}
-    wal_light = {"pywal_light": schemes.get_wal_light_scheme()}
-    wal_dark = {"pywal_dark": schemes.get_wal_dark_scheme()}
-
-    with open(MATERIAL_YOU_COLORS_JSON, 'r', encoding='utf8') as material_you_colors:
-        colors = json.load(material_you_colors)
-
-    colors.update(extras)
-    colors.update(wal_light)
-    colors.update(wal_dark)
+    colors = schemes.get_material_schemes()
+    colors.update({
+        "extras": schemes.get_extras(),
+        "pywal": {
+            "light": schemes.get_wal_light_scheme(),
+            "dark": schemes.get_wal_dark_scheme()
+        }
+    })
 
     with open(MATERIAL_YOU_COLORS_JSON, 'w', encoding='utf8') as material_you_colors:
         json.dump(colors, material_you_colors, indent=4, ensure_ascii=False)
@@ -1342,8 +1346,8 @@ def apply_themes(
                 config_watcher.get_new_value()['lbm'],
                 config_watcher.get_new_value()['dbm'],
                 config_watcher.get_new_value()['toolbar_opacity']))
-            # Append generated schemes to output file
-            append_schemes(schemes_watcher.get_new_value())
+            # Export generated schemes to output file
+            export_schemes(schemes_watcher.get_new_value())
             # Make plasma color schemes
             make_plasma_scheme(schemes_watcher.get_new_value())
             # Apply plasma color schemes
@@ -1390,31 +1394,31 @@ def apply_themes(
 
     if first_run_watcher.get_new_value() == False:
         if light_mode_watcher.has_changed or plasma_scheme_watcher.has_changed and plasma_scheme_watcher.get_old_value() != None and light_mode_watcher.get_new_value() != plasma_scheme_watcher.get_new_value():
-
-            # Apply plasma color schemes
-            apply_color_schemes(dark_light)
-            # Export and apply color scheme to konsole profile
-            konsole_apply_color_scheme(
-                dark_light,
-                config_watcher.get_new_value()['pywal_light'],
-                schemes_watcher.get_new_value(),
-                config_watcher.get_new_value()['konsole_profile'],
-                konsole_opacity=config_watcher.get_new_value()[
-                    'konsole_opacity']
-            )
-            set_icons(
-                config_watcher.get_new_value()['iconslight'],
-                config_watcher.get_new_value()['iconsdark'],
-                light_mode_watcher.get_new_value())
-            if config_watcher.get_new_value()['pywal'] == True:
-                if config_watcher.get_new_value()['pywal_light'] == None:
-                    apply_pywal_schemes(
-                        dark_light,
-                        use_pywal=config_watcher.get_new_value()['pywal'],
-                        pywal_light=config_watcher.get_new_value()[
-                            'pywal_light'],
-                        schemes=schemes_watcher.get_new_value())
-            print("---------------------")
+            if not wallpaper_watcher.has_changed:
+                # Apply plasma color schemes
+                apply_color_schemes(dark_light)
+                # Export and apply color scheme to konsole profile
+                konsole_apply_color_scheme(
+                    dark_light,
+                    config_watcher.get_new_value()['pywal_light'],
+                    schemes_watcher.get_new_value(),
+                    config_watcher.get_new_value()['konsole_profile'],
+                    konsole_opacity=config_watcher.get_new_value()[
+                        'konsole_opacity']
+                )
+                set_icons(
+                    config_watcher.get_new_value()['iconslight'],
+                    config_watcher.get_new_value()['iconsdark'],
+                    light_mode_watcher.get_new_value())
+                if config_watcher.get_new_value()['pywal'] == True:
+                    if config_watcher.get_new_value()['pywal_light'] == None:
+                        apply_pywal_schemes(
+                            dark_light,
+                            use_pywal=config_watcher.get_new_value()['pywal'],
+                            pywal_light=config_watcher.get_new_value()[
+                                'pywal_light'],
+                            schemes=schemes_watcher.get_new_value())
+                print("---------------------")
 
     if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None:
         make_konsole_mirror_profile(
@@ -1486,8 +1490,8 @@ def apply_themes(
                     config_watcher.get_new_value()['lbm'],
                     config_watcher.get_new_value()['dbm'],
                     config_watcher.get_new_value()['toolbar_opacity']))
-                # Append generated schemes to output file
-                append_schemes(schemes_watcher.get_new_value())
+                # Export generated schemes to output file
+                export_schemes(schemes_watcher.get_new_value())
                 # Make plasma color schemes
                 make_plasma_scheme(schemes_watcher.get_new_value())
                 # Apply plasma color schemes
