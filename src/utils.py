@@ -459,14 +459,15 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
                 if os.path.isdir(wallpaper):
                     # check for mormal/dark variant and return largest file based on name
                     if os.path.exists(wallpaper+"contents/images_dark") and light == False:
-                        wallpaper = max(
-                            [wallpaper+"contents/images_dark/"+file for file in os.listdir(wallpaper+"contents/images_dark")])
+                        wallpaper = get_smallest_image(
+                            wallpaper+"contents/images_dark/")
 
                     elif os.path.exists(wallpaper+"contents/images"):
-                        wallpaper = max(
-                            [wallpaper+"contents/images/"+file for file in os.listdir(wallpaper+"contents/images")])
+                        wallpaper = get_smallest_image(
+                            wallpaper+"contents/images/")
                 return ("image", wallpaper)
-            except:
+            except Exception as e:
+                logging.error(f'Error: {e}')
                 return None
 
 
@@ -1541,3 +1542,30 @@ def color2hex(color):
         return rgb2hex(r, g, b)
     elif format == 2:
         return color
+
+
+def get_smallest_image(directory):
+    """Based on a directory with images return the smallest horizontal image
+
+    Args:
+        directory (str): Path containing images
+
+    Returns:
+        str: Absolute file path
+    """
+    img_list = [directory+file for file in os.listdir(directory)]
+    size_sorted = sorted(img_list, key=os.path.getsize)
+
+    r = None
+    for image in size_sorted:
+        img = Image.open(image)
+        if img.size[0] > img.size[1]:
+            r = image
+            break
+
+    if r != None:
+        return r
+    elif size_sorted:
+        return size_sorted[0]
+    else:
+        return None
