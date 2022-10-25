@@ -396,11 +396,13 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
                 d.currentConfigGroup = Array("Wallpaper", "%s", "General");
                 print(d.readConfig("Provider")+","+d.readConfig("Category"));
             """
-
-            try:
-                script_output = tuple(evaluate_script(
-                    script, monitor, plugin).split(","))
-            except:
+            script_output = evaluate_script(script, monitor, plugin)
+            if script_output != None:
+                try:
+                    script_output = tuple(script_output.split(","))
+                except:
+                    script_output = ('', '')
+            else:
                 script_output = ('', '')
             img_provider = script_output[0]
             provider_category = script_output[1]
@@ -437,12 +439,15 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
                 d.currentConfigGroup = Array("Wallpaper", "%s", "General");
                 print(d.readConfig("Color"));
             """
-            try:
-                color_rgb = tuple(
-                    (evaluate_script(script, monitor, plugin)).split(","))
-                return ("color", rgb2hex(r=int(color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
-            except Exception as e:
-                logging.error(f'Plain color error: {e}')
+            color_rgb = evaluate_script(script, monitor, plugin)
+            if color_rgb != None:
+                try:
+                    color_rgb = tuple(color_rgb.split(","))
+                    return ("color", rgb2hex(r=int(color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
+                except Exception as e:
+                    logging.error(f'Plain color error: {e}')
+                    return None
+            else:
                 return None
         else:
             # wallpaper plugin that stores current image
@@ -453,11 +458,12 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
                 d.currentConfigGroup = Array("Wallpaper", "%s", "General");
                 print(d.readConfig("Image"));
             """
-            try:
-                wallpaper = evaluate_script(script, monitor, plugin)
+
+            wallpaper = evaluate_script(script, monitor, plugin)
+            if wallpaper != None:
                 # if script returns a directory
                 if os.path.isdir(wallpaper):
-                    # check for mormal/dark variant and return largest file based on name
+                    # check for mormal/dark variant
                     if os.path.exists(wallpaper+"contents/images_dark") and light == False:
                         wallpaper = get_smallest_image(
                             wallpaper+"contents/images_dark/")
@@ -466,9 +472,6 @@ def get_wallpaper_data(plugin=DEFAULT_PLUGIN, monitor=0, file=None, color=None, 
                         wallpaper = get_smallest_image(
                             wallpaper+"contents/images/")
                 return ("image", wallpaper)
-            except Exception as e:
-                logging.error(f'Error: {e}')
-                return None
 
 
 def evaluate_script(script, monitor, plugin):
@@ -491,7 +494,7 @@ def evaluate_script(script, monitor, plugin):
         return wallpaper_data
     except Exception as e:
         logging.error(f'Error getting wallpaper from dbus:\n{e}')
-        exit(1)
+        return None
 
 
 def get_last_modification(file):
