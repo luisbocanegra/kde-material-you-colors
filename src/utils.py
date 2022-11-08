@@ -1055,8 +1055,6 @@ def konsole_reload_profile(profile=None):
                                 "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'", shell=True)
                         else:
                             subprocess.check_output(
-                                "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile 'TempMyou'", shell=True)
-                            subprocess.check_output(
                                 "qdbus "+service+" "+session+" org.kde.konsole.Session.setProfile '"+profile + "'", shell=True)
                 except:
                     pass
@@ -1359,6 +1357,8 @@ def apply_themes(
             apply_color_schemes(dark_light)
             # Export and apply color scheme to konsole profile
             if config_watcher.get_new_value()['konsole_profile'] != None:
+                make_konsole_mirror_profile(
+                    config_watcher.get_new_value()['konsole_profile'])
                 konsole_apply_color_scheme(
                     dark_light,
                     config_watcher.get_new_value()['pywal_light'],
@@ -1425,7 +1425,7 @@ def apply_themes(
                             schemes=schemes_watcher.get_new_value())
                 print("---------------------")
 
-    if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None:
+    if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None and first_run_watcher.get_new_value() == False:
         make_konsole_mirror_profile(
             config_watcher.get_new_value()['konsole_profile'])
 
