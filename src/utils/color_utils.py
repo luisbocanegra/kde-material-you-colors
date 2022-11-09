@@ -1,6 +1,7 @@
 import operator
 import numpy
 import colorsys
+import re
 from material_color_utilities_python.utils.theme_utils import *
 
 
@@ -238,6 +239,36 @@ def scale_saturation(hex_color, amount):
     o_hex = rgb2hex(int(r), int(g), int(b))
     # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
     return o_hex
+
+
+def validate_color(color):
+    """check if a color is either a valid hex or rgb format
+
+    Args:
+        color (str): Hex or rgb color
+
+    Returns:
+        int: color type rgb(1) or hex(2)
+        None: for invalid color
+    """
+    is_hex = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
+    is_rgb = re.search(
+        r'^(?:(?:^|,\s*)([01]?\d\d?|2[0-4]\d|25[0-5])){3}$', color)
+    if is_rgb:
+        return 1
+    elif is_hex:
+        return 2
+    else:
+        return None
+
+
+def color2hex(color):
+    format = validate_color(color)
+    if format == 1:
+        r, g, b = [int(c) for c in color.split(",")]
+        return rgb2hex(r, g, b)
+    elif format == 2:
+        return color
 
 
 # Tests

@@ -1,7 +1,7 @@
 from material_color_utilities_python.quantize.quantizer_celebi import *
 from material_color_utilities_python.score.score import *
 from material_color_utilities_python.utils.color_utils import *
-from PIL import Image
+import logging
 
 # /**
 #  * Get the source color from an image.
@@ -43,7 +43,8 @@ def sourceColorsFromImage(image, top=False):
     if (image.mode == 'RGB'):
         image = image.convert('RGBA')
     if (image.mode != 'RGBA'):
-        print("Warning: Image not in RGB|RGBA format - Converting...")
+        logging.warning(
+            "Warning: Image not in RGB|RGBA format - Converting...")
         image = image.convert('RGBA')
 
     pixels = []

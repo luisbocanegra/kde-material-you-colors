@@ -1,14 +1,23 @@
 #!/usr/bin/python3
 import time
 import argparse
-import utils
+import globals
+from config import Configs
+from utils import utils
+from utils import wallpaper_utils
+from utils import plasma_utils
+import theme_selector
+from logging_config import MyLogFormatter
+
+MyLogFormatter.set_format()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop')
     parser.add_argument('--monitor', '-m', type=int,
                         help='Monitor to get wallpaper (default is 0) but second one is 6 in my case, play with this to find yours', default=None)
     parser.add_argument('--plugin', '-p', type=str,
-                        help=f'Wallpaper plugin id (default is {utils.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default=None)
+                        help=f'Wallpaper plugin id (default is {globals.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers', default=None)
     parser.add_argument('--file', '-f', type=str,
                         help='Text file that contains wallpaper absolute path (Takes precedence over the above options)', default=None)
     parser.add_argument('--ncolor', '-n', type=int,
@@ -74,12 +83,12 @@ if __name__ == '__main__':
     plasma_scheme_watcher = utils.Watcher(None)
     while True:
         # Get config from file and compare it with passed args
-        config = utils.Configs(args)
+        config = Configs(args)
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
         # Get wallpaper
         wallpaper_watcher.set_value(
-            utils.get_wallpaper_data(
+            wallpaper_utils.get_wallpaper_data(
                 plugin=config_watcher.get_new_value()['plugin'],
                 monitor=config_watcher.get_new_value()['monitor'],
                 color=config_watcher.get_new_value()['color'],
@@ -89,9 +98,9 @@ if __name__ == '__main__':
 
         if wallpaper_watcher.get_new_value() != None:
             # Get light/dark scheme status
-            plasma_scheme_watcher.set_value(utils.kde_globals_light())
+            plasma_scheme_watcher.set_value(plasma_utils.kde_globals_light())
 
-            utils.apply_themes(
+            theme_selector.apply_themes(
                 config_watcher,
                 wallpaper_watcher,
                 wallpaper_modified,
