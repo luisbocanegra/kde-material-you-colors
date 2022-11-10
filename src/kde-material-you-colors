@@ -83,7 +83,8 @@ if __name__ == '__main__':
                 plugin=config_watcher.get_new_value()['plugin'],
                 monitor=config_watcher.get_new_value()['monitor'],
                 color=config_watcher.get_new_value()['color'],
-                light=config_watcher.get_new_value()['light']
+                light=config_watcher.get_new_value()['light'],
+                file=config_watcher.get_new_value()['file']
             ))
 
         if wallpaper_watcher.get_new_value() != None:
