@@ -20,8 +20,9 @@ echo -e "${BGreen}Installing kde-material-you-colors${clean}"
 # Cleanup
 rm -rf /usr/lib/${pkgname}
 
-mkdir -p /usr/lib/${pkgname}
+mkdir -p /usr/lib/${pkgname}/utils
 cp -f src/*.{py,conf,desktop} /usr/lib/${pkgname}/
+cp -f src/utils/*.py /usr/lib/${pkgname}/utils/
 cp -f src/*.desktop /usr/share/applications/
 cp -f src/kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
 chmod 755 /usr/lib/${pkgname}/*.py
