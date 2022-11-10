@@ -29,6 +29,7 @@ KONSOLE_DIR = HOME+"/.local/share/konsole/"
 KONSOLE_COLOR_SCHEME_PATH = KONSOLE_DIR+"MaterialYou.colorscheme"
 KONSOLE_COLOR_SCHEME_ALT_PATH = KONSOLE_DIR+"MaterialYouAlt.colorscheme"
 KONSOLE_TEMP_PROFILE = KONSOLE_DIR+"TempMyou.profile"
+KSYNTAX_THEMES_DIR = HOME+"/.local/share/org.kde.syntax-highlighting/themes/"
 BOLD = "\033[1m"
 COLOR_RESET = "\033[0;0m"
 LOG_HINT = '\033[31m'

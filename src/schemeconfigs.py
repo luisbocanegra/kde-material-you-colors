@@ -613,6 +613,366 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             "btn_inactive_color": string_utils.tup2str(hex2rgb(blendColors(light_inactive, colors_light['secondary'], .32)))
         }
 
+        self._ksyntax_highlighting_dark = {
+            "metadata": {
+                "copyright": [
+                    "SPDX-FileCopyrightText: 2016 Volker Krause <vkrause@kde.org>",
+                    "SPDX-FileCopyrightText: 2016 Dominik Haumann <dhaumann@kde.org>"
+                ],
+                "license": "SPDX-License-Identifier: MIT",
+                "name": "Material You Dark",
+                "revision": 7
+            },
+            "editor-colors": {
+                "BackgroundColor": pywal_colors_dark[0],
+                "BracketMatching": tones_secondary[35],
+                "CodeFolding": "#224e65",
+                "CurrentLine": tones_secondary[20],
+                "CurrentLineNumber": colors_dark['onSurface'],
+                "IconBorder": pywal_colors_dark[0],
+                "IndentationLine": tones_secondary[20],
+                "LineNumbers": tones_neutral[45],
+                "MarkBookmark": "#0404bf",
+                "MarkBreakpointActive": "#8b0607",
+                "MarkBreakpointDisabled": "#820683",
+                "MarkBreakpointReached": "#6d6e07",
+                "MarkError": extras['dark']['negativeOnSurface'],
+                "MarkExecution": "#4d4e50",
+                "MarkWarning": extras['dark']['neutralOnSurface'],
+                "ModifiedLines": "#c04900",
+                "ReplaceHighlight": "#808021",
+                "SavedLines": "#1c8042",
+                "SearchHighlight": "#218058",
+                "Separator": "#3f4347",
+                "SpellChecking": "#c0392b",
+                "TabMarker": "#4d4d4d",
+                "TemplateBackground": tones_secondary[20],
+                "TemplateFocusedPlaceholder": "#123723",
+                "TemplatePlaceholder": "#123723",
+                "TemplateReadOnlyPlaceholder": "#4d1f24",
+                "TextSelection": tones_secondary[30],
+                "WordWrapMarker": "#3a3f44"
+            },
+            "text-styles": {
+                "Alert": {
+                    "background-color": "#4d1f24",
+                    "bold": "true",
+                    "selected-text-color": "#95da4c",
+                    "text-color": "#95da4c"
+                },
+                "Annotation": {
+                    "selected-text-color": "#54aa75",
+                    "text-color": "#3f8058"
+                },
+                "Attribute": {
+                    "selected-text-color": "#fdbc4b",
+                    "text-color": "#2980b9"
+                },
+                "BaseN": {
+                    "selected-text-color": "#f67400",
+                    "text-color": "#f67400"
+                },
+                "BuiltIn": {
+                    "selected-text-color": "#bdc3c7",
+                    "text-color": "#7f8c8d"
+                },
+                "Char": {
+                    "selected-text-color": "#3daee9",
+                    "text-color": "#3daee9"
+                },
+                "Comment": {
+                    "selected-text-color": "#808080",
+                    "text-color": "#7a7c7d"
+                },
+                "CommentVar": {
+                    "selected-text-color": "#94a3a4",
+                    "text-color": "#7f8c8d"
+                },
+                "Constant": {
+                    "bold": "true",
+                    "selected-text-color": "#27aeae",
+                    "text-color": "#27aeae"
+                },
+                "ControlFlow": {
+                    "bold": "true",
+                    "selected-text-color": "#fdbc4b",
+                    "text-color": "#fdbc4b"
+                },
+                "DataType": {
+                    "selected-text-color": "#fdbc4b",
+                    "text-color": "#2980b9"
+                },
+                "DecVal": {
+                    "selected-text-color": "#f67400",
+                    "text-color": "#f67400"
+                },
+                "Documentation": {
+                    "selected-text-color": "#da4453",
+                    "text-color": "#a43340"
+                },
+                "Error": {
+                    "selected-text-color": "#da4453",
+                    "text-color": "#da4453",
+                    "underline": "true"
+                },
+                "Extension": {
+                    "bold": "true",
+                    "selected-text-color": "#bdc3c7",
+                    "text-color": "#0099ff"
+                },
+                "Float": {
+                    "selected-text-color": "#f67400",
+                    "text-color": "#f67400"
+                },
+                "Function": {
+                    "selected-text-color": "#af81ff",
+                    "text-color": "#8e44ad"
+                },
+                "Import": {
+                    "selected-text-color": "#27ae60",
+                    "text-color": "#27ae60"
+                },
+                "Information": {
+                    "selected-text-color": "#e46700",
+                    "text-color": "#c45b00"
+                },
+                "Keyword": {
+                    "bold": "true",
+                    "selected-text-color": colors_dark['onSurface'],
+                    "text-color": colors_dark['onSurface']
+                },
+                "Normal": {
+                    "selected-text-color": colors_dark['onSurface'],
+                    "text-color": colors_dark['onSurface']
+                },
+                "Operator": {
+                    "selected-text-color": "#54aa75",
+                    "text-color": "#3f8058"
+                },
+                "Others": {
+                    "selected-text-color": "#27ae60",
+                    "text-color": "#27ae60"
+                },
+                "Preprocessor": {
+                    "selected-text-color": "#27ae60",
+                    "text-color": "#27ae60"
+                },
+                "RegionMarker": {
+                    "background-color": "#153042",
+                    "selected-text-color": "#3daee9",
+                    "text-color": "#2980b9"
+                },
+                "SpecialChar": {
+                    "selected-text-color": "#3daee9",
+                    "text-color": "#3daee9"
+                },
+                "SpecialString": {
+                    "selected-text-color": "#da4453",
+                    "text-color": "#da4453"
+                },
+                "String": {
+                    "selected-text-color": "#f44f4f",
+                    "text-color": "#f44f4f"
+                },
+                "Variable": {
+                    "selected-text-color": "#27aeae",
+                    "text-color": "#27aeae"
+                },
+                "VerbatimString": {
+                    "selected-text-color": "#da4453",
+                    "text-color": "#da4453"
+                },
+                "Warning": {
+                    "selected-text-color": "#da4453",
+                    "text-color": "#da4453"
+                }
+            },
+            "custom-styles": {
+            },
+        }
+
+        self._ksyntax_highlighting_light = {
+            "metadata": {
+                "copyright": [
+                    "SPDX-FileCopyrightText: 2016 Volker Krause <vkrause@kde.org>",
+                    "SPDX-FileCopyrightText: 2016 Dominik Haumann <dhaumann@kde.org>"
+                ],
+                "license": "SPDX-License-Identifier: MIT",
+                "revision": 9,
+                "name": "Material You Light"
+            },
+            "editor-colors": {
+                "BackgroundColor": pywal_colors_light[0],
+                "CodeFolding": "#94caef",
+                "BracketMatching": tones_secondary[65],
+                "CurrentLine": tones_secondary[80],
+                "IconBorder": pywal_colors_light[0],
+                "IndentationLine": tones_secondary[80],
+                "LineNumbers": tones_neutral[55],
+                "CurrentLineNumber": colors_light['onSurface'],
+                "MarkBookmark": "#0000ff",
+                "MarkBreakpointActive": "#ff0000",
+                "MarkBreakpointReached": "#ffff00",
+                "MarkBreakpointDisabled": "#ff00ff",
+                "MarkExecution": "#a0a0a4",
+                "MarkWarning": extras['light']['neutralOnSurface'],
+                "MarkError": extras['light']['negativeOnSurface'],
+                "ModifiedLines": "#fdbc4b",
+                "ReplaceHighlight": "#00ff00",
+                "SavedLines": "#2ecc71",
+                "SearchHighlight": "#ffff00",
+                "TextSelection": tones_secondary[80],
+                "Separator": "#d5d5d5",
+                "SpellChecking": "#bf0303",
+                "TabMarker": "#d2d2d2",
+                "TemplateBackground": tones_secondary[80],
+                "TemplatePlaceholder": "#baf8ce",
+                "TemplateFocusedPlaceholder": "#76da98",
+                "TemplateReadOnlyPlaceholder": "#f6e6e6",
+                "WordWrapMarker": "#ededed"
+            },
+            "text-styles": {
+                "Normal": {
+                    "text-color": colors_light['onSurface'],
+                    "selected-text-color": colors_light['onSurface'],
+                    "bold": "false",
+                    "italic": "false",
+                    "underline": "false",
+                    "strike-through": "false"
+                },
+                "Keyword": {
+                    "text-color": colors_light['onSurface'],
+                    "selected-text-color": "#ffffff",
+                    "bold": "true"
+                },
+                "Function": {
+                    "text-color": "#644a9b",
+                    "selected-text-color": "#452886"
+                },
+                "Variable": {
+                    "text-color": "#0057ae",
+                    "selected-text-color": "#00316e"
+                },
+                "ControlFlow": {
+                    "text-color": colors_light['onSurface'],
+                    "selected-text-color": "#ffffff",
+                    "bold": "true"
+                },
+                "Operator": {
+                    "text-color": "#ca60ca",
+                    "selected-text-color": "#a44ea4"
+                },
+                "BuiltIn": {
+                    "text-color": "#644a9b",
+                    "selected-text-color": "#452886",
+                    "bold": "true"
+                },
+                "Extension": {
+                    "text-color": "#0095ff",
+                    "selected-text-color": "#ffffff",
+                    "bold": "true"
+                },
+                "Preprocessor": {
+                    "text-color": "#006e28",
+                    "selected-text-color": "#006e28"
+                },
+                "Attribute": {
+                    "text-color": "#0057ae",
+                    "selected-text-color": "#00316e"
+                },
+                "Char": {
+                    "text-color": "#924c9d",
+                    "selected-text-color": "#6c2477"
+                },
+                "SpecialChar": {
+                    "text-color": "#3daee9",
+                    "selected-text-color": "#fcfcfc"
+                },
+                "String": {
+                    "text-color": "#bf0303",
+                    "selected-text-color": "#9c0e0e"
+                },
+                "VerbatimString": {
+                    "text-color": "#e31616",
+                    "selected-text-color": "#9c0e0e"
+                },
+                "SpecialString": {
+                    "text-color": "#ff5500",
+                    "selected-text-color": "#ff5500"
+                },
+                "Import": {
+                    "text-color": "#ff5500",
+                    "selected-text-color": "#ff5500"
+                },
+                "DataType": {
+                    "text-color": "#0057ae",
+                    "selected-text-color": "#00316e"
+                },
+                "DecVal": {
+                    "text-color": "#b08000",
+                    "selected-text-color": "#805c00"
+                },
+                "BaseN": {
+                    "text-color": "#b08000",
+                    "selected-text-color": "#805c00"
+                },
+                "Float": {
+                    "text-color": "#b08000",
+                    "selected-text-color": "#805c00"
+                },
+                "Constant": {
+                    "text-color": "#aa5500",
+                    "selected-text-color": "#5e2f00"
+                },
+                "Comment": {
+                    "text-color": "#898887",
+                    "selected-text-color": "#5e5d5d"
+                },
+                "Documentation": {
+                    "text-color": "#607880",
+                    "selected-text-color": "#46585e"
+                },
+                "Annotation": {
+                    "text-color": "#ca60ca",
+                    "selected-text-color": "#a44ea4"
+                },
+                "CommentVar": {
+                    "text-color": "#0095ff",
+                    "selected-text-color": "#ffffff"
+                },
+                "RegionMarker": {
+                    "text-color": "#0057ae",
+                    "selected-text-color": "#00316e",
+                    "background-color": "#e0e9f8"
+                },
+                "Information": {
+                    "text-color": "#b08000",
+                    "selected-text-color": "#805c00"
+                },
+                "Warning": {
+                    "text-color": "#bf0303",
+                    "selected-text-color": "#9c0e0e"
+                },
+                "Alert": {
+                    "text-color": "#bf0303",
+                    "selected-text-color": "#9c0e0e",
+                    "background-color": "#f7e6e6",
+                    "bold": "true"
+                },
+                "Error": {
+                    "text-color": "#bf0303",
+                    "selected-text-color": "#9c0e0e",
+                    "underline": "true"
+                },
+                "Others": {
+                    "text-color": "#006e28",
+                    "selected-text-color": "#006e28"
+                }
+            },
+            "custom-styles": {
+            },
+        }
+
     def get_material_schemes(self):
         return self._material_you_schemes
 
@@ -636,3 +996,9 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
 
     def get_sierra_breeze_light_colors(self):
         return (self._sierra_breeze_light_colors)
+
+    def get_ksyntax_highlighting_dark(self):
+        return (self._ksyntax_highlighting_dark)
+
+    def get_ksyntax_highlighting_light(self):
+        return (self._ksyntax_highlighting_light)

@@ -1,7 +1,7 @@
 import logging
 import schemeconfigs
 import globals
-from utils import utils, config_utils, file_utils, m3_scheme_utils, pywal_utils, plasma_utils, konsole_utils, titlebar_utils, kwin_utils
+from utils import utils, config_utils, file_utils, m3_scheme_utils, pywal_utils, plasma_utils, konsole_utils, titlebar_utils, kwin_utils, ksyntax_utils
 
 # TODO: Refactor this into something cleaner
 
@@ -77,6 +77,7 @@ def apply_themes(
             plasma_utils.make_scheme(schemes_watcher.get_new_value())
             # Apply plasma color schemes
             plasma_utils.apply_color_schemes(dark_light)
+            ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
             # Export and apply color scheme to konsole profile
             if config_watcher.get_new_value()['konsole_profile'] != None:
                 konsole_utils.make_mirror_profile(
@@ -228,6 +229,7 @@ def apply_themes(
                     schemes_watcher.get_new_value())
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
+                ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
 
         if config_utils.get_config_value(config_watcher.get_new_value(), 'sierra_breeze_buttons_color') != config_utils.get_config_value(config_watcher.get_old_value(), 'sierra_breeze_buttons_color'):
             if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
