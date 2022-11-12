@@ -17,7 +17,7 @@ class Configs():
     def __init__(self, args):
         c_monitor = 0
         c_plugin = globals.DEFAULT_PLUGIN
-        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = None
+        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = c_klassy_windeco_outline = None
         config = configparser.ConfigParser()
         if os.path.exists(globals.USER_CONFIG_PATH+globals.CONFIG_FILE):
             try:
@@ -113,6 +113,14 @@ class Configs():
                             logging.error(
                                 'Value for konsole_opacity must be an integer between 0 and 100, using default 100')
                             c_konsole_opacity = 100
+
+                    try:
+                        c_klassy_windeco_outline = custom.getboolean(
+                            'klassy_windeco_outline', None)
+                    except:
+                        logging.error(
+                            'Value for klassy_windeco_outline must be a boolean, using default None')
+                        c_klassy_windeco_outline = None
 
             except Exception as e:
                 logging.error(f"Please fix your settings file:\n{e}\n")
@@ -211,6 +219,11 @@ class Configs():
         elif args.konsole_opacity == None and c_konsole_opacity == None:
             c_konsole_opacity = None
 
+        if args.klassy_windeco_outline == True:
+            c_klassy_windeco_outline = args.klassy_windeco_outline
+        elif c_klassy_windeco_outline == None:
+            c_klassy_windeco_outline = args.klassy_windeco_outline
+
         self._options = {
             'light': c_light,
             'file': c_file,
@@ -229,7 +242,8 @@ class Configs():
             "titlebar_opacity": c_titlebar_opacity,
             "toolbar_opacity": c_toolbar_opacity,
             "konsole_opacity": c_konsole_opacity,
-            "color": c_color
+            "color": c_color,
+            "klassy_windeco_outline": c_klassy_windeco_outline
         }
 
     @property

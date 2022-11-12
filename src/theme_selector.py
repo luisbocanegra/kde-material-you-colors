@@ -102,6 +102,12 @@ def apply_themes(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
 
+            if config_watcher.get_new_value()['klassy_windeco_outline'] == True:
+                needs_kwin_reload = True
+                titlebar_utils.klassy_windeco_outline_color(
+                    schemes_watcher.get_new_value(),
+                    light_mode_watcher.get_new_value())
+
             if first_run_watcher.get_new_value() == True:
                 if config_watcher.get_new_value()['titlebar_opacity'] != None:
                     needs_kwin_reload = True
@@ -237,6 +243,12 @@ def apply_themes(
                 titlebar_utils.sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
+
+        if config_utils.get_config_value(config_watcher.get_new_value(), 'klassy_windeco_outline') != config_utils.get_config_value(config_watcher.get_old_value(), 'klassy_windeco_outline') and config_watcher.get_new_value()['klassy_windeco_outline'] == True:
+            needs_kwin_reload = True
+            titlebar_utils.klassy_windeco_outline_color(
+                schemes_watcher.get_new_value(),
+                light_mode_watcher.get_new_value())
 
         utils.run_hook(config_watcher.get_new_value()['on_change_hook'])
 

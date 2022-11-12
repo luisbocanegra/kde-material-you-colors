@@ -92,3 +92,38 @@ def titlebar_opacity(opacity):
                             configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
+
+
+def klassy_windeco_outline_color(schemes, light=None):
+    """Tint Klassy window decoration outline https://github.com/paulmcauley/klassy
+
+    Args:
+        schemes (ThemeConfig): Color scheme
+        light (bool, optional): Light or dark mode. Defaults to None.
+    """
+    if light == True:
+        outline_color = schemes.get_extras()['light']['selectionAlt']
+    elif light == False:
+        outline_color = schemes.get_extras()['dark']['selectionAlt']
+
+    klassyrc = configparser.ConfigParser()
+    # preserve case
+    klassyrc.optionxform = str
+    if os.path.exists(globals.KLASSY_RC):
+        try:
+            klassyrc.read(globals.KLASSY_RC)
+            if 'Windeco' in klassyrc:
+                klassyrc['Windeco']['ThinWindowOutlineStyle'] = "WindowOutlineCustomColor"
+                klassyrc['Windeco']['ThinWindowOutlineCustomColor'] = outline_color
+                reload = True
+            else:
+                reload = False
+            if reload == True:
+                logging.info(f"Applying Klassy outline color")
+                with open(globals.KLASSY_RC, 'w') as configfile:
+                    klassyrc.write(configfile, space_around_delimiters=False)
+        except Exception as e:
+            logging.error(f"Error writing Klassy outline color:\n{e}")
+    else:
+        logging.warning(
+            f"Klassy config '{globals.KLASSY_RC}' not found, skipping")
