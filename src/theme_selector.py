@@ -65,12 +65,14 @@ def apply_themes(
         )
         if material_colors.get_new_value() != None:
             # Genrate color schemes from MYou colors
-            schemes_watcher.set_value(schemeconfigs.ThemeConfig(
-                material_colors.get_new_value(),
-                wallpaper_new_data,
-                config_watcher.get_new_value()['lbm'],
-                config_watcher.get_new_value()['dbm'],
-                config_watcher.get_new_value()['toolbar_opacity']))
+            schemes_watcher.set_value(
+                schemeconfigs.ThemeConfig(
+                    material_colors.get_new_value(),
+                    wallpaper_new_data,
+                    config_watcher.get_new_value()['lbm'],
+                    config_watcher.get_new_value()['dbm'],
+                    config_watcher.get_new_value()['toolbar_opacity'],
+                    config_watcher.get_new_value()['custom_colors_list']))
             # Export generated schemes to output file
             m3_scheme_utils.export_schemes(schemes_watcher.get_new_value())
             # Make plasma color schemes
@@ -222,12 +224,14 @@ def apply_themes(
                     config_watcher.get_new_value()['ncolor']))
             if material_colors.get_new_value() != None:
                 # Genrate color schemes from MYou colors
-                schemes_watcher.set_value(schemeconfigs.ThemeConfig(
-                    material_colors.get_new_value(),
-                    wallpaper_new_data,
-                    config_watcher.get_new_value()['lbm'],
-                    config_watcher.get_new_value()['dbm'],
-                    config_watcher.get_new_value()['toolbar_opacity']))
+                schemes_watcher.set_value(
+                    schemeconfigs.ThemeConfig(
+                        material_colors.get_new_value(),
+                        wallpaper_new_data,
+                        config_watcher.get_new_value()['lbm'],
+                        config_watcher.get_new_value()['dbm'],
+                        config_watcher.get_new_value()['toolbar_opacity'],
+                        config_watcher.get_new_value()['custom_colors_list']))
                 # Export generated schemes to output file
                 m3_scheme_utils.export_schemes(schemes_watcher.get_new_value())
                 # Make plasma color schemes
@@ -235,6 +239,46 @@ def apply_themes(
                     schemes_watcher.get_new_value())
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
+                ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
+
+        if config_utils.get_config_value(config_watcher.get_new_value(), 'custom_colors_list') != config_utils.get_config_value(config_watcher.get_old_value(), 'custom_colors_list'):
+            if config_watcher.get_new_value()['custom_colors_list'] != None:
+                material_colors.set_value(m3_scheme_utils.get_color_schemes(
+                    wallpaper_watcher.get_new_value(),
+                    config_watcher.get_new_value()['ncolor']))
+            if material_colors.get_new_value() != None:
+                # Genrate color schemes from MYou colors
+                schemes_watcher.set_value(
+                    schemeconfigs.ThemeConfig(
+                        material_colors.get_new_value(),
+                        wallpaper_new_data,
+                        config_watcher.get_new_value()['lbm'],
+                        config_watcher.get_new_value()['dbm'],
+                        config_watcher.get_new_value()['toolbar_opacity'],
+                        config_watcher.get_new_value()['custom_colors_list']))
+                # Export generated schemes to output file
+                m3_scheme_utils.export_schemes(schemes_watcher.get_new_value())
+                # Make plasma color schemes
+                # plasma_utils.make_scheme(
+                #    schemes_watcher.get_new_value())
+                # Apply plasma color schemes
+                # plasma_utils.apply_color_schemes(dark_light)
+                konsole_utils.apply_color_scheme(
+                    dark_light,
+                    config_watcher.get_new_value()['pywal_light'],
+                    schemes_watcher.get_new_value(),
+                    config_watcher.get_new_value()['konsole_profile'],
+                    konsole_opacity=config_watcher.get_new_value()[
+                        'konsole_opacity']
+                )
+                if config_watcher.get_new_value()['pywal'] == True:
+                    if config_watcher.get_new_value()['pywal_light'] == None:
+                        pywal_utils.apply_schemes(
+                            dark_light,
+                            use_pywal=config_watcher.get_new_value()['pywal'],
+                            pywal_light=config_watcher.get_new_value()[
+                                'pywal_light'],
+                            schemes=schemes_watcher.get_new_value())
                 ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
 
         if config_utils.get_config_value(config_watcher.get_new_value(), 'sierra_breeze_buttons_color') != config_utils.get_config_value(config_watcher.get_old_value(), 'sierra_breeze_buttons_color'):
