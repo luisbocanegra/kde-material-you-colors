@@ -193,7 +193,6 @@ class ThemeConfig:
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['light']['surface1']}
 ColorAmount=0.55
-ColorAmount=0
 ColorEffect=0
 ContrastAmount=0.65
 ContrastEffect=1
