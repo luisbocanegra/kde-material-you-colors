@@ -1,13 +1,19 @@
 from utils.color_utils import blendColors, hex2rgb, hex2alpha, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
 from utils import math_utils
 from utils import string_utils
+import logging
 
 
 class ThemeConfig:
-    def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100):
+    def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100, custom_colors_list=None):
         if toolbar_opacity == None:
             toolbar_opacity = 100
-        colors_best = colors['best']
+        if custom_colors_list is not None:
+            colors_best = custom_colors_list
+            logging.info(f"Using custom colors: {colors_best}")
+        else:
+            colors_best = list(colors['best'].values())
+        #colors_best = list(colors['best'].values())
         tones_primary = colors['palettes']['primary']
         tones_secondary = colors['palettes']['secondary']
         tones_neutral = colors['palettes']['neutral']
@@ -93,7 +99,6 @@ class ThemeConfig:
         extras = self._extras
 
         best_colors_count = len(colors_best)
-        best_colors_count = best_colors_count if best_colors_count > 7 else 8
 
         pywal_colors_dark = (extras['dark']['surface'],)
         pywal_colors_dark_intense = (blendColors(
@@ -103,11 +108,9 @@ class ThemeConfig:
         tone = 50
 
         for x in range(7):
-            str_x = str(x)
-            if (len(pywal_colors_dark) <= 7):
-                if str_x in colors_best.keys():
-                    c = lighteen_color(
-                        colors_best[str_x], .2, tones_neutral[99])
+            if len(pywal_colors_dark) <= 7:
+                if x < best_colors_count:
+                    c = lighteen_color(colors_best[x], .2, tones_neutral[99])
                     pywal_colors_dark += (blend2contrast(
                         c, pywal_colors_dark[0], tones_neutral[99], 4.5, .01, True),)
                 else:
@@ -144,10 +147,9 @@ class ThemeConfig:
             tones_neutral[50], colors_light['secondary'], .8*lbm),)
 
         for x in range(7):
-            str_x = str(x)
-            if (len(pywal_colors_light) <= 7):
-                if str_x in colors_best.keys():
-                    c = scale_saturation(colors_best[str_x], 1)
+            if len(pywal_colors_light) <= 7:
+                if x < best_colors_count:
+                    c = scale_saturation(colors_best[x], 1)
                     c = lighteen_color(c, .2, tones_neutral[99])
                     pywal_colors_light += (blend2contrast(
                         c, pywal_colors_light[0], tones_neutral[10], 4.5, .01, False),)
@@ -191,7 +193,6 @@ class ThemeConfig:
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['light']['surface1']}
 ColorAmount=0.55
-ColorAmount=0
 ColorEffect=0
 ContrastAmount=0.65
 ContrastEffect=1
