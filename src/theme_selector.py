@@ -97,24 +97,26 @@ def apply_themes(
                 config_watcher.get_new_value()['iconslight'],
                 config_watcher.get_new_value()['iconsdark'],
                 light_mode_watcher.get_new_value())
-
             if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
                 needs_kwin_reload = True
                 titlebar_utils.sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
-
             if config_watcher.get_new_value()['klassy_windeco_outline'] == True:
                 needs_kwin_reload = True
                 titlebar_utils.klassy_windeco_outline_color(
                     schemes_watcher.get_new_value(),
                     light_mode_watcher.get_new_value())
-
             if first_run_watcher.get_new_value() == True:
                 if config_watcher.get_new_value()['titlebar_opacity'] != None:
                     needs_kwin_reload = True
                     titlebar_utils.titlebar_opacity(
                         config_watcher.get_new_value()['titlebar_opacity'])
+            if config_watcher.get_new_value()['darker_window_list'] is not None:
+                titlebar_utils.kwin_rule_darker_titlebar(
+                    config_watcher.get_new_value()['pywal_light'],
+                    config_watcher.get_new_value()['darker_window_list'])
+                needs_kwin_reload = True
             if needs_kwin_reload == True:
                 kwin_utils.reload()
                 needs_kwin_reload == False
@@ -130,7 +132,10 @@ def apply_themes(
 
     if first_run_watcher.get_new_value() == False:
         if light_mode_watcher.has_changed or plasma_scheme_watcher.has_changed and plasma_scheme_watcher.get_old_value() != None and light_mode_watcher.get_new_value() != plasma_scheme_watcher.get_new_value():
+            print("AAAAA")
             if not wallpaper_watcher.has_changed:
+                print(f"AAAAA %s", config_watcher.get_new_value()
+                      ['darker_window_list'])
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
                 # Export and apply color scheme to konsole profile
@@ -146,6 +151,11 @@ def apply_themes(
                     config_watcher.get_new_value()['iconslight'],
                     config_watcher.get_new_value()['iconsdark'],
                     light_mode_watcher.get_new_value())
+                if config_watcher.get_new_value()['darker_window_list'] is not None:
+                    titlebar_utils.kwin_rule_darker_titlebar(
+                        config_watcher.get_new_value()['pywal_light'],
+                        config_watcher.get_new_value()['darker_window_list'])
+                    needs_kwin_reload = True
                 if config_watcher.get_new_value()['pywal'] == True:
                     if config_watcher.get_new_value()['pywal_light'] == None:
                         pywal_utils.apply_schemes(
@@ -194,6 +204,11 @@ def apply_themes(
                 konsole_opacity=config_watcher.get_new_value()[
                     'konsole_opacity']
             )
+            if config_watcher.get_new_value()['darker_window_list'] is not None:
+                titlebar_utils.kwin_rule_darker_titlebar(
+                    config_watcher.get_new_value()['pywal_light'],
+                    config_watcher.get_new_value()['darker_window_list'])
+                needs_kwin_reload = True
             if config_watcher.get_new_value()['pywal'] == True:
                 pywal_utils.apply_schemes(
                     dark_light,
@@ -294,9 +309,15 @@ def apply_themes(
                 schemes_watcher.get_new_value(),
                 light_mode_watcher.get_new_value())
 
+        if config_utils.get_config_value(config_watcher.get_new_value(), 'darker_window_list') != config_utils.get_config_value(config_watcher.get_old_value(), 'darker_window_list') and config_watcher.get_new_value()['darker_window_list'] is not None:
+            titlebar_utils.kwin_rule_darker_titlebar(
+                config_watcher.get_new_value()['pywal_light'],
+                config_watcher.get_new_value()['darker_window_list'])
+            needs_kwin_reload = True
+
         utils.run_hook(config_watcher.get_new_value()['on_change_hook'])
 
-        if needs_kwin_reload == True:
-            kwin_utils.reload()
-            needs_kwin_reload == False
+    if needs_kwin_reload == True:
+        kwin_utils.reload()
+        needs_kwin_reload == False
     first_run_watcher.set_value(False)
