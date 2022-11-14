@@ -142,7 +142,8 @@ def kwin_rule_darker_titlebar(light, darker_window_list):
     if darker_window_list is None:
         darker_window_list = "--not-configured--"
     else:
-        logging.info(f"Setting window rule [{darker_window_list}]")
+        logging.info(
+            f"Setting window rule [{darker_window_list}], dark: {light}")
     if light is not None and light is True:
         scheme_name = "MaterialYouLight_darker_titlebar"
     else:
