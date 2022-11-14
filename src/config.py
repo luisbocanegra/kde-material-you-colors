@@ -18,7 +18,7 @@ class Configs():
     def __init__(self, args):
         c_monitor = 0
         c_plugin = globals.DEFAULT_PLUGIN
-        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = c_klassy_windeco_outline = c_custom_colors_list = None
+        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = c_klassy_windeco_outline = c_custom_colors_list = c_darker_window_list = None
         config = configparser.ConfigParser()
         if os.path.exists(globals.USER_CONFIG_PATH+globals.CONFIG_FILE):
             try:
@@ -124,6 +124,7 @@ class Configs():
                         c_klassy_windeco_outline = None
 
                     c_custom_colors_list = custom.get('custom_colors_list')
+                    c_darker_window_list = custom.get('darker_window_list')
 
             except Exception as e:
                 logging.error(f"Please fix your settings file:\n{e}\n")
@@ -235,7 +236,7 @@ class Configs():
                 c_custom_colors_list = c_custom_colors_list.split(' ')
                 if len(c_custom_colors_list) < 7:
                     raise TypeError(
-                        "Value for custom_color_list must contain 7 elements (rgb or hex colors)")
+                        "Value for custom_color_list must contain 7 elements (rgb or hex colors), space separated")
                 else:
                     for i, color in enumerate(c_custom_colors_list):
                         fmt = color_utils.validate_color(color)
@@ -249,6 +250,9 @@ class Configs():
             c_custom_colors_list = None
             logging.error(
                 f'Please fix your settings file: {e}, using wallpaper colors')
+
+        if args.darker_window_list != None:
+            c_darker_window_list = args.darker_window_list
 
         self._options = {
             'light': c_light,
@@ -270,7 +274,8 @@ class Configs():
             "konsole_opacity": c_konsole_opacity,
             "color": c_color,
             "klassy_windeco_outline": c_klassy_windeco_outline,
-            "custom_colors_list": c_custom_colors_list
+            "custom_colors_list": c_custom_colors_list,
+            "darker_window_list": c_darker_window_list
         }
 
     @property

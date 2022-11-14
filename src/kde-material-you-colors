@@ -63,7 +63,9 @@ if __name__ == '__main__':
     parser.add_argument('--klassy-windeco-outline', '-kwo', action='store_true',
                         help='Tint Klassy Window Decoration window outline')
     parser.add_argument('--custom-colors-list', '-ccl', type=str,
-                        help='List of 7 colors (hex or rgb) to be used for text in pywall/konsole/KSyntaxHighlighting instead of wallpaper ones', default=None)
+                        help='List of 7 space separated colors (hex or rgb) to be used for text in pywall/konsole/KSyntaxHighlighting instead of wallpaper ones', default=None)
+    parser.add_argument('--darker-window-list', '-dwl', type=str,
+                        help='List of space separated window class names to apply a darker titlebar', default=None)
 
     # Get commandline arguments
     args = parser.parse_args()

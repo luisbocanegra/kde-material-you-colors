@@ -42,3 +42,4 @@ BOLD_RESET = COLOR_RESET+BOLD
 LOG_FILE_PATH = HOME+"/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
 MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors.json"
+KWIN_RULES_RC = HOME+"/.config/kwinrulesrc"

@@ -25,6 +25,8 @@ def make_scheme(schemes=None):
     with open(globals.THEME_DARK_PATH+".colors", 'w', encoding='utf8') as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
 
+    plasma_darker_header(schemes)
+
 
 def apply_color_schemes(light=False):
     if light == None:
@@ -81,3 +83,38 @@ def kde_globals_light():
             return None
     else:
         return None
+
+
+def plasma_darker_header(schemes):
+    """Make a copy of the generated plasma themes but with darker headers
+
+    Args:
+        schemes (ThemeConfig): generated color schemes
+    """
+    light_color = schemes.get_wal_light_scheme()['colors']['color0']
+    dark_color = schemes.get_wal_dark_scheme()['colors']['color0']
+    color_scheme = configparser.ConfigParser()
+    color_scheme.optionxform = str
+    try:
+        # Edit titlebar of dark scheme
+        color_scheme.read(globals.THEME_DARK_PATH+".colors")
+        color_scheme['Colors:Header][Inactive']['BackgroundNormal'] = dark_color
+        color_scheme['Colors:Header']['BackgroundNormal'] = dark_color
+        color_scheme['General']['Name'] = "Material You Dark (darker titlebar)"
+
+        with open(globals.THEME_DARK_PATH+"_darker_titlebar.colors", 'w') as configfile:
+            color_scheme.write(
+                configfile, space_around_delimiters=False)
+
+        # Edit titlebar of light scheme
+        color_scheme.read(globals.THEME_LIGHT_PATH+".colors")
+        color_scheme['Colors:Header][Inactive']['BackgroundNormal'] = light_color
+        color_scheme['Colors:Header']['BackgroundNormal'] = light_color
+        color_scheme['General']['Name'] = "Material You Dark (darker titlebar)"
+
+        with open(globals.THEME_LIGHT_PATH+"_darker_titlebar.colors", 'w') as configfile:
+            color_scheme.write(
+                configfile, space_around_delimiters=False)
+
+    except Exception as e:
+        logging.error(f"Error:\n{e}")
