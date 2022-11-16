@@ -96,17 +96,17 @@ def apply_themes(
             plasma_utils.set_icons(
                 config_watcher.get_new_value()['iconslight'],
                 config_watcher.get_new_value()['iconsdark'],
-                light_mode_watcher.get_new_value())
+                dark_light)
             if config_watcher.get_new_value()['sierra_breeze_buttons_color'] == True:
                 needs_kwin_reload = True
                 titlebar_utils.sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
-                    light_mode_watcher.get_new_value())
+                    dark_light)
             if config_watcher.get_new_value()['klassy_windeco_outline'] == True:
                 needs_kwin_reload = True
                 titlebar_utils.klassy_windeco_outline_color(
                     schemes_watcher.get_new_value(),
-                    light_mode_watcher.get_new_value())
+                    dark_light)
             if first_run_watcher.get_new_value() == True:
                 if config_watcher.get_new_value()['titlebar_opacity'] != None:
                     needs_kwin_reload = True
@@ -149,7 +149,7 @@ def apply_themes(
                 plasma_utils.set_icons(
                     config_watcher.get_new_value()['iconslight'],
                     config_watcher.get_new_value()['iconsdark'],
-                    light_mode_watcher.get_new_value())
+                    dark_light)
                 if config_watcher.get_new_value()['darker_window_list'] is not None:
                     titlebar_utils.kwin_rule_darker_titlebar(
                         dark_light if config_watcher.get_new_value(
@@ -307,13 +307,13 @@ def apply_themes(
                 needs_kwin_reload = True
                 titlebar_utils.sierra_breeze_button_colors(
                     schemes_watcher.get_new_value(),
-                    light_mode_watcher.get_new_value())
+                    dark_light)
 
         if config_utils.get_config_value(config_watcher.get_new_value(), 'klassy_windeco_outline') != config_utils.get_config_value(config_watcher.get_old_value(), 'klassy_windeco_outline') and config_watcher.get_new_value()['klassy_windeco_outline'] == True:
             needs_kwin_reload = True
             titlebar_utils.klassy_windeco_outline_color(
                 schemes_watcher.get_new_value(),
-                light_mode_watcher.get_new_value())
+                dark_light)
 
         if config_utils.get_config_value(config_watcher.get_new_value(), 'darker_window_list') != config_utils.get_config_value(config_watcher.get_old_value(), 'darker_window_list') and config_watcher.get_new_value()['darker_window_list'] is not None:
             titlebar_utils.kwin_rule_darker_titlebar(
