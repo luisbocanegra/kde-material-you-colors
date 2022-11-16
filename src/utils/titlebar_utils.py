@@ -151,6 +151,8 @@ def kwin_rule_darker_titlebar(light, darker_window_list):
     kwin_rules = configparser.ConfigParser()
     kwin_rules.optionxform = str
     kwin_rules.read(globals.KWIN_RULES_RC)
+    if 'General' not in kwin_rules:
+        return
     # Get active rules
     active_rules = kwin_rules['General']['rules'].split(',')
 
