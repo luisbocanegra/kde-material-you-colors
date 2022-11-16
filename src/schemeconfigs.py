@@ -43,7 +43,7 @@ class ThemeConfig:
                 "surface": blendColors(tones_neutral[5], tones_primary[40], 0.08*dbm),
                 "surface1": blendColors(colors_dark['background'], tones_primary[40], .05*dbm),
                 "surface2": blendColors(colors_dark['background'], tones_primary[40], .08*dbm),
-                "surface3": blendColors(colors_dark['background'], tones_primary[40], .11*dbm),
+                "surface3": blendColors(colors_dark['background'], tones_primary[40], .18*dbm),
 
                 "linkOnPrimary": blendColors(colors_dark['onPrimary'], base_text_states['Link'], .5),
                 "linkVisitedOnPrimary": blendColors(colors_dark['onPrimary'], base_text_states['Visited'], .8),
@@ -61,7 +61,7 @@ class ThemeConfig:
                 "selectionAltActive": blendColors(colors_dark['background'], colors_dark['secondary'], .5),
             },
             "light": {
-                "surface": blendColors(colors_light['background'], tones_primary[70], 0.13*lbm),
+                "surface": blendColors(colors_light['background'], tones_primary[70], 0.08*lbm),
                 "surface1": blendColors(colors_light['background'], tones_primary[70], .18*lbm),
                 "surface2": blendColors(colors_light['background'], tones_primary[70], .23*lbm),
                 "surface3": blendColors(colors_light['background'], tones_primary[70], .20*lbm),
