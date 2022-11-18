@@ -21,11 +21,14 @@ def apply_themes(
     if config_watcher.has_changed:
         logging.debug(f"Config: {config_watcher.get_new_value()}")
     needs_kwin_reload = False
+
     group1_watcher.set_value([
         config_utils.get_config_value(
             config_watcher.get_new_value(), 'ncolor'),
-        config_utils.get_config_value(config_watcher.get_new_value(), 'lbm'),
-        config_utils.get_config_value(config_watcher.get_new_value(), 'dbm'),
+        config_utils.get_config_value(
+            config_watcher.get_new_value(), 'light_blend_multiplier'),
+        config_utils.get_config_value(
+            config_watcher.get_new_value(), 'dark_blend_multiplier'),
     ])
 
     light_mode_watcher.set_value(config_utils.get_config_value(
@@ -69,8 +72,8 @@ def apply_themes(
                 schemeconfigs.ThemeConfig(
                     material_colors.get_new_value(),
                     wallpaper_new_data,
-                    config_watcher.get_new_value()['lbm'],
-                    config_watcher.get_new_value()['dbm'],
+                    config_watcher.get_new_value()['light_blend_multiplier'],
+                    config_watcher.get_new_value()['dark_blend_multiplier'],
                     config_watcher.get_new_value()['toolbar_opacity'],
                     config_watcher.get_new_value()['custom_colors_list']))
             # Export generated schemes to output file
@@ -249,8 +252,10 @@ def apply_themes(
                     schemeconfigs.ThemeConfig(
                         material_colors.get_new_value(),
                         wallpaper_new_data,
-                        config_watcher.get_new_value()['lbm'],
-                        config_watcher.get_new_value()['dbm'],
+                        config_watcher.get_new_value(
+                        )['light_blend_multiplier'],
+                        config_watcher.get_new_value(
+                        )['dark_blend_multiplier'],
                         config_watcher.get_new_value()['toolbar_opacity'],
                         config_watcher.get_new_value()['custom_colors_list']))
                 # Export generated schemes to output file
@@ -273,8 +278,10 @@ def apply_themes(
                     schemeconfigs.ThemeConfig(
                         material_colors.get_new_value(),
                         wallpaper_new_data,
-                        config_watcher.get_new_value()['lbm'],
-                        config_watcher.get_new_value()['dbm'],
+                        config_watcher.get_new_value(
+                        )['light_blend_multiplier'],
+                        config_watcher.get_new_value(
+                        )['dark_blend_multiplier'],
                         config_watcher.get_new_value()['toolbar_opacity'],
                         config_watcher.get_new_value()['custom_colors_list']))
                 # Export generated schemes to output file
