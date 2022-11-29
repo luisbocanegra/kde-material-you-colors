@@ -99,9 +99,11 @@ class Configs():
             options[k] = eval_conf(config, k, v[1], defaults[k][0])
         # Some logging for incorrect values
         if options['monitor'] < 0:
-            logging.warning("Value for monitor must be a positive number")
+            logging.warning(
+                "Value for monitor must be a positive number, using default 0")
         if options['ncolor'] < 0:
-            logging.warning("Value for ncolor must be a positive number")
+            logging.warning(
+                "Value for ncolor must be a positive number, using default 0")
         if options['dark_blend_multiplier'] < 0 or options['dark_blend_multiplier'] > 4:
             logging.warning(
                 "Value for dark_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0")

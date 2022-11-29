@@ -10,10 +10,9 @@ import globals
 
 def export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=100):
     if konsole_opacity == None:
-        konsole_opacity = 1.0
+        konsole_opacity = 100
     else:
-        konsole_opacity = float(konsole_opacity/100)
-    konsole_opacity = clip(konsole_opacity, 0.0, 1.0, 1.0)
+        konsole_opacity = float(clip(konsole_opacity, 0, 100, 100)/100)
     # print(f"konsole_opacity: {konsole_opacity}")
     if pywal_light != None:
         if pywal_light == True:

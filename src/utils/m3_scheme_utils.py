@@ -4,6 +4,7 @@ import globals
 if globals.USER_HAS_COLR:
     import colr
 from . import color_utils
+from . import math_utils
 from .extra_image_utils import sourceColorsFromImage
 from material_color_utilities_python.utils.theme_utils import *
 
@@ -81,7 +82,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         # return a selected color or a single color for hex code
         totalColors = len(best_colors)
         if ncolor and ncolor != None:
-            ncolor = ncolor
+            ncolor = math_utils.clip(ncolor, 0, totalColors, 0)
         else:
             ncolor = 0
 
