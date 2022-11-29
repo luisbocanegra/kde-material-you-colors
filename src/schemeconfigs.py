@@ -8,6 +8,8 @@ class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100, custom_colors_list=None):
         if toolbar_opacity == None:
             toolbar_opacity = 100
+        else:
+            math_utils.clip(toolbar_opacity, 0, 100, 100)
         if custom_colors_list is not None:
             colors_best = custom_colors_list
             logging.info(f"Using custom colors: {colors_best}")

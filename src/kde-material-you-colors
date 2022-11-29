@@ -6,6 +6,7 @@ from config import Configs
 from utils import utils
 from utils import wallpaper_utils
 from utils import plasma_utils
+from utils import file_utils
 import theme_selector
 from logging_config import MyLogFormatter
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
     # Kill existing instance if found
     utils.kill_existing()
 
-    # at first settings are empty so first initial apply is done
+    # set initial state so first apply is done
     config_watcher = utils.Watcher(None)
     wallpaper_watcher = utils.Watcher(None)
     wallpaper_modified = utils.Watcher(None)
@@ -87,9 +88,20 @@ if __name__ == '__main__':
     first_run_watcher = utils.Watcher(True)
     konsole_profile_modified = utils.Watcher(None)
     plasma_scheme_watcher = utils.Watcher(None)
+    config_modified = utils.Watcher(
+        file_utils.get_last_modification(
+            globals.USER_CONFIG_PATH + globals.CONFIG_FILE
+        ))
+    config = Configs(args)
+
     while True:
+        config_modified.set_value(file_utils.get_last_modification(
+            globals.USER_CONFIG_PATH + globals.CONFIG_FILE
+        ))
+
         # Get config from file and compare it with passed args
-        config = Configs(args)
+        if config_modified.has_changed and config_modified.get_new_value() != None:
+            config = Configs(args)
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
         # Get wallpaper

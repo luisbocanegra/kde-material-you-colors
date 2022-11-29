@@ -4,6 +4,7 @@ import os
 import globals
 from . import color_utils
 from . import file_utils
+from . import math_utils
 
 
 def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None):
@@ -20,6 +21,10 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
     """
     if plugin == None:
         plugin = globals.DEFAULT_PLUGIN
+    if monitor and monitor != None:
+        monitor = math_utils.clip(monitor, 0, 999, 0)
+    else:
+        monitor = 0
     if file:
         if os.path.exists(file):
             with open(file) as file:
