@@ -2,6 +2,7 @@ import operator
 import numpy
 import colorsys
 import re
+from . import math_utils
 from material_color_utilities_python.utils.theme_utils import *
 
 
@@ -236,6 +237,30 @@ def scale_saturation(hex_color, amount):
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
     # manipulate value and convert back to rgb
     r, g, b = colorsys.hsv_to_rgb(h, amount, v)
+    o_hex = rgb2hex(int(r), int(g), int(b))
+    # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
+    return o_hex
+
+
+def multiply_saturation(hex_color, amount):
+    r, g, b = hex2rgb(hex_color)
+    # convert rgb to hls
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    # manipulate value and convert back to rgb
+    amount = math_utils.clip(s*amount, 0, 1, s)
+    r, g, b = colorsys.hsv_to_rgb(h, amount, v)
+    o_hex = rgb2hex(int(r), int(g), int(b))
+    # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
+    return o_hex
+
+
+def multiply_lightness(hex_color, amount):
+    r, g, b = hex2rgb(hex_color)
+    # convert rgb to hls
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    # manipulate value and convert back to rgb
+    amount = math_utils.clip(v*amount, 0, 255, v)
+    r, g, b = colorsys.hsv_to_rgb(h, s, amount)
     o_hex = rgb2hex(int(r), int(g), int(b))
     # print(f"scale_lightness color: {hex_color} * amount: {amount} = {o_hex}")
     return o_hex

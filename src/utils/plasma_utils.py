@@ -91,8 +91,8 @@ def plasma_darker_header(schemes):
     Args:
         schemes (ThemeConfig): generated color schemes
     """
-    light_color = schemes.get_wal_light_scheme()['colors']['color0']
-    dark_color = schemes.get_wal_dark_scheme()['colors']['color0']
+    light_color = schemes.get_wal_light_scheme()['special']['background']
+    dark_color = schemes.get_wal_dark_scheme()['special']['background']
     color_scheme = configparser.ConfigParser()
     color_scheme.optionxform = str
     try:
