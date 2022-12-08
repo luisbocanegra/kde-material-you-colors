@@ -63,19 +63,19 @@ class Watcher:
 
     def __init__(self, value: any):
         self.value = value
-        self.has_changed = False
+        self.changed = False
         self.old_value = None
 
     def set_value(self, new_value: any) -> None:
         if self.value != new_value:
             self.old_value = self.value
             self.value = new_value
-            self.has_changed = True
+            self.changed = True
         else:
-            self.has_changed = False
+            self.changed = False
 
     def has_changed(self):
-        return self.has_changed
+        return self.changed
 
     def get_old_value(self):
         return self.old_value

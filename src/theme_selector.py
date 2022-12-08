@@ -18,7 +18,7 @@ def apply_themes(
         konsole_profile_modified: utils.Watcher):
 
     # Print new config after change
-    if config_watcher.has_changed:
+    if config_watcher.has_changed():
         logging.debug(f"Config: {config_watcher.get_new_value()}")
     needs_kwin_reload = False
 
@@ -55,8 +55,8 @@ def apply_themes(
 
     dark_light = light_mode_watcher.get_new_value()
 
-    if wallpaper_watcher.has_changed or group1_watcher.has_changed or wallpaper_modified.has_changed:
-        if wallpaper_watcher.has_changed or wallpaper_modified.has_changed:
+    if wallpaper_watcher.has_changed() or group1_watcher.has_changed() or wallpaper_modified.has_changed():
+        if wallpaper_watcher.has_changed() or wallpaper_modified.has_changed():
             logging.info(
                 f'Using source ({wallpaper_new_type}): {wallpaper_new_data}')
         material_colors.set_value(
@@ -147,8 +147,8 @@ def apply_themes(
             utils.run_hook(config_watcher.get_new_value()['on_change_hook'])
 
     if first_run_watcher.get_new_value() == False:
-        if light_mode_watcher.has_changed:
-            if not wallpaper_watcher.has_changed:
+        if light_mode_watcher.has_changed():
+            if not wallpaper_watcher.has_changed():
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
                 # Export and apply color scheme to konsole profile
@@ -184,11 +184,11 @@ def apply_themes(
                     needs_kwin_reload == False
                 print("---------------------")
 
-    if konsole_profile_modified.has_changed and konsole_profile_modified.get_old_value() != None and first_run_watcher.get_new_value() == False:
+    if konsole_profile_modified.has_changed() and konsole_profile_modified.get_old_value() != None and first_run_watcher.get_new_value() == False:
         konsole_utils.make_mirror_profile(
             config_watcher.get_new_value()['konsole_profile'])
 
-    if config_watcher.has_changed and config_watcher.get_old_value() != None:
+    if config_watcher.has_changed() and config_watcher.get_old_value() != None:
         icons_new = [
             config_utils.get_config_value(
                 config_watcher.get_new_value(), 'iconslight'),

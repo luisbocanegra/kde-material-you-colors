@@ -99,7 +99,7 @@ if __name__ == '__main__':
         ))
 
         # Get config from file and compare it with passed args
-        if config_modified.has_changed and config_modified.get_new_value() != None:
+        if config_modified.has_changed() and config_modified.get_new_value() != None:
             config = Configs(args)
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
