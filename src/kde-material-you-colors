@@ -24,9 +24,9 @@ if __name__ == '__main__':
     parser.add_argument('--ncolor', '-n', type=int,
                         help='Alternative color mode (default is 0), some images return more than one color, this will use either the matched or last one', default=None)
     parser.add_argument('--light', '-l', action='store_true',
-                        help='Enable Light mode (default is Dark)')
+                        help='Enable Light mode (default is Dark)', default=None)
     parser.add_argument('--dark', '-d', action='store_true',
-                        help='Enable Dark mode (ignores user config)')
+                        help='Enable Dark mode (ignores user config)', default=None)
     parser.add_argument('--autostart', '-a', action='store_true',
                         help='Enable (copies) the startup script to automatically start with KDE')
     parser.add_argument('--copyconfig', '-c', action='store_true',
@@ -87,7 +87,6 @@ if __name__ == '__main__':
     material_colors = utils.Watcher(None)
     first_run_watcher = utils.Watcher(True)
     konsole_profile_modified = utils.Watcher(None)
-    plasma_scheme_watcher = utils.Watcher(None)
     config_modified = utils.Watcher(
         file_utils.get_last_modification(
             globals.USER_CONFIG_PATH + globals.CONFIG_FILE
@@ -116,7 +115,6 @@ if __name__ == '__main__':
 
         if wallpaper_watcher.get_new_value() != None:
             # Get light/dark scheme status
-            plasma_scheme_watcher.set_value(plasma_utils.kde_globals_light())
 
             theme_selector.apply_themes(
                 config_watcher,
@@ -127,6 +125,5 @@ if __name__ == '__main__':
                 schemes_watcher,
                 material_colors,
                 first_run_watcher,
-                konsole_profile_modified,
-                plasma_scheme_watcher)
+                konsole_profile_modified)
         time.sleep(1)

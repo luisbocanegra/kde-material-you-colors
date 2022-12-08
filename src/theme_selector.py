@@ -15,8 +15,8 @@ def apply_themes(
         schemes_watcher: utils.Watcher,
         material_colors: utils.Watcher,
         first_run_watcher: utils.Watcher,
-        konsole_profile_modified: utils.Watcher,
-        plasma_scheme_watcher: utils.Watcher):
+        konsole_profile_modified: utils.Watcher):
+
     # Print new config after change
     if config_watcher.has_changed:
         logging.debug(f"Config: {config_watcher.get_new_value()}")
@@ -30,9 +30,6 @@ def apply_themes(
         config_utils.get_config_value(
             config_watcher.get_new_value(), 'dark_blend_multiplier'),
     ])
-
-    light_mode_watcher.set_value(config_utils.get_config_value(
-        config_watcher.get_new_value(), 'light'))
 
     # Get wallpaper type and data
     if wallpaper_watcher.get_new_value() != None and wallpaper_watcher.get_new_value()[1] != None:
@@ -49,16 +46,17 @@ def apply_themes(
         konsole_profile_modified.set_value(file_utils.get_last_modification(
             globals.KONSOLE_DIR+config_watcher.get_new_value()['konsole_profile']+".profile"))
 
-    # decide light or dark
-    dark_light = False
-    if light_mode_watcher.get_new_value() == None:
-        if plasma_scheme_watcher.get_new_value() != None:
-            dark_light = plasma_scheme_watcher.get_new_value()
+    if config_watcher.get_new_value()['light'] != None:
+        light_mode_watcher.set_value(
+            config_watcher.get_new_value()['light']
+        )
     else:
-        dark_light = light_mode_watcher.get_new_value()
+        light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+
+    dark_light = light_mode_watcher.get_new_value()
 
     if wallpaper_watcher.has_changed or group1_watcher.has_changed or wallpaper_modified.has_changed:
-        if wallpaper_watcher.has_changed:
+        if wallpaper_watcher.has_changed or wallpaper_modified.has_changed:
             logging.info(
                 f'Using source ({wallpaper_new_type}): {wallpaper_new_data}')
         material_colors.set_value(
@@ -80,6 +78,19 @@ def apply_themes(
             m3_scheme_utils.export_schemes(schemes_watcher.get_new_value())
             # Make plasma color schemes
             plasma_utils.make_scheme(schemes_watcher.get_new_value())
+
+            # light mode may have changed while generating colors, check it again
+
+            if config_watcher.get_new_value()['light'] != None:
+                light_mode_watcher.set_value(
+                    config_watcher.get_new_value()['light']
+                )
+            else:
+                #print(f"KDE: {plasma_utils.kde_globals_light()}")
+                light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+
+            dark_light = light_mode_watcher.get_new_value()
+
             # Apply plasma color schemes
             plasma_utils.apply_color_schemes(dark_light)
             ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
@@ -136,7 +147,7 @@ def apply_themes(
             utils.run_hook(config_watcher.get_new_value()['on_change_hook'])
 
     if first_run_watcher.get_new_value() == False:
-        if light_mode_watcher.has_changed or plasma_scheme_watcher.has_changed and plasma_scheme_watcher.get_old_value() != None and light_mode_watcher.get_new_value() != plasma_scheme_watcher.get_new_value():
+        if light_mode_watcher.has_changed:
             if not wallpaper_watcher.has_changed:
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
@@ -159,7 +170,7 @@ def apply_themes(
                         )['pywal_light'] is None else config_watcher.get_new_value(
                         )['pywal_light'],
                         config_watcher.get_new_value()['darker_window_list'])
-                needs_kwin_reload = True
+                    needs_kwin_reload = True
                 if config_watcher.get_new_value()['pywal'] == True:
                     if config_watcher.get_new_value()['pywal_light'] == None:
                         pywal_utils.apply_schemes(
