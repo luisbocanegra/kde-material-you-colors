@@ -2,10 +2,10 @@
 import time
 import argparse
 import globals
+import logging
 from config import Configs
 from utils import utils
 from utils import wallpaper_utils
-from utils import plasma_utils
 from utils import file_utils
 import theme_selector
 from logging_config import MyLogFormatter
@@ -87,6 +87,8 @@ if __name__ == '__main__':
     material_colors = utils.Watcher(None)
     first_run_watcher = utils.Watcher(True)
     konsole_profile_modified = utils.Watcher(None)
+    logging.info(
+        "###### STARTED NEW INSTANCE ######")
     config_modified = utils.Watcher(
         file_utils.get_last_modification(
             globals.USER_CONFIG_PATH + globals.CONFIG_FILE

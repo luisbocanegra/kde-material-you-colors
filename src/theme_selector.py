@@ -150,7 +150,8 @@ def apply_themes(
         if light_mode_watcher.has_changed():
             if not wallpaper_watcher.has_changed():
                 # Apply plasma color schemes
-                plasma_utils.apply_color_schemes(dark_light)
+                if plasma_utils.kde_globals_light() != dark_light:
+                    plasma_utils.apply_color_schemes(dark_light)
                 # Export and apply color scheme to konsole profile
                 konsole_utils.apply_color_scheme(
                     dark_light,
