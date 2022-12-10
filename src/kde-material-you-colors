@@ -67,6 +67,10 @@ if __name__ == '__main__':
                         help='List of 7 space separated colors (hex or rgb) to be used for text in pywall/konsole/KSyntaxHighlighting instead of wallpaper ones', default=None)
     parser.add_argument('--darker-window-list', '-dwl', type=str,
                         help='List of space separated window class names to apply a darker titlebar', default=None)
+    parser.add_argument('--use-startup-delay', action='store_true',
+                        help='Enable the startup delay, disabled by default, requires --startup-delay or startup_delay in config', default=None)
+    parser.add_argument('--startup-delay', '-sd', type=int,
+                        help='Add a startup delay (in seconds) before doing anything, useful for waiting for other utilities that may change themes on boot (default is 0)', default=None)
 
     # Get commandline arguments
     args = parser.parse_args()

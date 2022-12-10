@@ -102,7 +102,9 @@ class Configs():
             'color': [args.color or None, 3],
             'klassy_windeco_outline': [args.klassy_windeco_outline, 0],
             'custom_colors_list': [args.custom_colors_list or None, 3],
-            'darker_window_list': [args.darker_window_list or None, 3]
+            'darker_window_list': [args.darker_window_list or None, 3],
+            'use_startup_delay': [args.use_startup_delay or None, 0],
+            'startup_delay': [args.startup_delay or 0, 1]
         }
         options = defaults
         config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
