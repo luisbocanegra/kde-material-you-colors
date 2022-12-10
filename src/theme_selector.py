@@ -50,6 +50,9 @@ def apply_themes(
         light_mode_watcher.set_value(
             config_watcher.get_new_value()['light']
         )
+    # try to get the initial theme with from hash
+    elif first_run_watcher.get_new_value() is True:
+        light_mode_watcher.set_value(plasma_utils.get_initial_mode())
     else:
         light_mode_watcher.set_value(plasma_utils.kde_globals_light())
 
@@ -91,6 +94,9 @@ def apply_themes(
                 light_mode_watcher.set_value(
                     config_watcher.get_new_value()['light']
                 )
+            # try to get the initial theme with saved hash
+            elif first_run_watcher.get_new_value() is True:
+                light_mode_watcher.set_value(plasma_utils.get_initial_mode())
             else:
                 light_mode_watcher.set_value(plasma_utils.kde_globals_light())
 
@@ -99,6 +105,7 @@ def apply_themes(
             # skip applying themes if no dark/light mode was specified
             # or found in current user settings
             if dark_light != None:
+                logging.info(f"Using light mode for Plasma: {dark_light}")
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
                 ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
@@ -129,6 +136,9 @@ def apply_themes(
 
             # Parts that can follow pywal if enabled
             if dark_light != None or config_watcher.get_new_value()['pywal']:
+                if config_watcher.get_new_value()['pywal_light'] is not None:
+                    logging.info(
+                        f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal")
                 # Export and apply color scheme to konsole profile
                 if config_watcher.get_new_value()['konsole_profile'] != None:
                     konsole_utils.make_mirror_profile(
@@ -178,6 +188,7 @@ def apply_themes(
                 # skip applying themes if no dark/light mode was specified
                 # or found in current user settings
                 if dark_light != None:
+                    logging.info(f"Using light mode for Plasma: {dark_light}")
                     # Apply plasma color schemes
                     # change only if is not currently active
                     if plasma_utils.kde_globals_light() != dark_light:
@@ -204,6 +215,9 @@ def apply_themes(
 
                 # Parts that can follow pywal if enabled
                 if dark_light != None or config_watcher.get_new_value()['pywal']:
+                    if config_watcher.get_new_value()['pywal_light'] is not None:
+                        logging.info(
+                            f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal")
                     # Export and apply color scheme to konsole profile
                     konsole_utils.apply_color_scheme(
                         dark_light,
@@ -213,6 +227,14 @@ def apply_themes(
                         konsole_opacity=config_watcher.get_new_value()[
                             'konsole_opacity']
                     )
+                    # applications matching titlebar and window color
+                    if config_watcher.get_new_value()['darker_window_list'] is not None:
+                        titlebar_utils.kwin_rule_darker_titlebar(
+                            dark_light if config_watcher.get_new_value(
+                            )['pywal_light'] is None else config_watcher.get_new_value(
+                            )['pywal_light'],
+                            config_watcher.get_new_value()['darker_window_list'])
+                        needs_kwin_reload = True
 
                     # Apply pywal color scheme with MYou colors
                     if config_watcher.get_new_value()['pywal'] == True:
@@ -224,15 +246,6 @@ def apply_themes(
                                 pywal_light=config_watcher.get_new_value()[
                                     'pywal_light'],
                                 schemes=schemes_watcher.get_new_value())
-
-                    # applications matching titlebar and window color
-                    if config_watcher.get_new_value()['darker_window_list'] is not None:
-                        titlebar_utils.kwin_rule_darker_titlebar(
-                            dark_light if config_watcher.get_new_value(
-                            )['pywal_light'] is None else config_watcher.get_new_value(
-                            )['pywal_light'],
-                            config_watcher.get_new_value()['darker_window_list'])
-                        needs_kwin_reload = True
 
             if needs_kwin_reload == True:
                 kwin_utils.reload()
@@ -313,7 +326,10 @@ def apply_themes(
 
         # Parts that can also follow pywal if enabled
         if dark_light != None or config_watcher.get_new_value()['pywal'] != None:
-
+            if config_watcher.get_new_value()['pywal_light'] != config_watcher.get_old_value()['pywal_light']:
+                if config_watcher.get_new_value()['pywal_light'] is not None:
+                    logging.info(
+                        f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal")
             # update copy of konsole profile
             if konsole_profile_modified.has_changed() \
                     and konsole_profile_modified.get_old_value() != None \
