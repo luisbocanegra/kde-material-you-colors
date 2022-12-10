@@ -82,3 +82,11 @@ class Watcher:
 
     def get_new_value(self):
         return self.value
+
+
+def startup_delay(use_startup_delay, delay_conf):
+    #print(f'use delay:{use_startup_delay}, delay: {delay_conf}')
+    if use_startup_delay:
+        return delay_conf
+    else:
+        return 0

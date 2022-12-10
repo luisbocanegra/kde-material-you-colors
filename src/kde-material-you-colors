@@ -78,6 +78,12 @@ if __name__ == '__main__':
     utils.one_shot_actions(args)
     # Kill existing instance if found
     utils.kill_existing()
+    # read config
+    config = Configs(args)
+    # startup delay
+    time.sleep(
+        utils.startup_delay(config.options['use_startup_delay'],
+                            config.options['startup_delay']))
 
     # set initial state so first apply is done
     config_watcher = utils.Watcher(None)
@@ -97,7 +103,6 @@ if __name__ == '__main__':
         file_utils.get_last_modification(
             globals.USER_CONFIG_PATH + globals.CONFIG_FILE
         ))
-    config = Configs(args)
 
     while True:
         config_modified.set_value(file_utils.get_last_modification(
