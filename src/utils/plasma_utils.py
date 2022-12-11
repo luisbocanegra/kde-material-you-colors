@@ -170,6 +170,10 @@ def plasma_darker_header(schemes):
         with open(globals.THEME_DARK_PATH+"_darker_titlebar.colors", 'w') as configfile:
             color_scheme.write(
                 configfile, space_around_delimiters=False)
+        color_scheme['General']['Name'] = "Material You Dark (darker titlebar2)"
+        with open(globals.THEME_DARK_PATH+"_darker_titlebar2.colors", 'w') as configfile:
+            color_scheme.write(
+                configfile, space_around_delimiters=False)
 
         # Edit titlebar of light scheme
         color_scheme.read(globals.THEME_LIGHT_PATH+".colors")
@@ -178,6 +182,10 @@ def plasma_darker_header(schemes):
         color_scheme['General']['Name'] = "Material You Light (darker titlebar)"
 
         with open(globals.THEME_LIGHT_PATH+"_darker_titlebar.colors", 'w') as configfile:
+            color_scheme.write(
+                configfile, space_around_delimiters=False)
+        color_scheme['General']['Name'] = "Material You Light (darker titlebar2)"
+        with open(globals.THEME_LIGHT_PATH+"_darker_titlebar2.colors", 'w') as configfile:
             color_scheme.write(
                 configfile, space_around_delimiters=False)
 
