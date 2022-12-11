@@ -22,6 +22,7 @@ def apply_themes(
     if config_watcher.has_changed():
         logging.debug(f"Config: {config_watcher.get_new_value()}")
     needs_kwin_reload = False
+    initial_dark_light = False
 
     group1_watcher.set_value([
         config_watcher.get_new_value()['ncolor'],
@@ -53,6 +54,7 @@ def apply_themes(
     # try to get the initial theme with from hash
     elif first_run_watcher.get_new_value() is True:
         light_mode_watcher.set_value(plasma_utils.get_initial_mode())
+        initial_dark_light = light_mode_watcher.get_new_value()
     else:
         light_mode_watcher.set_value(plasma_utils.kde_globals_light())
 
@@ -94,13 +96,11 @@ def apply_themes(
                 light_mode_watcher.set_value(
                     config_watcher.get_new_value()['light']
                 )
-            # try to get the initial theme with saved hash
-            elif first_run_watcher.get_new_value() is True:
-                light_mode_watcher.set_value(plasma_utils.get_initial_mode())
-            else:
+            elif plasma_utils.kde_globals_light() is not None:
                 light_mode_watcher.set_value(plasma_utils.kde_globals_light())
-
-            dark_light = light_mode_watcher.get_new_value()
+                dark_light = light_mode_watcher.get_new_value()
+            else:
+                dark_light = initial_dark_light
 
             # skip applying themes if no dark/light mode was specified
             # or found in current user settings
@@ -132,7 +132,7 @@ def apply_themes(
                             config_watcher.get_new_value()['titlebar_opacity'])
             else:
                 logging.warning(
-                    "No default theme found or currently active, skipping Plasma theming")
+                    "No default theme found or currently active, skipping Plasma theming :(")
 
             # Parts that can follow pywal if enabled
             if dark_light != None or config_watcher.get_new_value()['pywal']:
