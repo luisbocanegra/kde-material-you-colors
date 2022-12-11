@@ -4,6 +4,7 @@ import os
 import subprocess
 import globals
 from . import kwin_utils
+from . import file_utils
 
 
 def make_scheme(schemes=None):
@@ -42,6 +43,25 @@ def apply_color_schemes(light=False):
         colorscheme_out = subprocess.check_output("plasma-apply-colorscheme "+color_scheme+".colors",
                                                   shell=True, stderr=subprocess.PIPE, universal_newlines=True).strip()
         logging.info(colorscheme_out)
+        # Get hash of the updated theme
+        hash = file_utils.get_file_sha1(color_scheme+".colors")
+        # Update ColorScheme hash in kdeglobals file
+        if os.path.exists(globals.KDE_GLOBALS) and hash is not None:
+            kdeglobals = configparser.ConfigParser()
+            kdeglobals.optionxform = str
+            try:
+                kdeglobals.read(globals.KDE_GLOBALS)
+                if 'General' not in kdeglobals:
+                    kdeglobals.add_section('General')
+
+                general = kdeglobals['General']
+                general['ColorSchemeHash'] = hash
+
+                with open(globals.KDE_GLOBALS, 'w') as configfile:
+                    kdeglobals.write(
+                        configfile, space_around_delimiters=False)
+            except Exception as e:
+                logging.error(f"Error:\n{e}")
 
 
 def set_icons(icons_light, icons_dark, light=False):
@@ -85,6 +105,51 @@ def kde_globals_light():
         return None
 
 
+def get_initial_mode():
+    """Try to get the initial theme mode based based on the theme name, 
+    if failed try to get it from the stored hash and the current
+    generated schemes.
+
+    Returns:
+        bool: Current mode light=True, dark=False
+    """
+
+    theme_from_name = kde_globals_light()
+
+    if theme_from_name is not None:
+        logging.info("Using theme from stored name")
+        return theme_from_name
+    else:
+        logging.info(
+            "Couldn't find theme by name, trying to resolve theme from last stored hash...")
+
+        current_theme_hash = None
+        kdeglobals = configparser.ConfigParser()
+        kdeglobals.optionxform = str
+        try:
+            kdeglobals.read(globals.KDE_GLOBALS)
+            if 'General' in kdeglobals and 'ColorSchemeHash' in kdeglobals['General']:
+                current_theme_hash = kdeglobals['General']['ColorSchemeHash']
+        except Exception as e:
+            logging.error(f"Error:\n{e}")
+
+        if current_theme_hash is not None:
+            logging.debug(f"Config file hash: {current_theme_hash}")
+            dark_scheme_hash = file_utils.get_file_sha1(
+                globals.THEME_DARK_PATH+".colors")
+            logging.debug(f"Dark scheme hash: {dark_scheme_hash}")
+            light_scheme_hash = file_utils.get_file_sha1(
+                globals.THEME_LIGHT_PATH+".colors")
+            logging.debug(f"Light scheme hash: {dark_scheme_hash}")
+            if current_theme_hash == dark_scheme_hash:
+                return False
+            if current_theme_hash == light_scheme_hash:
+                return True
+        else:
+            logging.warning("Couldn't find previus theme, using dark mode...")
+            return False
+
+
 def plasma_darker_header(schemes):
     """Make a copy of the generated plasma themes but with darker headers
 
@@ -110,7 +175,7 @@ def plasma_darker_header(schemes):
         color_scheme.read(globals.THEME_LIGHT_PATH+".colors")
         color_scheme['Colors:Header][Inactive']['BackgroundNormal'] = light_color
         color_scheme['Colors:Header']['BackgroundNormal'] = light_color
-        color_scheme['General']['Name'] = "Material You Dark (darker titlebar)"
+        color_scheme['General']['Name'] = "Material You Light (darker titlebar)"
 
         with open(globals.THEME_LIGHT_PATH+"_darker_titlebar.colors", 'w') as configfile:
             color_scheme.write(

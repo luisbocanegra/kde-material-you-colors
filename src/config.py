@@ -30,8 +30,7 @@ def show_conf_err(exception, conf_name, default):
 
 def eval_conf(config: configparser.ConfigParser, val, conf_type, default):
     """Get a config value depending on its type (0 = bool, 1 = int, 2 = float, 3 = str), with default value on error"""
-    # print(
-    #    f"EVAL: {config}, name:{val}, type:{conf_type}, fallback:{default}")
+
     if config is not None:
         section = config['CUSTOM']
         try:
@@ -67,9 +66,23 @@ class Configs():
 
     def __init__(self, args):
 
+        if args.dark is True:
+            light = False
+        elif args.light is True:
+            light = True
+        else:
+            light = None
+
+        if args.pywaldark is True:
+            pywal_light = False
+        elif args.pywallight is True:
+            pywal_light = True
+        else:
+            pywal_light = None
+
         # 'config' : [value,type[0=bool,1=int,2=float,3=str]]
         defaults = {
-            'light': [False if args.dark else True if args.light else False, 0],
+            'light': [light, 0],
             'file': [args.file or None, 3],
             'monitor': [args.monitor or 0, 1],
             'plugin': [args.plugin or globals.DEFAULT_PLUGIN, 3],
@@ -77,19 +90,21 @@ class Configs():
             'iconslight': [args.iconslight or None, 3],
             'iconsdark': [args.iconsdark or None, 3],
             'pywal': [args.pywal, 0],
-            'pywal_light': [False if args.pywaldark else True if args.pywallight else False, 0],
+            'pywal_light': [pywal_light, 0],
             'light_blend_multiplier': [args.lbmultiplier or 1, 2],
             'dark_blend_multiplier': [args.dbmultiplier or 1, 2],
             'on_change_hook': [args.on_change_hook or None, 3],
             'sierra_breeze_buttons_color': [args.sierra_breeze_buttons_color, 0],
             'konsole_profile': [args.konsole_profile or None, 3],
-            'titlebar_opacity': [args.titlebar_opacity or 100, 1],
+            'titlebar_opacity': [args.titlebar_opacity or None, 1],
             'toolbar_opacity': [args.toolbar_opacity or 100, 1],
             'konsole_opacity': [args.konsole_opacity or 100, 1],
             'color': [args.color or None, 3],
             'klassy_windeco_outline': [args.klassy_windeco_outline, 0],
             'custom_colors_list': [args.custom_colors_list or None, 3],
-            'darker_window_list': [args.darker_window_list or None, 3]
+            'darker_window_list': [args.darker_window_list or None, 3],
+            'use_startup_delay': [args.use_startup_delay or None, 0],
+            'startup_delay': [args.startup_delay or 0, 1]
         }
         options = defaults
         config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
