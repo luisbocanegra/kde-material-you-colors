@@ -153,7 +153,9 @@ def apply_themes(
                     )
 
                 # applications matching titlebar and window color
-                if config_watcher.get_new_value()['darker_window_list'] is not None:
+                if first_run_watcher.get_new_value() is True \
+                        or config_watcher.get_new_value()['darker_window_list'] is not None:
+
                     titlebar_utils.kwin_rule_darker_titlebar(
                         dark_light if config_watcher.get_new_value(
                         )['pywal_light'] is None else config_watcher.get_new_value(
@@ -354,13 +356,12 @@ def apply_themes(
             # applications matching titlebar and window color
             if config_watcher.get_new_value()['darker_window_list'] != config_watcher.get_old_value()['darker_window_list']\
                     or config_watcher.get_new_value()['pywal_light'] != config_watcher.get_old_value()['pywal_light']:
-                if config_watcher.get_new_value()['darker_window_list'] is not None:
-                    titlebar_utils.kwin_rule_darker_titlebar(
-                        dark_light if config_watcher.get_new_value(
-                        )['pywal_light'] is None else config_watcher.get_new_value(
-                        )['pywal_light'],
-                        config_watcher.get_new_value()['darker_window_list'])
-                    needs_kwin_reload = True
+                titlebar_utils.kwin_rule_darker_titlebar(
+                    dark_light if config_watcher.get_new_value(
+                    )['pywal_light'] is None else config_watcher.get_new_value(
+                    )['pywal_light'],
+                    config_watcher.get_new_value()['darker_window_list'])
+                needs_kwin_reload = True
 
             # pywal
             if config_watcher.get_new_value()['pywal_light'] != config_watcher.get_old_value()['pywal_light']\
