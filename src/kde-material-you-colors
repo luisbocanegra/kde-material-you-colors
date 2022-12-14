@@ -13,9 +13,9 @@ from logging_config import MyLogFormatter
 MyLogFormatter.set_format()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
+    parser = utils.ColoredArgParser(
         description='Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop and more, powered by python-material-color-utilities with pywal support. Any argument passed here overrides their counterpart in the configuration file (if any).',
-        epilog='For more information, issues, feature requests and updates check the project page https://github.com/luisbocanegra/kde-material-you-colors')
+        epilog='For more information, issues, feature requests and updates check the project page https://github.com/luisbocanegra/kde-material-you-colors', formatter_class=utils.wide_argparse_help(argparse.HelpFormatter, help_column=50, min_width=120))
 
     parser.add_argument('--monitor', '-m',
                         type=int,
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--custom-colors-list', '-ccl',
                         type=str,
-                        help='List of 7 space separated colors (hex or rgb) to be used for text in pywall/konsole/KSyntaxHighlighting instead of wallpaper ones',
+                        help='List of 7 space separated colors (hex or rgb) to be used for text in pywal/konsole/KSyntaxHighlighting instead of wallpaper ones',
                         default=None,
                         metavar='<colors>')
 
