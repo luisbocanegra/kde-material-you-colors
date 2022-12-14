@@ -158,7 +158,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                     materialYouColors = get_material_you_colors(
                         wallpaper_data, ncolor=ncolor, source_type=source_type)
                 else:
-                    logging.warning(
+                    logging.error(
                         f'"{wallpaper_data}" is a directory, aborting')
 
         elif wallpaper_type == "color":
@@ -170,13 +170,15 @@ def get_color_schemes(wallpaper, ncolor=None):
         if materialYouColors != None:
             try:
                 if len(materialYouColors['best']) > 1:
-                    best_colors = f'Best colors:'
+                    best_colors = f'Best colors: {globals.TERM_STY_BOLD}'
 
                     for index, col in materialYouColors['best'].items():
                         if globals.USER_HAS_COLR:
-                            best_colors += f' {globals.BOLD_RESET}{index}:{colr.color(col,fore=col)}'
+                            best_colors += f'{globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{index}:{colr.color(col,fore=col)}'
                         else:
-                            best_colors += f' {globals.BOLD_RESET}{index}:{globals.COLOR_INFO}{col}'
+                            best_colors += f'{globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{index}:{globals.TERM_COLOR_WHI}{col}'
+                        if int(index) < len(materialYouColors['best'])-1:
+                            best_colors = best_colors+","
                     logging.info(best_colors)
 
                 seed = materialYouColors['seed']
@@ -184,10 +186,10 @@ def get_color_schemes(wallpaper, ncolor=None):
                 seedNo = list(seed.keys())[0]
                 if globals.USER_HAS_COLR:
                     logging.info(
-                        f'Using seed: {globals.BOLD_RESET}{seedNo}:{colr.color(sedColor, fore=sedColor)}')
+                        f'Using seed: {globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{seedNo}:{colr.color(sedColor, fore=sedColor)}')
                 else:
                     logging.info(
-                        f'{globals.BOLD}Using seed: {globals.BOLD_RESET}{seedNo}:{globals.COLOR_INFO}{sedColor}')
+                        f'Using seed: {globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{seedNo}:{globals.TERM_COLOR_WHI}{sedColor}')
 
                 return materialYouColors
 

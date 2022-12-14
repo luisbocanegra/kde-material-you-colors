@@ -4,7 +4,7 @@ import dbus
 
 
 def reload():
-    logging.info(f"Reloading KWin...")
+    logging.info(f"Reloading KWin")
     subprocess.Popen("qdbus org.kde.KWin /KWin reconfigure", shell=True,
                      stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 

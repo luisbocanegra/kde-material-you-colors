@@ -26,6 +26,7 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
     if pywal_colors != None:
         if use_pywal != None and use_pywal == True:
             if globals.USER_HAS_PYWAL:
+                logging.info("Setting pywal colors...")
                 # On very rare occassions pywal will hang, add a timeout to it
                 timeout_utils.timeout_set(3)
                 try:
@@ -39,12 +40,13 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
                     # Reload xrdb, i3 and polybar.
                     pywal.reload.env()
                 except Exception as e:
+                    logging.info(f"Failed setting pywal colors:{e}")
                     pass
                 finally:
                     timeout_utils.timeout_reset()
             else:
                 logging.warning(
-                    "pywal option enabled but python module is not installed")
+                    "Pywal option enabled but python module is not installed, ignored")
         # print palette
         print_color_palette(pywal_colors)
 
@@ -53,17 +55,17 @@ def print_color_palette(pywal_colors):
     if globals.USER_HAS_COLR:
         i = 0
         for index, col in pywal_colors['colors'].items():
-            if i % 8 == 0:
+            if i % 8 == 0 and i != 0:
                 print()
             print(f'{colr.color("    ",back=hex2rgb(col))}', end='')
             i += 1
-        print(f'{globals.BOLD}')
+        print(f'{globals.TERM_STY_RESET}')
     else:
         logging.debug(
             "Install colr python module to tint color codes and palette as they update")
         # Print color palette from pywal.colors.palette
         for i in range(0, 16):
-            if i % 8 == 0:
+            if i % 8 == 0 and i != 0:
                 print()
 
             if i > 7:
