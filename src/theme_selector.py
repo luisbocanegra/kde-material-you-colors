@@ -132,7 +132,7 @@ def apply_themes(
                             config_watcher.get_new_value()['titlebar_opacity'])
             else:
                 logging.warning(
-                    "No default theme found or currently active, skipping Plasma theming :(")
+                    "No default theme found or currently active, skipping Plasma theming")
 
             # Parts that can follow pywal if enabled
             if dark_light != None or config_watcher.get_new_value()['pywal']:
@@ -259,6 +259,13 @@ def apply_themes(
 #
 #
 #
+#   update copy of konsole profile
+    if konsole_profile_modified.has_changed() \
+            and konsole_profile_modified.get_new_value() != None \
+            and first_run_watcher.get_new_value() == False:
+        konsole_utils.make_mirror_profile(
+            config_watcher.get_new_value()['konsole_profile'])
+
     if config_watcher.has_changed() and config_watcher.get_old_value() != None\
             and not group1_watcher.has_changed():
 
@@ -332,12 +339,6 @@ def apply_themes(
                 if config_watcher.get_new_value()['pywal_light'] is not None:
                     logging.info(
                         f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal")
-            # update copy of konsole profile
-            if konsole_profile_modified.has_changed() \
-                    and konsole_profile_modified.get_old_value() != None \
-                    and first_run_watcher.get_new_value() == False:
-                konsole_utils.make_mirror_profile(
-                    config_watcher.get_new_value()['konsole_profile'])
 
             # check for changes that affect konsole color scheme
             if config_watcher.get_new_value()['pywal_light'] != config_watcher.get_old_value()['pywal_light'] \

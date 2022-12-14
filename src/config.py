@@ -25,7 +25,7 @@ def get_conf(conf_path):
 def show_conf_err(exception, conf_name, fallback):
     """Show the error from a given config name"""
     logging.error(
-        f'Error for "{conf_name}" value: {exception}, using fallback: {fallback}')
+        f'Config "{conf_name}": {exception}, using fallback: {fallback}')
 
 
 def eval_conf(config: configparser.ConfigParser, val, conf_type, arg, fallback):
