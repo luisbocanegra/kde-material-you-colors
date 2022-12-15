@@ -134,19 +134,20 @@ def get_initial_mode():
             logging.error(f"Error:\n{e}")
 
         if current_theme_hash is not None:
-            logging.debug(f"Config file hash: {current_theme_hash}")
+            logging.debug(f"Config file hash:  {current_theme_hash}")
             dark_scheme_hash = file_utils.get_file_sha1(
                 globals.THEME_DARK_PATH+".colors")
-            logging.debug(f"Dark scheme hash: {dark_scheme_hash}")
+            logging.debug(f"Dark scheme hash:  {dark_scheme_hash}")
             light_scheme_hash = file_utils.get_file_sha1(
                 globals.THEME_LIGHT_PATH+".colors")
-            logging.debug(f"Light scheme hash: {dark_scheme_hash}")
+            logging.debug(f"Light scheme hash: {light_scheme_hash}")
             if current_theme_hash == dark_scheme_hash:
                 return False
             if current_theme_hash == light_scheme_hash:
                 return True
         else:
-            logging.warning("Couldn't find previus theme, using dark mode...")
+            logging.warning(
+                "Couldn't find previus theme, falling back to dark mode...")
             return False
 
 
