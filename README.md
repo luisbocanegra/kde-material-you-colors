@@ -19,9 +19,10 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 Table of Contents
 =================
 
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
   - [Plasma specific](#plasma-specific)
-  - [Themeable addons/programs](#themeable-addonsprograms)
+  - [Themeable programs](#themeable-programs)
   - [Theming options](#theming-options)
 - [Installing](#installing)
   - [Arch Linux](#arch-linux)
@@ -51,26 +52,27 @@ Table of Contents
 - Start automatically on login
 - Make titlebar darker to match specified applications like terminals, code editors and other programs themed by pywal
 - Follow Plasma Material You Dark/Light change to work with theme schedulers like [Koi](https://github.com/baduhai/Koi)
-
-## Themeable addons/programs
-- Konsole color scheme support
-  - opacity control
-- **[Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors**
-- Basic KSyntaxHighlighting support (Kate, KWrite, KDevelop...)
 - **Plasma addons**
   - Tint [SierraBreeze](https://github.com/kay0u/SierraBreeze) window decoration buttons
   - TitleBar opacity control for [Klassy](https://github.com/paulmcauley/klassy) and [SierraBreezeEnhanced](https://github.com/kupiqu/SierraBreezeEnhanced) window decorations
   - ToolBar opacity control for [Lightly](https://github.com/Luwx/Lightly) Application style
   - Tint [Klassy](https://github.com/paulmcauley/klassy) window decoration outline
 
+## Themeable programs
+- Konsole color scheme
+  - opacity control
+- **[Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors**
+- Basic KSyntaxHighlighting support (Kate, KWrite, KDevelop...)
+
+
 ## Theming options
 - Alternative Material You color selection if the wallpaper provides more than one
 - Use your favorite color to generate Material You color schemes
 - Custom colors list used for konsole/pywal
 - Custom amount for background color tint
-- Dark an Light Color schemes (Plasma and pywal/konsole independently)
+- Dark/light Color schemes (Plasma and pywal/konsole independently)
 - Set a script/command that will be executed on start or wallpaper/dark/light/settings change
-- Configurarion file
+- Configuration file
 
 
 # Installing

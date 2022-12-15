@@ -132,15 +132,19 @@ def wide_argparse_help(formatter, help_column: int = 30, min_width: int = 100):
         # https://stackoverflow.com/a/5464440
         # beware: "Only the name of this class is considered a public API."
 
-        # get terminal width
-        columns = int(os.popen('stty size', 'r').read().split()[1])
+        # try to get terminal width from interactive shells
+        columns = None
+        try:
+            columns = int(os.popen('stty size', 'r').read().split()[1])
+            if columns < min_width:
+                help_column = 4
+        except Exception:
+            pass
 
-        if columns < min_width:
-            help_column = 4
         kwargs = {'width': columns, 'max_help_position': help_column}
         formatter(None, **kwargs)
         return lambda prog: formatter(prog, **kwargs)
-    except TypeError as e:
+    except Exception as e:
         logging.error(
             f"Warning: Argparse help formatter failed, falling back.{e}")
         return formatter
