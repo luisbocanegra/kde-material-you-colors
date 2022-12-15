@@ -44,7 +44,7 @@ def sourceColorsFromImage(image, top=False):
         image = image.convert('RGBA')
     if (image.mode != 'RGBA'):
         logging.warning(
-            "Warning: Image not in RGB|RGBA format - Converting...")
+            "Image not in RGB|RGBA format - Converting...")
         image = image.convert('RGBA')
 
     pixels = []

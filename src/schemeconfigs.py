@@ -1,4 +1,4 @@
-from utils.color_utils import blendColors, hex2rgb, hex2alpha, scale_saturation, sort_colors_luminance, blend2contrast, lighteen_color
+from utils.color_utils import *
 from utils import math_utils
 from utils import string_utils
 import logging
@@ -8,6 +8,8 @@ class ThemeConfig:
     def __init__(self, colors, wallpaper_data, light_blend_multiplier=1, dark_blend_multiplier=1, toolbar_opacity=100, custom_colors_list=None):
         if toolbar_opacity == None:
             toolbar_opacity = 100
+        else:
+            math_utils.clip(toolbar_opacity, 0, 100, 100)
         if custom_colors_list is not None:
             colors_best = custom_colors_list
             logging.info(f"Using custom colors: {colors_best}")
@@ -43,7 +45,7 @@ class ThemeConfig:
                 "surface": blendColors(tones_neutral[5], tones_primary[40], 0.08*dbm),
                 "surface1": blendColors(colors_dark['background'], tones_primary[40], .05*dbm),
                 "surface2": blendColors(colors_dark['background'], tones_primary[40], .08*dbm),
-                "surface3": blendColors(colors_dark['background'], tones_primary[40], .11*dbm),
+                "surface3": blendColors(colors_dark['background'], tones_primary[40], .18*dbm),
 
                 "linkOnPrimary": blendColors(colors_dark['onPrimary'], base_text_states['Link'], .5),
                 "linkVisitedOnPrimary": blendColors(colors_dark['onPrimary'], base_text_states['Visited'], .8),
@@ -61,7 +63,7 @@ class ThemeConfig:
                 "selectionAltActive": blendColors(colors_dark['background'], colors_dark['secondary'], .5),
             },
             "light": {
-                "surface": blendColors(colors_light['background'], tones_primary[70], 0.13*lbm),
+                "surface": blendColors(colors_light['background'], tones_primary[70], 0.08*lbm),
                 "surface1": blendColors(colors_light['background'], tones_primary[70], .18*lbm),
                 "surface2": blendColors(colors_light['background'], tones_primary[70], .23*lbm),
                 "surface3": blendColors(colors_light['background'], tones_primary[70], .20*lbm),
@@ -99,12 +101,14 @@ class ThemeConfig:
         extras = self._extras
 
         best_colors_count = len(colors_best)
-
+        # bg , ansi 30
         pywal_colors_dark = (extras['dark']['surface'],)
+        # gray? bold, ansi 30
         pywal_colors_dark_intense = (blendColors(
-            extras['dark']['surface'], colors_dark['secondary'], .8),)
+            pywal_colors_dark[0], colors_dark['onSurface'], .75),)
+        # dark gray? faint ansi 30
         pywal_colors_dark_faint = (blendColors(
-            extras['dark']['surface'], colors_dark['secondary'], .9),)
+            pywal_colors_dark[0], colors_dark['onSurface'], .6),)
         tone = 50
 
         for x in range(7):
@@ -131,20 +135,29 @@ class ThemeConfig:
 
         all = pywal_colors_dark
         pywal_colors_dark = (pywal_colors_dark[0],)
-        sorted_colors = sort_colors_luminance(all)[-7:]
-        for n in range(len(sorted_colors)):
-            pywal_colors_dark += (sorted_colors[n],)
+        # sort colors if they don't come from custom colors
+        if custom_colors_list is None:
+            all = sort_colors_luminance(all[-7:])
+        else:
+            all = all[-7:]
+
+        for n in range(7):
+            pywal_colors_dark += (blendColors(
+                tones_neutral[99], all[n], .95),)
+
             pywal_colors_dark_intense += (blendColors(
-                tones_neutral[1], sorted_colors[n], .96),)
+                tones_neutral[99], all[n], .82),)
+
             pywal_colors_dark_faint += (blendColors(
-                tones_neutral[99], sorted_colors[n], .85),)
+                pywal_colors_dark[0], all[n], .7),)
 
         tone = 50
+        # ansi 30
         pywal_colors_light = (extras['light']['surface'],)
         pywal_colors_light_intense = (blendColors(
-            tones_neutral[75], colors_light['secondary'], .8*lbm),)
+            pywal_colors_light[0], colors_light['onSurface'], .75),)
         pywal_colors_light_faint = (blendColors(
-            tones_neutral[50], colors_light['secondary'], .8*lbm),)
+            pywal_colors_light[0], colors_light['onSurface'], .6),)
 
         for x in range(7):
             if len(pywal_colors_light) <= 7:
@@ -169,26 +182,57 @@ class ThemeConfig:
 
         all = pywal_colors_light
         pywal_colors_light = (pywal_colors_light[0],)
-        sorted_colors = sort_colors_luminance(all, True)[-7:]
+        # sort colors if they don't come from custom colors
+        if custom_colors_list is None:
+            all = sort_colors_luminance(all[-7:])
+        else:
+            all = all[-7:]
+        for n in range(7):
 
-        for n in range(len(sorted_colors)):
             pywal_colors_light += (blendColors(
-                tones_neutral[38], sorted_colors[n], .8*lbm),)
+                tones_neutral[1], all[n], .95),)
 
             pywal_colors_light_intense += (blendColors(
-                tones_neutral[33], sorted_colors[n], .8*lbm),)
+                tones_neutral[1], all[n], .82),)
 
             pywal_colors_light_faint += (blendColors(
-                tones_neutral[23], sorted_colors[n], .8*lbm),)
+                pywal_colors_light[0], all[n], .7),)
 
-        # print("CONTRAST CHECK DARK")
+        # print("CONTRAST CHECK DARK - NORMAL")
         # for color in pywal_colors_dark:
         #     c = contrast_ratio(color, pywal_colors_dark[0])
-        #     print(f"{color} - {c}")
-        # print("CONTRAST CHECK LIGHT")
+        #     print(f"{color}  {'{0:.2g}'.format(c)} |", end=" ")
+        # print()
+
+        # print("CONTRAST CHECK DARK - INTENSE")
+        # for color in pywal_colors_dark_intense:
+        #     c = contrast_ratio(color, pywal_colors_dark[0])
+        #     print(f"{color}  {'{0:.2g}'.format(c)} |", end=" ")
+        # print()
+
+        # print("CONTRAST CHECK DARK - FAINT")
+        # for color in pywal_colors_dark_faint:
+        #     c = contrast_ratio(color, pywal_colors_dark[0])
+        #     print(f"{color}  {'{0:.2g}'.format(c)} |", end=" ")
+        # print("\n")
+
+        # print("CONTRAST CHECK LIGHT - NORMAL")
         # for color in pywal_colors_light:
-        #     c = contrast_ratio(pywal_colors_light[0],color)
-        #     print(f"{color} - {c}")
+        #     c = contrast_ratio(pywal_colors_light[0], color)
+        #     print(f"{color}   {'{0:.2g}'.format(c)} |", end=" ")
+        # print()
+
+        # print("CONTRAST CHECK LIGHT - INTENSE")
+        # for color in pywal_colors_light_intense:
+        #     c = contrast_ratio(pywal_colors_light[0], color)
+        #     print(f"{color}  {'{0:.2g}'.format(c)} |", end=" ")
+        # print()
+
+        # print("CONTRAST CHECK LIGHT - FAINT")
+        # for color in pywal_colors_light_faint:
+        #     c = contrast_ratio(pywal_colors_light[0], color)
+        #     print(f"{color}  {'{0:.2g}'.format(c)} |", end=" ")
+        # print()
 
         self._light_scheme = f"""[ColorEffects:Disabled]
 Color={extras['light']['surface1']}
@@ -504,12 +548,11 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                     tones_neutral[8], colors_light['primary'], .0),
                 "backgroundFaint": blendColors(
                     tones_neutral[8], colors_light['primary'], .35),
-                "foreground": colors_light['onSurface'],
-                "foregroundIntense": blendColors(
-                    colors_light['onSurface'], colors_light['secondary'], .7),
+                "foreground": blendColors(
+                    pywal_colors_light[0], colors_light['onSurface'], .85),
+                "foregroundIntense": colors_light['onSurface'],
                 "foregroundFaint": blendColors(
-                    colors_light['onSurface'], colors_light['secondary'], .35),
-
+                    pywal_colors_light[0], colors_light['onSurface'], .75),
                 "cursor": colors_dark['onSurface'],
             },
 
@@ -551,11 +594,14 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                     tones_neutral[8], colors_dark['primary'], .0),
                 "backgroundFaint": blendColors(
                     tones_neutral[8], colors_dark['primary'], .35),
-                "foreground": colors_dark['onSurface'],
-                "foregroundIntense": blendColors(
-                    colors_dark['onSurface'], colors_dark['secondary'], .7),
+                # Normal, ansi 39
+                "foreground": blendColors(
+                    pywal_colors_dark[0], colors_dark['onSurface'], .85),
+                # bold, ansi 39
+                "foregroundIntense": colors_dark['onSurface'],
+                # faint, ansi 39
                 "foregroundFaint": blendColors(
-                    colors_dark['onSurface'], colors_dark['secondary'], .35),
+                    pywal_colors_dark[0], colors_dark['onSurface'], .75),
                 "cursor": colors_dark['onSurface'],
             },
 

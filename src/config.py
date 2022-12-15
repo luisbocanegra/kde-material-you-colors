@@ -1,10 +1,60 @@
-
-from utils import math_utils
 from utils import color_utils
 import configparser
 import logging
 import globals
 import os
+
+
+def get_conf(conf_path):
+    """Open the config file and do simple checks on it"""
+    if os.path.exists(conf_path):
+        try:
+            config = configparser.ConfigParser()
+            config.read(conf_path)
+            if 'CUSTOM' not in config:
+                logging.error(
+                    f"Config file {conf_path} must start a ['CUSTOM'] section continuing without it")
+            else:
+                return config
+        except Exception as e:
+            logging.error(f"{e}\n")
+    else:
+        logging.debug("No configuration file was found")
+
+
+def show_conf_err(exception, conf_name, fallback):
+    """Show the error from a given config name"""
+    logging.error(
+        f'Config "{conf_name}": {exception}, using fallback: {fallback}')
+
+
+def eval_conf(config: configparser.ConfigParser, val, conf_type, arg, fallback):
+    """Get a config value depending on its type (0 = bool, 1 = int, 2 = float, 3 = str), with default value on error"""
+
+    if config is not None:
+        section = config['CUSTOM']
+        try:
+            if conf_type == 0:
+                return section.getboolean(
+                    val, fallback
+                ) if arg is None else arg
+            elif conf_type == 1:
+                return section.getint(
+                    val, fallback
+                ) if arg is None else arg
+            elif conf_type == 2:
+                return section.getfloat(
+                    val, fallback
+                ) if arg is None else arg
+            elif conf_type == 3:
+                return section.get(
+                    val, fallback
+                ) if arg is None else arg
+        except Exception as e:
+            show_conf_err(e, val, fallback)
+            return fallback
+    else:
+        return fallback if arg is None else arg
 
 
 class Configs():
@@ -16,267 +66,116 @@ class Configs():
     """
 
     def __init__(self, args):
-        c_monitor = 0
-        c_plugin = globals.DEFAULT_PLUGIN
-        c_light = c_file = c_plugin = c_ncolor = c_iconsdark = c_iconslight = c_pywal = c_pywal_light = c_light_blend_multiplier = c_dark_blend_multiplier = c_on_change_hook = c_sierra_breeze_buttons_color = c_konsole_profile = c_titlebar_opacity = c_toolbar_opacity = c_konsole_opacity = c_color = c_klassy_windeco_outline = c_custom_colors_list = c_darker_window_list = None
-        config = configparser.ConfigParser()
-        if os.path.exists(globals.USER_CONFIG_PATH+globals.CONFIG_FILE):
-            try:
-                config.read(globals.USER_CONFIG_PATH+globals.CONFIG_FILE)
-                if 'CUSTOM' in config:
-                    custom = config['CUSTOM']
-                    try:
-                        c_light = custom.getboolean('light', None)
-                    except:
-                        logging.error(
-                            'Value for light must be a boolean, using default None')
-                        c_light = None
 
-                    c_file = custom.get('file')
+        if args.dark is True:
+            light = False
+        elif args.light is True:
+            light = True
+        else:
+            light = None
 
-                    c_monitor = custom.getint('monitor', 0)
-                    if c_monitor < 0:
-                        c_monitor = 0
-                        logging.error(
-                            'Value for monitor must be a positive integer, using default 0')
+        if args.pywaldark is True:
+            pywal_light = False
+        elif args.pywallight is True:
+            pywal_light = True
+        else:
+            pywal_light = None
 
-                    c_ncolor = custom.getint('ncolor', 0)
-                    if c_ncolor < 0:
-                        c_ncolor = None
-                        logging.error(
-                            'Value for ncolor must be a positive integer, using default 0')
+        # 'config' : [value,fallback,type[0=bool,1=int,2=float,3=str]]
+        defaults = {
+            'light': [light, None, 0],
+            'file': [args.file, None, 3],
+            'monitor': [args.monitor, 0, 1],
+            'plugin': [args.plugin, None, 3],
+            'ncolor': [args.ncolor, 0, 1],
+            'iconslight': [args.iconslight, None, 3],
+            'iconsdark': [args.iconsdark, None, 3],
+            'pywal': [args.pywal, None, 0],
+            'pywal_light': [pywal_light, None, 0],
+            'light_blend_multiplier': [args.lbmultiplier, 1, 2],
+            'dark_blend_multiplier': [args.dbmultiplier, 1, 2],
+            'on_change_hook': [args.on_change_hook, None, 3],
+            'sierra_breeze_buttons_color': [args.sierra_breeze_buttons_color, None, 0],
+            'konsole_profile': [args.konsole_profile, None, 3],
+            'titlebar_opacity': [args.titlebar_opacity, None, 1],
+            'toolbar_opacity': [args.toolbar_opacity, None, 1],
+            'konsole_opacity': [args.konsole_opacity, None, 1],
+            'color': [args.color, None, 3],
+            'klassy_windeco_outline': [args.klassy_windeco_outline, None, 0],
+            'custom_colors_list': [args.custom_colors_list, None, 3],
+            'darker_window_list': [args.darker_window_list, None, 3],
+            'use_startup_delay': [args.use_startup_delay, None, 0],
+            'startup_delay': [args.startup_delay, 0, 1]
+        }
+        options = defaults
+        config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
 
-                    c_plugin = custom.get('plugin')
-                    c_color = custom.get('color')
-                    c_iconslight = custom.get('iconslight')
-                    c_iconsdark = custom.get('iconsdark')
+        # loop and read configs
+        for key, val in defaults.items():
+            # print(
+            #     f'key: {key}  values: {val}')
+            options[key] = eval_conf(
+                config=config, val=key, conf_type=val[2], arg=val[0], fallback=val[1])
 
-                    try:
-                        c_pywal = custom.getboolean('pywal', None)
-                    except:
-                        logging.error(
-                            'Value for pywal must be a boolean, using default None')
-                        c_pywal = None
+        # Some logging for out of range values
+        if options['monitor'] < 0:
+            logging.warning(
+                "Value for monitor must be a positive number, using default 0")
 
-                    try:
-                        c_pywal_light = custom.getboolean('pywal_light', None)
-                    except:
-                        logging.error(
-                            'Value for pywal_light must be a boolean, using default None')
-                        c_pywal_light = None
+        if options['ncolor'] < 0:
+            logging.warning(
+                "Value for ncolor must be a positive number, using default 0")
 
-                    try:
-                        c_light_blend_multiplier = custom.getfloat(
-                            'light_blend_multiplier')
-                    except:
-                        logging.error(
-                            'Value for light_blend_multiplier must be a number between 0.0 and 4.0 , using default 1.0')
-                        c_light_blend_multiplier = 1
+        if options['dark_blend_multiplier'] < 0 or options['dark_blend_multiplier'] > 4:
+            logging.warning(
+                "Value for dark_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0")
 
-                    try:
-                        c_dark_blend_multiplier = custom.getfloat(
-                            'dark_blend_multiplier')
-                    except:
-                        logging.error(
-                            'Value for dark_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0')
-                        c_dark_blend_multiplier = 1
+        if options['light_blend_multiplier'] < 0 or options['light_blend_multiplier'] > 4:
+            logging.warning(
+                "Value for light_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0")
 
-                    c_on_change_hook = custom.get('on_change_hook')
+        if options['toolbar_opacity'] is not None and (options['toolbar_opacity'] < 0 or options['toolbar_opacity'] > 100):
+            logging.warning(
+                'Value for toolbar_opacity must be an integer between 0 and 100, using default 100')
+            options['toolbar_opacity'] = 100
 
-                    try:
-                        c_sierra_breeze_buttons_color = custom.getboolean(
-                            'sierra_breeze_buttons_color', None)
-                    except:
-                        logging.error(
-                            'Value for sierra_breeze_buttons_color must be a boolean, using default None')
-                        c_sierra_breeze_buttons_color = None
+        if options['konsole_opacity'] is not None and (options['konsole_opacity'] < 0 or options['konsole_opacity'] > 100):
+            logging.warning(
+                'Value for konsole_opacity must be an integer between 0 and 100, using default 100')
+            options['konsole_opacity'] = 100
 
-                    c_konsole_profile = custom.get('konsole_profile')
+        if options['titlebar_opacity'] is not None and (options['titlebar_opacity'] < 0 or options['titlebar_opacity'] > 100):
+            logging.warning(
+                'Value for titlebar_opacity must be an integer between 0 and 100, using default 100')
+            options['konsole_opacity'] = 100
 
-                    c_titlebar_opacity = custom.getint(
-                        'titlebar_opacity', None)
-                    if c_titlebar_opacity != None:
-                        if c_titlebar_opacity < 0 or c_titlebar_opacity > 100:
-                            logging.error(
-                                'Value for titlebar_opacity must be an integer between 0 and 100, using default 100')
-                            c_titlebar_opacity = 100
-
-                    c_toolbar_opacity = custom.getint('toolbar_opacity', None)
-                    if c_toolbar_opacity != None:
-                        if c_toolbar_opacity < 0 or c_toolbar_opacity > 100:
-                            logging.error(
-                                'Value for toolbar_opacity must be an integer between 0 and 100, using default 100')
-                            c_toolbar_opacity = 100
-
-                    c_konsole_opacity = custom.getint('konsole_opacity', None)
-                    if c_konsole_opacity != None:
-                        if c_konsole_opacity < 0 or c_konsole_opacity > 100:
-                            logging.error(
-                                'Value for konsole_opacity must be an integer between 0 and 100, using default 100')
-                            c_konsole_opacity = 100
-
-                    try:
-                        c_klassy_windeco_outline = custom.getboolean(
-                            'klassy_windeco_outline', None)
-                    except:
-                        logging.error(
-                            'Value for klassy_windeco_outline must be a boolean, using default None')
-                        c_klassy_windeco_outline = None
-
-                    c_custom_colors_list = custom.get('custom_colors_list')
-                    c_darker_window_list = custom.get('darker_window_list')
-
-            except Exception as e:
-                logging.error(f"Please fix your settings file:\n{e}\n")
-
-        if args.dark == True:
-            c_light = False
-        elif args.light == True:
-            c_light = args.light
-
-        if args.pywal == True:
-            c_pywal = args.pywal
-        elif c_pywal == None:
-            c_pywal = args.pywal
-
-        if args.pywaldark == True:
-            c_pywal_light = False
-        elif args.pywallight == True:
-            c_pywal_light = args.pywallight
-
-        if args.lbmultiplier != None:
-            c_light_blend_multiplier = math_utils.clip(
-                args.lbmultiplier, 0, 4, 1)
-        elif c_light_blend_multiplier != None:
-            c_light_blend_multiplier = math_utils.clip(
-                c_light_blend_multiplier, 0, 4, 1)
-
-        if args.dbmultiplier != None:
-            c_dark_blend_multiplier = math_utils.clip(
-                args.dbmultiplier, 0, 4, 1)
-        elif c_dark_blend_multiplier != None:
-            c_dark_blend_multiplier = math_utils.clip(
-                c_dark_blend_multiplier, 0, 4, 1)
-
-        if args.file != None:
-            c_file = args.file
-
-        if args.monitor != None:
-            if args.monitor < 0:
-                logging.error(
-                    'Value for --monitor must be a positive integer, using default 0')
-                logging.error
-            else:
-                c_monitor = args.monitor
-
-        if args.ncolor != None:
-            if args.ncolor < 0:
-                logging.error(
-                    'Value for --ncolor must be a positive integer, using default 0')
-                logging.error
-            else:
-                c_ncolor = args.ncolor
-
-        if args.plugin != None:
-            c_plugin = args.plugin
-
-        if args.color != None:
-            c_color = args.color
-
-        if args.iconslight != None:
-            c_iconslight = args.iconslight
-
-        if args.iconsdark != None:
-            c_iconsdark = args.iconsdark
-
-        if args.on_change_hook != None:
-            c_on_change_hook = args.on_change_hook
-
-        if args.sierra_breeze_buttons_color == True:
-            c_sierra_breeze_buttons_color = args.sierra_breeze_buttons_color
-
-        if args.konsole_profile != None:
-            c_konsole_profile = args.konsole_profile
-
-        if args.titlebar_opacity != None:
-            if args.titlebar_opacity < 0 or args.titlebar_opacity > 100:
-                logging.error(
-                    'Value for --sbe-titlebar-opacity must be an integer between 0 and 100, using default 100')
-
-            else:
-                c_titlebar_opacity = args.titlebar_opacity
-
-        if args.toolbar_opacity != None:
-            if args.toolbar_opacity < 0 or args.toolbar_opacity > 100:
-                logging.error(
-                    'Value for --toolbar-opacity must be an integer between 0 and 100, using default 100')
-
-            else:
-                c_toolbar_opacity = args.toolbar_opacity
-
-        if args.konsole_opacity != None:
-            if args.konsole_opacity < 0 or args.konsole_opacity > 100:
-                logging.error(
-                    'Value for --konsole-opacity must be an integer between 0 and 100, using default 100')
-            else:
-                c_konsole_opacity = args.konsole_opacity
-        elif args.konsole_opacity == None and c_konsole_opacity == None:
-            c_konsole_opacity = None
-
-        if args.klassy_windeco_outline == True:
-            c_klassy_windeco_outline = args.klassy_windeco_outline
-        elif c_klassy_windeco_outline == None:
-            c_klassy_windeco_outline = args.klassy_windeco_outline
-
-        if args.custom_colors_list != None:
-            c_custom_colors_list = args.custom_colors_list
+        if options['startup_delay'] < 0:
+            logging.warning(
+                'Value for startup_delay must be an positive integer, using default 0')
+            options['startup_delay'] = 0
 
         try:
-            if c_custom_colors_list is not None:
-                c_custom_colors_list = c_custom_colors_list.split(' ')
-                if len(c_custom_colors_list) < 7:
+            if options['custom_colors_list'] is not None:
+                options['custom_colors_list'] = options['custom_colors_list'].split(
+                    ' ')
+                if len(options['custom_colors_list']) < 7:
                     raise TypeError(
-                        "Value for custom_color_list must contain 7 elements (rgb or hex colors), space separated")
+                        "Value for custom_colors_list must contain 7 elements (rgb or hex colors), space separated")
                 else:
-                    for i, color in enumerate(c_custom_colors_list):
+                    for i, color in enumerate(options['custom_colors_list']):
                         fmt = color_utils.validate_color(color)
                         if fmt is None:
                             raise TypeError(
-                                "Value for custom_color_list only accepts rgb or hex colors")
+                                "Value for custom_colors_list only accepts rgb or hex colors")
                         elif fmt == 1:
-                            c_custom_colors_list[i] = color_utils.color2hex(
+                            options['custom_colors_list'][i] = color_utils.color2hex(
                                 color)
         except Exception as e:
-            c_custom_colors_list = None
+            options['custom_colors_list'] = None
             logging.error(
                 f'Please fix your settings file: {e}, using wallpaper colors')
 
-        if args.darker_window_list != None:
-            c_darker_window_list = args.darker_window_list
-
-        self._options = {
-            'light': c_light,
-            'file': c_file,
-            'monitor': c_monitor,
-            'plugin': c_plugin,
-            'ncolor': c_ncolor,
-            'iconslight': c_iconslight,
-            'iconsdark': c_iconsdark,
-            "pywal": c_pywal,
-            "pywal_light":  c_pywal_light,
-            "lbm": c_light_blend_multiplier,
-            "dbm": c_dark_blend_multiplier,
-            "on_change_hook": c_on_change_hook,
-            "sierra_breeze_buttons_color": c_sierra_breeze_buttons_color,
-            "konsole_profile": c_konsole_profile,
-            "titlebar_opacity": c_titlebar_opacity,
-            "toolbar_opacity": c_toolbar_opacity,
-            "konsole_opacity": c_konsole_opacity,
-            "color": c_color,
-            "klassy_windeco_outline": c_klassy_windeco_outline,
-            "custom_colors_list": c_custom_colors_list,
-            "darker_window_list": c_darker_window_list
-        }
+        self._options = options
 
     @property
     def options(self):

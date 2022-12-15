@@ -39,7 +39,7 @@ Table of Contents
 - [Working Wallpaper plugins](#working-wallpaper-plugins)
 - [Configuration file](#configuration-file)
 - [Notes](#notes)
-  - [Bug reporting / Feature requests](#bug-reporting--feature-requests)
+  - [Bug reporting / Feature requests / Contributing](#bug-reporting--feature-requests--contributing)
 - [Thanks & Credits](#thanks--credits)
 
 # Features
@@ -158,8 +158,8 @@ This is a list of compatible Plasma Wallpaper Plugins
 - As throwaway6560192 pointed out, the `evaluateScript` DBus call doesn't return any output, to get the current wallpaper this script uses `print()`, but the journal gets spammed by plasmashell with the wallpaper data. If you know a better way of doing this please tell me.
 - To update color with `plasma-apply-colorscheme`, the file containing the new color scheme must have a different name than the current one, to workaround this it creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
 
-## Bug reporting / Feature requests
-- If you encounter a problem or have an idea for a cool feature don't hesitate to open an issue using the **issue templates**, pull requests are also welcomed.
+## Bug reporting / Feature requests / Contributing
+Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 
 # Thanks & Credits
 - [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required in this script.

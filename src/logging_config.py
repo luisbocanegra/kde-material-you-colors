@@ -12,16 +12,27 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 
 class MyLogFormatter(logging.Formatter):
 
-    term_fmt = '{}[%(levelname).1s] {}%(module)s: %(funcName)s: {}%(message)s'
+    term_fmt = '{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s'
     file_fmt = '%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s'
     dbg_fmt = term_fmt.format(
-        globals.LOG_HINT, globals.LOG_WHERE, globals.COLOR_DEBUG)
+        globals.TERM_COLOR_BLU+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL+globals.TERM_COLOR_BLU)
+
     info_fmt = term_fmt.format(
-        globals.LOG_HINT, globals.LOG_WHERE, globals.COLOR_INFO)
+        globals.TERM_COLOR_GRE+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_GRE)
+
     warn_fmt = term_fmt.format(
-        globals.LOG_HINT, globals.LOG_WHERE, globals.COLOR_WARN)
+        globals.TERM_COLOR_YEL+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_YEL)
+
     err_fmt = term_fmt.format(
-        globals.LOG_HINT, globals.LOG_WHERE, globals.COLOR_ERROR)
+        globals.TERM_COLOR_RED+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_RED)
 
     def __init__(self, to_file):
         self.to_file = to_file

@@ -1,7 +1,11 @@
+import gettext
 import logging
 import os
 import subprocess
 import globals
+import argparse
+import sys
+import re
 
 
 def run_hook(hook):
@@ -63,22 +67,156 @@ class Watcher:
 
     def __init__(self, value: any):
         self.value = value
-        self.has_changed = False
+        self.changed = False
         self.old_value = None
 
     def set_value(self, new_value: any) -> None:
         if self.value != new_value:
             self.old_value = self.value
             self.value = new_value
-            self.has_changed = True
+            self.changed = True
         else:
-            self.has_changed = False
+            self.changed = False
 
     def has_changed(self):
-        return self.has_changed
+        return self.changed
 
     def get_old_value(self):
         return self.old_value
 
     def get_new_value(self):
         return self.value
+
+
+def startup_delay(use_startup_delay, delay_conf):
+    # print(f'use delay:{use_startup_delay}, delay: {delay_conf}')
+    if use_startup_delay:
+        return delay_conf
+    else:
+        return 0
+
+
+class ColoredArgParser(argparse.ArgumentParser):
+    """Colored help message for ArgumentParser
+
+    Args:
+        argparse (argparse.ArgumentParser): argparse.ArgumentParser
+    """
+
+    def _print_message(self, message, file=None):
+        if message and message:
+            if file is None:
+                file = sys.stderr
+            else:
+                file.write(color_text(message))
+
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        args = {'prog': self.prog, 'message': message}
+        self.exit(2, gettext.gettext('%(prog)s: ERROR: %(message)s\n') % args)
+
+
+def wide_argparse_help(formatter, help_column: int = 30, min_width: int = 100):
+    """Return a wider HelpFormatter, if possible.
+    Removing help spacing if window is not wide enough.
+    Args:
+        formatter (argparse.HelpFormatter): Formatter
+        help_column (int, optional): Column at which help(right) text starts. Defaults to 30.
+        min_width (int optional): Minimun terminal width to remove help padding. Defaults to 100.
+
+    Returns:
+        _type_: _description_
+    """
+
+    try:
+        # https://stackoverflow.com/a/5464440
+        # beware: "Only the name of this class is considered a public API."
+
+        # get terminal width
+        columns = int(os.popen('stty size', 'r').read().split()[1])
+
+        if columns < min_width:
+            help_column = 4
+        kwargs = {'width': columns, 'max_help_position': help_column}
+        formatter(None, **kwargs)
+        return lambda prog: formatter(prog, **kwargs)
+    except TypeError as e:
+        logging.error(
+            f"Warning: Argparse help formatter failed, falling back.{e}")
+        return formatter
+
+
+def color_text(message: str):
+    """Color text with regex rules
+
+    Args:
+        message (str): text
+
+    Returns:
+        str: Colored text
+    """
+    # # find epilog
+    # match_epilog = '((For|Autom)(.*[\s\S][a-zA-Z](.*)[\s\S](.*)){0,6})'
+    # re_epilog = re.findall(match_epilog, message)
+    # # color them
+    # for txt in re_epilog:
+    #     # print(txt)
+    #     t = txt[0]
+    #     message = message.replace(
+    #         t.strip(), f'{globals.TERM_COLOR_WHI}{t}{globals.TERM_STY_RESET}')
+
+    # search and color other patterns, line by line
+    formatted_text = ""
+    for i, line in enumerate(message.splitlines()):
+
+        # find options (--op, -o), config_names
+        match_opts = [
+            '([\s-]-{1,2}[a-zA-Z-]+)',
+            '(?<=\[)(-{1,2}[a-zA-Z]+)',
+            '([a-zA-Z]+_[a-zA-Z]+)']
+        line = re.sub(
+            '|'.join(match_opts),
+            rf'{globals.TERM_COLOR_BLU}{globals.TERM_STY_BOLD}\1\2\3{globals.TERM_STY_RESET}', line)
+
+        # color argument <meta> values
+        match_args = ['(\<(.*?)\>)']
+        line = re.sub(
+            '|'.join(match_args),
+            rf'{globals.TERM_COLOR_YEL}\1{globals.TERM_STY_RESET}', line)
+
+        # color sections usage: , options:\n
+        match_sect = ['((\)|^)([a-zA-Z]+):($|)(?!/))',]
+        line = re.sub(
+            '|'.join(match_sect),
+            rf'{globals.TERM_COLOR_MAG}{globals.TERM_STY_BOLD}{globals.TERM_STY_INVERT}\1{globals.TERM_STY_RESET}', line)
+
+        #programs, commands
+        progname = sys.argv[0].split(' ')[0].split('/')[-1]
+        match_progname = [
+            f'('+progname+')',
+            '( konsole)',
+            '([\s](.*)[a-zA-Z]-[\s][a-zA-Z](.+?)[\s])']
+        line = re.sub(
+            '|'.join(match_progname),
+            rf'{globals.TERM_COLOR_GRE}{globals.TERM_STY_BOLD}\1\2\3{globals.TERM_STY_RESET}', line)
+
+        # uppercase strings
+        uppercase_words = ['usage:', 'options:']
+        for w in uppercase_words:
+            line = line.replace(w, w.upper())
+
+        # Error red
+        match_progname = [
+            f'(ERROR:)']
+        line = re.sub(
+            '|'.join(match_progname),
+            rf'{globals.TERM_COLOR_RED}{globals.TERM_STY_BOLD}{globals.TERM_STY_INVERT}\1{globals.TERM_STY_RESET}', line)
+
+        # capitalize strings
+        cap_words = ['show']
+        for w in cap_words:
+            line = line.replace(w, w.capitalize())
+
+        formatted_text += line+"\n"
+    formatted_text+globals.TERM_STY_RESET
+    return formatted_text
