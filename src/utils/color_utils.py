@@ -192,7 +192,7 @@ def blend2contrast(lighter_color, darker_color, blend_color, min_contrast, blend
     if contrast < min_contrast:
         blend_ratio = 0.0
 
-        while contrast < 4.5:
+        while contrast < min_contrast:
             blend_ratio += blend_step
             if dark:
                 new = blendColors(lighter_color, blend_color, blend_ratio)
