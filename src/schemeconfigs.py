@@ -19,6 +19,7 @@ class ThemeConfig:
         tones_primary = colors['palettes']['primary']
         tones_secondary = colors['palettes']['secondary']
         tones_neutral = colors['palettes']['neutral']
+        tones_neutral_variant = colors['palettes']['neutralVariant']
         tones_tertiary = colors['palettes']['tertiary']
         tones_error = colors['palettes']['error']
         colors_light = colors['schemes']['light']
@@ -105,10 +106,10 @@ class ThemeConfig:
         pywal_colors_dark = (extras['dark']['surface'],)
         # gray? bold, ansi 30
         pywal_colors_dark_intense = (blendColors(
-            pywal_colors_dark[0], colors_dark['onSurface'], .75),)
+            pywal_colors_dark[0], tones_secondary[90], .8),)
         # dark gray? faint ansi 30
         pywal_colors_dark_faint = (blendColors(
-            pywal_colors_dark[0], colors_dark['onSurface'], .6),)
+            pywal_colors_dark[0], tones_secondary[90], .7),)
         tone = 50
 
         for x in range(7):
@@ -155,9 +156,9 @@ class ThemeConfig:
         # ansi 30
         pywal_colors_light = (extras['light']['surface'],)
         pywal_colors_light_intense = (blendColors(
-            pywal_colors_light[0], colors_light['onSurface'], .75),)
+            pywal_colors_light[0], tones_secondary[25], .8),)
         pywal_colors_light_faint = (blendColors(
-            pywal_colors_light[0], colors_light['onSurface'], .6),)
+            pywal_colors_light[0], tones_secondary[25], .7),)
 
         for x in range(7):
             if len(pywal_colors_light) <= 7:
@@ -549,10 +550,10 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 "backgroundFaint": blendColors(
                     tones_neutral[8], colors_light['primary'], .35),
                 "foreground": blendColors(
-                    pywal_colors_light[0], colors_light['onSurface'], .85),
-                "foregroundIntense": colors_light['onSurface'],
+                    pywal_colors_light[0], tones_secondary[25], .98),
+                "foregroundIntense": tones_secondary[25],
                 "foregroundFaint": blendColors(
-                    pywal_colors_light[0], colors_light['onSurface'], .75),
+                    pywal_colors_light[0], tones_secondary[25], .88),
                 "cursor": colors_dark['onSurface'],
             },
 
@@ -596,12 +597,12 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                     tones_neutral[8], colors_dark['primary'], .35),
                 # Normal, ansi 39
                 "foreground": blendColors(
-                    pywal_colors_dark[0], colors_dark['onSurface'], .85),
+                    pywal_colors_dark[0], tones_secondary[90], .98),
                 # bold, ansi 39
-                "foregroundIntense": colors_dark['onSurface'],
+                "foregroundIntense": tones_secondary[90],
                 # faint, ansi 39
                 "foregroundFaint": blendColors(
-                    pywal_colors_dark[0], colors_dark['onSurface'], .75),
+                    pywal_colors_dark[0], tones_secondary[90], .88),
                 "cursor": colors_dark['onSurface'],
             },
 

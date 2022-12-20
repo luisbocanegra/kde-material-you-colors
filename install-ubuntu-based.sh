@@ -20,17 +20,14 @@ echo -e "${BGreen}Installing kde-material-you-colors${clean}"
 # Cleanup
 rm -rf /usr/lib/${pkgname}
 
-mkdir -p /usr/lib/${pkgname}/utils
-cp -f src/*.{py,conf,desktop} /usr/lib/${pkgname}/
-cp -f src/utils/*.py /usr/lib/${pkgname}/utils/
-cp -f src/*.desktop /usr/share/applications/
-cp -f src/kde-material-you-colors /usr/lib/${pkgname}/kde-material-you-colors
-chmod 755 /usr/lib/${pkgname}/*.py
+install -dm755 ${pkgdir}/usr/lib/${pkgname}/utils
+install -dm755 ${pkgdir}/usr/share/applications/
 
-mkdir -p /usr/share/licenses/kde-material-you-colors/
-cp -f LICENSE /usr/share/licenses/${pkgname}/LICENSE
-chmod 664 /usr/share/licenses/${pkgname}/LICENSE
-chmod 664 /usr/lib/${pkgname}/*.{desktop,conf}
+install -Dm644 src/*.{py,conf} ${pkgdir}/usr/lib/${pkgname}/
+install -Dm644 src/utils/*.py ${pkgdir}/usr/lib/${pkgname}/utils/
+install -Dm644 src/*.desktop ${pkgdir}/usr/share/applications/
+install -Dm755 src/kde-material-you-colors ${pkgdir}/usr/lib/${pkgname}/kde-material-you-colors
+install -dm755 ${pkgdir}/usr/bin
 
-chmod 755 /usr/lib/${pkgname}/kde-material-you-colors
-ln -sf /usr/lib/${pkgname}/kde-material-you-colors /usr/bin/kde-material-you-colors
+ln -sf /usr/lib/${pkgname}/kde-material-you-colors ${pkgdir}/usr/bin/kde-material-you-colors
+install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
