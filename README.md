@@ -16,32 +16,6 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 <img src="https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif"  alt="Screenshot">
 </div>
 
-Table of Contents
-=================
-
-- [Table of Contents](#table-of-contents)
-- [Features](#features)
-  - [Plasma specific](#plasma-specific)
-  - [Themeable programs](#themeable-programs)
-  - [Theming options](#theming-options)
-- [Installing](#installing)
-  - [Arch Linux](#arch-linux)
-  - [Other distributions](#other-distributions)
-    - [Updating](#updating)
-  - [Optional features](#optional-features)
-- [Running](#running)
-    - [From terminal to debug your configuration](#from-terminal-to-debug-your-configuration)
-    - [Options](#options)
-    - [Desktop entries](#desktop-entries)
-- [Startup script](#startup-script)
-  - [Removing the autostart script](#removing-the-autostart-script)
-- [Changing Current Wallpaper plugin](#changing-current-wallpaper-plugin)
-- [Working Wallpaper plugins](#working-wallpaper-plugins)
-- [Configuration file](#configuration-file)
-- [Notes](#notes)
-  - [Bug reporting / Feature requests / Contributing](#bug-reporting--feature-requests--contributing)
-- [Thanks \& Credits](#thanks--credits)
-
 # Features
 ## Plasma specific
 - Update automatically on wallpaper change
@@ -77,14 +51,39 @@ Table of Contents
 
 # Installing
 ## Arch Linux
-- [AUR](https://aur.archlinux.org/packages/kde-material-you-colors)
-## Other distributions
+- [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper
+## openSUSE Build Service packages by [@markusgod](https://github.com/markusgod)
+### Fedora
+Add repository and install as root:
+```sh
+dnf config-manager --add-repo https://download.opensuse.org/repositories/home:MarkNefedov/Fedora_37/home:MarkNefedov.repo
+dnf install kde-material-you-colors
+```
+### openSUSE
+For **openSUSE Tumbleweed** add repository and install as root:
+```sh
+zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/openSUSE_Tumbleweed/home:MarkNefedov.repo
+zypper refresh
+zypper install kde-material-you-colors
+```
+For **openSUSE 15.4** add repository and install as root:
+```sh
+zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/15.4/home:MarkNefedov.repo
+zypper refresh
+zypper install kde-material-you-colors
+```
+
+## Other distributions/manual install
+<details>
+
+<summary>Expand</summary>
+
 1. Clone/download this repository and cd to it
 ```sh
 git clone https://github.com/luisbocanegra/kde-material-you-colors --branch main
 cd kde-material-you-colors
 ```
-2. Make the installer executable and run it as root
+1. Make the installer executable and run it as root
 
 For Ubuntu based distros:
 ```sh
@@ -106,6 +105,8 @@ git pull
 ```
 
 Repeat step 2
+
+</details>
 
 ## Optional features
 - Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
