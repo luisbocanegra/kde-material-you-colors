@@ -105,7 +105,7 @@ def apply_themes(
             # skip applying themes if no dark/light mode was specified
             # or found in current user settings
             if dark_light != None:
-                logging.info(f"Using light mode for Plasma: {dark_light}")
+                logging.info(f"Using {'light' if dark_light else 'dark'} mode for Plasma")
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
                 ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
@@ -190,7 +190,7 @@ def apply_themes(
                 # skip applying themes if no dark/light mode was specified
                 # or found in current user settings
                 if dark_light != None:
-                    logging.info(f"Using light mode for Plasma: {dark_light}")
+                    logging.info(f"Using {'light' if dark_light else 'dark'} mode for Plasma")
                     # Apply plasma color schemes
                     # change only if is not currently active
                     if plasma_utils.kde_globals_light() != dark_light:

@@ -106,20 +106,18 @@ def kde_globals_light():
 
 
 def get_initial_mode():
-    """Try to get the initial theme mode based based on the theme name, 
-    if failed try to get it from the stored hash and the current
-    generated schemes.
+    """Try to get the initial theme mode based based on the theme name
+    or the stored hash against the current generated schemes.
+    Fallback to dark mode if no previous mode is found.
 
     Returns:
         bool: Current mode light=True, dark=False
     """
 
-    theme_from_name = kde_globals_light()
+    logging.info(f"Trying to get previous applied theme mode from {globals.KDE_GLOBALS}")
+    theme_mode = kde_globals_light()
 
-    if theme_from_name is not None:
-        logging.info("Using theme from stored name")
-        return theme_from_name
-    else:
+    if theme_mode is None:
         logging.info(
             "Couldn't find theme by name, trying to resolve theme from last stored hash...")
 
@@ -142,13 +140,17 @@ def get_initial_mode():
                 globals.THEME_LIGHT_PATH+".colors")
             logging.debug(f"Light scheme hash: {light_scheme_hash}")
             if current_theme_hash == dark_scheme_hash:
-                return False
+                theme_mode = False
             if current_theme_hash == light_scheme_hash:
-                return True
-        else:
-            logging.warning(
-                "Couldn't find previus theme, falling back to dark mode...")
-            return False
+                theme_mode = True
+    
+    if theme_mode is not None:
+        logging.info(f"Found previous mode: {'light' if theme_mode else 'dark'}")
+        return theme_mode
+    
+    logging.warning(
+        "Couldn't find previus mode, falling back to dark theme")
+    return False
 
 
 def plasma_darker_header(schemes):
