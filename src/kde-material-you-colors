@@ -166,6 +166,12 @@ if __name__ == '__main__':
                         help='Add a startup delay (in seconds) before doing anything, useful for waiting for other utilities that may change themes on boot (default is 0), requires --use-startup-delay option',
                         default=None,
                         metavar='<integer>')
+
+    parser.add_argument('--palette-type','-pt',
+                        type=int,
+                        help='Palette type to use 0=Core (default) An intermediate concept between the key color for a UI theme, and a full color scheme. 1=Fidelity Tokens and palettes match source color. Primary Container is source color, adjusted to ensure contrast with surfaces. 2=Monochrome All colors are grayscale, no chroma. 3=Neutral Close to grayscale, a hint of chroma. 4=TonalSpot Pastel tokens, low chroma palettes (32). Default Material You theme at 2021 launch.',
+                        metavar='<integer>')
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments

@@ -6,7 +6,9 @@ if globals.USER_HAS_COLR:
 from . import color_utils
 from . import math_utils
 from .extra_image_utils import sourceColorsFromImage
-from material_color_utilities_python.utils.theme_utils import *
+from .m3_theme_utils import *
+from .palettes.palettes import *
+from material_color_utilities_python.palettes.core_palette import *
 
 
 def dict_to_rgb(dark_scheme):
@@ -40,7 +42,7 @@ def get_custom_colors(custom_colors):
     return colors
 
 
-def get_material_you_colors(wallpaper_data, ncolor, source_type):
+def get_material_you_colors(wallpaper_data, ncolor, source_type,palette_type:int=0):
     """ Get material you colors from wallpaper or hex color using material-color-utility
 
     Args:
@@ -51,6 +53,35 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
     Returns:
         str: string data from python-material-color-utilities
     """
+
+    palette_types = {
+        0:{
+            "name":"Core (default)",
+            "palette":CorePalette
+        },
+        1:{
+            "name":"Fidelity",
+            "palette":FidelityPalette
+        },
+        2:{
+            "name":"Monochrome",
+            "palette":MonochromePalette
+        },
+        3:{
+            "name":"Neutral",
+            "palette":NeutralPalette
+        },
+        4:{
+            "name":"Tonal Spot",
+            "palette":TonalSpotPalette
+        }
+        }
+
+    if palette_type > len(palette_types) - 1:
+        palette_type = 0
+    #print(palette_types)
+    logging.info(f"Using {palette_type}:{palette_types[palette_type]['name']} palette")
+    palette_type=palette_types[palette_type]['palette']
 
     try:
         seedColor = 0
@@ -76,7 +107,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         for i, color in enumerate(source_colors):
             best_colors.update({str(i): hexFromArgb(color)})
         # generate theme from seed color
-        theme = themeFromSourceColor(seed_color)
+        theme = themeFromSourceColor(source=seed_color,palette_type=palette_type)
 
         # Given a image, the alt color and hex color
         # return a selected color or a single color for hex code
@@ -93,7 +124,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             seedColor = hexFromArgb(source_colors[-1])
             seedNo = totalColors-1
         if seedColor != 0:
-            theme = themeFromSourceColor(argbFromHex(seedColor))
+            theme = themeFromSourceColor(argbFromHex(seedColor),palette_type=palette_type)
 
         dark_scheme = json.loads(theme['schemes']['dark'].toJSON())
         light_scheme = json.loads(theme['schemes']['light'].toJSON())
@@ -134,7 +165,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         return None
 
 
-def get_color_schemes(wallpaper, ncolor=None):
+def get_color_schemes(wallpaper, ncolor=None,palette_type:int=0):
     """ Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
@@ -156,7 +187,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                 if not os.path.isdir(wallpaper_data):
                     # get colors from material-color-utility
                     materialYouColors = get_material_you_colors(
-                        wallpaper_data, ncolor=ncolor, source_type=source_type)
+                        wallpaper_data, ncolor=ncolor, source_type=source_type,palette_type=palette_type)
                 else:
                     logging.error(
                         f'"{wallpaper_data}" is a directory, aborting')
@@ -165,7 +196,7 @@ def get_color_schemes(wallpaper, ncolor=None):
             source_type = "color"
             wallpaper_data = color_utils.color2hex(wallpaper_data)
             materialYouColors = get_material_you_colors(
-                wallpaper_data, ncolor=ncolor, source_type=source_type)
+                wallpaper_data, ncolor=ncolor, source_type=source_type,palette_type=palette_type)
 
         if materialYouColors != None:
             try:

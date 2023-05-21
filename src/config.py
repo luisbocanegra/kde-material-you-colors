@@ -105,7 +105,8 @@ class Configs():
             'custom_colors_list': [args.custom_colors_list, None, 3],
             'darker_window_list': [args.darker_window_list, None, 3],
             'use_startup_delay': [args.use_startup_delay, None, 0],
-            'startup_delay': [args.startup_delay, 0, 1]
+            'startup_delay': [args.startup_delay, 0, 1],
+            'palette_type':[args.palette_type, 0, 1]
         }
         options = defaults
         config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
@@ -153,6 +154,11 @@ class Configs():
             logging.warning(
                 'Value for startup_delay must be an positive integer, using default 0')
             options['startup_delay'] = 0
+
+        if options['palette_type'] < 0:
+            logging.warning(
+                'Value for palette_type must be an positive integer, using default 0')
+            options['palette_type'] = 0
 
         try:
             if options['custom_colors_list'] is not None:

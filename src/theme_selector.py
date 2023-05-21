@@ -28,6 +28,7 @@ def apply_themes(
         config_watcher.get_new_value()['ncolor'],
         config_watcher.get_new_value()['light_blend_multiplier'],
         config_watcher.get_new_value()['dark_blend_multiplier'],
+        config_watcher.get_new_value()['palette_type']
     ])
 
     # Get wallpaper type and data
@@ -72,7 +73,7 @@ def apply_themes(
         material_colors.set_value(
             m3_scheme_utils.get_color_schemes(
                 wallpaper_watcher.get_new_value(),
-                config_watcher.get_new_value()['ncolor'])
+                config_watcher.get_new_value()['ncolor'],palette_type=config_watcher.get_new_value()['palette_type'])
         )
         if material_colors.get_new_value() != None:
             # Genrate color schemes from MYou colors
@@ -275,7 +276,7 @@ def apply_themes(
                 if config_watcher.get_new_value()['toolbar_opacity'] != None:
                     material_colors.set_value(m3_scheme_utils.get_color_schemes(
                         wallpaper_watcher.get_new_value(),
-                        config_watcher.get_new_value()['ncolor']))
+                        config_watcher.get_new_value()['ncolor'],palette_type=config_watcher.get_new_value()['palette_type']))
                 if material_colors.get_new_value() != None:
                     # Genrate color schemes from MYou colors
                     schemes_watcher.set_value(
@@ -379,7 +380,7 @@ def apply_themes(
 
                 material_colors.set_value(m3_scheme_utils.get_color_schemes(
                     wallpaper_watcher.get_new_value(),
-                    config_watcher.get_new_value()['ncolor']))
+                    config_watcher.get_new_value()['ncolor'],palette_type=config_watcher.get_new_value()['palette_type']))
                 if material_colors.get_new_value() != None:
                     # Genrate color schemes from MYou colors
                     schemes_watcher.set_value(
