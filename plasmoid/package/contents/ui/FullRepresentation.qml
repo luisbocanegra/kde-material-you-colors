@@ -32,7 +32,7 @@ PlasmaExtras.Representation {
     property var materialYouData: null
     property var wallpaperPreview: null
 
-    property string configPath
+    property string configPath: null
     property string cmd_type: ""
 
     property alias colorsFromWallpaper: settings.color
@@ -125,9 +125,6 @@ PlasmaExtras.Representation {
         property bool light: false
         property int ncolor: 0
 
-        // property string iconslight: "Breeze"
-        // property string iconsdark: "Breeze"
-        
         property bool pywal:false
         property bool pywal_light: false
 
@@ -785,6 +782,7 @@ PlasmaExtras.Representation {
             onTriggered: {
                 loadMaterialYouData()
                 console.log("@@@@@@@@ config", configPath);
+                console.log("Config file name:", settings.fileName);
             }
         }
 
