@@ -40,12 +40,11 @@ def sourceColorsFromImage(image, top=False):
     #     const argb = argbFromRgb(r, g, b);
     #     pixels.push(argb);
     # }
-    if (image.mode == 'RGB'):
-        image = image.convert('RGBA')
-    if (image.mode != 'RGBA'):
-        logging.warning(
-            "Image not in RGB|RGBA format - Converting...")
-        image = image.convert('RGBA')
+    if image.mode == "RGB":
+        image = image.convert("RGBA")
+    if image.mode != "RGBA":
+        logging.warning("Image not in RGB|RGBA format - Converting...")
+        image = image.convert("RGBA")
 
     pixels = []
     for x in range(image.width):
@@ -56,7 +55,7 @@ def sourceColorsFromImage(image, top=False):
             g = pixel[1]
             b = pixel[2]
             a = pixel[3]
-            if (a < 255):
+            if a < 255:
                 continue
             argb = argbFromRgb(r, g, b)
             pixels.append(argb)

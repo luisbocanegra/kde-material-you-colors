@@ -8,12 +8,14 @@ import signal
 # for name of caller of caller of current func, specify 2. etc.
 
 
-def currentFuncName(n=0): return sys._getframe(n + 1).f_code.co_name
+def currentFuncName(n=0):
+    return sys._getframe(n + 1).f_code.co_name
 
 
 def timeout_handler(signum, frame):  # Register a timeout handler
     logging.error(
-        f"{currentFuncName(1)}: took too much time, aborted, reboot if the problem persists")
+        f"{currentFuncName(1)}: took too much time, aborted, reboot if the problem persists"
+    )
     raise TimeoutError
 
 

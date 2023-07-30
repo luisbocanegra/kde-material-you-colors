@@ -5,41 +5,45 @@ import os
 import globals
 
 # Set logging level for pillow
-logging.getLogger('PIL').setLevel(logging.WARNING)
+logging.getLogger("PIL").setLevel(logging.WARNING)
 
 # Custom logging format (adapted from https://stackoverflow.com/a/14859558)
 
 
 class MyLogFormatter(logging.Formatter):
-
-    term_fmt = '{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s'
-    file_fmt = '%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s'
+    term_fmt = "{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s"
+    file_fmt = "%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s"
     dbg_fmt = term_fmt.format(
-        globals.TERM_COLOR_BLU+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL+globals.TERM_COLOR_BLU)
+        globals.TERM_COLOR_BLU + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_BLU,
+    )
 
     info_fmt = term_fmt.format(
-        globals.TERM_COLOR_GRE+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_GRE)
+        globals.TERM_COLOR_GRE + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_GRE,
+    )
 
     warn_fmt = term_fmt.format(
-        globals.TERM_COLOR_YEL+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_YEL)
+        globals.TERM_COLOR_YEL + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_YEL,
+    )
 
     err_fmt = term_fmt.format(
-        globals.TERM_COLOR_RED+globals.TERM_STY_NORMAL+globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF+globals.TERM_STY_BOLD+globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_RED)
+        globals.TERM_COLOR_RED + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
+        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
+        globals.TERM_STY_NORMAL + globals.TERM_COLOR_RED,
+    )
 
     def __init__(self, to_file):
         self.to_file = to_file
-        super().__init__(fmt="%(levelno)d: %(msg)s", datefmt="%Y-%m-%d %H:%M:%S", style='%')
+        super().__init__(
+            fmt="%(levelno)d: %(msg)s", datefmt="%Y-%m-%d %H:%M:%S", style="%"
+        )
 
     def format(self, record):
-
         # Save the original format configured by the user
         # when the logger formatter was instantiated
         format_orig = self._style._fmt
@@ -80,12 +84,13 @@ class MyLogFormatter(logging.Formatter):
         # Format for log file
         file_fmt = MyLogFormatter(to_file=True)
         fh = RotatingFileHandler(
-            globals.LOG_FILE_PATH+globals.LOG_FILE_NAME,
-            mode='a',
-            maxBytes=1*1024*1024,
+            globals.LOG_FILE_PATH + globals.LOG_FILE_NAME,
+            mode="a",
+            maxBytes=1 * 1024 * 1024,
             backupCount=1,
             encoding=None,
-            delay=0)
+            delay=0,
+        )
         fh.setFormatter(file_fmt)
         logging.root.addHandler(hdlr)
         logging.root.addHandler(fh)

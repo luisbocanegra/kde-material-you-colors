@@ -2,6 +2,7 @@ import logging
 from .color_utils import hex2rgb
 from . import timeout_utils
 import globals
+
 if globals.USER_HAS_PYWAL:
     import pywal
 if globals.USER_HAS_COLR:
@@ -46,7 +47,8 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
                     timeout_utils.timeout_reset()
             else:
                 logging.warning(
-                    "Pywal option enabled but python module is not installed, ignored")
+                    "Pywal option enabled but python module is not installed, ignored"
+                )
         # print palette
         print_color_palette(pywal_colors)
 
@@ -54,15 +56,16 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
 def print_color_palette(pywal_colors):
     if globals.USER_HAS_COLR:
         i = 0
-        for index, col in pywal_colors['colors'].items():
+        for index, col in pywal_colors["colors"].items():
             if i % 8 == 0 and i != 0:
                 print()
-            print(f'{colr.color("    ",back=hex2rgb(col))}', end='')
+            print(f'{colr.color("    ",back=hex2rgb(col))}', end="")
             i += 1
-        print(f'{globals.TERM_STY_RESET}')
+        print(f"{globals.TERM_STY_RESET}")
     else:
         logging.debug(
-            "Install colr python module to tint color codes and palette as they update")
+            "Install colr python module to tint color codes and palette as they update"
+        )
         # Print color palette from pywal.colors.palette
         for i in range(0, 16):
             if i % 8 == 0 and i != 0:

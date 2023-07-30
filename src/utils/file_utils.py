@@ -27,7 +27,7 @@ def get_smallest_image(directory):
     Returns:
         str: Absolute file path
     """
-    img_list = [directory+file for file in os.listdir(directory)]
+    img_list = [directory + file for file in os.listdir(directory)]
     size_sorted = sorted(img_list, key=os.path.getsize)
 
     r = None
@@ -47,9 +47,9 @@ def get_smallest_image(directory):
 
 def get_file_sha1(file_path: str):
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             data = f.read()
-            file_sha1 = hashlib.sha1(data.encode('utf-8')).hexdigest()
+            file_sha1 = hashlib.sha1(data.encode("utf-8")).hexdigest()
             return file_sha1
     except Exception as e:
         print(f"Error:\n{e}")

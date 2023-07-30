@@ -7,7 +7,9 @@ from . import file_utils
 from . import math_utils
 
 
-def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None):
+def get_wallpaper_data(
+    plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None
+):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
 
@@ -28,7 +30,7 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
     if file:
         if os.path.exists(file):
             with open(file) as file:
-                wallpaper = str(file.read()).replace('file://', '').strip()
+                wallpaper = str(file.read()).replace("file://", "").strip()
                 if wallpaper:
                     return ("image", wallpaper)
                 else:
@@ -58,18 +60,20 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
                 try:
                     script_output = tuple(script_output.split(","))
                 except:
-                    script_output = ('', '')
+                    script_output = ("", "")
             else:
-                script_output = ('', '')
+                script_output = ("", "")
             img_provider = script_output[0]
             provider_category = script_output[1]
 
             if img_provider:
-                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR+img_provider
+                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + img_provider
             else:
                 # default provider is astronomic picture of the day
-                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + \
-                    globals.PICTURE_OF_DAY_DEFAULT_PROVIDER
+                potd = (
+                    globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR
+                    + globals.PICTURE_OF_DAY_DEFAULT_PROVIDER
+                )
 
             # unsplash also has a category
             if img_provider == globals.PICTURE_OF_DAY_UNSPLASH_PROVIDER:
@@ -81,9 +85,16 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
             # Bing file now has the wallpaper resolution in the name
             if img_provider == globals.PICTURE_OF_DAY_BING_PROVIDER:
                 # find and return files that start with bing and don't end with json and use the largest one
-                potd = [file for file in os.listdir(globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR) if os.path.isfile(os.path.join(
-                    globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)) if file.startswith(globals.PICTURE_OF_DAY_BING_PROVIDER) and not file.endswith('json')]
-                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR+max(potd)
+                potd = [
+                    file
+                    for file in os.listdir(globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR)
+                    if os.path.isfile(
+                        os.path.join(globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)
+                    )
+                    if file.startswith(globals.PICTURE_OF_DAY_BING_PROVIDER)
+                    and not file.endswith("json")
+                ]
+                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + max(potd)
 
             if os.path.exists(potd):
                 return ("image", potd)
@@ -101,9 +112,16 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
             if color_rgb != None:
                 try:
                     color_rgb = tuple(color_rgb.split(","))
-                    return ("color", color_utils.rgb2hex(r=int(color_rgb[0]), g=int(color_rgb[1]), b=int(color_rgb[2])))
+                    return (
+                        "color",
+                        color_utils.rgb2hex(
+                            r=int(color_rgb[0]),
+                            g=int(color_rgb[1]),
+                            b=int(color_rgb[2]),
+                        ),
+                    )
                 except Exception as e:
-                    logging.error(f'Plain color error: {e}')
+                    logging.error(f"Plain color error: {e}")
                     return None
             else:
                 return None
@@ -122,13 +140,18 @@ def get_wallpaper_data(plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, colo
                 # if script returns a directory
                 if os.path.isdir(wallpaper):
                     # check for mormal/dark variant
-                    if os.path.exists(wallpaper+"contents/images_dark") and light == False:
+                    if (
+                        os.path.exists(wallpaper + "contents/images_dark")
+                        and light == False
+                    ):
                         wallpaper = file_utils.get_smallest_image(
-                            wallpaper+"contents/images_dark/")
+                            wallpaper + "contents/images_dark/"
+                        )
 
-                    elif os.path.exists(wallpaper+"contents/images"):
+                    elif os.path.exists(wallpaper + "contents/images"):
                         wallpaper = file_utils.get_smallest_image(
-                            wallpaper+"contents/images/")
+                            wallpaper + "contents/images/"
+                        )
                 return ("image", wallpaper)
 
 
@@ -145,11 +168,14 @@ def evaluate_script(script, monitor, plugin):
     """
     try:
         bus = dbus.SessionBus()
-        plasma = dbus.Interface(bus.get_object(
-            'org.kde.plasmashell', '/PlasmaShell'), dbus_interface='org.kde.PlasmaShell')
-        wallpaper_data = str(plasma.evaluateScript(
-            script % (monitor, plugin, plugin))).replace('file://', '')
+        plasma = dbus.Interface(
+            bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
+            dbus_interface="org.kde.PlasmaShell",
+        )
+        wallpaper_data = str(
+            plasma.evaluateScript(script % (monitor, plugin, plugin))
+        ).replace("file://", "")
         return wallpaper_data
     except Exception as e:
-        logging.error(f'Error getting wallpaper from dbus:\n{e}')
+        logging.error(f"Error getting wallpaper from dbus:\n{e}")
         return None
