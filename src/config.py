@@ -9,7 +9,7 @@ def get_conf(conf_path):
     """Open the config file and do simple checks on it"""
     if os.path.exists(conf_path):
         try:
-            config = configparser.ConfigParser()
+            config = configparser.ConfigParser(empty_lines_in_values=True)
             config.read(conf_path)
             if "CUSTOM" not in config:
                 logging.error(
@@ -33,6 +33,11 @@ def eval_conf(config: configparser.ConfigParser, val, conf_type, arg, fallback):
 
     if config is not None:
         section = config["CUSTOM"]
+        # check for empty configuration values and fallback right away
+        res = section.get(val, fallback) if arg is None else arg
+        if isinstance(res, str) and len(res) == 0:
+            logging.info(f'Config "{val}": empty, using fallback: {fallback}')
+            return fallback
         try:
             if conf_type == 0:
                 return section.getboolean(val, fallback) if arg is None else arg
