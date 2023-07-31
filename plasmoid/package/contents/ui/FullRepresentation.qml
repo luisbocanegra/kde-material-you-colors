@@ -19,12 +19,12 @@ PlasmaExtras.Representation {
 
     Layout.preferredWidth: PlasmaCore.Units.gridUnit * 26
     Layout.preferredHeight: PlasmaCore.Units.gridUnit * 50
-    
+
     Layout.maximumWidth: mainLayout.implicitWidth //PlasmaCore.Units.gridUnit * 50
     Layout.maximumHeight: mainLayout.implicitHeight + PlasmaCore.Units.gridUnit * 4 //PlasmaCore.Units.gridUnit * 60
 
     readonly property int controlSize: PlasmaCore.Units.iconSizes.medium
-    
+
     property var colorPickerHeight: 36
     property var colorPickerWidth: 48
     property var slideWidth: 250
@@ -43,6 +43,7 @@ PlasmaExtras.Representation {
         if (materialYouData !== null) {
             // console.log("@@@ WALLPAPER @@@",materialYouData.pywal.dark.wallpaper)
             // imagePreview.source = materialYouData.pywal.dark.wallpaper
+            updateStoredColors()
         }
     }
 
@@ -79,28 +80,6 @@ PlasmaExtras.Representation {
                 // console.log("Current brightness -> "+monitor_name +" -> "+stdout)
                 configPath = stdout.replace('\n', '').trim()
             }
-
-            // // update monitors list
-            // if (cmd_type == "updateMonitors") {
-            //     main.mon_list = stdout.split('\n')
-            //     items.clear()
-            //     if (main.mon_list.length > 0) {
-            //         for (var i = 0; i < main.mon_list.length; ++i) {
-            //             if ( main.mon_list[i] != "") {
-            //                 items.append({"name": main.mon_list[i]})
-            //             }
-            //         }
-            //     }
-            //     // set default monitor
-            //     if (monitor_name === '') {
-            //         monitor_name = main.mon_list[0]
-            //         executable.exec(currentBrightnessCommand(monitor_name),"updateCurrentBrightness")
-            //     }
-            //     console.log(mon_list_Command())
-            // }
-            // if (cmd_type == "setBrightness") {
-            //     console.log(changeBrightnessCommand(monitor_name,currentBrightness));
-            // }
         }
     }
 
@@ -137,24 +116,7 @@ PlasmaExtras.Representation {
         property real light_brightness_multiplier: 1.0
         property real dark_brightness_multiplier: 1.0
 
-        // property string on_change_hook
-
-        // property bool sierra_breeze_buttons_color: false
-        // property string konsole_profile
-        // property int konsole_opacity: 100
-
-        // property int titlebar_opacity: 100
-
-        // property int toolbar_opacity: 100
-
-        // property bool klassy_windeco_outline: false
-
-        // property string darker_window_list
-
-        // property bool use_startup_delay:false
-
-        // property int startup_delay
-
+        property bool gui_global_dark_mode: false
     }
 
     function updateStoredColors() {
@@ -163,8 +125,13 @@ PlasmaExtras.Representation {
             var colorBtn = colorButtonRepeater.itemAt(i);
             colors.push(colorBtn.color.toString());
         }
-        settings.custom_colors_list = colors.join(" ");
-        settings.custom_colors_list_last = colors.join(" ");
+        // do not re-enable custom colors if is disabled
+        if (customColorsCheckbox.checked) {
+            settings.custom_colors_list = ""
+        } else {
+            settings.custom_colors_list = colors.join(" ");
+            settings.custom_colors_list_last = colors.join(" ");
+        }
     }
 
     function loadMaterialYouData() {
@@ -194,15 +161,16 @@ PlasmaExtras.Representation {
             rightMargin: PlasmaCore.Units.mediumSpacing
         }
         id: mainLayout
-        
+
         PlasmaExtras.Heading {
             level: 1
             text: "Colors source"
+            Layout.alignment: Qt.AlignHCenter
             // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
             // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
             // Layout.fillWidth: true
         }
-        
+
         RowLayout {
             Label {
                 text: "From Wallpaper"
@@ -211,13 +179,49 @@ PlasmaExtras.Representation {
                 // Layout.fillWidth: true
             }
             CheckBox {
-                checked: colorsFromWallpaper==""
+                checked: settings.color==""
                 onCheckedChanged: {
                     settings.color = checked?"":settings.color_last
                     updateStoredColors()
                 }
             }
+
+            Item { implicitWidth: PlasmaCore.Units.gridUnit / 2}
+
+            // Monitor number
+            Label {
+                visible: settings.color==""
+                text: "Monitor/Screen number"
+                Layout.alignment: Qt.AlignLeft
+                // Layout.fillWidth: true
+            }
+
+            TextField {
+                id: monitorNumber
+                visible: settings.color==""
+                Layout.preferredWidth: colorPickerWidth
+                topPadding: 10
+                bottomPadding: 10
+                leftPadding: 10
+                rightPadding: 10
+                placeholderText: "0-?"
+                horizontalAlignment: TextInput.AlignHCenter
+                text: parseInt(settings.monitor)
+                // Layout.fillWidth: true
+                validator: IntValidator {
+                    bottom: 0
+                }
+
+                onAccepted: {
+                    settings.monitor = parseInt(text)
+                    // reset color selection
+                    settings.ncolor = 0
+                }
+            }
+
         }
+
+
 
         // Color selection
         RowLayout {
@@ -227,7 +231,7 @@ PlasmaExtras.Representation {
             // Layout.fillWidth: true
 
             Label {
-                text: "Source color"
+                text: "Select color"
                 // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                 // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
                 Layout.fillWidth: true
@@ -242,8 +246,7 @@ PlasmaExtras.Representation {
                 dialogTitle: "Choose source color"
                 Layout.preferredHeight: colorPickerHeight
                 Layout.preferredWidth: colorPickerWidth
-                // color:"red"
-                color: "#ff0000"
+                color: settings.color?settings.color:settings.color_last
                 onAccepted: {
                     settings.color = colorButton.color.toString()
                     settings.color_last = settings.color
@@ -264,7 +267,7 @@ PlasmaExtras.Representation {
                     //spacing: PlasmaCore.Units.gridUnit / 2
                     Layout.alignment: Qt.AlignHCenter
                     // Layout.preferredWidth: mainLayout.width
-                    
+
                     Repeater {
                         id: circleRepeater
                         model: materialYouData ? Object.keys(materialYouData.best) : []
@@ -299,7 +302,7 @@ PlasmaExtras.Representation {
                                 // samples: 5
                                 color: "#80000000"
                             }
-                            
+
                             MouseArea {
                                 anchors.fill: parent
                                 hoverEnabled: true
@@ -346,6 +349,7 @@ PlasmaExtras.Representation {
             PlasmaExtras.Heading {
                 level: 1
                 text: "Text colors"
+                Layout.alignment: Qt.AlignHCenter
                 // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                 // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
                 // Layout.fillWidth: true
@@ -358,9 +362,10 @@ PlasmaExtras.Representation {
                 text: "From Wallpaper"
                 Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                 // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
-                
+
             }
             CheckBox {
+                id:customColorsCheckbox
                 checked: textColorsFromWallpaper==""
                 Layout.fillWidth: true
                 onCheckedChanged: {
@@ -370,7 +375,15 @@ PlasmaExtras.Representation {
             }
         }
 
-        
+        Label {
+            visible: settings.custom_colors_list !==""
+            text: "Tap each button to change color"
+            Layout.alignment: Qt.AlignHCenter
+            // Layout.fillWidth: true
+            // width: parent.width
+            opacity: 0.7
+        }
+
         RowLayout {
             Layout.preferredWidth: mainLayout.width
 
@@ -396,7 +409,7 @@ PlasmaExtras.Representation {
                         dialogTitle: "Choose custom color"
                         Layout.preferredHeight: colorPickerHeight
                         Layout.preferredWidth: colorPickerWidth
-                        
+
                         color: settings.custom_colors_list.split(" ")[index]
 
                         onAccepted: updateStoredColors()
@@ -404,7 +417,7 @@ PlasmaExtras.Representation {
                 }
                 // Component.onCompleted: updateStoredColors()
             }
-            
+
             RowLayout {
                 // width: parent.width
                 // Layout.fillWidth: true
@@ -435,43 +448,10 @@ PlasmaExtras.Representation {
             }
         }
 
-
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        }
-
-
-        // DARK MODE
-        RowLayout {
-            Label {
-                text: "Dark mode"
-                Layout.alignment: Qt.AlignLeft
-            }
-
-            CheckBox {
-                id: darkMode
-                checked: !settings.light
-
-                onCheckedChanged: {
-                    settings.light = !checked
-                }
-            }
-        }
-
-
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        }
-
-
         // PYWAL
         RowLayout {
             Label {
-                text: "Apply colors to pywal"
+                text: "Apply to pywal"
                 Layout.alignment: Qt.AlignLeft
             }
 
@@ -492,15 +472,103 @@ PlasmaExtras.Representation {
             color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
         }
 
+        PlasmaExtras.Heading {
+            level: 1
+            text: "Dark mode"
+            Layout.alignment: Qt.AlignHCenter
+            // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+            // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
+            // Layout.fillWidth: true
+        }
+
+        // DARK MODE
+        RowLayout {
+            PlasmaExtras.Heading {
+                text: "Apply to All"
+                level: 2
+            }
+
+            CheckBox {
+                checked: settings.gui_global_dark_mode
+
+                onCheckedChanged: {
+                    settings.gui_global_dark_mode = checked
+                }
+            }
+        }
+
+        RowLayout {
+            visible: settings.gui_global_dark_mode
+            Label {
+                text: "Enable"
+                Layout.alignment: Qt.AlignLeft
+            }
+
+            CheckBox {
+                checked: !settings.light && settings.gui_global_dark_mode
+
+                onCheckedChanged: {
+                    settings.light = !checked
+                    settings.pywal_light = !checked
+                }
+            }
+        }
+
+        // DARK MODE extras
+        RowLayout {
+            visible: !settings.gui_global_dark_mode
+            Label {
+                text: "Plasma"
+                Layout.alignment: Qt.AlignLeft
+            }
+
+            CheckBox {
+                checked: !settings.light
+
+                onCheckedChanged: {
+                    settings.light = !checked
+                }
+            }
+
+            Item { implicitWidth: PlasmaCore.Units.gridUnit / 2}
+
+            Label {
+                text: "Konsole, Pywal, KSyntaxHighlighting"
+                Layout.alignment: Qt.AlignLeft
+            }
+
+            CheckBox {
+                checked: !settings.pywal_light
+
+                onCheckedChanged: {
+                    settings.pywal_light = !checked
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+        }
+
+        PlasmaExtras.Heading {
+            level: 1
+            text: "Color amount"
+            Layout.alignment: Qt.AlignHCenter
+            // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+            // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
+            // Layout.fillWidth: true
+        }
 
         // Dark blend
         RowLayout {
             width: parent.width
             Layout.fillWidth: true
             Label {
-                text: "Dark blend multiplier"
+                text: "Dark blend"
                 Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
+                // Layout.fillWidth: true
             }
 
             Slider {
@@ -509,7 +577,8 @@ PlasmaExtras.Representation {
                 from: 0
                 to: 4.0
                 stepSize: 0.2
-                Layout.preferredWidth: slideWidth
+                // Layout.preferredWidth: slideWidth
+                Layout.fillWidth: true
                 onValueChanged: {
                     settings.dark_blend_multiplier = Math.round(value * 10) / 10
                 }
@@ -540,21 +609,14 @@ PlasmaExtras.Representation {
         }
 
 
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        }
-
-
         // Light blend
         RowLayout {
             width: parent.width
             Layout.fillWidth: true
             Label {
-                text: "Light blend multiplier"
+                text: "Light blend"
                 Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
+                // Layout.fillWidth: true
             }
 
             Slider {
@@ -563,7 +625,8 @@ PlasmaExtras.Representation {
                 from: 0
                 to: 4.0
                 stepSize: 0.2
-                Layout.preferredWidth: slideWidth
+                // Layout.preferredWidth: slideWidth
+                Layout.fillWidth: true
                 onValueChanged: {
                     settings.light_blend_multiplier = Math.round(value * 10) / 10
                 }
@@ -594,186 +657,72 @@ PlasmaExtras.Representation {
         }
 
 
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        }
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     height: 1
+        //     color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+        // }
 
 
-        // Dark Saturation
-        RowLayout {
-            width: parent.width
-            Layout.fillWidth: true
-            Label {
-                text: "Dark saturation multiplier"
-                Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
-            }
+        // // Dark Saturation
+        // // RowLayout {
+        // //     width: parent.width
+        // //     Layout.fillWidth: true
+        // //     Label {
+        // //         text: "Dark saturation multiplier"
+        // //         Layout.alignment: Qt.AlignLeft
+        // //         Layout.fillWidth: true
+        // //     }
 
-            Slider {
-                id: darkSat
-                value: settings.dark_saturation_multiplier
-                from: 0
-                to: 4.0
-                stepSize: 0.2
-                Layout.preferredWidth: slideWidth
-                onValueChanged: {
-                    settings.dark_saturation_multiplier = Math.round(value * 10) / 10
-                }
-            }
+        // //     Slider {
+        // //         id: darkSat
+        // //         value: settings.dark_saturation_multiplier
+        // //         from: 0
+        // //         to: 4.0
+        // //         stepSize: 0.2
+        // //         Layout.preferredWidth: slideWidth
+        // //         onValueChanged: {
+        // //             settings.dark_saturation_multiplier = Math.round(value * 10) / 10
+        // //         }
+        // //     }
 
-            TextField {
-                id: darkSatManual
-                Layout.preferredWidth: colorPickerWidth
-                topPadding: 10
-                bottomPadding: 10
-                leftPadding: 10
-                rightPadding: 10
-                placeholderText: "0-4"
-                horizontalAlignment: TextInput.AlignHCenter
-                text: parseFloat(settings.dark_saturation_multiplier)
-                // Layout.fillWidth: true
-                validator: DoubleValidator {
-                    bottom: 0.0
-                    top: 4.0
-                    decimals: 1
-                    notation: DoubleValidator.StandardNotation
-                }
+        // //     TextField {
+        // //         id: darkSatManual
+        // //         Layout.preferredWidth: colorPickerWidth
+        // //         topPadding: 10
+        // //         bottomPadding: 10
+        // //         leftPadding: 10
+        // //         rightPadding: 10
+        // //         placeholderText: "0-4"
+        // //         horizontalAlignment: TextInput.AlignHCenter
+        // //         text: parseFloat(settings.dark_saturation_multiplier)
+        // //         // Layout.fillWidth: true
+        // //         validator: DoubleValidator {
+        // //             bottom: 0.0
+        // //             top: 4.0
+        // //             decimals: 1
+        // //             notation: DoubleValidator.StandardNotation
+        // //         }
 
-                onAccepted: {
-                    settings.dark_saturation_multiplier = parseFloat(text)
-                }
-            }
-        }
-
-
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        }
+        // //         onAccepted: {
+        // //             settings.dark_saturation_multiplier = parseFloat(text)
+        // //         }
+        // //     }
+        // // }
 
 
-        // Monitor number
-        RowLayout {
-            width: parent.width
-            Layout.fillWidth: true
-            Label {
-                text: "Monitor/Screen number"
-                Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: monitorNumber
-                Layout.preferredWidth: colorPickerWidth
-                topPadding: 10
-                bottomPadding: 10
-                leftPadding: 10
-                rightPadding: 10
-                placeholderText: "0-?"
-                horizontalAlignment: TextInput.AlignHCenter
-                text: parseInt(settings.monitor)
-                // Layout.fillWidth: true
-                validator: IntValidator {
-                    bottom: 0
-                }
-
-                onAccepted: {
-                    settings.monitor = parseInt(text)
-                }
-            }
-        }
+        // Rectangle {
+        //     Layout.fillWidth: true
+        //     height: 1
+        //     color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+        // }
 
         Component.onCompleted: {
+            console.log("@@@@@@@@ config", configPath);
             loadMaterialYouData()
-            // console.log("Home directory: " + FolderListModel.homePath())
             executable.exec('echo ${HOME}/.config/kde-material-you-colors/config.conf',"getConfigPath")
-            //configPath
-            // settings.sync()
-            // settings.color = checked?"":settings.color_last
             statupTimer.start()
         }
-
-        // onMaterialYouDataChanged: {
-        //     console.log("CHANGED:",materialYouData.keys);
-        // }
-
-        // PlasmaComponents3.ScrollView {
-        //     visible: settings.color===""
-        //     ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
-        //     ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-        //     Layout.fillWidth: true
-        //     Layout.preferredHeight: colorPickerHeight * .75
-        //     RowLayout {
-        //         spacing: PlasmaCore.Units.gridUnit / 2
-        //         Repeater {
-        //             id: circleRepeater
-        //             model: materialYouData ? Object.keys(materialYouData.best) : []
-        //             delegate: Item {
-        //                 Layout.preferredWidth: colorPickerHeight * .75
-        //                 Layout.preferredHeight: colorPickerHeight * .75
-
-        //                 Rectangle {
-        //                     anchors.fill: parent
-        //                     radius: parent.height
-        //                     color: materialYouData.best[index]
-        //                     border.width: 3
-        //                     border.color: settings.ncolor==index?Kirigami.Theme.textColor:materialYouData.best[index]
-        //                 }
-
-        //                 // Label {
-        //                 //     anchors.centerIn: parent
-        //                 //     text: index
-        //                 //     font.pixelSize: 12
-        //                 //     // style: Text.Outline
-        //                 //     // styleColor: "black"
-        //                 //     color: "white"
-        //                 //     horizontalAlignment: TextInput.AlignHCenter
-        //                 //     verticalAlignment: TextInput.AlignVCenter
-        //                 // }
-
-        //                 // DropShadow {
-        //                 //     anchors.fill: circleRepeater.itemAt(index).children[1]
-        //                 //     source: circleRepeater.itemAt(index).children[1]
-        //                 //     verticalOffset: 1
-        //                 //     radius: 3
-        //                 //     // samples: 5
-        //                 //     color: "#80000000"
-        //                 // }
-                        
-        //                 MouseArea {
-        //                     anchors.fill: parent
-        //                     hoverEnabled: true
-
-        //                     onEntered: {
-        //                         var hoverColor = Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, materialYouData.best[index], .5)
-        //                         //var hoverColor = Kirigami.ColorUtils.adjustColor(materialYouData.best[index], {"value": -80})
-        //                         circleRepeater.itemAt(index).children[0].color = hoverColor
-        //                     }
-
-        //                     onExited: {
-        //                         circleRepeater.itemAt(index).children[0].color = materialYouData.best[index]
-        //                     }
-
-        //                     onClicked: {
-        //                         console.log("SELECTED COLOR:",materialYouData.best[index])
-        //                         settings.ncolor = index
-
-        //                         for (let i=0; i < circleRepeater.count; i++) {
-        //                             if (i == settings.ncolor){
-        //                                 circleRepeater.itemAt(i).children[0].border.color = Kirigami.Theme.textColor
-        //                             } else {
-        //                                 circleRepeater.itemAt(i).children[0].border.color = materialYouData.best[i]
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
 
         Timer {
             interval: 500;
@@ -791,15 +740,11 @@ PlasmaExtras.Representation {
             interval: 500
             repeat: false
             onTriggered: {
-                if (settings.color_last===""){
-                    settings.color_last="#ff0000"
-                    colorButton.color = "#ff0000"
-                } else {
-                    colorButton.color = settings.color_last
+                if(settings.color_last==="") {
+                    settings.color_last = "#66a3ef"
                 }
-
-                if (settings.custom_colors_list!=="") {
-                    settings.custom_colors_list_last = settings.custom_colors_list
+                if (settings.custom_colors_list_last==="") {
+                    settings.custom_colors_list_last = "#d0265c #74e448 #eece4f #66a3ef #532066 #297d81 #ccc1c1"
                 }
             }
         }
