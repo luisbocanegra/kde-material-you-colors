@@ -193,9 +193,11 @@ PlasmaExtras.Representation {
         Kirigami.InlineMessage {
             Layout.fillWidth: true
             type: Kirigami.MessageType.Error
-
-            text: "Backend is not running"
             visible: !backendRunning
+
+            text: qsTr("Backend is not running. This Plasmoid requires <a href=\"https://github.com/luisbocanegra/kde-material-you-colors\">kde-material-you-colors</a> to be installed and running to work.")
+
+            onLinkActivated: link => Qt.openUrlExternally(link)
 
             actions: [
                 Kirigami.Action {
@@ -203,6 +205,13 @@ PlasmaExtras.Representation {
                     text: "Start"
                     onTriggered: {
                         checkBackend.exec("kde-material-you-colors")
+                    }
+                },
+                Kirigami.Action {
+                    icon.name: "media-playback-start"
+                    text: "Start and enable Autostart"
+                    onTriggered: {
+                        checkBackend.exec("kde-material-you-colors --autostart;kde-material-you-colors")
                     }
                 },
                 Kirigami.Action {
