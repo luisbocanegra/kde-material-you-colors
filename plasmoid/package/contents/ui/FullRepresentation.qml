@@ -35,9 +35,9 @@ PlasmaExtras.Representation {
     property string configPath: null
     property string cmd_type: ""
 
-    property alias colorsFromWallpaper: settings.color
+    property bool backendRunning: false
+    property string checkBackendCommand: 'ps -C "kde-material-you-colors" -F --no-headers'
 
-    property alias textColorsFromWallpaper: settings.custom_colors_list
 
     onMaterialYouDataChanged: {
         if (materialYouData !== null) {
@@ -69,17 +69,45 @@ PlasmaExtras.Representation {
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
 
-
     Connections {
         target: executable
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
             console.log("COMMAND TYPE",cmd_type)
             // update current brightness
             if (cmd_type == "getConfigPath") {
-                //executable.exec(currentBrightnessCommand(monitor_name),"")
-                // console.log("Current brightness -> "+monitor_name +" -> "+stdout)
                 configPath = stdout.replace('\n', '').trim()
             }
+        }
+    }
+
+
+    PlasmaCore.DataSource {
+        id: checkBackend
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+            exited(sourceName, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName) // cmd finished
+        }
+
+            function exec(cmd) {
+                checkBackend.connectSource(cmd)
+        }
+
+        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    Connections {
+        target: checkBackend
+        function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+            backendRunning = stdout.replace('\n', '').trim().length>0
+            console.log("BACKEND RUNNING:", backendRunning)
         }
     }
 
@@ -150,6 +178,7 @@ PlasmaExtras.Representation {
 
 
     ColumnLayout {
+        id: mainLayout
         Layout.fillWidth: true
         Layout.fillHeight: true
         // Layout.preferredWidth: 50
@@ -160,7 +189,31 @@ PlasmaExtras.Representation {
             leftMargin: PlasmaCore.Units.mediumSpacing
             rightMargin: PlasmaCore.Units.mediumSpacing
         }
-        id: mainLayout
+
+        Kirigami.InlineMessage {
+            Layout.fillWidth: true
+            type: Kirigami.MessageType.Error
+
+            text: "Backend is not running"
+            visible: !backendRunning
+
+            actions: [
+                Kirigami.Action {
+                    icon.name: "media-playback-start"
+                    text: "Start"
+                    onTriggered: {
+                        checkBackend.exec("kde-material-you-colors")
+                    }
+                },
+                Kirigami.Action {
+                    text: "View install guide"
+                    onTriggered: {
+                        Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing")
+                    }
+                }
+            ]
+        }
+
 
         PlasmaExtras.Heading {
             level: 1
@@ -366,11 +419,10 @@ PlasmaExtras.Representation {
             }
             CheckBox {
                 id:customColorsCheckbox
-                checked: textColorsFromWallpaper==""
+                checked: settings.custom_colors_list==""
                 Layout.fillWidth: true
                 onCheckedChanged: {
                     settings.custom_colors_list = checked?"":settings.custom_colors_list_last
-                    // updateStoredColors()
                 }
             }
         }
@@ -732,6 +784,7 @@ PlasmaExtras.Representation {
                 loadMaterialYouData()
                 console.log("@@@@@@@@ config", configPath);
                 console.log("Config file name:", settings.fileName);
+                checkBackend.exec(checkBackendCommand)
             }
         }
 
