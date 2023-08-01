@@ -38,6 +38,8 @@ PlasmaExtras.Representation {
     property bool backendRunning: false
     property string checkBackendCommand: 'ps -C "kde-material-you-colors" -F --no-headers'
 
+    property bool plasmoidExpanded
+
 
     onMaterialYouDataChanged: {
         if (materialYouData !== null) {
@@ -784,7 +786,7 @@ PlasmaExtras.Representation {
 
         Timer {
             interval: 500;
-            running: true;
+            running: plasmoidExpanded
             repeat: true;
             onTriggered: {
                 loadMaterialYouData()
