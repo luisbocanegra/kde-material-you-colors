@@ -32,7 +32,7 @@ PlasmaExtras.Representation {
     property var materialYouData: null
     property var wallpaperPreview: null
 
-    property string configPath: null
+    property string configPath
     property string cmd_type: ""
 
     property bool backendRunning: false
@@ -107,7 +107,6 @@ PlasmaExtras.Representation {
         target: checkBackend
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
             backendRunning = stdout.replace('\n', '').trim().length>0
-            console.log("BACKEND RUNNING:", backendRunning)
         }
     }
 
@@ -116,12 +115,10 @@ PlasmaExtras.Representation {
     // save relevant configs with _last suffix
     // to recover them after reenable
     Settings {
-        fileName: configPath //+"" //FolderListModel.homePath()+"/.config/kde-material-you-colors/config.conf"
+        fileName: configPath
         category: "CUSTOM"
         id: settings
         property int monitor: 0
-        // property string plugin: "org.kde.image"
-        // property string file
 
         property string color
         property string color_last
@@ -779,9 +776,9 @@ PlasmaExtras.Representation {
         // }
 
         Component.onCompleted: {
-            console.log("@@@@@@@@ config", configPath);
             loadMaterialYouData()
             executable.exec('echo ${HOME}/.config/kde-material-you-colors/config.conf',"getConfigPath")
+            checkBackend.exec(checkBackendCommand)
             statupTimer.start()
         }
 
@@ -791,8 +788,6 @@ PlasmaExtras.Representation {
             repeat: true;
             onTriggered: {
                 loadMaterialYouData()
-                console.log("@@@@@@@@ config", configPath);
-                console.log("Config file name:", settings.fileName);
                 checkBackend.exec(checkBackendCommand)
             }
         }
@@ -801,7 +796,11 @@ PlasmaExtras.Representation {
             id: statupTimer
             interval: 500
             repeat: false
+
             onTriggered: {
+                console.log("@@@@@ BACKEND RUNNING:", backendRunning)
+                console.log("@@@@@ Config file:", settings.fileName);
+                // Default colors
                 if(settings.color_last==="") {
                     settings.color_last = "#66a3ef"
                 }
