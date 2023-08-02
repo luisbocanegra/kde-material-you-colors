@@ -102,6 +102,8 @@ class Configs:
             "darker_window_list": [args.darker_window_list, None, 3],
             "use_startup_delay": [args.use_startup_delay, None, 0],
             "startup_delay": [args.startup_delay, 0, 1],
+            "plasma_follows_scheme": [None, None, 0],
+            "pywal_follows_scheme": [None, None, 0],
         }
         options = defaults
         config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
@@ -113,6 +115,15 @@ class Configs:
             options[key] = eval_conf(
                 config=config, val=key, conf_type=val[2], arg=val[0], fallback=val[1]
             )
+
+        if options["plasma_follows_scheme"]:
+            options["light"] = None
+
+        if options["pywal_follows_scheme"]:
+            options["pywal_light"] = None
+
+        # if config["pywal_follows_scheme"]:
+        #    options["pywal_light"] = None
 
         # Some logging for out of range values
         if options["monitor"] < 0:
