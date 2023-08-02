@@ -151,6 +151,9 @@ PlasmaExtras.Representation {
         property real dark_brightness_multiplier: 1.0
 
         property bool gui_global_dark_mode: false
+
+        property bool plasma_follows_scheme: true
+        property bool pywal_follows_scheme: true
     }
 
     function updateStoredColors() {
@@ -528,78 +531,102 @@ PlasmaExtras.Representation {
             color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
         }
 
+        // DARK MODE
         PlasmaExtras.Heading {
             level: 1
             text: "Dark mode"
             Layout.alignment: Qt.AlignHCenter
-            // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
-            // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
+        }
+
+        RowLayout {
+            ColumnLayout {
+                Label {
+                    text: "Plasma"
+                    Layout.alignment: Qt.AlignLeft
+                }
+
+                ButtonGroup {
+                    id: plasmaModeGroup
+                }
+
+                RadioButton {
+                    id:plasmaEnableDark
+                    checked: !settings.light
+                    text: qsTr("Enabled")
+                    onCheckedChanged: {
+                        settings.light = !checked
+                    }
+                    ButtonGroup.group: plasmaModeGroup
+                }
+
+                RadioButton {
+                    checked: !plasmaEnableDark.checked && !plasmaFollowScheme.checked//settings.light
+                    text: qsTr("Disabled")
+
+                    ButtonGroup.group: plasmaModeGroup
+                }
+
+                RadioButton {
+                    id: plasmaFollowScheme
+                    checked: settings.plasma_follows_scheme
+                    text: qsTr("Follow color scheme")
+                    onCheckedChanged: {
+                            settings.plasma_follows_scheme = checked
+                    }
+                    ButtonGroup.group: plasmaModeGroup
+                }
+            }
+
+            Item { Layout.fillWidth: true}
+
+            ColumnLayout {
+                Label {
+                    text: "Konsole, Pywal, KSyntaxHighlighting"
+                    Layout.alignment: Qt.AlignLeft
+                }
+
+                ButtonGroup {
+                    id: pywalModeGroup
+                }
+
+                RadioButton {
+                    id:pywalEnableDark
+                    checked: !settings.pywal_light
+                    text: qsTr("Enabled")
+                    onCheckedChanged: {
+                        settings.pywal_light = !checked
+                    }
+                    ButtonGroup.group: pywalModeGroup
+                }
+
+                RadioButton {
+                    checked: !pywalEnableDark.checked && !pywalFollowScheme.checked//settings.light
+                    text: qsTr("Disabled")
+
+                    ButtonGroup.group: pywalModeGroup
+                }
+
+                RadioButton {
+                    id: pywalFollowScheme
+                    checked: settings.pywal_follows_scheme
+                    text: qsTr("Follow color scheme")
+                    onCheckedChanged: {
+                            settings.pywal_follows_scheme = checked
+                    }
+                    ButtonGroup.group: pywalModeGroup
+                }
+            }
+        }
+
+        Text {
+            text: "<i>Follow color scheme</i> applies only for Material You color schemes when changed by you or other programs"
+            Layout.alignment: Qt.AlignHCenter
             // Layout.fillWidth: true
-        }
-
-        // DARK MODE
-        RowLayout {
-            PlasmaExtras.Heading {
-                text: "Apply to All"
-                level: 2
-            }
-
-            CheckBox {
-                checked: settings.gui_global_dark_mode
-
-                onCheckedChanged: {
-                    settings.gui_global_dark_mode = checked
-                }
-            }
-        }
-
-        RowLayout {
-            visible: settings.gui_global_dark_mode
-            Label {
-                text: "Enable"
-                Layout.alignment: Qt.AlignLeft
-            }
-
-            CheckBox {
-                checked: !settings.light && settings.gui_global_dark_mode
-
-                onCheckedChanged: {
-                    settings.light = !checked
-                    settings.pywal_light = !checked
-                }
-            }
-        }
-
-        // DARK MODE extras
-        RowLayout {
-            visible: !settings.gui_global_dark_mode
-            Label {
-                text: "Plasma"
-                Layout.alignment: Qt.AlignLeft
-            }
-
-            CheckBox {
-                checked: !settings.light
-
-                onCheckedChanged: {
-                    settings.light = !checked
-                }
-            }
-
-            Item { implicitWidth: PlasmaCore.Units.gridUnit / 2}
-
-            Label {
-                text: "Konsole, Pywal, KSyntaxHighlighting"
-                Layout.alignment: Qt.AlignLeft
-            }
-
-            CheckBox {
-                checked: !settings.pywal_light
-
-                onCheckedChanged: {
-                    settings.pywal_light = !checked
-                }
-            }
+            Layout.preferredWidth: parent.width
+            opacity: 0.7
+            color: Kirigami.Theme.textColor
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
         }
 
         Rectangle {
