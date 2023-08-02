@@ -17,11 +17,8 @@ PlasmaExtras.Representation {
     Layout.minimumWidth: Plasmoid.switchWidth
     Layout.minimumHeight: Plasmoid.switchHeight
 
-    Layout.preferredWidth: PlasmaCore.Units.gridUnit * 26
-    Layout.preferredHeight: PlasmaCore.Units.gridUnit * 50
-
-    Layout.maximumWidth: mainLayout.implicitWidth //PlasmaCore.Units.gridUnit * 50
-    Layout.maximumHeight: mainLayout.implicitHeight + PlasmaCore.Units.gridUnit * 4 //PlasmaCore.Units.gridUnit * 60
+    Layout.preferredWidth: 560 * PlasmaCore.Units.devicePixelRatio
+    // Layout.preferredHeight: 680 * PlasmaCore.Units.devicePixelRatio
 
     readonly property int controlSize: PlasmaCore.Units.iconSizes.medium
 
@@ -35,11 +32,12 @@ PlasmaExtras.Representation {
     property string configPath
     property string cmd_type: ""
 
-    property bool backendRunning: false
+    property bool backendRunning: true
     property string checkBackendCommand: 'ps -C "kde-material-you-colors" -F --no-headers'
 
     property bool plasmoidExpanded
 
+    property var scrollVisible: mainLayout.height>expandedRepresentation.height
 
     onMaterialYouDataChanged: {
         if (materialYouData !== null) {
@@ -175,19 +173,20 @@ PlasmaExtras.Representation {
         xhr.send()
     }
 
+    PlasmaComponents3.ScrollView {
+        anchors {
+            fill: parent
+            leftMargin: PlasmaCore.Units.gridUnit / 2
+            rightMargin: 0
+        }
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
     ColumnLayout {
         id: mainLayout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        // Layout.preferredWidth: 50
-        // Layout.preferredHeight: 50
-        // Layout.preferredWidth: parent.width
-        anchors {
-            fill: parent
-            leftMargin: PlasmaCore.Units.mediumSpacing
-            rightMargin: PlasmaCore.Units.mediumSpacing
-        }
+        // HACK check if scrollbar is shown to add/remove fake right marging of
+        // ColumnLayout inside ScrollView, ideally it should take the available space
+        // but I simply don't know how to do that
+        width: expandedRepresentation.width - (scrollVisible?PlasmaCore.Units.gridUnit*1.5:PlasmaCore.Units.gridUnit)
 
         Kirigami.InlineMessage {
             Layout.fillWidth: true
@@ -208,13 +207,14 @@ PlasmaExtras.Representation {
                 },
                 Kirigami.Action {
                     icon.name: "media-playback-start"
-                    text: "Start and enable Autostart"
+                    text: "Start && enable Autostart"
                     onTriggered: {
                         checkBackend.exec("kde-material-you-colors --autostart;kde-material-you-colors")
                     }
                 },
                 Kirigami.Action {
-                    text: "View install guide"
+                    icon.name: "help-about-symbolic"
+                    text: "Install guide"
                     onTriggered: {
                         Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing")
                     }
@@ -405,16 +405,11 @@ PlasmaExtras.Representation {
         }
 
         // CUSTOM COLOR LIST
-        ColumnLayout{
-
-            PlasmaExtras.Heading {
-                level: 1
-                text: "Text colors"
-                Layout.alignment: Qt.AlignHCenter
-                // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
-                // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
-                // Layout.fillWidth: true
-            }
+        PlasmaExtras.Heading {
+            level: 1
+            text: "Text colors"
+            Layout.alignment: Qt.AlignHCenter
+        }
 
         RowLayout {
             Layout.preferredWidth: mainLayout.width
@@ -446,15 +441,6 @@ PlasmaExtras.Representation {
 
         RowLayout {
             Layout.preferredWidth: mainLayout.width
-
-            // Label {
-            //     text: "Text colors"
-            //     Layout.alignment: Qt.AlignHCenter
-            //     Layout.fillWidth: true
-            //     // width: parent.width
-            // }
-
-
 
             RowLayout {
                 // width: parent.width
@@ -499,14 +485,15 @@ PlasmaExtras.Representation {
                 }
             }
         }
+
         Label {
-                text: "Applies to Konsole, Pywal, KSyntaxHighlighting"
-                Layout.alignment: Qt.AlignHCenter
-                // Layout.fillWidth: true
-                // width: parent.width
-                opacity: 0.7
-            }
+            text: "Applies to Konsole, Pywal, KSyntaxHighlighting"
+            Layout.alignment: Qt.AlignHCenter
+            // Layout.fillWidth: true
+            // width: parent.width
+            opacity: 0.7
         }
+
 
         // PYWAL
         RowLayout {
@@ -724,51 +711,51 @@ PlasmaExtras.Representation {
         // }
 
 
-        // // Dark Saturation
-        // // RowLayout {
-        // //     width: parent.width
-        // //     Layout.fillWidth: true
-        // //     Label {
-        // //         text: "Dark saturation multiplier"
-        // //         Layout.alignment: Qt.AlignLeft
-        // //         Layout.fillWidth: true
-        // //     }
+        // //Dark Saturation
+        // RowLayout {
+        //     width: parent.width
+        //     Layout.fillWidth: true
+        //     Label {
+        //         text: "Dark saturation"
+        //         Layout.alignment: Qt.AlignLeft
+        //         // Layout.fillWidth: true
+        //     }
 
-        // //     Slider {
-        // //         id: darkSat
-        // //         value: settings.dark_saturation_multiplier
-        // //         from: 0
-        // //         to: 4.0
-        // //         stepSize: 0.2
-        // //         Layout.preferredWidth: slideWidth
-        // //         onValueChanged: {
-        // //             settings.dark_saturation_multiplier = Math.round(value * 10) / 10
-        // //         }
-        // //     }
+        //     Slider {
+        //         id: darkSat
+        //         value: settings.dark_saturation_multiplier
+        //         from: 0
+        //         to: 4.0
+        //         stepSize: 0.2
+        //         Layout.fillWidth: true
+        //         onValueChanged: {
+        //             settings.dark_saturation_multiplier = Math.round(value * 10) / 10
+        //         }
+        //     }
 
-        // //     TextField {
-        // //         id: darkSatManual
-        // //         Layout.preferredWidth: colorPickerWidth
-        // //         topPadding: 10
-        // //         bottomPadding: 10
-        // //         leftPadding: 10
-        // //         rightPadding: 10
-        // //         placeholderText: "0-4"
-        // //         horizontalAlignment: TextInput.AlignHCenter
-        // //         text: parseFloat(settings.dark_saturation_multiplier)
-        // //         // Layout.fillWidth: true
-        // //         validator: DoubleValidator {
-        // //             bottom: 0.0
-        // //             top: 4.0
-        // //             decimals: 1
-        // //             notation: DoubleValidator.StandardNotation
-        // //         }
+        //     TextField {
+        //         id: darkSatManual
+        //         Layout.preferredWidth: colorPickerWidth
+        //         topPadding: 10
+        //         bottomPadding: 10
+        //         leftPadding: 10
+        //         rightPadding: 10
+        //         placeholderText: "0-4"
+        //         horizontalAlignment: TextInput.AlignHCenter
+        //         text: parseFloat(settings.dark_saturation_multiplier)
+        //         // Layout.fillWidth: true
+        //         validator: DoubleValidator {
+        //             bottom: 0.0
+        //             top: 4.0
+        //             decimals: 1
+        //             notation: DoubleValidator.StandardNotation
+        //         }
 
-        // //         onAccepted: {
-        // //             settings.dark_saturation_multiplier = parseFloat(text)
-        // //         }
-        // //     }
-        // // }
+        //         onAccepted: {
+        //             settings.dark_saturation_multiplier = parseFloat(text)
+        //         }
+        //     }
+        // }
 
 
         // Rectangle {
@@ -791,6 +778,7 @@ PlasmaExtras.Representation {
             onTriggered: {
                 loadMaterialYouData()
                 checkBackend.exec(checkBackendCommand)
+                //console.log("Main H:",mainLayout.height," View H:",expandedRepresentation.height);
             }
         }
 
@@ -811,6 +799,7 @@ PlasmaExtras.Representation {
                 }
             }
         }
+    }
     }
 }
 
