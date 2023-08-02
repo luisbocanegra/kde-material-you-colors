@@ -12,7 +12,5 @@ Item {
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
 
-    Plasmoid.fullRepresentation: FullRepresentation {
-        plasmoidExpanded: Plasmoid.expanded
-    }
+    Plasmoid.fullRepresentation: FullRepresentation {}
 }
