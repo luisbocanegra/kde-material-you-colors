@@ -27,7 +27,9 @@ PlasmaExtras.Representation {
     property bool backendRunning: true
     property string checkBackendCommand: 'ps -C "kde-material-you-colors" -F --no-headers'
 
-    property bool plasmoidExpanded:false
+    property bool plasmoidExpanded: plasmoid.expanded ||
+                                    plasmoid.location === PlasmaCore.Types.Floating ||
+                                    plasmoid.location === PlasmaCore.Types.Desktop
 
     property var scrollVisible: mainLayout.height>expandedRepresentation.height
 
@@ -105,16 +107,8 @@ PlasmaExtras.Representation {
         }
     }
 
-    Connections {
-        target: Plasmoid.self
-        function onExpandedChanged() {
-            plasmoidExpanded = Plasmoid.expanded
-        }
-    }
-
     // read settings file
-    // save relevant configs with _last suffix
-    // to recover them after reenable
+    // save relevant configs with _last suffix to recover them after reenable
     Settings {
         fileName: configPath
         category: "CUSTOM"

@@ -8,12 +8,11 @@ import org.kde.plasma.components 3.0 as PlasmaComponents3
 
 Item {
     id:root
-    // Plasmoid.switchWidth: PlasmaCore.Units.gridUnit * 14
-    // Plasmoid.switchHeight: PlasmaCore.Units.gridUnit * 10
 
-    // Always display the compact view.
-    // Never show the full popup view even if there is space for it.
-    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    // Allow full view on the desktop
+    Plasmoid.preferredRepresentation: (plasmoid.location === PlasmaCore.Types.Floating ||
+                                    plasmoid.location === PlasmaCore.Types.Desktop) ?
+                                    Plasmoid.fullRepresentation : Plasmoid.compactRepresentation
 
     property string mainSource: "FullRepMain.qml"
 
@@ -33,7 +32,7 @@ Item {
             visible: !(plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
 
             leftPadding: PlasmaCore.Units.smallSpacing
-            rightPadding: PlasmaCore.Units.smallSpacing
+            // rightPadding: PlasmaCore.Units.smallSpacing
 
             RowLayout {
                 anchors.fill: parent
@@ -79,9 +78,13 @@ Item {
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
 
+                    // hide keep open on the desktop
+                    visible: !(plasmoid.location === PlasmaCore.Types.Floating ||
+                                    plasmoid.location === PlasmaCore.Types.Desktop)
+
                     icon.name: 'pin'
 
-                    text: i18n("Keep open")
+                    text: i18n("Keep Open")
 
                     checked: !autoHide
 
