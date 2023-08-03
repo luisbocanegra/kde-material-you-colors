@@ -14,17 +14,9 @@ import "components" as Components
 
 PlasmaExtras.Representation {
     id: expandedRepresentation
-    Layout.minimumWidth: Plasmoid.switchWidth
-    Layout.minimumHeight: Plasmoid.switchHeight
 
-    Layout.preferredWidth: 560 * PlasmaCore.Units.devicePixelRatio
-    // Layout.preferredHeight: 680 * PlasmaCore.Units.devicePixelRatio
-
-    readonly property int controlSize: PlasmaCore.Units.iconSizes.medium
-
-    property var colorPickerHeight: 36
-    property var colorPickerWidth: 48
-    property var slideWidth: 250
+    property var controlHeight: 36 * PlasmaCore.Units.devicePixelRatio
+    property var controlWidth: 48 * PlasmaCore.Units.devicePixelRatio
 
     property var materialYouData: null
     property var wallpaperPreview: null
@@ -272,7 +264,7 @@ PlasmaExtras.Representation {
             TextField {
                 id: monitorNumber
                 visible: settings.color==""
-                Layout.preferredWidth: colorPickerWidth
+                Layout.preferredWidth: controlWidth
                 topPadding: 10
                 bottomPadding: 10
                 leftPadding: 10
@@ -305,9 +297,10 @@ PlasmaExtras.Representation {
 
             Label {
                 text: "Select color"
+                id:selectColorLabel
                 // Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                 // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
-                Layout.fillWidth: true
+                // Layout.fillWidth: true
             }
 
             // Single color
@@ -317,8 +310,8 @@ PlasmaExtras.Representation {
                 visible: settings.color!==""
                 showAlphaChannel: false
                 dialogTitle: "Choose source color"
-                Layout.preferredHeight: colorPickerHeight
-                Layout.preferredWidth: colorPickerWidth
+                Layout.preferredHeight: controlHeight
+                Layout.preferredWidth: controlWidth
                 color: settings.color?settings.color:settings.color_last
                 onAccepted: {
                     settings.color = colorButton.color.toString()
@@ -329,83 +322,77 @@ PlasmaExtras.Representation {
             // multiple colors
             // TODO: center rows
             GridLayout { //PlasmaComponents3.ScrollView
+                property var gridSpacing: PlasmaCore.Units.mediumSpacing
                 visible: settings.color===""
-                // Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-                // Layout.alignment: Qt.AlignHCenter
-                // Layout.preferredWidth: mainLayout.width - PlasmaCore.Units.gridUnit
-                // Layout.preferredHeight: PlasmaCore.Units.gridUnit
-                columns: 12
-                // Layout.preferredHeight: colorPickerHeight * .75
-                //RowLayout {
-                    //spacing: PlasmaCore.Units.gridUnit / 2
-                    Layout.alignment: Qt.AlignHCenter
-                    // Layout.preferredWidth: mainLayout.width
+                columns: Math.floor((mainLayout.width - selectColorLabel.width) / (
+                    controlHeight * .75 + gridSpacing))
+                rowSpacing: gridSpacing
+                columnSpacing: gridSpacing
 
-                    Repeater {
-                        id: circleRepeater
-                        model: materialYouData ? Object.keys(materialYouData.best) : []
-                        delegate: Item {
-                            Layout.preferredWidth: colorPickerHeight * .75
-                            Layout.preferredHeight: colorPickerHeight * .75
+                Layout.alignment: Qt.AlignRight
 
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: parent.height
-                                color: materialYouData.best[index]
-                                border.width: 3
-                                border.color: settings.ncolor==index?Kirigami.Theme.textColor:materialYouData.best[index]
-                            }
+                Repeater {
+                    id: circleRepeater
+                    model: materialYouData ? Object.keys(materialYouData.best) : []
+                    delegate: Item {
+                        Layout.preferredWidth: controlHeight * .75
+                        Layout.preferredHeight: controlHeight * .75
 
-                            // Label {
-                            //     anchors.centerIn: parent
-                            //     text: index
-                            //     font.pixelSize: 12
-                            //     // style: Text.Outline
-                            //     // styleColor: "black"
-                            //     color: "white"
-                            //     horizontalAlignment: TextInput.AlignHCenter
-                            //     verticalAlignment: TextInput.AlignVCenter
-                            // }
+                        property string color1: Kirigami.ColorUtils.brightnessForColor(materialYouData.best[index]) === Kirigami.ColorUtils.Dark ? "#ffffff":"#000000"
+                        property string hoverColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index],color1, .18)
+                        property string selectColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index],color1, .7)
 
-                            DropShadow {
-                                anchors.fill: circleRepeater.itemAt(index).children[0]
-                                source: circleRepeater.itemAt(index).children[0]
-                                verticalOffset: 0.5
-                                radius: 4
-                                // samples: 5
-                                color: "#80000000"
-                            }
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: parent.height
 
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
+                            color: settings.ncolor==index?circleRepeater.itemAt(index).selectColor:materialYouData.best[index]
+                            border.width: parent.width / 4
+                            border.color: materialYouData.best[index]
+                        }
 
-                                onEntered: {
-                                    var hoverColor = Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, materialYouData.best[index], .5)
-                                    //var hoverColor = Kirigami.ColorUtils.adjustColor(materialYouData.best[index], {"value": -80})
-                                    circleRepeater.itemAt(index).children[0].color = hoverColor
+                        DropShadow {
+                            anchors.fill: circleRepeater.itemAt(index).children[0]
+                            source: circleRepeater.itemAt(index).children[0]
+                            verticalOffset: 0.5
+                            radius: 4
+                            // samples: 5
+                            color: "#80000000"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onEntered: {
+                                circleRepeater.itemAt(index).children[0].border.color = circleRepeater.itemAt(index).hoverColor
+                                if (index!=settings.ncolor){
+                                    circleRepeater.itemAt(index).children[0].color = circleRepeater.itemAt(index).hoverColor
                                 }
+                            }
 
-                                onExited: {
+                            onExited: {
+                                circleRepeater.itemAt(index).children[0].border.color = materialYouData.best[index]
+                                if (index!=settings.ncolor){
                                     circleRepeater.itemAt(index).children[0].color = materialYouData.best[index]
                                 }
+                            }
 
-                                onClicked: {
-                                    console.log("SELECTED COLOR:",materialYouData.best[index])
-                                    settings.ncolor = index
+                            onClicked: {
+                                console.log("SELECTED COLOR:",materialYouData.best[index])
+                                settings.ncolor = index
 
-                                    for (let i=0; i < circleRepeater.count; i++) {
-                                        if (i == settings.ncolor){
-                                            circleRepeater.itemAt(i).children[0].border.color = Kirigami.Theme.textColor
-                                        } else {
-                                            circleRepeater.itemAt(i).children[0].border.color = materialYouData.best[i]
-                                        }
+                                for (let i=0; i < circleRepeater.count; i++) {
+                                    if (i == settings.ncolor){
+                                        circleRepeater.itemAt(i).children[0].color = circleRepeater.itemAt(index).selectColor
+                                    } else {
+                                        circleRepeater.itemAt(i).children[0].color = materialYouData.best[i]
                                     }
                                 }
                             }
                         }
                     }
-                //}
+                }
             }
         }
 
@@ -465,8 +452,8 @@ PlasmaExtras.Representation {
                     delegate: Components.CustomColorButton {
                         showAlphaChannel: false
                         dialogTitle: "Choose custom color"
-                        Layout.preferredHeight: colorPickerHeight
-                        Layout.preferredWidth: colorPickerWidth
+                        Layout.preferredHeight: controlHeight
+                        Layout.preferredWidth: controlWidth
 
                         color: settings.custom_colors_list.split(" ")[index]
 
@@ -485,8 +472,8 @@ PlasmaExtras.Representation {
                     model: materialYouData ? Object.keys(materialYouData.pywal.dark.colors).slice(1,8) : []
 
                     delegate: Item {
-                        Layout.preferredWidth: colorPickerHeight * .75
-                        Layout.preferredHeight: colorPickerHeight * .75
+                        Layout.preferredWidth: controlHeight * .75
+                        Layout.preferredHeight: controlHeight * .75
 
                         Rectangle {
                             anchors.fill: parent
@@ -660,7 +647,6 @@ PlasmaExtras.Representation {
                 from: 0
                 to: 4.0
                 stepSize: 0.2
-                // Layout.preferredWidth: slideWidth
                 Layout.fillWidth: true
                 onValueChanged: {
                     settings.dark_blend_multiplier = Math.round(value * 10) / 10
@@ -669,7 +655,7 @@ PlasmaExtras.Representation {
 
             TextField {
                 id: darkBlendManual
-                Layout.preferredWidth: colorPickerWidth
+                Layout.preferredWidth: controlWidth
                 topPadding: 10
                 bottomPadding: 10
                 leftPadding: 10
@@ -708,7 +694,6 @@ PlasmaExtras.Representation {
                 from: 0
                 to: 4.0
                 stepSize: 0.2
-                // Layout.preferredWidth: slideWidth
                 Layout.fillWidth: true
                 onValueChanged: {
                     settings.light_blend_multiplier = Math.round(value * 10) / 10
@@ -717,7 +702,7 @@ PlasmaExtras.Representation {
 
             TextField {
                 id: lightBlendManual
-                Layout.preferredWidth: colorPickerWidth
+                Layout.preferredWidth: controlWidth
                 topPadding: 10
                 bottomPadding: 10
                 leftPadding: 10
@@ -771,7 +756,7 @@ PlasmaExtras.Representation {
 
         //     TextField {
         //         id: darkSatManual
-        //         Layout.preferredWidth: colorPickerWidth
+        //         Layout.preferredWidth: controlWidth
         //         topPadding: 10
         //         bottomPadding: 10
         //         leftPadding: 10

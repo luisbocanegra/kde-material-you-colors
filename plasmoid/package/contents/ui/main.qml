@@ -23,6 +23,8 @@ Item {
         id:root
         anchors.fill: parent
 
+        Layout.minimumWidth: 560 * PlasmaCore.Units.devicePixelRatio
+        Layout.minimumHeight: 380 * PlasmaCore.Units.devicePixelRatio
         Layout.preferredWidth: 560 * PlasmaCore.Units.devicePixelRatio
         Layout.preferredHeight: loader.height + heading.height
 
