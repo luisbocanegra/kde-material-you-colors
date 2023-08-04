@@ -194,6 +194,8 @@ PlasmaExtras.Representation {
             model: 1
 
             delegate: ColumnLayout {
+                // Inherit theme from parent, without this colors don't change on light/dark switch
+                Kirigami.Theme.inherit: true
                 id: mainLayout
                 anchors.left: parent.left
                 anchors.right: parent.right
