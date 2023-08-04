@@ -33,6 +33,9 @@ PlasmaExtras.Representation {
 
     property var scrollVisible: mainLayout.height>expandedRepresentation.height
 
+    property var dividerColor: Kirigami.Theme.textColor
+    property var dividerOpacity: 0.1
+
     //TODO: figure out a reliable way to detect config changes
     signal reloadUI()
 
@@ -394,7 +397,8 @@ PlasmaExtras.Representation {
         Rectangle {
             Layout.fillWidth: true
             height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: dividerColor
+            opacity: dividerOpacity
         }
 
         // CUSTOM COLOR LIST
@@ -509,7 +513,8 @@ PlasmaExtras.Representation {
         Rectangle {
             Layout.fillWidth: true
             height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: dividerColor
+            opacity: dividerOpacity
         }
 
         // DARK MODE
@@ -613,7 +618,8 @@ PlasmaExtras.Representation {
         Rectangle {
             Layout.fillWidth: true
             height: 1
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: dividerColor
+            opacity: dividerOpacity
         }
 
         PlasmaExtras.Heading {
@@ -722,7 +728,8 @@ PlasmaExtras.Representation {
         // Rectangle {
         //     Layout.fillWidth: true
         //     height: 1
-        //     color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+        //     color: dividerColor
+        //     opacity: dividerOpacity
         // }
 
 
@@ -776,7 +783,8 @@ PlasmaExtras.Representation {
         // Rectangle {
         //     Layout.fillWidth: true
         //     height: 1
-        //     color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+        //     color: dividerColor
+        //     opacity: dividerOpacity
         // }
 
         Component.onCompleted: {
@@ -787,7 +795,7 @@ PlasmaExtras.Representation {
         }
 
         Timer {
-            interval: 500;
+            interval: 1000;
             running: plasmoidExpanded
             repeat: true;
             onTriggered: {
