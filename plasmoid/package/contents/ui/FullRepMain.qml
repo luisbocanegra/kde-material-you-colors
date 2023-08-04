@@ -13,7 +13,7 @@ import org.kde.plasma.plasmoid 2.0
 import "components" as Components
 
 PlasmaExtras.Representation {
-    id: expandedRepresentation
+    id: root
 
     collapseMarginsHint: true
 
@@ -21,7 +21,8 @@ PlasmaExtras.Representation {
     property var controlWidth: 48 * PlasmaCore.Units.devicePixelRatio
 
     property var materialYouData: null
-    property var wallpaperPreview: null
+    property var materialYouDataString: null
+    //property var wallpaperPreview: null
 
     property string configPath
     property string cmd_type: ""
@@ -33,7 +34,7 @@ PlasmaExtras.Representation {
                                     plasmoid.location === PlasmaCore.Types.Floating ||
                                     plasmoid.location === PlasmaCore.Types.Desktop
 
-    //property var scrollVisible: mainLayout.height>expandedRepresentation.height
+    //property var scrollVisible: mainLayout.height>root.height
 
     property var dividerColor: Kirigami.Theme.textColor
     property var dividerOpacity: 0.1
@@ -42,11 +43,11 @@ PlasmaExtras.Representation {
     //signal reloadUI()
 
     onMaterialYouDataChanged: {
-        if (materialYouData !== null) {
-            // console.log("@@@ WALLPAPER @@@",materialYouData.pywal.dark.wallpaper)
-            // imagePreview.source = materialYouData.pywal.dark.wallpaper
-            updateStoredColors()
+        if (JSON.stringify(materialYouData) !== materialYouDataString) {
+            console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
+            //updateStoredColors()
         }
+        materialYouDataString = JSON.stringify(materialYouData);
     }
 
     PlasmaCore.DataSource {
@@ -167,7 +168,7 @@ PlasmaExtras.Representation {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 materialYouData = JSON.parse(xhr.responseText);
-                //console.log("Data:", materialYouData);
+                // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", materialYouDataString);
                 //console.log("KEYS:",Object.keys(materialYouData));
                 // console.log("DUMP:",JSON.stringify(materialYouData, null, 2));
             }
@@ -184,9 +185,10 @@ PlasmaExtras.Representation {
         PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
         PlasmaComponents3.ScrollBar.vertical.policy: PlasmaComponents3.ScrollBar.AsNeeded
 
-        contentWidth: availableWidth - mainLayout.leftMargin - mainLayout.rightMargin
+        contentWidth: availableWidth - contentItem.leftMargin - contentItem.rightMargin
 
         contentItem: ListView {
+            id: listView
             leftMargin: PlasmaCore.Units.mediumSpacing
             rightMargin: PlasmaCore.Units.mediumSpacing
             boundsBehavior: Flickable.StopAtBounds
@@ -812,7 +814,7 @@ PlasmaExtras.Representation {
                     onTriggered: {
                         loadMaterialYouData()
                         checkBackend.exec(checkBackendCommand)
-                        //console.log("Main H:",mainLayout.height," View H:",expandedRepresentation.height);
+                        //console.log("Main H:",mainLayout.height," View H:",root.height);
                     }
                 }
 
