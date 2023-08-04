@@ -20,10 +20,6 @@ PlasmaExtras.Representation {
     property var controlHeight: 36 * PlasmaCore.Units.devicePixelRatio
     property var controlWidth: 48 * PlasmaCore.Units.devicePixelRatio
 
-    property var materialYouData: null
-    property var materialYouDataString: null
-    //property var wallpaperPreview: null
-
     property string configPath: StandardPaths.writableLocation(
                                 StandardPaths.HomeLocation).toString().substring(7) +
                                 "/.config/kde-material-you-colors/config.conf"
@@ -46,42 +42,6 @@ PlasmaExtras.Representation {
 
     //TODO: figure out a reliable way to detect config changes
     //signal reloadUI()
-
-    onMaterialYouDataChanged: {
-        if (JSON.stringify(materialYouData) !== materialYouDataString) {
-            console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
-            //updateStoredColors()
-        }
-        materialYouDataString = JSON.stringify(materialYouData);
-    }
-
-    PlasmaCore.DataSource {
-        id: readMaterialYouData
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-            exited(sourceName, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName) // cmd finished
-        }
-
-            function exec() {
-                readMaterialYouData.connectSource("cat /tmp/kde-material-you-colors.json")
-        }
-
-        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
-    }
-
-    Connections {
-        target: readMaterialYouData
-        function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            materialYouData = JSON.parse(stdout)
-        }
-    }
 
 
     PlasmaCore.DataSource {
@@ -148,21 +108,6 @@ PlasmaExtras.Representation {
         property bool pywal_follows_scheme: true
     }
 
-    function updateStoredColors() {
-        var colors = [];
-        for (var i = 0; i < colorButtonRepeater.count; i++) {
-            var colorBtn = colorButtonRepeater.itemAt(i);
-            colors.push(colorBtn.color.toString());
-        }
-        // do not re-enable custom colors if is disabled
-        if (customColorsCheckbox.checked) {
-            settings.custom_colors_list = ""
-        } else {
-            settings.custom_colors_list = colors.join(" ");
-            settings.custom_colors_list_last = colors.join(" ");
-        }
-    }
-
     PlasmaComponents3.ScrollView {
         anchors.fill: parent
         topPadding: PlasmaCore.Units.smallSpacing
@@ -182,6 +127,60 @@ PlasmaExtras.Representation {
             model: 1
 
             delegate: ColumnLayout {
+                property var materialYouData: null
+                property var materialYouDataString: null
+
+                onMaterialYouDataChanged: {
+                    if (JSON.stringify(materialYouData) !== materialYouDataString) {
+                        console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
+                        updateStoredColors()
+                    }
+                    materialYouDataString = JSON.stringify(materialYouData);
+                }
+
+                function updateStoredColors() {
+                    var colors = [];
+                    for (var i = 0; i < colorButtonRepeater.count; i++) {
+                        var colorBtn = colorButtonRepeater.itemAt(i);
+                        colors.push(colorBtn.color.toString());
+                    }
+                    // do not re-enable custom colors if is disabled
+                    if (customColorsCheckbox.checked) {
+                        settings.custom_colors_list = ""
+                    } else {
+                        settings.custom_colors_list = colors.join(" ");
+                        settings.custom_colors_list_last = colors.join(" ");
+                    }
+                }
+
+                PlasmaCore.DataSource {
+                    id: readMaterialYouData
+                    engine: "executable"
+                    connectedSources: []
+
+                    onNewData: {
+                        var exitCode = data["exit code"]
+                        var exitStatus = data["exit status"]
+                        var stdout = data["stdout"]
+                        var stderr = data["stderr"]
+                        exited(sourceName, exitCode, exitStatus, stdout, stderr)
+                        disconnectSource(sourceName) // cmd finished
+                    }
+
+                        function exec() {
+                            readMaterialYouData.connectSource("cat /tmp/kde-material-you-colors.json")
+                    }
+
+                    signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
+                }
+
+                Connections {
+                    target: readMaterialYouData
+                    function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+                        materialYouData = JSON.parse(stdout)
+                    }
+                }
+
                 // Inherit theme from parent, without this colors don't change on light/dark switch
                 Kirigami.Theme.inherit: true
                 id: mainLayout
