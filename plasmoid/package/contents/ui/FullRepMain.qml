@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.0
 import org.kde.kirigami 2.20 as Kirigami
 import org.kde.kquickcontrols 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import Qt.labs.folderlistmodel 2.15
+import Qt.labs.platform 1.1
 import Qt.labs.settings 1.0
 import QtGraphicalEffects 1.12
 import org.kde.plasma.components 3.0 as PlasmaComponents3
@@ -24,11 +24,16 @@ PlasmaExtras.Representation {
     property var materialYouDataString: null
     //property var wallpaperPreview: null
 
-    property string configPath
+    property string configPath: StandardPaths.writableLocation(
+                                StandardPaths.HomeLocation).toString().substring(7) +
+                                "/.config/kde-material-you-colors/config.conf"
     property string cmd_type: ""
 
     property bool backendRunning: true
-    property string checkBackendCommand: 'ps -C "kde-material-you-colors" -F --no-headers'
+    property string execName: 'kde-material-you-colors'
+    property string checkBackendCommand: 'ps -C '+execName+' -F --no-headers'
+    property string startBackendCommand: execName
+    property string autoStartBackendCommand: execName+' --autostart;' +execName
 
     property bool plasmoidExpanded: plasmoid.expanded ||
                                     plasmoid.location === PlasmaCore.Types.Floating ||
@@ -51,7 +56,7 @@ PlasmaExtras.Representation {
     }
 
     PlasmaCore.DataSource {
-        id: executable
+        id: readMaterialYouData
         engine: "executable"
         connectedSources: []
 
@@ -64,22 +69,17 @@ PlasmaExtras.Representation {
             disconnectSource(sourceName) // cmd finished
         }
 
-            function exec(cmd,type) {
-                cmd_type = type
-                executable.connectSource(cmd)
+            function exec() {
+                readMaterialYouData.connectSource("cat /tmp/kde-material-you-colors.json")
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
 
     Connections {
-        target: executable
+        target: readMaterialYouData
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            console.log("COMMAND TYPE",cmd_type)
-            // update current brightness
-            if (cmd_type == "getConfigPath") {
-                configPath = stdout.replace('\n', '').trim()
-            }
+            materialYouData = JSON.parse(stdout)
         }
     }
 
@@ -163,20 +163,6 @@ PlasmaExtras.Representation {
         }
     }
 
-    function loadMaterialYouData() {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                materialYouData = JSON.parse(xhr.responseText);
-                // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", materialYouDataString);
-                //console.log("KEYS:",Object.keys(materialYouData));
-                // console.log("DUMP:",JSON.stringify(materialYouData, null, 2));
-            }
-        }
-        xhr.open("GET","file:///tmp/kde-material-you-colors.json")
-        xhr.send()
-    }
-
     PlasmaComponents3.ScrollView {
         anchors.fill: parent
         topPadding: PlasmaCore.Units.smallSpacing
@@ -217,14 +203,14 @@ PlasmaExtras.Representation {
                             icon.name: "media-playback-start"
                             text: "Start"
                             onTriggered: {
-                                checkBackend.exec("kde-material-you-colors")
+                                checkBackend.exec(startBackendCommand)
                             }
                         },
                         Kirigami.Action {
                             icon.name: "media-playback-start"
                             text: "Start && enable Autostart"
                             onTriggered: {
-                                checkBackend.exec("kde-material-you-colors --autostart;kde-material-you-colors")
+                                checkBackend.exec(startBackendCommandAutostart)
                             }
                         },
                         Kirigami.Action {
@@ -801,10 +787,10 @@ PlasmaExtras.Representation {
                 // }
 
                 Component.onCompleted: {
-                    loadMaterialYouData()
-                    executable.exec('echo ${HOME}/.config/kde-material-you-colors/config.conf',"getConfigPath")
+                    readMaterialYouData.exec()
                     checkBackend.exec(checkBackendCommand)
                     statupTimer.start()
+
                 }
 
                 Timer {
@@ -812,7 +798,7 @@ PlasmaExtras.Representation {
                     running: plasmoidExpanded
                     repeat: true;
                     onTriggered: {
-                        loadMaterialYouData()
+                        readMaterialYouData.exec()
                         checkBackend.exec(checkBackendCommand)
                         //console.log("Main H:",mainLayout.height," View H:",root.height);
                     }
