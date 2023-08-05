@@ -1,6 +1,6 @@
 import logging
 from .color_utils import hex2rgb
-from . import timeout_utils
+from . import pywal_sequences_timeout
 import globals
 
 if globals.USER_HAS_PYWAL:
@@ -29,22 +29,18 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
             if globals.USER_HAS_PYWAL:
                 logging.info("Setting pywal colors...")
                 # On very rare occassions pywal will hang, add a timeout to it
-                timeout_utils.timeout_set(3)
                 try:
                     # Apply the palette to all open terminals.
                     # Second argument is a boolean for VTE terminals.
                     # Set it to true if the terminal you're using is
                     # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                    pywal.sequences.send(pywal_colors, vte_fix=False)
+                    pywal_sequences_timeout.send(pywal_colors, vte_fix=False)
                     # Export all template files.
                     pywal.export.every(pywal_colors)
                     # Reload xrdb, i3 and polybar.
                     pywal.reload.env()
                 except Exception as e:
                     logging.info(f"Failed setting pywal colors:{e}")
-                    pass
-                finally:
-                    timeout_utils.timeout_reset()
             else:
                 logging.warning(
                     "Pywal option enabled but python module is not installed, ignored"
