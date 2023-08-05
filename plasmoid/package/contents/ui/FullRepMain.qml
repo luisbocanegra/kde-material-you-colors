@@ -20,9 +20,6 @@ PlasmaExtras.Representation {
     property var controlHeight: 36 * PlasmaCore.Units.devicePixelRatio
     property var controlWidth: 48 * PlasmaCore.Units.devicePixelRatio
 
-    property string configPath: StandardPaths.writableLocation(
-                                StandardPaths.HomeLocation).toString().substring(7) +
-                                "/.config/kde-material-you-colors/config.conf"
     property string cmd_type: ""
 
     property bool backendRunning: true
@@ -58,8 +55,8 @@ PlasmaExtras.Representation {
             disconnectSource(sourceName) // cmd finished
         }
 
-            function exec(cmd) {
-                checkBackend.connectSource(cmd)
+        function exec(cmd) {
+            checkBackend.connectSource(cmd)
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
@@ -76,7 +73,6 @@ PlasmaExtras.Representation {
     // read settings file
     // save relevant configs with _last suffix to recover them after reenable
     Settings {
-        fileName: configPath
         category: "CUSTOM"
         id: settings
         property int monitor: 0
@@ -102,10 +98,14 @@ PlasmaExtras.Representation {
         property real light_brightness_multiplier: 1.0
         property real dark_brightness_multiplier: 1.0
 
-        property bool gui_global_dark_mode: false
-
         property bool plasma_follows_scheme: true
         property bool pywal_follows_scheme: true
+
+        Component.onCompleted: {
+            settings.fileName = StandardPaths.writableLocation(
+                    StandardPaths.HomeLocation).toString().substring(7) +
+                    "/.config/kde-material-you-colors/config.conf"
+        }
     }
 
     PlasmaComponents3.ScrollView {
@@ -131,21 +131,23 @@ PlasmaExtras.Representation {
                 property var materialYouDataString: null
 
                 onMaterialYouDataChanged: {
-                    if (JSON.stringify(materialYouData) !== materialYouDataString) {
-                        console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
-                        updateStoredColors()
+                    if (materialYouData!=null && materialYouDataString!=null) {
+                        if (JSON.stringify(materialYouData) !== materialYouDataString) {
+                            console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
+                            console.log(materialYouData,materialYouDataString);
+                        }
+                        materialYouDataString = JSON.stringify(materialYouData);
                     }
-                    materialYouDataString = JSON.stringify(materialYouData);
                 }
 
-                function updateStoredColors() {
+                function saveCustomColorsList() {
                     var colors = [];
-                    for (var i = 0; i < colorButtonRepeater.count; i++) {
-                        var colorBtn = colorButtonRepeater.itemAt(i);
+                    for (var i = 0; i < colorPickerRepeater.count; i++) {
+                        var colorBtn = colorPickerRepeater.itemAt(i);
                         colors.push(colorBtn.color.toString());
                     }
                     // do not re-enable custom colors if is disabled
-                    if (customColorsCheckbox.checked) {
+                    if (customTextColorsCheck.checked) {
                         settings.custom_colors_list = ""
                     } else {
                         settings.custom_colors_list = colors.join(" ");
@@ -222,7 +224,7 @@ PlasmaExtras.Representation {
                     ]
                 }
 
-
+                // COLOR SELECTION FROM WALLPAPER OR CUSTOM COLOR
                 PlasmaExtras.Heading {
                     level: 1
                     text: "Colors source"
@@ -243,13 +245,13 @@ PlasmaExtras.Representation {
                         checked: settings.color==""
                         onCheckedChanged: {
                             settings.color = checked?"":settings.color_last
-                            updateStoredColors()
+                            //saveCustomColorsList()
                         }
                     }
 
                     Item { implicitWidth: PlasmaCore.Units.gridUnit / 2}
 
-                    // Monitor number
+                    // Monitor number when wallpaper colors is enabled
                     Label {
                         visible: settings.color==""
                         text: "Monitor/Screen number"
@@ -298,7 +300,7 @@ PlasmaExtras.Representation {
                         // Layout.fillWidth: true
                     }
 
-                    // Single color
+                    // Single color picker when color is not empty
                     Components.CustomColorButton { // Components.Custom
                         id: colorButton
                         Layout.alignment: Qt.AlignHCenter
@@ -314,8 +316,8 @@ PlasmaExtras.Representation {
                         }
                     }
 
-                    // multiple colors
-                    // TODO: center rows
+                    // Choose color from wallpaper when colors is not set
+                    // IDEA: center buttons in separate row maybe?
                     GridLayout { //PlasmaComponents3.ScrollView
                         property var gridSpacing: PlasmaCore.Units.mediumSpacing
                         visible: settings.color===""
@@ -399,32 +401,30 @@ PlasmaExtras.Representation {
                     opacity: dividerOpacity
                 }
 
-                // CUSTOM COLOR LIST
+                // TEXT COLORS SECTION
                 PlasmaExtras.Heading {
                     level: 1
                     text: "Text colors"
                     Layout.alignment: Qt.AlignHCenter
                 }
-
+                // Enable/disable taking text colors from wallpaper
                 RowLayout {
-                    Layout.preferredWidth: mainLayout.width
-                    // Layout.fillWidth: true
                     Label {
-                        text: "From Wallpaper"
+                        id:customTextColorsLabel
+                        text: "From Wallpaper/color"
                         Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
-                        // Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
-
                     }
                     CheckBox {
-                        id:customColorsCheckbox
+                        id:customTextColorsCheck
                         checked: settings.custom_colors_list==""
-                        Layout.fillWidth: true
                         onCheckedChanged: {
                             settings.custom_colors_list = checked?"":settings.custom_colors_list_last
                         }
                     }
                 }
 
+                // Show color picker buttons when custom_colors_list is not set
+                // Hint
                 Label {
                     visible: settings.custom_colors_list !==""
                     text: "Tap each button to change color"
@@ -434,48 +434,46 @@ PlasmaExtras.Representation {
                     opacity: 0.7
                 }
 
+                // Row of color pickers
                 RowLayout {
-                    Layout.preferredWidth: mainLayout.width
+                    // width: parent.width
+                    // Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: settings.custom_colors_list!==""
+                    Repeater {
+                        model: 7
+                        id: colorPickerRepeater
+                        delegate: Components.CustomColorButton {
+                            showAlphaChannel: false
+                            dialogTitle: "Choose custom color"
+                            Layout.preferredHeight: controlHeight
+                            Layout.preferredWidth: controlWidth
 
-                    RowLayout {
-                        // width: parent.width
-                        // Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignHCenter
-                        visible: settings.custom_colors_list!==""
-                        Repeater {
-                            model: 7
-                            id: colorButtonRepeater
-                            delegate: Components.CustomColorButton {
-                                showAlphaChannel: false
-                                dialogTitle: "Choose custom color"
-                                Layout.preferredHeight: controlHeight
-                                Layout.preferredWidth: controlWidth
+                            color: settings.custom_colors_list.split(" ")[index]
 
-                                color: settings.custom_colors_list.split(" ")[index]
-
-                                onAccepted: updateStoredColors()
-                            }
+                            onAccepted: saveCustomColorsList()
                         }
-                        // Component.onCompleted: updateStoredColors()
                     }
+                    // Component.onCompleted: saveCustomColorsList()
+                }
 
-                    RowLayout {
-                        // width: parent.width
-                        // Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignHCenter
-                        visible: settings.custom_colors_list===""
-                        Repeater {
-                            model: materialYouData ? Object.keys(materialYouData.pywal.dark.colors).slice(1,8) : []
+                // Row of non clickable colors from a color or wallpaper
+                RowLayout {
+                    // width: parent.width
+                    // Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: settings.custom_colors_list===""
+                    Repeater {
+                        model: materialYouData ? Object.keys(materialYouData.pywal.dark.colors).slice(1,8) : []
 
-                            delegate: Item {
-                                Layout.preferredWidth: controlHeight * .75
-                                Layout.preferredHeight: controlHeight * .75
+                        delegate: Item {
+                            Layout.preferredWidth: controlHeight * .75
+                            Layout.preferredHeight: controlHeight * .75
 
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: parent.height
-                                    color: materialYouData.pywal.dark.colors["color"+(index+1).toString()]
-                                }
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: parent.height
+                                color: materialYouData.pywal.dark.colors["color"+(index+1).toString()]
                             }
                         }
                     }
@@ -811,6 +809,16 @@ PlasmaExtras.Representation {
                     onTriggered: {
                         console.log("@@@@@ BACKEND RUNNING:", backendRunning)
                         console.log("@@@@@ Config file:", settings.fileName);
+                        console.log("@@@@@ Settings @@@@@");
+                        var propertyNames = Object.keys(settings);
+                        for (var i = 0; i < propertyNames.length; i++) {
+                            var propertyName = propertyNames[i];
+                            var propertyValue = settings[propertyName];
+                            if (propertyName.indexOf("Changed")===-1 || propertyValue.indexOf("function()")===-1) {
+                                console.log(" ",propertyName + ": " + propertyValue);
+                            }
+                        }
+
                         // Default colors
                         if(settings.color_last==="") {
                             settings.color_last = "#66a3ef"
