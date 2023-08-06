@@ -130,6 +130,6 @@ Item {
 
 
     Component.onCompleted: function() {
-        Plasmoid.setAction('reloadConfig', i18n("Reload configuration file"), 'view-refresh');
+        Plasmoid.setAction('reloadConfig', i18n("Reload configuration file.\nWill also terminate the backend if started from the widget"), 'view-refresh');
     }
 }
