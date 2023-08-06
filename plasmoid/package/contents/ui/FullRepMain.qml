@@ -111,7 +111,6 @@ PlasmaExtras.Representation {
     PlasmaComponents3.ScrollView {
         anchors.fill: parent
         topPadding: PlasmaCore.Units.smallSpacing
-        bottomPadding: PlasmaCore.Units.smallSpacing
 
         PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
         PlasmaComponents3.ScrollBar.vertical.policy: PlasmaComponents3.ScrollBar.AsNeeded
@@ -127,6 +126,12 @@ PlasmaExtras.Representation {
             model: 1
 
             delegate: ColumnLayout {
+                // Inherit theme from parent, without this colors don't change on light/dark switch
+                Kirigami.Theme.inherit: true
+                id: mainLayout
+                anchors.left: parent.left
+                anchors.right: parent.right
+
                 property var materialYouData: null
                 property var materialYouDataString: null
 
@@ -182,13 +187,6 @@ PlasmaExtras.Representation {
                         materialYouData = JSON.parse(stdout)
                     }
                 }
-
-                // Inherit theme from parent, without this colors don't change on light/dark switch
-                Kirigami.Theme.inherit: true
-                id: mainLayout
-                anchors.left: parent.left
-                anchors.right: parent.right
-                // Layout.fillWidth: true
 
                 Kirigami.InlineMessage {
                     Layout.fillWidth: true
@@ -395,7 +393,7 @@ PlasmaExtras.Representation {
 
 
                 Rectangle {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: mainLayout.width
                     height: 1
                     color: dividerColor
                     opacity: dividerOpacity
@@ -507,7 +505,7 @@ PlasmaExtras.Representation {
 
 
                 Rectangle {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: mainLayout.width
                     height: 1
                     color: dividerColor
                     opacity: dividerOpacity
@@ -519,13 +517,41 @@ PlasmaExtras.Representation {
                     text: "Dark mode"
                     Layout.alignment: Qt.AlignHCenter
                 }
-
+                // Headings
                 RowLayout {
                     ColumnLayout {
-                        Label {
+                        Layout.preferredWidth: mainLayout.width / 2
+
+                        PlasmaExtras.Heading {
                             text: "Plasma"
-                            Layout.alignment: Qt.AlignLeft
+                            Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+                            Layout.preferredWidth: parent.width
+                            color: Kirigami.Theme.textColor
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignHCenter
+                            level: 2
                         }
+                    }
+
+                    ColumnLayout {
+                        Layout.preferredWidth: mainLayout.width/2
+
+                        PlasmaExtras.Heading {
+                            text: "Konsole, Pywal, KSyntaxHighlighting"
+                            Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+                            Layout.preferredWidth: parent.width
+                            color: Kirigami.Theme.textColor
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignHCenter
+                            level: 2
+                        }
+                    }
+                }
+                // plasma dark
+                RowLayout {
+                    ColumnLayout {
+                        Layout.preferredWidth: mainLayout.width/2
+                        anchors.top: parent.top
 
                         ButtonGroup {
                             id: plasmaModeGroup
@@ -559,13 +585,9 @@ PlasmaExtras.Representation {
                         }
                     }
 
-                    Item { Layout.fillWidth: true}
-
                     ColumnLayout {
-                        Label {
-                            text: "Konsole, Pywal, KSyntaxHighlighting"
-                            Layout.alignment: Qt.AlignLeft
-                        }
+                        Layout.preferredWidth: mainLayout.width/2
+                        anchors.top: parent.top
 
                         ButtonGroup {
                             id: pywalModeGroup
@@ -599,7 +621,7 @@ PlasmaExtras.Representation {
                         }
                     }
                 }
-
+                // pywal dark
                 Text {
                     text: "<i>Follow color scheme</i> applies only for Material You color schemes when changed by you or other programs"
                     Layout.alignment: Qt.AlignHCenter
@@ -612,7 +634,7 @@ PlasmaExtras.Representation {
                 }
 
                 Rectangle {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: mainLayout.width
                     height: 1
                     color: dividerColor
                     opacity: dividerOpacity
@@ -722,7 +744,7 @@ PlasmaExtras.Representation {
 
 
                 // Rectangle {
-                //     Layout.fillWidth: true
+                //     Layout.preferredWidth: mainLayout.width
                 //     height: 1
                 //     color: dividerColor
                 //     opacity: dividerOpacity
@@ -777,7 +799,7 @@ PlasmaExtras.Representation {
 
 
                 // Rectangle {
-                //     Layout.fillWidth: true
+                //     Layout.preferredWidth: mainLayout.width
                 //     height: 1
                 //     color: dividerColor
                 //     opacity: dividerOpacity

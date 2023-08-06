@@ -22,9 +22,10 @@ Item {
         id:root
         anchors.fill: parent
 
-        Layout.minimumWidth: 560 * PlasmaCore.Units.devicePixelRatio
-        Layout.minimumHeight: 380 * PlasmaCore.Units.devicePixelRatio
-        Layout.preferredWidth: 560 * PlasmaCore.Units.devicePixelRatio
+        Layout.minimumWidth: PlasmaCore.Units.gridUnit * 19
+        Layout.minimumHeight: PlasmaCore.Units.gridUnit * 19
+
+        Layout.preferredWidth: loader.width
         Layout.preferredHeight: loader.height + heading.height
 
         PlasmaExtras.PlasmoidHeading {
