@@ -110,7 +110,15 @@ ColumnLayout {
     Connections {
         target: readMaterialYouData
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            materialYouData = JSON.parse(stdout)
+            try {
+                materialYouData = JSON.parse(stdout)
+            } catch(error) {
+                if (error instanceof SyntaxError) {
+                    console.log("@@@@@ Error parsing JSON data:", error.message);
+                } else {
+                    throw error;
+                }
+            }
         }
     }
 
