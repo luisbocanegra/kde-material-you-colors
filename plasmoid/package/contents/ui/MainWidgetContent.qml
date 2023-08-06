@@ -322,8 +322,10 @@ ColumnLayout {
                 dialogTitle: "Choose custom color"
                 Layout.preferredHeight: controlHeight
                 Layout.preferredWidth: controlWidth
-
-                color: settings.custom_colors_list.split(" ")[index]
+                property var colorList: settings.custom_colors_list ?
+                                        settings.custom_colors_list :
+                                        settings.custom_colors_list_last
+                color: colorList.split(" ")[index]
 
                 onAccepted: saveCustomColorsList()
             }
