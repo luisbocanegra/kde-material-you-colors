@@ -56,6 +56,8 @@ ColumnLayout {
             settings.fileName = StandardPaths.writableLocation(
                     StandardPaths.HomeLocation).toString().substring(7) +
                     "/.config/kde-material-you-colors/config.conf"
+            customTextColorsCheck.checked = custom_colors_list == ""
+            customColorCheck.checked = color == ""
         }
     }
 
@@ -126,7 +128,7 @@ ColumnLayout {
         }
 
         CheckBox {
-            checked: settings.color==""
+            id: customColorCheck
             onCheckedChanged: {
                 settings.color = checked?"":settings.color_last
                 //saveCustomColorsList()
@@ -293,8 +295,8 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
         }
         CheckBox {
-            id:customTextColorsCheck
-            checked: settings.custom_colors_list==""
+            id: customTextColorsCheck
+
             onCheckedChanged: {
                 settings.custom_colors_list = checked?"":settings.custom_colors_list_last
             }
