@@ -15,18 +15,16 @@ Item {
                                     Plasmoid.fullRepresentation :
                                     Plasmoid.compactRepresentation
 
-    property string mainSource: "FullRepMain.qml"
-
-    property bool mainRequiresReload: false
+    property bool doSettingsReload: false
 
     Plasmoid.fullRepresentation: FullRepresentation {
-        mainRequiresReload: root.mainRequiresReload
+        doSettingsReload: root.doSettingsReload
     }
 
     function reloadConfig() {
         console.log("RELOAD");
-        mainRequiresReload = true
-        mainRequiresReload = false
+        doSettingsReload = true
+        doSettingsReload = false
     }
 
     function action_reloadConfig() {
