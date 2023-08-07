@@ -130,7 +130,7 @@ ColumnLayout {
         id:heading
         visible: !(plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
 
-        //leftPadding: PlasmaCore.Units.smallSpacing
+        leftPadding: PlasmaCore.Units.smallSpacing
 
         RowLayout {
             anchors.fill: parent
@@ -138,7 +138,7 @@ ColumnLayout {
             PlasmaExtras.Heading {
                 Layout.fillWidth: true
                 level: 1
-                text: Plasmoid.metaData.name + " ID: " + plasmoid.id
+                text: Plasmoid.metaData.name
             }
 
             PlasmaComponents3.ToolButton {
