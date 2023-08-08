@@ -431,44 +431,44 @@ ColumnLayout {
                             }
                         }
 
+                        Kirigami.InlineMessage {
+                            Layout.fillWidth: true
+                            type: Kirigami.MessageType.Error
+                            visible: !backendRunning
+
+                            text: qsTr("Backend is not running. This Plasmoid requires <a href=\"https://github.com/luisbocanegra/kde-material-you-colors\">kde-material-you-colors</a> to be installed and running to work.")
+
+                            onLinkActivated: link => Qt.openUrlExternally(link)
+
+                            actions: [
+                                Kirigami.Action {
+                                    icon.name: "media-playback-start"
+                                    text: "Start"
+                                    onTriggered: {
+                                        checkBackend.exec(startBackendCommand)
+                                    }
+                                },
+                                Kirigami.Action {
+                                    icon.name: "media-playback-start"
+                                    text: "Start && enable Autostart"
+                                    onTriggered: {
+                                        checkBackend.exec(startBackendCommand)
+                                    }
+                                },
+                                Kirigami.Action {
+                                    icon.name: "help-about-symbolic"
+                                    text: "Install guide"
+                                    onTriggered: {
+                                        Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing")
+                                    }
+                                }
+                            ]
+                        }
+
                         // NORMAL SETTINGS
                         ColumnLayout {
                             visible: !showAdvanced
                             Layout.preferredWidth: mainLayout.width
-
-                            Kirigami.InlineMessage {
-                                Layout.fillWidth: true
-                                type: Kirigami.MessageType.Error
-                                visible: !backendRunning
-
-                                text: qsTr("Backend is not running. This Plasmoid requires <a href=\"https://github.com/luisbocanegra/kde-material-you-colors\">kde-material-you-colors</a> to be installed and running to work.")
-
-                                onLinkActivated: link => Qt.openUrlExternally(link)
-
-                                actions: [
-                                    Kirigami.Action {
-                                        icon.name: "media-playback-start"
-                                        text: "Start"
-                                        onTriggered: {
-                                            checkBackend.exec(startBackendCommand)
-                                        }
-                                    },
-                                    Kirigami.Action {
-                                        icon.name: "media-playback-start"
-                                        text: "Start && enable Autostart"
-                                        onTriggered: {
-                                            checkBackend.exec(startBackendCommand)
-                                        }
-                                    },
-                                    Kirigami.Action {
-                                        icon.name: "help-about-symbolic"
-                                        text: "Install guide"
-                                        onTriggered: {
-                                            Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing")
-                                        }
-                                    }
-                                ]
-                            }
 
                             // COLOR SELECTION FROM WALLPAPER OR CUSTOM COLOR
                             PlasmaExtras.Heading {
@@ -981,13 +981,6 @@ ColumnLayout {
                             //         scrollTimer.start()
                             //     }
                             // }
-
-                            Rectangle {
-                                Layout.preferredWidth: mainLayout.width
-                                height: 1
-                                color: dividerColor
-                                opacity: dividerOpacity
-                            }
 
                             // Konsole
                             PlasmaExtras.Heading {
