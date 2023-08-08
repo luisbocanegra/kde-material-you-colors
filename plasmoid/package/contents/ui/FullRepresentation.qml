@@ -36,13 +36,23 @@ ColumnLayout {
     property bool doSettingsReload
 
     // used to trigger a reload if the config file has changed
-    property string configPath: StandardPaths.writableLocation(
-                    StandardPaths.HomeLocation).toString().substring(7) +
-                    "/.config/kde-material-you-colors/config.conf"
+    property string homeDir: StandardPaths.writableLocation(
+                            StandardPaths.HomeLocation).toString().substring(7)
+    property string configPath: homeDir + "/.config/kde-material-you-colors/config.conf"
     property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
     property string configSha1
 
-    property bool showAdvanced: false
+    property bool showAdvanced: true
+
+    // Get a list of installed icon themes as id,name
+    // - discard hidden themes
+    // - discard cursor themes
+    // Non escaped version: find /usr/share/icons ~/.local/share/icons -maxdepth 2 -type f -path '*/icons/*/index.theme' ! -path '*/share/icons' ! -exec grep -q '^Hidden=true' {} \; ! -execdir test -d cursors \; -printf '%p\n' | while read line; do echo "$(basename $(dirname $line)),$(grep '^Name=' $line | sed 's/^Name=//')"; done
+    property string getIconThemesCommand: "find /usr/share/icons " +homeDir+"/.local/share/icons -maxdepth 2 -type f -path '*/icons/*/index.theme' ! -path '*/share/icons' ! -exec grep -q '^Hidden=true' {} \\; ! -execdir test -d cursors \\; -printf '%p\\n' | while read line; do echo \"$(basename $(dirname $line)),$(grep '^Name=' $line | sed 's/^Name=//;s/-/ /')\"; done | sort --field-separator=, --key=2n -k2,2"
+
+    ListModel {
+        id: iconThemeList
+    }
 
     onPlasmoidExpandedChanged: {
         checkConfigChange.exec(checkConfigChangeCommand)
@@ -118,6 +128,43 @@ ColumnLayout {
             //console.log("CONFIG SHA1:",out);
             if (out != "") {
                 configSha1 = out.split(" ")[0]
+            }
+        }
+    }
+
+    PlasmaCore.DataSource {
+        id: getIconThemes
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+            exited(sourceName, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName) // cmd finished
+        }
+
+        function exec() {
+            getIconThemes.connectSource(getIconThemesCommand)
+        }
+
+        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    Connections {
+        target: getIconThemes
+        function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+            iconThemeList.clear()
+            var lines = stdout.trim().split("\n")
+            for (let i=0; i<lines.length; i++) {
+                var line = lines[i].toString().split(",")
+                // discard lines that are not actual themes e.g default,
+                if (line.length === 2 && line[1] !== '') {
+                    iconThemeList.append({"name":line[0], "label":line[1]})
+                }
             }
         }
     }
@@ -270,10 +317,10 @@ ColumnLayout {
 
                         Component.onCompleted: {
                             createSettings()
-
                             checkBackend.exec(checkBackendCommand)
                             console.log("@@@@@ BACKEND RUNNING:", backendRunning)
                             readMaterialYouData.exec()
+                            getIconThemes.exec()
                             statupTimer.start()
                         }
 
@@ -315,6 +362,8 @@ ColumnLayout {
                                     property bool pywal_follows_scheme: true; \
                                     property string konsole_profile; \
                                     property int konsole_opacity: 100; \
+                                    property string iconslight; \
+                                    property string iconsdark; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -992,6 +1041,78 @@ ColumnLayout {
                                     }
                                 }
                             }
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            // Icon themes
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Icon theme"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Dark"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                ComboBox {
+                                    id:iconThemeDarkCombo
+                                    model: iconThemeList
+                                    textRole: "label"
+                                    Layout.fillWidth: true
+                                    valueRole: "name"
+                                    currentIndex:0
+                                    popup.height: 300 * PlasmaCore.Units.devicePixelRatio
+
+                                    onCurrentIndexChanged: {
+                                        settings.iconsdark = model.get(currentIndex)["name"]
+                                    }
+
+                                    // Prevent starting scrolling on collapsed combobox
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onWheel: {}
+                                        onClicked: parent.popup.open()
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Light"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                ComboBox {
+                                    id:iconThemeLightCombo
+                                    model: iconThemeList
+                                    textRole: "label"
+                                    Layout.fillWidth: true
+                                    valueRole: "name"
+                                    currentIndex:0
+                                    popup.height: 300 * PlasmaCore.Units.devicePixelRatio
+
+                                    onCurrentIndexChanged: {
+                                        settings.iconslight = model.get(currentIndex)["name"]
+                                    }
+
+                                    // Prevent starting scrolling on collapsed combobox
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onWheel: {}
+                                        onClicked: parent.popup.open()
+                                    }
+                                }
+                            }
                         }
 
                         // Timer {
@@ -1015,6 +1136,26 @@ ColumnLayout {
                                 }
                                 if (settings.custom_colors_list_last==="") {
                                     settings.custom_colors_list_last = "#d0265c #74e448 #eece4f #66a3ef #532066 #297d81 #ccc1c1"
+                                }
+
+                                var index = 0;
+                                var darkFound = false
+                                var lightFound = false
+                                // set currently selected icon theme here now that it has been loaded
+                                for (var i = 0; i < iconThemeList.count; i++) {
+                                    if (iconThemeList.get(i)["name"]===settings.iconsdark) {
+                                        iconThemeDarkCombo.currentIndex = i;
+                                        darkFound = true
+                                    }
+
+                                    if (iconThemeList.get(i)["name"]===settings.iconslight) {
+                                        iconThemeLightCombo.currentIndex = i;
+                                        lightFound = true
+                                    }
+                                    // stop looking if both are found
+                                    if (darkFound && lightFound) {
+                                        break
+                                    }
                                 }
                             }
                         }
