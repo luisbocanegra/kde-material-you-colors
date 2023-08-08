@@ -1010,6 +1010,10 @@ ColumnLayout {
                                     rightPadding: textAreaPadding
                                     Layout.fillWidth: true
                                     text: settings.konsole_profile
+
+                                    onAccepted: {
+                                        settings.konsole_profile = text
+                                    }
                                 }
                             }
 
