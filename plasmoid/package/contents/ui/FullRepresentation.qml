@@ -3,6 +3,7 @@ import Qt.labs.settings 1.0
 import QtGraphicalEffects 1.12
 
 import QtQuick 2.0
+import QtQuick.Dialogs 1.3
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.0
 
@@ -42,7 +43,7 @@ ColumnLayout {
     property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
     property string configSha1
 
-    property bool showAdvanced: true
+    property bool showAdvanced: false
 
     // Get a list of installed icon themes as id,name
     // - discard hidden themes
@@ -364,6 +365,12 @@ ColumnLayout {
                                     property int konsole_opacity: 100; \
                                     property string iconslight; \
                                     property string iconsdark; \
+                                    property int titlebar_opacity: 100; \
+                                    property int toolbar_opacity: 100; \
+                                    property bool sierra_breeze_buttons_color: false; \
+                                    property bool klassy_windeco_outline: false; \
+                                    property string darker_window_list; \
+                                    property string on_change_hook; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -469,6 +476,7 @@ ColumnLayout {
                         ColumnLayout {
                             visible: !showAdvanced
                             Layout.preferredWidth: mainLayout.width
+                            spacing: PlasmaCore.Units.smallSpacing
 
                             // COLOR SELECTION FROM WALLPAPER OR CUSTOM COLOR
                             PlasmaExtras.Heading {
@@ -975,6 +983,7 @@ ColumnLayout {
                         ColumnLayout {
                             id: advancedSection
                             visible: showAdvanced
+                            spacing: PlasmaCore.Units.smallSpacing
 
                             // onVisibleChanged: {
                             //     if (visible) {
@@ -1108,6 +1117,204 @@ ColumnLayout {
                                         onWheel: {}
                                         onClicked: parent.popup.open()
                                     }
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            // DECO QT THEME
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Titlebar, Toolbar & Window Decorations"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+
+                            // Opacity
+                            RowLayout {
+                                Label {
+                                    text: "Titlebar opacity"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                Slider {
+                                    value: settings.titlebar_opacity
+                                    from: 0
+                                    to: 100
+                                    stepSize: 5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.titlebar_opacity = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                SpinBox {
+                                    Layout.preferredWidth: controlWidth*1.3
+                                    leftPadding: textAreaPadding
+                                    from: 0
+                                    to: 100
+                                    value: settings.titlebar_opacity
+                                    onValueModified: {
+                                        settings.titlebar_opacity = value
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: "Requires Klassy or Sierra Breeze Enhanced window decoration"
+                                Layout.alignment: Qt.AlignHCenter
+                                // Layout.fillWidth: true
+                                Layout.preferredWidth: mainLayout.width
+                                opacity: 0.7
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Toolbar opacity"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                Slider {
+                                    value: settings.toolbar_opacity
+                                    from: 0
+                                    to: 100
+                                    stepSize: 5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.toolbar_opacity = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                SpinBox {
+                                    Layout.preferredWidth: controlWidth*1.3
+                                    leftPadding: textAreaPadding
+                                    from: 0
+                                    to: 100
+                                    value: settings.toolbar_opacity
+                                    onValueModified: {
+                                        settings.toolbar_opacity = value
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: "Requires Lightly Application Style"
+                                Layout.alignment: Qt.AlignHCenter
+                                // Layout.fillWidth: true
+                                Layout.preferredWidth: mainLayout.width
+                                opacity: 0.7
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Tint Sierra Breeze window decoration buttons"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                CheckBox {
+                                    id: enableSbeColor
+                                    checked: settings.sierra_breeze_buttons_color
+
+                                    onCheckedChanged: {
+                                        settings.sierra_breeze_buttons_color = checked
+                                    }
+                                }
+                            }
+
+                            // klassy outline color
+                            RowLayout {
+                                Label {
+                                    text: "Tint Klassy window decoration outline"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                CheckBox {
+                                    id: enableKlassyOutlineColor
+                                    checked: settings.klassy_windeco_outline
+
+                                    onCheckedChanged: {
+                                        settings.klassy_windeco_outline = checked
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: "Match Titlebar and Window color for these themed windows (space separated)"
+                                Layout.alignment: Qt.AlignLeft
+                                Layout.preferredWidth: mainLayout.width
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                            }
+
+                            TextField {
+                                placeholderText: qsTr("Window class names e.g konsole alacritty kitty")
+                                topPadding: textAreaPadding
+                                bottomPadding: textAreaPadding
+                                leftPadding: textAreaPadding
+                                rightPadding: textAreaPadding
+                                Layout.fillWidth: true
+                                text: settings.darker_window_list
+
+                                onAccepted: {
+                                    settings.darker_window_list = text
+                                }
+                            }
+
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Custom script"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            Text {
+                                text: "Script to be executed on start or wallpaper/dark/light/settings change"
+                                Layout.alignment: Qt.AlignLeft
+                                Layout.preferredWidth: mainLayout.width
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                            }
+                            RowLayout {
+                                Button {
+                                    icon.name: "document-open"
+                                    onClicked: {
+                                        fileDialogExec.open()
+                                    }
+                                }
+
+                                Text {
+                                    text: settings.on_change_hook !== "" ?
+                                        "Set to: " + settings.on_change_hook :
+                                        ""
+                                    Layout.fillWidth: true
+                                    color: Kirigami.Theme.textColor
+                                    wrapMode: Text.Wrap
+                                }
+                            }
+
+
+                            FileDialog {
+                                id: fileDialogExec
+                                onAccepted: {
+                                    mainLayout.settings.on_change_hook = fileDialogExec.fileUrl.toString().substring(7)
                                 }
                             }
                         }
