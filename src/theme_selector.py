@@ -358,8 +358,10 @@ def apply_themes(
                 config_watcher.get_old_value()["iconslight"],
                 config_watcher.get_old_value()["iconsdark"],
             ]
-            if icons_new != icons_old:
-                plasma_utils.set_icons(icons_new[0], icons_new[1])
+            if (icons_new[0] != icons_old[0] and dark_light) or (
+                icons_new[1] != icons_old[1] and not dark_light
+            ):
+                plasma_utils.set_icons(icons_new[0], icons_new[1], dark_light)
 
             # titlebar opacity changes
             if (
