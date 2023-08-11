@@ -5,7 +5,7 @@ from .math_utils import clip
 from .string_utils import tup2str
 import configparser
 import os
-import globals
+import settings
 
 
 def export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=100):
@@ -28,8 +28,8 @@ def export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=10
         pywal_colors = schemes.get_wal_dark_scheme()
     config = configparser.ConfigParser()
     config.optionxform = str
-    if os.path.exists(globals.KONSOLE_COLOR_SCHEME_PATH):
-        config.read(globals.KONSOLE_COLOR_SCHEME_PATH)
+    if os.path.exists(settings.KONSOLE_COLOR_SCHEME_PATH):
+        config.read(settings.KONSOLE_COLOR_SCHEME_PATH)
 
     sections = [
         "Background",
@@ -119,22 +119,22 @@ def export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=10
     config["General"]["Description"] = "MaterialYou"
     config["General"]["Opacity"] = str(konsole_opacity)
 
-    with open(globals.KONSOLE_COLOR_SCHEME_PATH, "w") as configfile:
+    with open(settings.KONSOLE_COLOR_SCHEME_PATH, "w") as configfile:
         config.write(configfile, space_around_delimiters=False)
 
     config["General"]["Description"] = "MaterialYouAlt"
 
-    with open(globals.KONSOLE_COLOR_SCHEME_ALT_PATH, "w") as configfile:
+    with open(settings.KONSOLE_COLOR_SCHEME_ALT_PATH, "w") as configfile:
         config.write(configfile, space_around_delimiters=False)
 
 
 def make_mirror_profile(profile=None):
     if profile != None:
-        profile_path = globals.KONSOLE_DIR + profile + ".profile"
+        profile_path = settings.KONSOLE_DIR + profile + ".profile"
         if os.path.exists(profile_path):
             logging.debug(f"konsole: mirror profile ({profile})")
             subprocess.check_output(
-                "cp -f '" + profile_path + "' " + globals.KONSOLE_TEMP_PROFILE,
+                "cp -f '" + profile_path + "' " + settings.KONSOLE_TEMP_PROFILE,
                 shell=True,
             )
             profile = configparser.ConfigParser()
@@ -154,15 +154,15 @@ def make_mirror_profile(profile=None):
             # Mirror profile
             profile = configparser.ConfigParser()
             profile.optionxform = str
-            if os.path.exists(globals.KONSOLE_TEMP_PROFILE):
+            if os.path.exists(settings.KONSOLE_TEMP_PROFILE):
                 try:
-                    profile.read(globals.KONSOLE_TEMP_PROFILE)
+                    profile.read(settings.KONSOLE_TEMP_PROFILE)
                     if "Appearance" in profile:
                         profile["Appearance"]["ColorScheme"] = "MaterialYouAlt"
                         profile["General"]["Name"] = "TempMyou"
                 except Exception as e:
                     logging.error(f"Error applying Konsole profile:\n{e}")
-                with open(globals.KONSOLE_TEMP_PROFILE, "w") as configfile:
+                with open(settings.KONSOLE_TEMP_PROFILE, "w") as configfile:
                     profile.write(configfile, space_around_delimiters=False)
 
 
@@ -228,7 +228,7 @@ def apply_color_scheme(
     light=None, pywal_light=None, schemes=None, profile=None, konsole_opacity=None
 ):
     if profile != None:
-        profile_path = globals.KONSOLE_DIR + profile + ".profile"
+        profile_path = settings.KONSOLE_DIR + profile + ".profile"
         if os.path.exists(profile_path):
             export_scheme(light, pywal_light, schemes, konsole_opacity)
             reload_profile(profile)

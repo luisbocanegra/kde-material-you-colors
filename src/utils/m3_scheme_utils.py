@@ -1,8 +1,8 @@
 import logging
 import os
-import globals
+import settings
 
-if globals.USER_HAS_COLR:
+if settings.USER_HAS_COLR:
     import colr
 from . import color_utils
 from . import math_utils
@@ -171,13 +171,13 @@ def get_color_schemes(wallpaper, ncolor=None):
         if materialYouColors != None:
             try:
                 if len(materialYouColors["best"]) > 1:
-                    best_colors = f"Best colors: {globals.TERM_STY_BOLD}"
+                    best_colors = f"Best colors: {settings.TERM_STY_BOLD}"
 
                     for index, col in materialYouColors["best"].items():
-                        if globals.USER_HAS_COLR:
-                            best_colors += f"{globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{index}:{colr.color(col,fore=col)}"
+                        if settings.USER_HAS_COLR:
+                            best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{index}:{colr.color(col,fore=col)}"
                         else:
-                            best_colors += f"{globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{index}:{globals.TERM_COLOR_WHI}{col}"
+                            best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{index}:{settings.TERM_COLOR_WHI}{col}"
                         if int(index) < len(materialYouColors["best"]) - 1:
                             best_colors = best_colors + ","
                     logging.info(best_colors)
@@ -185,13 +185,13 @@ def get_color_schemes(wallpaper, ncolor=None):
                 seed = materialYouColors["seed"]
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
-                if globals.USER_HAS_COLR:
+                if settings.USER_HAS_COLR:
                     logging.info(
-                        f"Using seed: {globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{seedNo}:{colr.color(sedColor, fore=sedColor)}"
+                        f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{colr.color(sedColor, fore=sedColor)}"
                     )
                 else:
                     logging.info(
-                        f"Using seed: {globals.TERM_COLOR_DEF+globals.TERM_STY_BOLD}{seedNo}:{globals.TERM_COLOR_WHI}{sedColor}"
+                        f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{settings.TERM_COLOR_WHI}{sedColor}"
                     )
 
                 return materialYouColors
@@ -223,6 +223,6 @@ def export_schemes(schemes):
     )
 
     with open(
-        globals.MATERIAL_YOU_COLORS_JSON, "w", encoding="utf8"
+        settings.MATERIAL_YOU_COLORS_JSON, "w", encoding="utf8"
     ) as material_you_colors:
         json.dump(colors, material_you_colors, indent=4, ensure_ascii=False)

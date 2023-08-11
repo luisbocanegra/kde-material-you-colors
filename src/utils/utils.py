@@ -2,7 +2,7 @@ import gettext
 import logging
 import os
 import subprocess
-import globals
+import settings
 import argparse
 import sys
 import re
@@ -35,53 +35,53 @@ def kill_existing():
 def one_shot_actions(args):
     # User may just want to set the startup script / default config, do that only and terminate the script
     if args.autostart == True:
-        if not os.path.exists(globals.USER_AUTOSTART_SCRIPT_PATH):
-            os.makedirs(globals.USER_AUTOSTART_SCRIPT_PATH)
+        if not os.path.exists(settings.USER_AUTOSTART_SCRIPT_PATH):
+            os.makedirs(settings.USER_AUTOSTART_SCRIPT_PATH)
         if not os.path.exists(
-            globals.USER_AUTOSTART_SCRIPT_PATH + globals.AUTOSTART_SCRIPT
+            settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT
         ):
             try:
                 subprocess.check_output(
                     "cp "
-                    + globals.SAMPLE_AUTOSTART_SCRIPT_PATH
-                    + globals.AUTOSTART_SCRIPT
+                    + settings.SAMPLE_AUTOSTART_SCRIPT_PATH
+                    + settings.AUTOSTART_SCRIPT
                     + " "
-                    + globals.USER_AUTOSTART_SCRIPT_PATH
-                    + globals.AUTOSTART_SCRIPT,
+                    + settings.USER_AUTOSTART_SCRIPT_PATH
+                    + settings.AUTOSTART_SCRIPT,
                     shell=True,
                 )
                 logging.info(
-                    f"Autostart script copied to: {globals.USER_AUTOSTART_SCRIPT_PATH+globals.AUTOSTART_SCRIPT}"
+                    f"Autostart script copied to: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
                 )
             except Exception:
                 quit(1)
         else:
             logging.error(
-                f"Autostart script already exists in: {globals.USER_AUTOSTART_SCRIPT_PATH+globals.AUTOSTART_SCRIPT}"
+                f"Autostart script already exists in: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
             )
         quit(0)
     elif args.copyconfig == True:
-        if not os.path.exists(globals.USER_CONFIG_PATH):
-            os.makedirs(globals.USER_CONFIG_PATH)
-        if not os.path.exists(globals.USER_CONFIG_PATH + globals.CONFIG_FILE):
+        if not os.path.exists(settings.USER_CONFIG_PATH):
+            os.makedirs(settings.USER_CONFIG_PATH)
+        if not os.path.exists(settings.USER_CONFIG_PATH + settings.CONFIG_FILE):
             try:
                 subprocess.check_output(
                     "cp "
-                    + globals.SAMPLE_CONFIG_PATH
-                    + globals.SAMPLE_CONFIG_FILE
+                    + settings.SAMPLE_CONFIG_PATH
+                    + settings.SAMPLE_CONFIG_FILE
                     + " "
-                    + globals.USER_CONFIG_PATH
-                    + globals.CONFIG_FILE,
+                    + settings.USER_CONFIG_PATH
+                    + settings.CONFIG_FILE,
                     shell=True,
                 )
                 logging.info(
-                    f"Config copied to: {globals.USER_CONFIG_PATH+globals.CONFIG_FILE}"
+                    f"Config copied to: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
                 )
             except Exception:
                 quit(1)
         else:
             logging.error(
-                f"Config already exists in: {globals.USER_CONFIG_PATH+globals.CONFIG_FILE}"
+                f"Config already exists in: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
             )
         quit(0)
     elif args.stop == True:
@@ -193,7 +193,7 @@ def color_text(message: str):
     #     # print(txt)
     #     t = txt[0]
     #     message = message.replace(
-    #         t.strip(), f'{globals.TERM_COLOR_WHI}{t}{globals.TERM_STY_RESET}')
+    #         t.strip(), f'{settings.TERM_COLOR_WHI}{t}{settings.TERM_STY_RESET}')
 
     # search and color other patterns, line by line
     formatted_text = ""
@@ -206,7 +206,7 @@ def color_text(message: str):
         ]
         line = re.sub(
             "|".join(match_opts),
-            rf"{globals.TERM_COLOR_BLU}{globals.TERM_STY_BOLD}\1\2\3{globals.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_BLU}{settings.TERM_STY_BOLD}\1\2\3{settings.TERM_STY_RESET}",
             line,
         )
 
@@ -214,7 +214,7 @@ def color_text(message: str):
         match_args = ["(\<(.*?)\>)"]
         line = re.sub(
             "|".join(match_args),
-            rf"{globals.TERM_COLOR_YEL}\1{globals.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_YEL}\1{settings.TERM_STY_RESET}",
             line,
         )
 
@@ -224,7 +224,7 @@ def color_text(message: str):
         ]
         line = re.sub(
             "|".join(match_sect),
-            rf"{globals.TERM_COLOR_MAG}{globals.TERM_STY_BOLD}{globals.TERM_STY_INVERT}\1{globals.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_MAG}{settings.TERM_STY_BOLD}{settings.TERM_STY_INVERT}\1{settings.TERM_STY_RESET}",
             line,
         )
 
@@ -237,7 +237,7 @@ def color_text(message: str):
         ]
         line = re.sub(
             "|".join(match_progname),
-            rf"{globals.TERM_COLOR_GRE}{globals.TERM_STY_BOLD}\1\2\3{globals.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_GRE}{settings.TERM_STY_BOLD}\1\2\3{settings.TERM_STY_RESET}",
             line,
         )
 
@@ -250,7 +250,7 @@ def color_text(message: str):
         match_progname = [f"(ERROR:)"]
         line = re.sub(
             "|".join(match_progname),
-            rf"{globals.TERM_COLOR_RED}{globals.TERM_STY_BOLD}{globals.TERM_STY_INVERT}\1{globals.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_RED}{settings.TERM_STY_BOLD}{settings.TERM_STY_INVERT}\1{settings.TERM_STY_RESET}",
             line,
         )
 
@@ -260,5 +260,5 @@ def color_text(message: str):
             line = line.replace(w, w.capitalize())
 
         formatted_text += line + "\n"
-    formatted_text + globals.TERM_STY_RESET
+    formatted_text + settings.TERM_STY_RESET
     return formatted_text

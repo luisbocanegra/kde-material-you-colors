@@ -1,6 +1,6 @@
 import logging
 import schemeconfigs
-import globals
+import settings
 from utils import (
     utils,
     file_utils,
@@ -61,7 +61,7 @@ def apply_themes(
     if config_watcher.get_new_value()["konsole_profile"] != None:
         konsole_profile_modified.set_value(
             file_utils.get_last_modification(
-                globals.KONSOLE_DIR
+                settings.KONSOLE_DIR
                 + config_watcher.get_new_value()["konsole_profile"]
                 + ".profile"
             )

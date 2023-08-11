@@ -2,7 +2,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 import sys
 import os
-import globals
+import settings
 
 # Set logging level for pillow
 logging.getLogger("PIL").setLevel(logging.WARNING)
@@ -14,27 +14,27 @@ class MyLogFormatter(logging.Formatter):
     term_fmt = "{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s"
     file_fmt = "%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s"
     dbg_fmt = term_fmt.format(
-        globals.TERM_COLOR_BLU + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_BLU,
+        settings.TERM_COLOR_BLU + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
+        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
+        settings.TERM_STY_NORMAL + settings.TERM_COLOR_BLU,
     )
 
     info_fmt = term_fmt.format(
-        globals.TERM_COLOR_GRE + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_GRE,
+        settings.TERM_COLOR_GRE + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
+        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
+        settings.TERM_STY_NORMAL + settings.TERM_COLOR_GRE,
     )
 
     warn_fmt = term_fmt.format(
-        globals.TERM_COLOR_YEL + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_YEL,
+        settings.TERM_COLOR_YEL + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
+        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
+        settings.TERM_STY_NORMAL + settings.TERM_COLOR_YEL,
     )
 
     err_fmt = term_fmt.format(
-        globals.TERM_COLOR_RED + globals.TERM_STY_NORMAL + globals.TERM_STY_INVERT,
-        globals.TERM_STY_INVERT_OFF + globals.TERM_STY_BOLD + globals.TERM_COLOR_WHI,
-        globals.TERM_STY_NORMAL + globals.TERM_COLOR_RED,
+        settings.TERM_COLOR_RED + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
+        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
+        settings.TERM_STY_NORMAL + settings.TERM_COLOR_RED,
     )
 
     def __init__(self, to_file):
@@ -78,13 +78,13 @@ class MyLogFormatter(logging.Formatter):
         hdlr.setFormatter(term_fmt)
 
         # make sure that the folder for log exists
-        if not os.path.exists(globals.LOG_FILE_PATH):
-            os.makedirs(globals.LOG_FILE_PATH)
+        if not os.path.exists(settings.LOG_FILE_PATH):
+            os.makedirs(settings.LOG_FILE_PATH)
 
         # Format for log file
         file_fmt = MyLogFormatter(to_file=True)
         fh = RotatingFileHandler(
-            globals.LOG_FILE_PATH + globals.LOG_FILE_NAME,
+            settings.LOG_FILE_PATH + settings.LOG_FILE_NAME,
             mode="a",
             maxBytes=1 * 1024 * 1024,
             backupCount=1,

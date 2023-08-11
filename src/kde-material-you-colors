@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import time
 import argparse
-import globals
+import settings
 import logging
 from config import Configs
 from utils import utils
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         "--plugin",
         "-p",
         type=str,
-        help=f"Wallpaper plugin id (default is {globals.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers",
+        help=f"Wallpaper plugin id (default is {settings.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers",
         default=None,
         metavar="<plugin>",
     )
@@ -274,13 +274,15 @@ if __name__ == "__main__":
     konsole_profile_modified = utils.Watcher(None)
     logging.info("###### STARTED NEW SESSION ######")
     config_modified = utils.Watcher(
-        file_utils.get_last_modification(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
+        file_utils.get_last_modification(
+            settings.USER_CONFIG_PATH + settings.CONFIG_FILE
+        )
     )
 
     while True:
         config_modified.set_value(
             file_utils.get_last_modification(
-                globals.USER_CONFIG_PATH + globals.CONFIG_FILE
+                settings.USER_CONFIG_PATH + settings.CONFIG_FILE
             )
         )
 

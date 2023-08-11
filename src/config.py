@@ -1,7 +1,7 @@
 from utils import color_utils
 import configparser
 import logging
-import globals
+import settings
 import os
 
 
@@ -106,7 +106,7 @@ class Configs:
             "pywal_follows_scheme": [None, None, 0],
         }
         options = defaults
-        config = get_conf(globals.USER_CONFIG_PATH + globals.CONFIG_FILE)
+        config = get_conf(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
 
         # loop and read configs
         for key, val in defaults.items():

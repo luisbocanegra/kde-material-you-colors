@@ -1,7 +1,7 @@
 import logging
 import configparser
 import os
-import globals
+import settings
 from . import math_utils
 from . import string_utils
 
@@ -15,9 +15,9 @@ def sierra_breeze_button_colors(schemes, light=None):
     breezerc = configparser.ConfigParser()
     # preserve case
     breezerc.optionxform = str
-    if os.path.exists(globals.BREEZE_RC):
+    if os.path.exists(settings.BREEZE_RC):
         try:
-            breezerc.read(globals.BREEZE_RC)
+            breezerc.read(settings.BREEZE_RC)
             if "Windeco" in breezerc:
                 breezerc["Windeco"]["ButtonCloseActiveColor"] = colors[
                     "btn_close_active_color"
@@ -68,13 +68,13 @@ def sierra_breeze_button_colors(schemes, light=None):
                 reload = False
             if reload == True:
                 logging.info(f"Applying SierraBreeze window button colors")
-                with open(globals.BREEZE_RC, "w") as configfile:
+                with open(settings.BREEZE_RC, "w") as configfile:
                     breezerc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing breeze window button colors:\n{e}")
     else:
         logging.warning(
-            f"SierraBreeze config '{globals.BREEZE_RC}' not found, skipping"
+            f"SierraBreeze config '{settings.BREEZE_RC}' not found, skipping"
         )
 
 
@@ -85,9 +85,9 @@ def titlebar_opacity(opacity):
         # preserve case
         conf_file.optionxform = str
 
-        if os.path.exists(globals.SBE_RC):
+        if os.path.exists(settings.SBE_RC):
             try:
-                conf_file.read(globals.SBE_RC)
+                conf_file.read(settings.SBE_RC)
                 if "Windeco" in conf_file:
                     conf_file["Windeco"]["BackgroundOpacity"] = str(int(opacity))
                     reload = True
@@ -95,16 +95,16 @@ def titlebar_opacity(opacity):
                     reload = False
                 if reload == True:
                     logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
-                    with open(globals.SBE_RC, "w") as configfile:
+                    with open(settings.SBE_RC, "w") as configfile:
                         conf_file.write(configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.error(
                     f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}"
                 )
 
-        if os.path.exists(globals.KLASSY_RC):
+        if os.path.exists(settings.KLASSY_RC):
             try:
-                conf_file.read(globals.KLASSY_RC)
+                conf_file.read(settings.KLASSY_RC)
                 if "Common" in conf_file:
                     conf_file["Common"]["ActiveTitlebarOpacity"] = str(int(opacity))
                     conf_file["Common"]["InactiveTitlebarOpacity"] = str(int(opacity))
@@ -113,7 +113,7 @@ def titlebar_opacity(opacity):
                     reload = False
                 if reload == True:
                     logging.info(f"Applying Klassy titlebar opacity")
-                    with open(globals.KLASSY_RC, "w") as configfile:
+                    with open(settings.KLASSY_RC, "w") as configfile:
                         conf_file.write(configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
@@ -134,9 +134,9 @@ def klassy_windeco_outline_color(schemes, light=None):
     klassyrc = configparser.ConfigParser()
     # preserve case
     klassyrc.optionxform = str
-    if os.path.exists(globals.KLASSY_RC):
+    if os.path.exists(settings.KLASSY_RC):
         try:
-            klassyrc.read(globals.KLASSY_RC)
+            klassyrc.read(settings.KLASSY_RC)
             if "Windeco" in klassyrc:
                 klassyrc["Windeco"][
                     "ThinWindowOutlineStyle"
@@ -147,12 +147,12 @@ def klassy_windeco_outline_color(schemes, light=None):
                 reload = False
             if reload == True:
                 logging.info(f"Applying Klassy outline color")
-                with open(globals.KLASSY_RC, "w") as configfile:
+                with open(settings.KLASSY_RC, "w") as configfile:
                     klassyrc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing Klassy outline color:\n{e}")
     else:
-        logging.warning(f"Klassy config '{globals.KLASSY_RC}' not found, skipping")
+        logging.warning(f"Klassy config '{settings.KLASSY_RC}' not found, skipping")
 
 
 def kwin_rule_darker_titlebar(light, darker_window_list):
@@ -173,7 +173,7 @@ def kwin_rule_darker_titlebar(light, darker_window_list):
     # open kwinrulesrc file
     kwin_rules = configparser.ConfigParser(allow_no_value=True)
     kwin_rules.optionxform = str
-    kwin_rules.read(globals.KWIN_RULES_RC)
+    kwin_rules.read(settings.KWIN_RULES_RC)
     # Handle incomplete structure
     if "General" not in kwin_rules:
         kwin_rules.add_section("General")
@@ -234,5 +234,5 @@ def kwin_rule_darker_titlebar(light, darker_window_list):
     kwin_rules["General"]["rules"] = string_utils.tup2str(active_rules)
     # Write
 
-    with open(globals.KWIN_RULES_RC, "w") as configfile:
+    with open(settings.KWIN_RULES_RC, "w") as configfile:
         kwin_rules.write(configfile, space_around_delimiters=False)

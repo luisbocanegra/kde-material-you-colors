@@ -1,11 +1,11 @@
 import logging
 from .color_utils import hex2rgb
 from . import pywal_sequences_timeout
-import globals
+import settings
 
-if globals.USER_HAS_PYWAL:
+if settings.USER_HAS_PYWAL:
     import pywal
-if globals.USER_HAS_COLR:
+if settings.USER_HAS_COLR:
     import colr
 
 
@@ -26,7 +26,7 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
         pywal_colors = schemes.get_wal_dark_scheme()
     if pywal_colors != None:
         if use_pywal != None and use_pywal == True:
-            if globals.USER_HAS_PYWAL:
+            if settings.USER_HAS_PYWAL:
                 logging.info("Setting pywal colors...")
                 # On very rare occassions pywal will hang, add a timeout to it
                 try:
@@ -50,14 +50,14 @@ def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
 
 
 def print_color_palette(pywal_colors):
-    if globals.USER_HAS_COLR:
+    if settings.USER_HAS_COLR:
         i = 0
         for index, col in pywal_colors["colors"].items():
             if i % 8 == 0 and i != 0:
                 print()
             print(f'{colr.color("    ",back=hex2rgb(col))}', end="")
             i += 1
-        print(f"{globals.TERM_STY_RESET}")
+        print(f"{settings.TERM_STY_RESET}")
     else:
         logging.debug(
             "Install colr python module to tint color codes and palette as they update"

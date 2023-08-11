@@ -1,14 +1,14 @@
 import dbus
 import logging
 import os
-import globals
+import settings
 from . import color_utils
 from . import file_utils
 from . import math_utils
 
 
 def get_wallpaper_data(
-    plugin=globals.DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None
+    plugin=settings.DEFAULT_PLUGIN, monitor=0, file=None, color=None, light=None
 ):
     """Get current wallpaper or color from text file or plugin + containment combo
     and return a string with its type (color or image file)
@@ -22,7 +22,7 @@ def get_wallpaper_data(
         tuple: (type (int), data (str))
     """
     if plugin == None:
-        plugin = globals.DEFAULT_PLUGIN
+        plugin = settings.DEFAULT_PLUGIN
     if monitor and monitor != None:
         monitor = math_utils.clip(monitor, 0, 999, 0)
     else:
@@ -46,7 +46,7 @@ def get_wallpaper_data(
     else:
         # special case for picture of the day plugin that requires a
         # directory, provider and a category
-        if plugin == globals.PICTURE_OF_DAY_PLUGIN:
+        if plugin == settings.PICTURE_OF_DAY_PLUGIN:
             # wait a bit to for wallpaper update
             script = """
             var Desktops = desktops();
@@ -67,40 +67,42 @@ def get_wallpaper_data(
             provider_category = script_output[1]
 
             if img_provider:
-                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + img_provider
+                potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + img_provider
             else:
                 # default provider is astronomic picture of the day
                 potd = (
-                    globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR
-                    + globals.PICTURE_OF_DAY_DEFAULT_PROVIDER
+                    settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR
+                    + settings.PICTURE_OF_DAY_DEFAULT_PROVIDER
                 )
 
             # unsplash also has a category
-            if img_provider == globals.PICTURE_OF_DAY_UNSPLASH_PROVIDER:
+            if img_provider == settings.PICTURE_OF_DAY_UNSPLASH_PROVIDER:
                 # defaul category doesnt doesnt return id, add it
                 if not provider_category:
-                    provider_category = globals.PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
+                    provider_category = (
+                        settings.PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
+                    )
                 potd = f"{potd}:{provider_category}"
 
             # Bing file now has the wallpaper resolution in the name
-            if img_provider == globals.PICTURE_OF_DAY_BING_PROVIDER:
+            if img_provider == settings.PICTURE_OF_DAY_BING_PROVIDER:
                 # find and return files that start with bing and don't end with json and use the largest one
                 potd = [
                     file
-                    for file in os.listdir(globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR)
+                    for file in os.listdir(settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR)
                     if os.path.isfile(
-                        os.path.join(globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)
+                        os.path.join(settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)
                     )
-                    if file.startswith(globals.PICTURE_OF_DAY_BING_PROVIDER)
+                    if file.startswith(settings.PICTURE_OF_DAY_BING_PROVIDER)
                     and not file.endswith("json")
                 ]
-                potd = globals.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + max(potd)
+                potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + max(potd)
 
             if os.path.exists(potd):
                 return ("image", potd)
             else:
                 return None
-        elif plugin == globals.PLAIN_COLOR_PLUGIN:
+        elif plugin == settings.PLAIN_COLOR_PLUGIN:
             script = """
             var Desktops = desktops();
                 d = Desktops[%s];

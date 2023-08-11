@@ -2,15 +2,15 @@ import configparser
 import logging
 import os
 import subprocess
-import globals
+import settings
 from . import kwin_utils
 from . import file_utils
 
 
 def make_scheme(schemes=None):
     # Make sure the schemes path exists
-    if not os.path.exists(globals.USER_SCHEMES_PATH):
-        os.makedirs(globals.USER_SCHEMES_PATH)
+    if not os.path.exists(settings.USER_SCHEMES_PATH):
+        os.makedirs(settings.USER_SCHEMES_PATH)
     light_scheme = schemes.get_light_scheme()
     dark_scheme = schemes.get_dark_scheme()
     # plasma-apply-colorscheme doesnt allow to apply the same theme twice to reload
@@ -18,19 +18,19 @@ def make_scheme(schemes=None):
     # sadly color settings will show copies too
 
     with open(
-        globals.THEME_LIGHT_PATH + "2.colors", "w", encoding="utf8"
+        settings.THEME_LIGHT_PATH + "2.colors", "w", encoding="utf8"
     ) as light_scheme_file:
         light_scheme_file.write(light_scheme)
     with open(
-        globals.THEME_LIGHT_PATH + ".colors", "w", encoding="utf8"
+        settings.THEME_LIGHT_PATH + ".colors", "w", encoding="utf8"
     ) as light_scheme_file:
         light_scheme_file.write(light_scheme)
     with open(
-        globals.THEME_DARK_PATH + "2.colors", "w", encoding="utf8"
+        settings.THEME_DARK_PATH + "2.colors", "w", encoding="utf8"
     ) as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
     with open(
-        globals.THEME_DARK_PATH + ".colors", "w", encoding="utf8"
+        settings.THEME_DARK_PATH + ".colors", "w", encoding="utf8"
     ) as dark_scheme_file:
         dark_scheme_file.write(dark_scheme)
 
@@ -42,9 +42,9 @@ def apply_color_schemes(light=False):
         light = False
     if light != None:
         if light == True:
-            color_scheme = globals.THEME_LIGHT_PATH
+            color_scheme = settings.THEME_LIGHT_PATH
         elif light == False:
-            color_scheme = globals.THEME_DARK_PATH
+            color_scheme = settings.THEME_DARK_PATH
         kwin_utils.blend_changes()
         subprocess.run(
             "plasma-apply-colorscheme " + color_scheme + "2.colors",
@@ -62,18 +62,18 @@ def apply_color_schemes(light=False):
         # Get hash of the updated theme
         hash = file_utils.get_file_sha1(color_scheme + ".colors")
         # Update ColorScheme hash in kdeglobals file
-        if os.path.exists(globals.KDE_GLOBALS) and hash is not None:
+        if os.path.exists(settings.KDE_GLOBALS) and hash is not None:
             kdeglobals = configparser.ConfigParser()
             kdeglobals.optionxform = str
             try:
-                kdeglobals.read(globals.KDE_GLOBALS)
+                kdeglobals.read(settings.KDE_GLOBALS)
                 if "General" not in kdeglobals:
                     kdeglobals.add_section("General")
 
                 general = kdeglobals["General"]
                 general["ColorSchemeHash"] = hash
 
-                with open(globals.KDE_GLOBALS, "w") as configfile:
+                with open(settings.KDE_GLOBALS, "w") as configfile:
                     kdeglobals.write(configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.error(f"Error:\n{e}")
@@ -105,9 +105,9 @@ def set_icons(icons_light, icons_dark, light=False):
 
 def kde_globals_light():
     kdeglobals = configparser.ConfigParser()
-    if os.path.exists(globals.KDE_GLOBALS):
+    if os.path.exists(settings.KDE_GLOBALS):
         try:
-            kdeglobals.read(globals.KDE_GLOBALS)
+            kdeglobals.read(settings.KDE_GLOBALS)
             if "General" in kdeglobals:
                 general = kdeglobals["General"]
                 if "ColorScheme" in general:
@@ -147,7 +147,7 @@ def get_initial_mode():
         kdeglobals = configparser.ConfigParser()
         kdeglobals.optionxform = str
         try:
-            kdeglobals.read(globals.KDE_GLOBALS)
+            kdeglobals.read(settings.KDE_GLOBALS)
             if "General" in kdeglobals and "ColorSchemeHash" in kdeglobals["General"]:
                 current_theme_hash = kdeglobals["General"]["ColorSchemeHash"]
         except Exception as e:
@@ -156,11 +156,11 @@ def get_initial_mode():
         if current_theme_hash is not None:
             logging.debug(f"Config file hash:  {current_theme_hash}")
             dark_scheme_hash = file_utils.get_file_sha1(
-                globals.THEME_DARK_PATH + ".colors"
+                settings.THEME_DARK_PATH + ".colors"
             )
             logging.debug(f"Dark scheme hash:  {dark_scheme_hash}")
             light_scheme_hash = file_utils.get_file_sha1(
-                globals.THEME_LIGHT_PATH + ".colors"
+                settings.THEME_LIGHT_PATH + ".colors"
             )
             logging.debug(f"Light scheme hash: {light_scheme_hash}")
             if current_theme_hash == dark_scheme_hash:
@@ -184,34 +184,34 @@ def plasma_darker_header(schemes):
     color_scheme.optionxform = str
     try:
         # Edit titlebar of dark scheme
-        color_scheme.read(globals.THEME_DARK_PATH + ".colors")
+        color_scheme.read(settings.THEME_DARK_PATH + ".colors")
         color_scheme["Colors:Header][Inactive"]["BackgroundNormal"] = dark_color
         color_scheme["Colors:Header"]["BackgroundNormal"] = dark_color
         color_scheme["General"]["Name"] = "Material You Dark (darker titlebar)"
 
         with open(
-            globals.THEME_DARK_PATH + "_darker_titlebar.colors", "w"
+            settings.THEME_DARK_PATH + "_darker_titlebar.colors", "w"
         ) as configfile:
             color_scheme.write(configfile, space_around_delimiters=False)
         color_scheme["General"]["Name"] = "Material You Dark (darker titlebar2)"
         with open(
-            globals.THEME_DARK_PATH + "_darker_titlebar2.colors", "w"
+            settings.THEME_DARK_PATH + "_darker_titlebar2.colors", "w"
         ) as configfile:
             color_scheme.write(configfile, space_around_delimiters=False)
 
         # Edit titlebar of light scheme
-        color_scheme.read(globals.THEME_LIGHT_PATH + ".colors")
+        color_scheme.read(settings.THEME_LIGHT_PATH + ".colors")
         color_scheme["Colors:Header][Inactive"]["BackgroundNormal"] = light_color
         color_scheme["Colors:Header"]["BackgroundNormal"] = light_color
         color_scheme["General"]["Name"] = "Material You Light (darker titlebar)"
 
         with open(
-            globals.THEME_LIGHT_PATH + "_darker_titlebar.colors", "w"
+            settings.THEME_LIGHT_PATH + "_darker_titlebar.colors", "w"
         ) as configfile:
             color_scheme.write(configfile, space_around_delimiters=False)
         color_scheme["General"]["Name"] = "Material You Light (darker titlebar2)"
         with open(
-            globals.THEME_LIGHT_PATH + "_darker_titlebar2.colors", "w"
+            settings.THEME_LIGHT_PATH + "_darker_titlebar2.colors", "w"
         ) as configfile:
             color_scheme.write(configfile, space_around_delimiters=False)
 
