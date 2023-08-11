@@ -167,9 +167,9 @@ def get_initial_mode():
                 return False
             if current_theme_hash == light_scheme_hash:
                 return True
-        else:
-            logging.warning("Couldn't find previus theme, falling back to dark mode...")
-            return False
+
+        logging.warning("Couldn't find previus theme, falling back to dark mode...")
+        return False
 
 
 def plasma_darker_header(schemes):
