@@ -67,6 +67,7 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
+        sys.exit(0)
 
     if args.copylauncher == True:
         # Start/Stop Desktop entries
@@ -85,6 +86,7 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
+        sys.exit(0)
 
     elif args.copyconfig == True:
         dests = [
@@ -97,10 +99,11 @@ def one_shot_actions(args):
         ]
 
         copy_user_files(dests)
+        sys.exit(0)
 
     elif args.stop == True:
         kill_existing()
-    sys.exit(0)
+        sys.exit(0)
 
 
 class Watcher:
