@@ -1,8 +1,8 @@
 [Desktop Entry]
-Exec=/usr/bin/kde-material-you-colors
+Exec=kde-material-you-colors
 Icon=colors
 Name=KDE Material You Colors
-Comment=Starts/Restarts the Script
+Comment=Starts/Restarts background process
 Path=
 Type=Application
 X-KDE-AutostartScript=true
