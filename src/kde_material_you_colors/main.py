@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 import time
 import argparse
 import logging
@@ -252,6 +253,11 @@ def main():
     utils.one_shot_actions(args)
     # Kill existing instance if found
     utils.kill_existing()
+
+    with open(settings.PIDFILE_PATH, "w", encoding="utf-8") as pidfile:
+        pidfile.write(str(os.getpid()))
+        pidfile.close()
+
     # read config
     config = Configs(args)
     # startup delay

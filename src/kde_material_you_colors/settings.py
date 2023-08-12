@@ -1,3 +1,5 @@
+import getpass
+import tempfile
 from pathlib import Path
 import importlib.util
 
@@ -35,6 +37,9 @@ LOG_FILE_PATH = HOME + "/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
 MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors.json"
 KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
+PIDFILE_PATH = Path(
+    f"{tempfile.gettempdir()}/kde-material-you-colors-{getpass.getuser()}.pid"
+)
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"

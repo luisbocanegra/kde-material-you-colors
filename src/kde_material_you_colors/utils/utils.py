@@ -1,6 +1,7 @@
 import gettext
 import logging
 import os
+import signal
 import subprocess
 from .. import settings
 import argparse
@@ -14,22 +15,20 @@ def run_hook(hook):
 
 
 def kill_existing():
-    get_pids = (
-        subprocess.check_output(
-            "ps -e -f | grep [/]usr/bin/kde-material-you-colors | awk '{print $2}'",
-            shell=True,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
-        .strip()
-        .splitlines()
-    )
-    current_pid = os.getpid()
-    for pid in get_pids:
-        pid = int(pid)
-        if pid != current_pid:
-            logging.debug(f"Found existing process with PID: '{pid}' killing...")
-            subprocess.Popen("kill -9 " + str(pid), shell=True)
+    if os.path.exists(settings.PIDFILE_PATH):
+        prev_pid = ""
+        with open(settings.PIDFILE_PATH, "r", encoding="utf-8") as pidfile:
+            prev_pid = pidfile.readline()
+
+        current_pid = str(os.getpid())
+        if prev_pid != current_pid:
+            logging.debug(
+                f"Found previous process in PID file: '{prev_pid}' killing..."
+            )
+            try:
+                os.kill(int(prev_pid), signal.SIGKILL)
+            except ProcessLookupError:
+                logging.debug("Process not found, probably ended by someone else")
 
 
 def one_shot_actions(args):
