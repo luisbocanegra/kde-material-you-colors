@@ -100,6 +100,13 @@ def main():
     )
 
     parser.add_argument(
+        "--copylauncher",
+        "-cl",
+        action="store_true",
+        help="Copies desktop entries to ~/.local/share/applications/",
+    )
+
+    parser.add_argument(
         "--iconslight",
         type=str,
         help="Icons theme for Dark scheme",

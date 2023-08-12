@@ -7,6 +7,7 @@ from .. import settings
 import argparse
 import sys
 import re
+import shutil
 
 
 def run_hook(hook):
@@ -31,61 +32,75 @@ def kill_existing():
                 logging.debug("Process not found, probably ended by someone else")
 
 
+def copy_user_files(dests):
+    for dest in dests:
+        if not os.path.exists(dest["dest"]):
+            os.makedirs(dest["dest"])
+
+        if not os.path.exists(dest["dest"] + dest["file_dest"]):
+            try:
+                shutil.copy(
+                    dest["origin"] + dest["file"],
+                    dest["dest"] + dest["file_dest"],
+                )
+                logging.info(
+                    f'Copied {dest["file"]} -> {dest["dest"] + dest["file_dest"]}'
+                )
+            except shutil.Error as err:
+                logging.error(f"Error: {err}")
+                sys.exit(1)
+        else:
+            logging.warning(
+                f'File {dest["file"]} already exists in: {dest["dest"]+dest["file_dest"]}'
+            )
+
+
 def one_shot_actions(args):
-    # User may just want to set the startup script / default config, do that only and terminate the script
     if args.autostart == True:
-        if not os.path.exists(settings.USER_AUTOSTART_SCRIPT_PATH):
-            os.makedirs(settings.USER_AUTOSTART_SCRIPT_PATH)
-        if not os.path.exists(
-            settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT
-        ):
-            try:
-                subprocess.check_output(
-                    "cp "
-                    + settings.SAMPLE_AUTOSTART_SCRIPT_PATH
-                    + settings.AUTOSTART_SCRIPT
-                    + " "
-                    + settings.USER_AUTOSTART_SCRIPT_PATH
-                    + settings.AUTOSTART_SCRIPT,
-                    shell=True,
-                )
-                logging.info(
-                    f"Autostart script copied to: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
-                )
-            except Exception:
-                quit(1)
-        else:
-            logging.error(
-                f"Autostart script already exists in: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
-            )
-        quit(0)
+        # Autostart desktop entries
+        dests = [
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_AUTOSTART_SCRIPT_PATH,
+                "file": settings.AUTOSTART_SCRIPT,
+                "file_dest": settings.AUTOSTART_SCRIPT,
+            },
+        ]
+        copy_user_files(dests)
+
+    if args.copylauncher == True:
+        # Start/Stop Desktop entries
+        dests = [
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_APPS_PATH,
+                "file": settings.AUTOSTART_SCRIPT,
+                "file_dest": settings.AUTOSTART_SCRIPT,
+            },
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_APPS_PATH,
+                "file": settings.STOP_SCRIPT,
+                "file_dest": settings.STOP_SCRIPT,
+            },
+        ]
+        copy_user_files(dests)
+
     elif args.copyconfig == True:
-        if not os.path.exists(settings.USER_CONFIG_PATH):
-            os.makedirs(settings.USER_CONFIG_PATH)
-        if not os.path.exists(settings.USER_CONFIG_PATH + settings.CONFIG_FILE):
-            try:
-                subprocess.check_output(
-                    "cp "
-                    + settings.SAMPLE_CONFIG_PATH
-                    + settings.SAMPLE_CONFIG_FILE
-                    + " "
-                    + settings.USER_CONFIG_PATH
-                    + settings.CONFIG_FILE,
-                    shell=True,
-                )
-                logging.info(
-                    f"Config copied to: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
-                )
-            except Exception:
-                quit(1)
-        else:
-            logging.error(
-                f"Config already exists in: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
-            )
-        quit(0)
+        dests = [
+            {
+                "origin": settings.SAMPLE_CONFIG_PATH,
+                "dest": settings.USER_CONFIG_PATH,
+                "file": settings.SAMPLE_CONFIG_FILE,
+                "file_dest": settings.CONFIG_FILE,
+            },
+        ]
+
+        copy_user_files(dests)
+
     elif args.stop == True:
         kill_existing()
-        quit(0)
+    sys.exit(0)
 
 
 class Watcher:
