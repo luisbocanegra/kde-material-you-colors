@@ -2,7 +2,7 @@ import gettext
 import logging
 import os
 import subprocess
-import settings
+from .. import settings
 import argparse
 import sys
 import re

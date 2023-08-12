@@ -2,7 +2,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 import sys
 import os
-import settings
+from . import settings
 
 # Set logging level for pillow
 logging.getLogger("PIL").setLevel(logging.WARNING)

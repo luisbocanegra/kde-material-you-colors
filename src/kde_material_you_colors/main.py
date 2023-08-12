@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 import time
 import argparse
-import settings
 import logging
-from config import Configs
-from utils import utils
-from utils import wallpaper_utils
-from utils import file_utils
-import theme_selector
-from logging_config import MyLogFormatter
+from . import settings
+from .config import Configs
+from .utils import utils
+from .utils import wallpaper_utils
+from .utils import file_utils
+from . import theme_selector
+from .logging_config import MyLogFormatter
 
 MyLogFormatter.set_format()
 
-if __name__ == "__main__":
+
+def main():
     parser = utils.ColoredArgParser(
         description="Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop and more, powered by python-material-color-utilities with pywal support. Any argument passed here overrides their counterpart in the configuration file (if any).",
         epilog="For more information, issues, feature requests and updates check the project page https://github.com/luisbocanegra/kde-material-you-colors",
@@ -317,3 +318,6 @@ if __name__ == "__main__":
                 konsole_profile_modified,
             )
         time.sleep(1)
+
+
+main()

@@ -1,7 +1,7 @@
 import logging
 import configparser
 import os
-import settings
+from .. import settings
 from . import math_utils
 from . import string_utils
 

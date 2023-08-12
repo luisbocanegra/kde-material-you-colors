@@ -1,6 +1,6 @@
 import json
 import os
-import settings
+from .. import settings
 
 
 def export_schemes(schemes=None):
