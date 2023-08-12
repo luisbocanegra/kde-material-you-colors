@@ -36,4 +36,5 @@ setuptools.setup(
             "kde-material-you-colors=kde_material_you_colors.main:main",
         ],
     },
+    include_package_data=True,
 )
