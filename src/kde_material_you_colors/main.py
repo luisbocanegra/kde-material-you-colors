@@ -33,19 +33,10 @@ def main():
     )
 
     parser.add_argument(
-        "--plugin",
-        "-p",
-        type=str,
-        help=f"Wallpaper plugin id (default is {settings.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers",
-        default=None,
-        metavar="<plugin>",
-    )
-
-    parser.add_argument(
         "--color",
         "-col",
         type=str,
-        help="Custom color (hex or rgb) used to generate M3 color scheme Takes precedence over the --plugin option",
+        help="Custom color (hex or rgb) used to generate M3 color scheme Takes precedence over automatic wallpaper detection",
         default=None,
         metavar="<color>",
     )
@@ -54,7 +45,7 @@ def main():
         "--file",
         "-f",
         type=str,
-        help="Text file that contains wallpaper absolute path (Takes precedence over the --plugin and --color options)",
+        help="Text file that contains wallpaper absolute path (Takes precedence over automatic wallpaper detection and --color options)",
         default=None,
         metavar="<filename>",
     )
@@ -308,7 +299,6 @@ def main():
         # Get wallpaper
         wallpaper_watcher.set_value(
             wallpaper_utils.get_wallpaper_data(
-                plugin=config_watcher.get_new_value()["plugin"],
                 monitor=config_watcher.get_new_value()["monitor"],
                 color=config_watcher.get_new_value()["color"],
                 light=config_watcher.get_new_value()["light"],
