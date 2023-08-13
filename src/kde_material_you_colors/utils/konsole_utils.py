@@ -5,7 +5,7 @@ from .math_utils import clip
 from .string_utils import tup2str
 import configparser
 import os
-import settings
+from .. import settings
 
 
 def export_scheme(light=None, pywal_light=None, schemes=None, konsole_opacity=100):

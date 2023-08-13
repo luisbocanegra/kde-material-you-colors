@@ -1,6 +1,6 @@
 import logging
 import os
-import settings
+from .. import settings
 
 if settings.USER_HAS_COLR:
     import colr

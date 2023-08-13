@@ -2,7 +2,7 @@ import configparser
 import logging
 import os
 import subprocess
-import settings
+from .. import settings
 from . import kwin_utils
 from . import file_utils
 

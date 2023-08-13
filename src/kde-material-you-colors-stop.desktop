@@ -1,7 +1,0 @@
-[Desktop Entry]
-Exec=/usr/bin/kde-material-you-colors --stop
-Icon=colors
-Name=Stop KDE Material You Colors
-Comment=Stop the Script
-Path=
-Type=Application

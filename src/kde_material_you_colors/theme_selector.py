@@ -1,7 +1,7 @@
 import logging
-import schemeconfigs
-import settings
-from utils import (
+from . import schemeconfigs
+from . import settings
+from .utils import (
     utils,
     file_utils,
     m3_scheme_utils,

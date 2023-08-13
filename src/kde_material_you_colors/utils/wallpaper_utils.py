@@ -1,7 +1,7 @@
 import dbus
 import logging
 import os
-import settings
+from .. import settings
 from . import color_utils
 from . import file_utils
 from . import math_utils

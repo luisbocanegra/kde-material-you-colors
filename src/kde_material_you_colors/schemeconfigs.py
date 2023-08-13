@@ -1,7 +1,15 @@
-from utils.color_utils import *
-from utils import math_utils
-from utils import string_utils
 import logging
+from .utils.color_utils import (
+    blendColors,
+    lighteen_color,
+    scale_saturation,
+    blend2contrast,
+    sort_colors_luminance,
+    hex2alpha,
+    hex2rgb,
+)
+from .utils import math_utils
+from .utils import string_utils
 
 
 class ThemeConfig:
@@ -221,20 +229,24 @@ class ThemeConfig:
             else:
                 break
 
-        all = pywal_colors_dark
+        all_colors = pywal_colors_dark
         pywal_colors_dark = (pywal_colors_dark[0],)
         # sort colors if they don't come from custom colors
         if custom_colors_list is None:
-            all = sort_colors_luminance(all[-7:])
+            all_colors = sort_colors_luminance(all_colors[-7:])
         else:
-            all = all[-7:]
+            all_colors = all_colors[-7:]
 
         for n in range(7):
-            pywal_colors_dark += (blendColors(tones_neutral[99], all[n], 0.95),)
+            pywal_colors_dark += (blendColors(tones_neutral[99], all_colors[n], 0.95),)
 
-            pywal_colors_dark_intense += (blendColors(tones_neutral[99], all[n], 0.82),)
+            pywal_colors_dark_intense += (
+                blendColors(tones_neutral[99], all_colors[n], 0.82),
+            )
 
-            pywal_colors_dark_faint += (blendColors(pywal_colors_dark[0], all[n], 0.7),)
+            pywal_colors_dark_faint += (
+                blendColors(pywal_colors_dark[0], all_colors[n], 0.7),
+            )
 
         tone = 50
         # ansi 30
@@ -291,20 +303,22 @@ class ThemeConfig:
             else:
                 break
 
-        all = pywal_colors_light
+        all_colors = pywal_colors_light
         pywal_colors_light = (pywal_colors_light[0],)
         # sort colors if they don't come from custom colors
         if custom_colors_list is None:
-            all = sort_colors_luminance(all[-7:])
+            all_colors = sort_colors_luminance(all_colors[-7:])
         else:
-            all = all[-7:]
+            all_colors = all_colors[-7:]
         for n in range(7):
-            pywal_colors_light += (blendColors(tones_neutral[1], all[n], 0.95),)
+            pywal_colors_light += (blendColors(tones_neutral[1], all_colors[n], 0.95),)
 
-            pywal_colors_light_intense += (blendColors(tones_neutral[1], all[n], 0.82),)
+            pywal_colors_light_intense += (
+                blendColors(tones_neutral[1], all_colors[n], 0.82),
+            )
 
             pywal_colors_light_faint += (
-                blendColors(pywal_colors_light[0], all[n], 0.7),
+                blendColors(pywal_colors_light[0], all_colors[n], 0.7),
             )
 
         # print("CONTRAST CHECK DARK - NORMAL")

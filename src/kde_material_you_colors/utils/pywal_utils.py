@@ -1,10 +1,10 @@
 import logging
 from .color_utils import hex2rgb
-from . import pywal_sequences_timeout
-import settings
+from .. import settings
 
 if settings.USER_HAS_PYWAL:
     import pywal
+    from . import pywal_sequences_timeout
 if settings.USER_HAS_COLR:
     import colr
 

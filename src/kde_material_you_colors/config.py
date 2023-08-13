@@ -1,8 +1,8 @@
-from utils import color_utils
 import configparser
 import logging
-import settings
 import os
+from . import settings
+from .utils import color_utils
 
 
 def get_conf(conf_path):

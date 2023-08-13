@@ -1,11 +1,15 @@
 import gettext
 import logging
 import os
+import signal
+import stat
 import subprocess
-import settings
 import argparse
 import sys
 import re
+import shutil
+from .. import settings
+import configparser
 
 
 def run_hook(hook):
@@ -14,79 +18,150 @@ def run_hook(hook):
 
 
 def kill_existing():
-    get_pids = (
-        subprocess.check_output(
-            "ps -e -f | grep [/]usr/bin/kde-material-you-colors | awk '{print $2}'",
-            shell=True,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
-        .strip()
-        .splitlines()
-    )
-    current_pid = os.getpid()
-    for pid in get_pids:
-        pid = int(pid)
-        if pid != current_pid:
-            logging.debug(f"Found existing process with PID: '{pid}' killing...")
-            subprocess.Popen("kill -9 " + str(pid), shell=True)
+    if os.path.exists(settings.PIDFILE_PATH):
+        prev_pid = ""
+        with open(settings.PIDFILE_PATH, "r", encoding="utf-8") as pidfile:
+            prev_pid = pidfile.readline()
+
+        current_pid = str(os.getpid())
+        if prev_pid != current_pid:
+            logging.debug(
+                f"Found previous process in PID file: '{prev_pid}' killing..."
+            )
+            try:
+                os.kill(int(prev_pid), signal.SIGKILL)
+            except ProcessLookupError:
+                logging.debug("Process not found, probably ended by someone else")
+
+
+def copy_user_files(dests):
+    for dest in dests:
+        if not os.path.exists(dest["dest"]):
+            os.makedirs(dest["dest"])
+
+        if not os.path.exists(dest["dest"] + dest["file_dest"]):
+            try:
+                shutil.copy(
+                    dest["origin"] + dest["file"],
+                    dest["dest"] + dest["file_dest"],
+                )
+                logging.info(
+                    f'Copied {dest["file"]} -> {dest["dest"] + dest["file_dest"]}'
+                )
+            except shutil.Error as err:
+                logging.error(f"Error: {err}")
+                sys.exit(1)
+        else:
+            logging.warning(
+                f'File {dest["file"]} already exists in: {dest["dest"]+dest["file_dest"]}'
+            )
+
+
+def update_desktop_exec():
+    if settings.PKG_INSTALL_DIR.startswith("/home"):
+        entries = [
+            {
+                "dest": settings.USER_APPS_PATH + settings.AUTOSTART_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH,
+            },
+            {
+                "dest": settings.USER_APPS_PATH + settings.STOP_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH + " --stop",
+            },
+            {
+                "dest": settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH,
+            },
+        ]
+        for entry in entries:
+            if os.path.exists(entry["dest"]):
+                logging.info(
+                    f'Updating desktop entry {entry["dest"]}\n\tExec={entry["cmd"]}'
+                )
+                config = configparser.ConfigParser()
+                config.optionxform = str
+                config.read(entry["dest"])
+                config.set("Desktop Entry", "Exec", entry["cmd"])
+                with open(entry["dest"], "w", encoding="utf-8") as f:
+                    config.write(f, space_around_delimiters=False)
 
 
 def one_shot_actions(args):
-    # User may just want to set the startup script / default config, do that only and terminate the script
     if args.autostart == True:
-        if not os.path.exists(settings.USER_AUTOSTART_SCRIPT_PATH):
-            os.makedirs(settings.USER_AUTOSTART_SCRIPT_PATH)
-        if not os.path.exists(
-            settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT
-        ):
-            try:
-                subprocess.check_output(
-                    "cp "
-                    + settings.SAMPLE_AUTOSTART_SCRIPT_PATH
-                    + settings.AUTOSTART_SCRIPT
-                    + " "
-                    + settings.USER_AUTOSTART_SCRIPT_PATH
-                    + settings.AUTOSTART_SCRIPT,
-                    shell=True,
-                )
-                logging.info(
-                    f"Autostart script copied to: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
-                )
-            except Exception:
-                quit(1)
-        else:
-            logging.error(
-                f"Autostart script already exists in: {settings.USER_AUTOSTART_SCRIPT_PATH+settings.AUTOSTART_SCRIPT}"
-            )
-        quit(0)
+        # Autostart desktop entries
+        dests = [
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_AUTOSTART_SCRIPT_PATH,
+                "file": settings.AUTOSTART_SCRIPT,
+                "file_dest": settings.AUTOSTART_SCRIPT,
+            },
+        ]
+        copy_user_files(dests)
+        update_desktop_exec()
+        # # Add .local/bin to PATH if installed as user
+        # if settings.PKG_INSTALL_DIR.startswith("/home"):
+        #     dests_env = [
+        #         {
+        #             "origin": settings.PLASMA_WORKSPACE_ENV_PATH,
+        #             "dest": settings.USER_PLASMA_WORKSPACE_ENV_PATH,
+        #             "file": settings.PLASMA_WORKSPACE_ENV_FILE,
+        #             "file_dest": settings.PLASMA_WORKSPACE_ENV_FILE,
+        #         },
+        #     ]
+        #     copy_user_files(dests_env)
+        #     # Make env file executable
+        #     st = os.stat(
+        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
+        #         + settings.PLASMA_WORKSPACE_ENV_FILE
+        #     )
+        #     os.chmod(
+        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
+        #         + settings.PLASMA_WORKSPACE_ENV_FILE,
+        #         st.st_mode | stat.S_IEXEC,
+        #     )
+        #     logging.info(
+        #         f"Saved Pre-startup script {settings.USER_PLASMA_WORKSPACE_ENV_PATH+settings.PLASMA_WORKSPACE_ENV_FILE} \nREBOOT IS REQUIRED IF YOU WANT TO START BACKEND FROM WIDGET"
+        #     )
+
+        sys.exit(0)
+
+    if args.copylauncher == True:
+        # Start/Stop Desktop entries
+        dests = [
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_APPS_PATH,
+                "file": settings.AUTOSTART_SCRIPT,
+                "file_dest": settings.AUTOSTART_SCRIPT,
+            },
+            {
+                "origin": settings.SAMPLE_AUTOSTART_SCRIPT_PATH,
+                "dest": settings.USER_APPS_PATH,
+                "file": settings.STOP_SCRIPT,
+                "file_dest": settings.STOP_SCRIPT,
+            },
+        ]
+        copy_user_files(dests)
+        update_desktop_exec()
+        sys.exit(0)
+
     elif args.copyconfig == True:
-        if not os.path.exists(settings.USER_CONFIG_PATH):
-            os.makedirs(settings.USER_CONFIG_PATH)
-        if not os.path.exists(settings.USER_CONFIG_PATH + settings.CONFIG_FILE):
-            try:
-                subprocess.check_output(
-                    "cp "
-                    + settings.SAMPLE_CONFIG_PATH
-                    + settings.SAMPLE_CONFIG_FILE
-                    + " "
-                    + settings.USER_CONFIG_PATH
-                    + settings.CONFIG_FILE,
-                    shell=True,
-                )
-                logging.info(
-                    f"Config copied to: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
-                )
-            except Exception:
-                quit(1)
-        else:
-            logging.error(
-                f"Config already exists in: {settings.USER_CONFIG_PATH+settings.CONFIG_FILE}"
-            )
-        quit(0)
+        dests = [
+            {
+                "origin": settings.SAMPLE_CONFIG_PATH,
+                "dest": settings.USER_CONFIG_PATH,
+                "file": settings.SAMPLE_CONFIG_FILE,
+                "file_dest": settings.CONFIG_FILE,
+            },
+        ]
+
+        copy_user_files(dests)
+        sys.exit(0)
+
     elif args.stop == True:
         kill_existing()
-        quit(0)
+        sys.exit(0)
 
 
 class Watcher:

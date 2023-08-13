@@ -1,0 +1,7 @@
+[Desktop Entry]
+# Exec will be updated by kde-material-you-colors -a when installed as user
+Exec=kde-material-you-colors --stop
+Icon=colors
+Name=Stop KDE Material You Colors
+Comment=Stop background process
+Type=Application
