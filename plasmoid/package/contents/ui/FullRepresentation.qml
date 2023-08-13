@@ -24,10 +24,14 @@ ColumnLayout {
 
     property bool autoHide: true
     property bool backendRunning: true
+    property string homeDir: StandardPaths.writableLocation(
+                            StandardPaths.HomeLocation).toString().substring(7)
+
     property string execName: 'kde-material-you-colors'
+    property string execPath: ""
     property string checkBackendCommand: 'ps -C '+execName+' -F --no-headers'
-    property string startBackendCommand: execName
-    property string autoStartBackendCommand: execName+' --autostart;' +execName
+    property string startBackendCommand: execPath
+    property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
     property bool plasmoidExpanded: plasmoid.expanded
@@ -37,8 +41,6 @@ ColumnLayout {
     property bool doSettingsReload
 
     // used to trigger a reload if the config file has changed
-    property string homeDir: StandardPaths.writableLocation(
-                            StandardPaths.HomeLocation).toString().substring(7)
     property string configPath: homeDir + "/.config/kde-material-you-colors/config.conf"
     property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
     property string configSha1
@@ -67,6 +69,16 @@ ColumnLayout {
         }
     }
 
+    function findExecutablePath() {
+        execPath = StandardPaths.findExecutable(execName).toString()
+        if (execPath == "") {
+            execPath = StandardPaths.findExecutable(execName,
+                        homeDir+"/.local/bin").toString().substring(7)
+        }
+    }
+    Component.onCompleted: {
+        findExecutablePath()
+    }
 
     PlasmaCore.DataSource {
         id: checkBackend
@@ -93,6 +105,11 @@ ColumnLayout {
     Connections {
         target: checkBackend
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+            // console.log("CHECK BACLEND");
+            // console.log("cmd:",cmd);
+            // console.log("exitCode:",exitCode);
+            // console.log("stdout:",stdout);
+            // console.log("stderr:",stderr);
             backendRunning = stdout.replace('\n', '').trim().length>0
         }
     }
@@ -452,6 +469,7 @@ ColumnLayout {
                                     icon.name: "media-playback-start"
                                     text: "Start"
                                     onTriggered: {
+                                        findExecutablePath()
                                         checkBackend.exec(startBackendCommand)
                                     }
                                 },
@@ -459,6 +477,7 @@ ColumnLayout {
                                     icon.name: "media-playback-start"
                                     text: "Start && enable Autostart"
                                     onTriggered: {
+                                        findExecutablePath()
                                         checkBackend.exec(startBackendCommand)
                                     }
                                 },
