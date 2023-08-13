@@ -42,6 +42,7 @@ ColumnLayout {
 
     // used to trigger a reload if the config file has changed
     property string configPath: homeDir + "/.config/kde-material-you-colors/config.conf"
+    property string customConfigPath
     property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
     property string configSha1
 
@@ -70,7 +71,11 @@ ColumnLayout {
     }
 
     function findExecutablePath() {
-        execPath = StandardPaths.findExecutable(execName).toString()
+        if (customConfigPath != "") {
+            execPath = StandardPaths.findExecutable(customConfigPath).toString().substring(7)
+            return
+        }
+        execPath = StandardPaths.findExecutable(execName).toString().substring(7)
         if (execPath == "") {
             execPath = StandardPaths.findExecutable(execName,
                         homeDir+"/.local/bin").toString().substring(7)
@@ -388,6 +393,7 @@ ColumnLayout {
                                     property bool klassy_windeco_outline: false; \
                                     property string darker_window_list; \
                                     property string on_change_hook; \
+                                    property string gui_custom_exec_location; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -396,6 +402,8 @@ ColumnLayout {
                                         "/.config/kde-material-you-colors/config.conf"
                             customTextColorsCheck.checked = settings.custom_colors_list == ""
                             customColorCheck.checked = settings.color == ""
+                            root.customConfigPath = settings.gui_custom_exec_location
+
                         }
 
                         function destroySettings() {
@@ -489,6 +497,18 @@ ColumnLayout {
                                     }
                                 }
                             ]
+                        }
+
+                        PlasmaExtras.Heading {
+                            level: 3
+                            // visible: execPath == ""
+                            Layout.preferredWidth: mainLayout.width
+                            text: "Backend not found in system or ~/.local/bin. If installed somewhere else, enter the location in advanced settings"
+                            Layout.alignment: Qt.AlignHCenter
+                            color: Kirigami.Theme.neutralTextColor
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignHCenter
+                            visible: root.execPath == ""
                         }
 
                         // NORMAL SETTINGS
@@ -1010,6 +1030,43 @@ ColumnLayout {
                             //     }
                             // }
 
+                            // Custom backend location
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Backend executable location"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            RowLayout {
+                                TextField {
+                                    placeholderText: qsTr("Executable location e.g /tmp/testenv/bin/kde-material-you-colors")
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    Layout.fillWidth: true
+                                    text: settings.gui_custom_exec_location
+                                    onAccepted: {
+                                        settings.gui_custom_exec_location = text
+                                        root.customConfigPath = text
+                                        findExecutablePath()
+                                    }
+                                }
+                                Button {
+                                    icon.name: "document-open"
+                                    onClicked: {
+                                        fileDialogHookExec.open()
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
                             // Konsole
                             PlasmaExtras.Heading {
                                 level: 1
@@ -1315,7 +1372,7 @@ ColumnLayout {
                                 Button {
                                     icon.name: "document-open"
                                     onClicked: {
-                                        fileDialogExec.open()
+                                        fileDialogHookExec.open()
                                     }
                                 }
 
@@ -1331,9 +1388,16 @@ ColumnLayout {
 
 
                             FileDialog {
-                                id: fileDialogExec
+                                id: fileDialogHookExec
                                 onAccepted: {
-                                    mainLayout.settings.on_change_hook = fileDialogExec.fileUrl.toString().substring(7)
+                                    mainLayout.settings.on_change_hook = fileDialogHookExec.fileUrl.toString().substring(7)
+                                }
+                            }
+
+                            FileDialog {
+                                id: fileDialogBackendExec
+                                onAccepted: {
+                                    mainLayout.settings.gui_custom_exec_location = fileDialogBackendExec.fileUrl.toString().substring(7)
                                 }
                             }
                         }
