@@ -44,6 +44,10 @@ KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
 PIDFILE_PATH = Path(
     f"{tempfile.gettempdir()}/kde-material-you-colors-{getpass.getuser()}.pid"
 )
+# PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
+# PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
+# USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"
+USER_LOCAL_BIN_PATH = HOME + "/.local/bin/kde-material-you-colors"
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"

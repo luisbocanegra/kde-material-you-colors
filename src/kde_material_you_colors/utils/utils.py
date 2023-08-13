@@ -2,12 +2,14 @@ import gettext
 import logging
 import os
 import signal
+import stat
 import subprocess
-from .. import settings
 import argparse
 import sys
 import re
 import shutil
+from .. import settings
+import configparser
 
 
 def run_hook(hook):
@@ -55,6 +57,35 @@ def copy_user_files(dests):
             )
 
 
+def update_desktop_exec():
+    if settings.PKG_INSTALL_DIR.startswith("/home"):
+        entries = [
+            {
+                "dest": settings.USER_APPS_PATH + settings.AUTOSTART_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH,
+            },
+            {
+                "dest": settings.USER_APPS_PATH + settings.STOP_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH + " --stop",
+            },
+            {
+                "dest": settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT,
+                "cmd": settings.USER_LOCAL_BIN_PATH,
+            },
+        ]
+        for entry in entries:
+            if os.path.exists(entry["dest"]):
+                logging.info(
+                    f'Updating desktop entry {entry["dest"]}\n\tExec={entry["cmd"]}'
+                )
+                config = configparser.ConfigParser()
+                config.optionxform = str
+                config.read(entry["dest"])
+                config.set("Desktop Entry", "Exec", entry["cmd"])
+                with open(entry["dest"], "w", encoding="utf-8") as f:
+                    config.write(f, space_around_delimiters=False)
+
+
 def one_shot_actions(args):
     if args.autostart == True:
         # Autostart desktop entries
@@ -67,6 +98,32 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
+        update_desktop_exec()
+        # # Add .local/bin to PATH if installed as user
+        # if settings.PKG_INSTALL_DIR.startswith("/home"):
+        #     dests_env = [
+        #         {
+        #             "origin": settings.PLASMA_WORKSPACE_ENV_PATH,
+        #             "dest": settings.USER_PLASMA_WORKSPACE_ENV_PATH,
+        #             "file": settings.PLASMA_WORKSPACE_ENV_FILE,
+        #             "file_dest": settings.PLASMA_WORKSPACE_ENV_FILE,
+        #         },
+        #     ]
+        #     copy_user_files(dests_env)
+        #     # Make env file executable
+        #     st = os.stat(
+        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
+        #         + settings.PLASMA_WORKSPACE_ENV_FILE
+        #     )
+        #     os.chmod(
+        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
+        #         + settings.PLASMA_WORKSPACE_ENV_FILE,
+        #         st.st_mode | stat.S_IEXEC,
+        #     )
+        #     logging.info(
+        #         f"Saved Pre-startup script {settings.USER_PLASMA_WORKSPACE_ENV_PATH+settings.PLASMA_WORKSPACE_ENV_FILE} \nREBOOT IS REQUIRED IF YOU WANT TO START BACKEND FROM WIDGET"
+        #     )
+
         sys.exit(0)
 
     if args.copylauncher == True:
@@ -86,6 +143,7 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
+        update_desktop_exec()
         sys.exit(0)
 
     elif args.copyconfig == True:
