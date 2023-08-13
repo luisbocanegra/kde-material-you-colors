@@ -2,7 +2,7 @@
 
 # 🎨 KDE Material You Colors
 
-### Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
+## Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
 
 This is a Python program that uses the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) to generate a Material Design 3 color scheme.
 Which is used to generate Light and Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, automatically.
@@ -17,7 +17,9 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 </div>
 
 # Features
+
 ## Plasma specific
+
 - Update automatically on wallpaper change
 - Multiple wallpaper [plugins supported](#working-wallpaper-plugins)
 - Support for selecting Wallpaper plugin from secondary monitors
@@ -33,13 +35,14 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
   - Tint [Klassy](https://github.com/paulmcauley/klassy) window decoration outline
 
 ## Themeable programs
+
 - Konsole color scheme
   - opacity control
 - **[Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors**
 - Basic KSyntaxHighlighting support (Kate, KWrite, KDevelop...)
 
-
 ## Theming options
+
 - Alternative Material You color selection if the wallpaper provides more than one
 - Use your favorite color to generate Material You color schemes
 - Custom colors list used for konsole/pywal
@@ -48,100 +51,93 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 - Set a script/command that will be executed on start or wallpaper/dark/light/settings change
 - Configuration file
 
-
 # Installing
+
+## Using pypi
+
+```sh
+pip install kde-material-you-colors
+# Optional
+# pywal to theme other programs using Material You Colors
+pip install pywal colr
+# Colr to display colored palette and seed colors from terminal (approximate)
+pip install colr
+```
+
 ## Arch Linux
+
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper
-## openSUSE Build Service packages by [@markusgod](https://github.com/markusgod)
+
+## openSUSE Build Service packages by [marknefedov](https://github.com/marknefedov)
+
 ### Fedora
+
 Add repository and install as root:
+
 ```sh
 dnf config-manager --add-repo https://download.opensuse.org/repositories/home:MarkNefedov/Fedora_37/home:MarkNefedov.repo
 dnf install kde-material-you-colors
 ```
+
 ### openSUSE
+
 For **openSUSE Tumbleweed** add repository and install as root:
+
 ```sh
 zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/openSUSE_Tumbleweed/home:MarkNefedov.repo
 zypper refresh
 zypper install kde-material-you-colors
 ```
+
 For **openSUSE 15.4** add repository and install as root:
+
 ```sh
 zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/15.4/home:MarkNefedov.repo
 zypper refresh
 zypper install kde-material-you-colors
 ```
 
-## Other distributions/manual install
-<details>
-
-<summary>Expand</summary>
-
-1. Clone/download this repository and cd to it
-```sh
-git clone https://github.com/luisbocanegra/kde-material-you-colors --branch main
-cd kde-material-you-colors
-```
-1. Make the installer executable and run it as root
-
-For Ubuntu based distros:
-```sh
-chmod +x install-ubuntu-based.sh
-sudo ./install-ubuntu-based.sh
-```
-For Fedora based distros:
-```sh
-chmod +x install-fedora-based.sh
-sudo ./install-fedora-based.sh
-```
-### Updating
-
-Fetch latest changes:
-
-```sh
-cd kde-material-you-colors
-git pull
-```
-
-Repeat step 2
-
-</details>
-
 ## Optional features
+
 - Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
   - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) to theme supported programs
 
 # Running
-### From terminal to debug your configuration
+
+## From terminal to debug your configuration
+
 - Run `kde-material-you-colors` from terminal, this should change your Desktop colors right after.
 
 **NOTE:** Without any configuration/arguments your wallpaper will be reset to Image Wallpaper Plugin
 
 ### Options
+
 - Run `kde-material-you-colors -h` to see the list of available options
 
 ### Desktop entries
+
 - To start/restart the program launch **KDE Material You Colors** from your applications list
 - To stop it launch **Stop KDE Material You Colors** from your applications list
 
 # Startup script
+
 After finishing the setup, you can make it run automatically on boot
 
 1. Copy the default configuration to ~/.config/kde-material-you-colors/config.conf:
 
-`kde-material-you-colors -c` 
+    `kde-material-you-colors -c`
 
 2. Set the program to automatically start with Plasma:
 
-`kde-material-you-colors -a` 
+    `kde-material-you-colors -a`
 
 3. Reboot or logout/login and test the changes,
 
 **NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
 
 ## Removing the autostart script
+
 1. Open `System Settings` > `Startup and Shutdown`
 2. Remove `kde-material-you-colors` by clicking on the `-` button.
 
@@ -152,6 +148,7 @@ After finishing the setup, you can make it run automatically on boot
 Using Plasma Wallpaper Settings may Crash Plasmashell and will set again the plugin from Configuration file
 
 # Working Wallpaper plugins
+
 This is a list of compatible Plasma Wallpaper Plugins
 
 | Name        | ID          |
@@ -169,12 +166,15 @@ This is a list of compatible Plasma Wallpaper Plugins
 - **You can view the sample configuration file [here](https://github.com/luisbocanegra/kde-material-you-colors/blob/main/src/sample_config.conf)**
 
 # Notes
+
 - To update color with `plasma-apply-colorscheme` (utility provided by plasma developers), the file containing the new color scheme must have a different name than the current one, to workaround this the program creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
 
 ## Bug reporting / Feature requests / Contributing
+
 Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 
 # Thanks & Credits
+
 - [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required by this project.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
