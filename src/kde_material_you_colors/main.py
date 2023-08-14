@@ -8,8 +8,10 @@ from .config import Configs
 from .utils import utils
 from .utils import wallpaper_utils
 from .utils import file_utils
+from .utils import notify
 from . import theme_selector
 from .logging_config import MyLogFormatter
+
 
 MyLogFormatter.set_format()
 
@@ -270,8 +272,6 @@ def main():
     wallpaper_watcher = utils.Watcher(None)
     wallpaper_modified = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
-    icons_watcher = utils.Watcher(None)
-    titlebar_opacity_watcher = utils.Watcher(None)
     group1_watcher = utils.Watcher(None)
     schemes_watcher = utils.Watcher(None)
     material_colors = utils.Watcher(None)
@@ -292,7 +292,10 @@ def main():
         )
 
         # Get config from file and compare it with passed args
-        if config_modified.has_changed() and config_modified.get_new_value() != None:
+        if (
+            config_modified.has_changed()
+            and config_modified.get_new_value() is not None
+        ):
             config = Configs(args)
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
@@ -306,20 +309,31 @@ def main():
             )
         )
 
-        if wallpaper_watcher.get_new_value() != None:
-            # Get light/dark scheme status
-
-            theme_selector.apply_themes(
-                config_watcher,
-                wallpaper_watcher,
-                wallpaper_modified,
-                group1_watcher,
-                light_mode_watcher,
-                schemes_watcher,
-                material_colors,
-                first_run_watcher,
-                konsole_profile_modified,
-            )
+        if wallpaper_watcher.has_changed():
+            # print(wallpaper_watcher.get_new_value())
+            if wallpaper_watcher.get_new_value()[1] is not None:
+                # Get light/dark scheme status
+                theme_selector.apply_themes(
+                    config_watcher,
+                    wallpaper_watcher,
+                    wallpaper_modified,
+                    group1_watcher,
+                    light_mode_watcher,
+                    schemes_watcher,
+                    material_colors,
+                    first_run_watcher,
+                    konsole_profile_modified,
+                )
+            else:
+                notify.send_notification(
+                    "Could not get wallpaper",
+                    f"{wallpaper_watcher.get_new_value()[0]} \
+                        {wallpaper_watcher.get_new_value()[3]}",
+                )
+                logging.error(
+                    f"Could not get wallpaper {wallpaper_watcher.get_new_value()[0]}"
+                    + f" {wallpaper_watcher.get_new_value()[3]}"
+                )
         time.sleep(1)
 
 

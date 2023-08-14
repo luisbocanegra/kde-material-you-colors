@@ -16,7 +16,7 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
         monitor (int): containment (monitor) number
 
     Returns:
-        tuple: (type (int), data (str))
+        tuple: (source name (str), type (int), data (str), error (str))
     """
 
     if monitor and not monitor is None:
@@ -30,16 +30,18 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
             with open(file, encoding="utf-8") as text_file:
                 wallpaper = str(text_file.read()).replace("file://", "").strip()
                 if wallpaper:
-                    return ("image", wallpaper)
-                return None
+                    return ("file", "image", wallpaper)
         else:
-            logging.error(f'File "{file}" does not exist')
-            return None
+            error = f'File "{file}" does not exist'
+            logging.error(error)
+            return (f"file:{file}", None, None, error)
 
     elif color:
         if color_utils.validate_color(color):
-            return ("color", color)
-        logging.error(f'Error: Color format "{color}" is incorrect')
+            return ("Custom color", "color", color)
+        error = f'Error: Color format "{color}" is incorrect'
+        logging.error(error)
+        return (f"color:{color}", None, None, error)
 
     else:
         # Get current wallpaper plugin id
@@ -119,32 +121,28 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
                 potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + max(potd)
 
             if os.path.exists(potd):
-                return ("image", potd)
-            return None
+                return (plugin, "image", potd)
+
         # Color based wallpapers
         elif wallpaper_data[0] in ["color", "Color"]:
             if len(wallpaper_data) >= 2:
                 color = ",".join(wallpaper_data[1:])
                 color_fmt = color_utils.validate_color(color)
                 # print(color, "fmt:", color_fmt)
-                try:
-                    if color_fmt == 1:
-                        color_rgb = tuple(color.split(","))
-                        return (
-                            "color",
-                            color_utils.rgb2hex(
+                if color_fmt:
+                    try:
+                        if color_fmt == 1:
+                            color_rgb = tuple(color.split(","))
+                            color = color_utils.rgb2hex(
                                 r=int(color_rgb[0]),
                                 g=int(color_rgb[1]),
                                 b=int(color_rgb[2]),
-                            ),
-                        )
-                    elif color_fmt == 2:
-                        return ("color", color)
-                except Exception as e:
-                    logging.error(f"Could not resolve color from {plugin}: {e}")
-                    return None
-            else:
-                return None
+                            )
+                        return (plugin, "color", color)
+                    except Exception as e:
+                        error = f"Could not resolve color from {plugin}: {e}"
+                        logging.error(error)
+                        return (f"plugin:{plugin}", None, None, error)
         else:
             # wallpaper plugin that stores current image
             if wallpaper_data and wallpaper_data[0] in ["Image"]:
@@ -164,7 +162,9 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
                             wallpaper = file_utils.get_smallest_image(
                                 wallpaper + "contents/images/"
                             )
-                    return ("image", wallpaper)
+                    return (plugin, "image", wallpaper)
+
+        return (f"plugin:{plugin}", None, None, "Plugin unsupported")
 
 
 def evaluate_script(script, monitor):
@@ -188,5 +188,6 @@ def evaluate_script(script, monitor):
         )
         return wallpaper_data
     except Exception as e:
-        logging.error(f"Error getting wallpaper from dbus:\n{e}")
-        return None
+        error = f"Error getting wallpaper from dbus:\n{e}"
+        logging.error(error)
+        return ("Error", None, None, error)

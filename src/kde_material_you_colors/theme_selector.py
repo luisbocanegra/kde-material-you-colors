@@ -43,22 +43,24 @@ def apply_themes(
     )
 
     # Get wallpaper type and data
+    wallpaper_new_type = None
+    wallpaper_new_data = None
     if (
-        wallpaper_watcher.get_new_value() != None
-        and wallpaper_watcher.get_new_value()[1] != None
+        wallpaper_watcher.get_new_value() is not None
+        and wallpaper_watcher.get_new_value()[2] is not None
     ):
-        wallpaper_new_type = wallpaper_watcher.get_new_value()[0]
-        wallpaper_new_data = wallpaper_watcher.get_new_value()[1]
+        wallpaper_new_type = wallpaper_watcher.get_new_value()[1]
+        wallpaper_new_data = wallpaper_watcher.get_new_value()[2]
 
     # if wallpaper is image save time of last modification
-    if wallpaper_new_type == "image":
+    if wallpaper_new_type and wallpaper_new_type == "image":
         wallpaper_modified.set_value(
             file_utils.get_last_modification(wallpaper_new_data)
         )
     else:
         wallpaper_modified.set_value(None)
 
-    if config_watcher.get_new_value()["konsole_profile"] != None:
+    if config_watcher.get_new_value()["konsole_profile"] is not None:
         konsole_profile_modified.set_value(
             file_utils.get_last_modification(
                 settings.KONSOLE_DIR
@@ -68,7 +70,7 @@ def apply_themes(
         )
 
     # get dark/light mode
-    if config_watcher.get_new_value()["light"] != None:
+    if config_watcher.get_new_value()["light"] is not None:
         light_mode_watcher.set_value(config_watcher.get_new_value()["light"])
     # try to get the initial theme with from hash
     elif first_run_watcher.get_new_value() is True:
@@ -97,7 +99,7 @@ def apply_themes(
                 config_watcher.get_new_value()["ncolor"],
             )
         )
-        if material_colors.get_new_value() != None:
+        if material_colors.get_new_value() is not None:
             # Genrate color schemes from MYou colors
             schemes_watcher.set_value(
                 schemeconfigs.ThemeConfig(
@@ -117,7 +119,7 @@ def apply_themes(
             plasma_utils.make_scheme(schemes_watcher.get_new_value())
 
             # light mode may have changed while generating colors, check it again
-            if config_watcher.get_new_value()["light"] != None:
+            if config_watcher.get_new_value()["light"] is not None:
                 light_mode_watcher.set_value(config_watcher.get_new_value()["light"])
             elif plasma_utils.kde_globals_light() is not None:
                 light_mode_watcher.set_value(plasma_utils.kde_globals_light())
@@ -127,7 +129,7 @@ def apply_themes(
 
             # skip applying themes if no dark/light mode was specified
             # or found in current user settings
-            if dark_light != None:
+            if dark_light is not None:
                 logging.info(f"Using light mode for Plasma: {dark_light}")
                 # Apply plasma color schemes
                 plasma_utils.apply_color_schemes(dark_light)
@@ -141,19 +143,19 @@ def apply_themes(
                 )
                 if (
                     config_watcher.get_new_value()["sierra_breeze_buttons_color"]
-                    == True
+                    is True
                 ):
                     needs_kwin_reload = True
                     titlebar_utils.sierra_breeze_button_colors(
                         schemes_watcher.get_new_value(), dark_light
                     )
-                if config_watcher.get_new_value()["klassy_windeco_outline"] == True:
+                if config_watcher.get_new_value()["klassy_windeco_outline"] is True:
                     needs_kwin_reload = True
                     titlebar_utils.klassy_windeco_outline_color(
                         schemes_watcher.get_new_value(), dark_light
                     )
-                if first_run_watcher.get_new_value() == True:
-                    if config_watcher.get_new_value()["titlebar_opacity"] != None:
+                if first_run_watcher.get_new_value() is True:
+                    if config_watcher.get_new_value()["titlebar_opacity"] is not None:
                         needs_kwin_reload = True
                         titlebar_utils.titlebar_opacity(
                             config_watcher.get_new_value()["titlebar_opacity"]
@@ -164,13 +166,13 @@ def apply_themes(
                 )
 
             # Parts that can follow pywal if enabled
-            if dark_light != None or config_watcher.get_new_value()["pywal"]:
+            if dark_light is not None or config_watcher.get_new_value()["pywal"]:
                 if config_watcher.get_new_value()["pywal_light"] is not None:
                     logging.info(
-                        f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
+                        f"Forcing { 'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
                     )
                 # Export and apply color scheme to konsole profile
-                if config_watcher.get_new_value()["konsole_profile"] != None:
+                if config_watcher.get_new_value()["konsole_profile"] is not None:
                     konsole_utils.make_mirror_profile(
                         config_watcher.get_new_value()["konsole_profile"]
                     )
@@ -198,7 +200,7 @@ def apply_themes(
                     needs_kwin_reload = True
 
                 # Apply pywal color scheme with MYou colors
-                if config_watcher.get_new_value()["pywal"] == True:
+                if config_watcher.get_new_value()["pywal"] is True:
                     pywal_utils.apply_schemes(
                         dark_light,
                         use_pywal=config_watcher.get_new_value()["pywal"],
@@ -206,7 +208,7 @@ def apply_themes(
                         schemes=schemes_watcher.get_new_value(),
                     )
 
-            if needs_kwin_reload == True:
+            if needs_kwin_reload is True:
                 kwin_utils.reload()
                 needs_kwin_reload = False
             print("---------------------")
@@ -217,12 +219,12 @@ def apply_themes(
     #
     #
     #
-    if first_run_watcher.get_new_value() == False:
+    if first_run_watcher.get_new_value() is False:
         if light_mode_watcher.has_changed():
             if not wallpaper_watcher.has_changed():
                 # skip applying themes if no dark/light mode was specified
                 # or found in current user settings
-                if dark_light != None:
+                if dark_light is not None:
                     logging.info(f"Using light mode for Plasma: {dark_light}")
                     # Apply plasma color schemes
                     # change only if is not currently active
@@ -237,13 +239,13 @@ def apply_themes(
                     )
                     if (
                         config_watcher.get_new_value()["sierra_breeze_buttons_color"]
-                        == True
+                        is True
                     ):
                         needs_kwin_reload = True
                         titlebar_utils.sierra_breeze_button_colors(
                             schemes_watcher.get_new_value(), dark_light
                         )
-                    if config_watcher.get_new_value()["klassy_windeco_outline"] == True:
+                    if config_watcher.get_new_value()["klassy_windeco_outline"] is True:
                         needs_kwin_reload = True
                         titlebar_utils.klassy_windeco_outline_color(
                             schemes_watcher.get_new_value(), dark_light
@@ -254,10 +256,10 @@ def apply_themes(
                     )
 
                 # Parts that can follow pywal if enabled
-                if dark_light != None or config_watcher.get_new_value()["pywal"]:
+                if dark_light is not None or config_watcher.get_new_value()["pywal"]:
                     if config_watcher.get_new_value()["pywal_light"] is not None:
                         logging.info(
-                            f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
+                            f"Forcing { 'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
                         )
                     # Export and apply color scheme to konsole profile
                     konsole_utils.apply_color_scheme(
@@ -280,8 +282,8 @@ def apply_themes(
                         needs_kwin_reload = True
 
                     # Apply pywal color scheme with MYou colors
-                    if config_watcher.get_new_value()["pywal"] == True:
-                        if config_watcher.get_new_value()["pywal_light"] == None:
+                    if config_watcher.get_new_value()["pywal"] is True:
+                        if config_watcher.get_new_value()["pywal_light"] is None:
                             pywal_utils.apply_schemes(
                                 dark_light,
                                 use_pywal=config_watcher.get_new_value()["pywal"],
@@ -291,7 +293,7 @@ def apply_themes(
                                 schemes=schemes_watcher.get_new_value(),
                             )
 
-            if needs_kwin_reload == True:
+            if needs_kwin_reload is True:
                 kwin_utils.reload()
                 needs_kwin_reload = False
             print("---------------------")
@@ -304,8 +306,8 @@ def apply_themes(
     #   update copy of konsole profile
     if (
         konsole_profile_modified.has_changed()
-        and konsole_profile_modified.get_new_value() != None
-        and first_run_watcher.get_new_value() == False
+        and konsole_profile_modified.get_new_value() is not None
+        and first_run_watcher.get_new_value() is False
     ):
         konsole_utils.make_mirror_profile(
             config_watcher.get_new_value()["konsole_profile"]
@@ -313,23 +315,23 @@ def apply_themes(
 
     if (
         config_watcher.has_changed()
-        and config_watcher.get_old_value() != None
+        and config_watcher.get_old_value() is not None
         and not group1_watcher.has_changed()
     ):
-        if dark_light != None:
+        if dark_light is not None:
             # Toolbar opacity changes
             if (
                 config_watcher.get_new_value()["toolbar_opacity"]
                 != config_watcher.get_old_value()["toolbar_opacity"]
             ):
-                if config_watcher.get_new_value()["toolbar_opacity"] != None:
+                if config_watcher.get_new_value()["toolbar_opacity"] is not None:
                     material_colors.set_value(
                         m3_scheme_utils.get_color_schemes(
                             wallpaper_watcher.get_new_value(),
                             config_watcher.get_new_value()["ncolor"],
                         )
                     )
-                if material_colors.get_new_value() != None:
+                if material_colors.get_new_value() is not None:
                     # Genrate color schemes from MYou colors
                     schemes_watcher.set_value(
                         schemeconfigs.ThemeConfig(
@@ -368,7 +370,7 @@ def apply_themes(
                 config_watcher.get_new_value()["titlebar_opacity"]
                 != config_watcher.get_old_value()["titlebar_opacity"]
             ):
-                if config_watcher.get_new_value()["titlebar_opacity"] != None:
+                if config_watcher.get_new_value()["titlebar_opacity"] is not None:
                     needs_kwin_reload = True
                     titlebar_utils.titlebar_opacity(
                         config_watcher.get_new_value()["titlebar_opacity"]
@@ -381,7 +383,7 @@ def apply_themes(
             ):
                 if (
                     config_watcher.get_new_value()["sierra_breeze_buttons_color"]
-                    == True
+                    is True
                 ):
                     needs_kwin_reload = True
                     titlebar_utils.sierra_breeze_button_colors(
@@ -392,21 +394,24 @@ def apply_themes(
                 config_watcher.get_new_value()["klassy_windeco_outline"]
                 != config_watcher.get_old_value()["klassy_windeco_outline"]
             ):
-                if config_watcher.get_new_value()["klassy_windeco_outline"] == True:
+                if config_watcher.get_new_value()["klassy_windeco_outline"] is True:
                     needs_kwin_reload = True
                     titlebar_utils.klassy_windeco_outline_color(
                         schemes_watcher.get_new_value(), dark_light
                     )
 
         # Parts that can also follow pywal if enabled
-        if dark_light != None or config_watcher.get_new_value()["pywal"] != None:
+        if (
+            dark_light is not None
+            or config_watcher.get_new_value()["pywal"] is not None
+        ):
             if (
                 config_watcher.get_new_value()["pywal_light"]
                 != config_watcher.get_old_value()["pywal_light"]
             ):
                 if config_watcher.get_new_value()["pywal_light"] is not None:
                     logging.info(
-                        f"Forcing { f'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
+                        f"Forcing { 'light' if config_watcher.get_new_value()['pywal_light'] else 'dark'} mode for Pywal"
                     )
 
             # check for changes that affect konsole color scheme
@@ -468,7 +473,7 @@ def apply_themes(
                         config_watcher.get_new_value()["ncolor"],
                     )
                 )
-                if material_colors.get_new_value() != None:
+                if material_colors.get_new_value() is not None:
                     # Genrate color schemes from MYou colors
                     schemes_watcher.set_value(
                         schemeconfigs.ThemeConfig(
@@ -493,7 +498,7 @@ def apply_themes(
                         ],
                     )
                     # pywal
-                    if config_watcher.get_new_value()["pywal"] == True:
+                    if config_watcher.get_new_value()["pywal"] is True:
                         pywal_utils.apply_schemes(
                             dark_light,
                             use_pywal=config_watcher.get_new_value()["pywal"],
@@ -502,7 +507,7 @@ def apply_themes(
                         )
                         ksyntax_utils.export_schemes(schemes_watcher.get_new_value())
 
-        if needs_kwin_reload == True:
+        if needs_kwin_reload is True:
             kwin_utils.reload()
             needs_kwin_reload = False
 
