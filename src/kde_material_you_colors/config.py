@@ -82,7 +82,6 @@ class Configs:
             "light": [light, None, 0],
             "file": [args.file, None, 3],
             "monitor": [args.monitor, 0, 1],
-            "plugin": [args.plugin, None, 3],
             "ncolor": [args.ncolor, 0, 1],
             "iconslight": [args.iconslight, None, 3],
             "iconsdark": [args.iconsdark, None, 3],

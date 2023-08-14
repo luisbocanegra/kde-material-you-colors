@@ -148,8 +148,8 @@ def get_color_schemes(wallpaper, ncolor=None):
     """
     if wallpaper != None:
         materialYouColors = None
-        wallpaper_type = wallpaper[0]
-        wallpaper_data = wallpaper[1]
+        wallpaper_type = wallpaper[1]
+        wallpaper_data = wallpaper[2]
         if wallpaper_type == "image":
             source_type = "image"
             if os.path.exists(wallpaper_data):

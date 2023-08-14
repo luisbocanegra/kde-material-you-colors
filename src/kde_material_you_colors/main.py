@@ -8,8 +8,10 @@ from .config import Configs
 from .utils import utils
 from .utils import wallpaper_utils
 from .utils import file_utils
+from .utils import notify
 from . import theme_selector
 from .logging_config import MyLogFormatter
+
 
 MyLogFormatter.set_format()
 
@@ -33,19 +35,10 @@ def main():
     )
 
     parser.add_argument(
-        "--plugin",
-        "-p",
-        type=str,
-        help=f"Wallpaper plugin id (default is {settings.DEFAULT_PLUGIN}) you can find them in: /usr/share/plasma/wallpapers/ or ~/.local/share/plasma/wallpapers",
-        default=None,
-        metavar="<plugin>",
-    )
-
-    parser.add_argument(
         "--color",
         "-col",
         type=str,
-        help="Custom color (hex or rgb) used to generate M3 color scheme Takes precedence over the --plugin option",
+        help="Custom color (hex or rgb) used to generate M3 color scheme Takes precedence over automatic wallpaper detection",
         default=None,
         metavar="<color>",
     )
@@ -54,7 +47,7 @@ def main():
         "--file",
         "-f",
         type=str,
-        help="Text file that contains wallpaper absolute path (Takes precedence over the --plugin and --color options)",
+        help="Text file that contains wallpaper absolute path (Takes precedence over automatic wallpaper detection and --color options)",
         default=None,
         metavar="<filename>",
     )
@@ -279,8 +272,6 @@ def main():
     wallpaper_watcher = utils.Watcher(None)
     wallpaper_modified = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
-    icons_watcher = utils.Watcher(None)
-    titlebar_opacity_watcher = utils.Watcher(None)
     group1_watcher = utils.Watcher(None)
     schemes_watcher = utils.Watcher(None)
     material_colors = utils.Watcher(None)
@@ -301,14 +292,16 @@ def main():
         )
 
         # Get config from file and compare it with passed args
-        if config_modified.has_changed() and config_modified.get_new_value() != None:
+        if (
+            config_modified.has_changed()
+            and config_modified.get_new_value() is not None
+        ):
             config = Configs(args)
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
         # Get wallpaper
         wallpaper_watcher.set_value(
             wallpaper_utils.get_wallpaper_data(
-                plugin=config_watcher.get_new_value()["plugin"],
                 monitor=config_watcher.get_new_value()["monitor"],
                 color=config_watcher.get_new_value()["color"],
                 light=config_watcher.get_new_value()["light"],
@@ -316,20 +309,31 @@ def main():
             )
         )
 
-        if wallpaper_watcher.get_new_value() != None:
-            # Get light/dark scheme status
-
-            theme_selector.apply_themes(
-                config_watcher,
-                wallpaper_watcher,
-                wallpaper_modified,
-                group1_watcher,
-                light_mode_watcher,
-                schemes_watcher,
-                material_colors,
-                first_run_watcher,
-                konsole_profile_modified,
-            )
+        if wallpaper_watcher.has_changed():
+            # print(wallpaper_watcher.get_new_value())
+            if wallpaper_watcher.get_new_value()[1] is not None:
+                # Get light/dark scheme status
+                theme_selector.apply_themes(
+                    config_watcher,
+                    wallpaper_watcher,
+                    wallpaper_modified,
+                    group1_watcher,
+                    light_mode_watcher,
+                    schemes_watcher,
+                    material_colors,
+                    first_run_watcher,
+                    konsole_profile_modified,
+                )
+            else:
+                notify.send_notification(
+                    "Could not get wallpaper",
+                    f"{wallpaper_watcher.get_new_value()[0]} \
+                        {wallpaper_watcher.get_new_value()[3]}",
+                )
+                logging.error(
+                    f"Could not get wallpaper {wallpaper_watcher.get_new_value()[0]}"
+                    + f" {wallpaper_watcher.get_new_value()[3]}"
+                )
         time.sleep(1)
 
 
