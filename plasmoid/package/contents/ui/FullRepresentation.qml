@@ -275,7 +275,8 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                topPadding: PlasmaCore.Units.mediumSpacing
+                topPadding: PlasmaCore.Units.smallSpacing
+                bottomPadding: PlasmaCore.Units.smallSpacing
 
                 PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
                 PlasmaComponents3.ScrollBar.vertical.policy: PlasmaComponents3.ScrollBar.AsNeeded
@@ -284,9 +285,14 @@ ColumnLayout {
 
                 // scroll ScrollView to the bottom
                 // https://stackoverflow.com/a/64449107
-                //function scrollToBottom() {
-                //    ScrollBar.vertical.position = 1.0 - ScrollBar.vertical.size
-                //}
+                // scroll ScrollView to the bottom
+                function scrollToBottom() {
+                    ScrollBar.vertical.position = 1.0 - ScrollBar.vertical.size
+                }
+
+                function scrollToTop() {
+                    ScrollBar.vertical.position = 0
+                }
 
                 contentItem: ListView {
                     id: listView
@@ -394,6 +400,8 @@ ColumnLayout {
                                     property string darker_window_list; \
                                     property string on_change_hook; \
                                     property string gui_custom_exec_location; \
+                                    property bool use_startup_delay: false; \
+                                    property int startup_delay: 0; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -503,7 +511,7 @@ ColumnLayout {
                             level: 3
                             // visible: execPath == ""
                             Layout.preferredWidth: mainLayout.width
-                            text: "Backend not found in system or ~/.local/bin. If installed somewhere else, enter the location in advanced settings"
+                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, enter the location in advanced settings"
                             Layout.alignment: Qt.AlignHCenter
                             color: Kirigami.Theme.neutralTextColor
                             wrapMode: Text.WordWrap
@@ -511,9 +519,20 @@ ColumnLayout {
                             visible: root.execPath == ""
                         }
 
+                        PlasmaComponents3.ToolButton {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
+                            icon.name: 'configure'
+                            visible: root.execPath == ""
+                            checked: root.showAdvanced
+                            onClicked: {
+                                root.showAdvanced = !root.showAdvanced
+                            }
+                        }
+
                         // NORMAL SETTINGS
                         ColumnLayout {
-                            visible: !showAdvanced
+                            visible: !root.showAdvanced
                             Layout.preferredWidth: mainLayout.width
                             spacing: PlasmaCore.Units.smallSpacing
 
@@ -927,8 +946,6 @@ ColumnLayout {
 
                             // Dark blend
                             RowLayout {
-                                width: parent.width
-                                Layout.fillWidth: true
                                 Label {
                                     text: "Dark blend"
                                     Layout.alignment: Qt.AlignLeft
@@ -1016,19 +1033,29 @@ ColumnLayout {
                                     }
                                 }
                             }
+
+                            PlasmaComponents3.ToolButton {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
+                                icon.name: 'configure'
+                                checked: root.showAdvanced
+                                onClicked: {
+                                    root.showAdvanced = !root.showAdvanced
+                                }
+                            }
                         }
 
                         // ADVANCED SECTION
                         ColumnLayout {
                             id: advancedSection
-                            visible: showAdvanced
-                            spacing: PlasmaCore.Units.smallSpacing
+                            visible: root.showAdvanced
+                            // spacing: PlasmaCore.Units.smallSpacing
 
-                            // onVisibleChanged: {
-                            //     if (visible) {
-                            //         scrollTimer.start()
-                            //     }
-                            // }
+                            onVisibleChanged: {
+                                if (visible) {
+                                    scrollTimer.start()
+                                }
+                            }
 
                             // Custom backend location
                             PlasmaExtras.Heading {
@@ -1371,23 +1398,88 @@ ColumnLayout {
                                 color: Kirigami.Theme.textColor
                                 wrapMode: Text.WordWrap
                             }
+
                             RowLayout {
+                                TextField {
+                                    placeholderText: qsTr("Executable location e.g /home/luis/.local/bin/conky-colors.sh")
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    Layout.fillWidth: true
+                                    text: settings.on_change_hook
+                                    onAccepted: {
+                                        settings.on_change_hook = text
+                                    }
+                                }
                                 Button {
                                     icon.name: "document-open"
                                     onClicked: {
                                         fileDialogHookExec.open()
                                     }
                                 }
+                            }
 
-                                Text {
-                                    text: settings.on_change_hook !== "" ?
-                                        "Set to: " + settings.on_change_hook :
-                                        ""
-                                    Layout.fillWidth: true
-                                    color: Kirigami.Theme.textColor
-                                    wrapMode: Text.Wrap
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Delay on boot"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            Text {
+                                text: "Startup delay delay before doing anything, useful for waiting for other utilities that may change themes on boot"
+                                Layout.alignment: Qt.AlignLeft
+                                Layout.preferredWidth: mainLayout.width
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Seconds"
+                                    Layout.alignment: Qt.AlignLeft
+                                    // Layout.fillWidth: true
+                                }
+
+                                TextField {
+                                    Layout.preferredWidth: controlWidth
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    placeholderText: "0-?"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseInt(settings.startup_delay)
+                                    // Layout.fillWidth: true
+                                    validator: IntValidator {
+                                        bottom: 0
+                                    }
+
+                                    onAccepted: {
+                                        settings.startup_delay = parseInt(text)
+                                        // reset color selection
+                                        settings.use_startup_delay = settings.startup_delay > 0
+                                    }
                                 }
                             }
+
+
+                            // PlasmaComponents3.ToolButton {
+                            //     Layout.alignment: Qt.AlignHCenter
+                            //     text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
+                            //     icon.name: 'configure'
+                            //     checked: root.showAdvanced
+                            //     onClicked: {
+                            //         root.showAdvanced = !root.showAdvanced
+                            //     }
+                            // }
 
 
                             FileDialog {
@@ -1405,14 +1497,14 @@ ColumnLayout {
                             }
                         }
 
-                        // Timer {
-                        //     id: scrollTimer
-                        //     interval: 20
-                        //     repeat: false
-                        //     onTriggered: {
-                        //         scrollView.scrollToBottom()
-                        //     }
-                        // }
+                        Timer {
+                            id: scrollTimer
+                            interval: 20
+                            repeat: false
+                            onTriggered: {
+                                scrollView.scrollToTop()
+                            }
+                        }
 
                         Timer {
                             id: statupTimer
@@ -1450,31 +1542,47 @@ ColumnLayout {
                             }
                         }
 
-                        Components.FadeBehavior on showAdvanced {
-                            duration: 250
-                        }
+                        // Components.FadeBehavior on showAdvanced {
+                        //     duration: 250
+                        // }
                     }
                 }
             }
-        }
-
-        footer: PlasmaExtras.PlasmoidHeading {
-            id:footer
 
             RowLayout {
-                anchors.fill: parent
-
+                // anchors.fill: parent
+                Layout.alignment: Qt.AlignHCenter
+                visible: root.showAdvanced
+                Layout.bottomMargin: PlasmaCore.Units.smallSpacing
                 PlasmaComponents3.ToolButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "Show advanced settings"
+                    // Layout.alignment: Qt.AlignHCenter
+                    text: "Hide advanced settings"
                     icon.name: 'configure'
-
-                    checked: showAdvanced
+                    checked: root.showAdvanced
                     onClicked: {
-                        showAdvanced = !showAdvanced
+                        root.showAdvanced = !root.showAdvanced
                     }
                 }
             }
         }
+
+        // footer: PlasmaExtras.PlasmoidHeading {
+        //     id:footer
+
+        //     RowLayout {
+        //         anchors.fill: parent
+
+        //         PlasmaComponents3.ToolButton {
+        //             Layout.alignment: Qt.AlignHCenter
+        //             text: "Show advanced settings"
+        //             icon.name: 'configure'
+
+        //             checked: root.showAdvanced
+        //             onClicked: {
+        //                 root.showAdvanced = !root.showAdvanced
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
