@@ -5,6 +5,7 @@ from .. import settings
 from . import color_utils
 from . import file_utils
 from . import math_utils
+from . import notify
 
 
 def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
@@ -190,4 +191,4 @@ def evaluate_script(script, monitor):
     except Exception as e:
         error = f"Error getting wallpaper from dbus:\n{e}"
         logging.error(error)
-        return ("Error", None, None, error)
+        notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
