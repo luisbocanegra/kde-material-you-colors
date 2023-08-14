@@ -6,6 +6,7 @@ if settings.USER_HAS_COLR:
     import colr
 from . import color_utils
 from . import math_utils
+from . import notify
 from .extra_image_utils import sourceColorsFromImage
 from material_color_utilities_python.utils.theme_utils import *
 
@@ -130,7 +131,9 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         return materialYouColors
 
     except Exception as e:
-        logging.error(f"Error trying to get colors from {wallpaper_data}:\n{e}")
+        error = f"Error trying to get colors from {wallpaper_data}: {e}"
+        logging.error(error)
+        notify.send_notification("Could not get colors", error)
         return None
 
 
@@ -146,7 +149,7 @@ def get_color_schemes(wallpaper, ncolor=None):
     Returns:
 
     """
-    if wallpaper != None:
+    if wallpaper is not None:
         materialYouColors = None
         wallpaper_type = wallpaper[1]
         wallpaper_data = wallpaper[2]
@@ -168,7 +171,7 @@ def get_color_schemes(wallpaper, ncolor=None):
                 wallpaper_data, ncolor=ncolor, source_type=source_type
             )
 
-        if materialYouColors != None:
+        if materialYouColors is not None:
             try:
                 if len(materialYouColors["best"]) > 1:
                     best_colors = f"Best colors: {settings.TERM_STY_BOLD}"
@@ -199,10 +202,6 @@ def get_color_schemes(wallpaper, ncolor=None):
             except Exception as e:
                 logging.error(f"Error:\n{e}")
                 return None
-
-    else:
-        logging.error(f'''Error: Couldn't set schemes with "{wallpaper_data}"''')
-        return None
 
 
 def export_schemes(schemes):
