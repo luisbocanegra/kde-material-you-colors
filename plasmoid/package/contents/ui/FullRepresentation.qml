@@ -228,19 +228,20 @@ ColumnLayout {
                     }
                 }
 
-                PlasmaComponents3.ToolButton {
-                    display: PlasmaComponents3.AbstractButton.IconOnly
-                    icon.name: 'configure'
-                    text: Plasmoid.action("configure").text
+                // May find an use for it in the future idk
+                // PlasmaComponents3.ToolButton {
+                //     display: PlasmaComponents3.AbstractButton.IconOnly
+                //     icon.name: 'configure'
+                //     text: Plasmoid.action("configure").text
 
-                    onClicked: {
-                        plasmoid.action("configure").trigger()
-                    }
+                //     onClicked: {
+                //         plasmoid.action("configure").trigger()
+                //     }
 
-                    PlasmaComponents3.ToolTip {
-                        text: parent.text
-                    }
-                }
+                //     PlasmaComponents3.ToolTip {
+                //         text: parent.text
+                //     }
+                // }
 
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
