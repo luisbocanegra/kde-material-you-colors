@@ -1293,6 +1293,7 @@ ColumnLayout {
                             }
 
                             RowLayout {
+                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
                                 Label {
                                     text: "Tint Sierra Breeze window decoration buttons"
                                     Layout.alignment: Qt.AlignLeft
@@ -1310,6 +1311,7 @@ ColumnLayout {
 
                             // klassy outline color
                             RowLayout {
+                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
                                 Label {
                                     text: "Tint Klassy window decoration outline"
                                     Layout.alignment: Qt.AlignLeft
@@ -1331,6 +1333,7 @@ ColumnLayout {
                                 Layout.preferredWidth: mainLayout.width
                                 color: Kirigami.Theme.textColor
                                 wrapMode: Text.WordWrap
+                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
                             }
 
                             TextField {
