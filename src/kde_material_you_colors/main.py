@@ -309,31 +309,30 @@ def main():
             )
         )
 
-        if wallpaper_watcher.has_changed():
-            # print(wallpaper_watcher.get_new_value())
-            if wallpaper_watcher.get_new_value()[1] is not None:
-                # Get light/dark scheme status
-                theme_selector.apply_themes(
-                    config_watcher,
-                    wallpaper_watcher,
-                    wallpaper_modified,
-                    group1_watcher,
-                    light_mode_watcher,
-                    schemes_watcher,
-                    material_colors,
-                    first_run_watcher,
-                    konsole_profile_modified,
-                )
-            else:
-                notify.send_notification(
-                    "Could not get wallpaper",
-                    f"{wallpaper_watcher.get_new_value()[0]} \
-                        {wallpaper_watcher.get_new_value()[3]}",
-                )
-                logging.error(
-                    f"Could not get wallpaper {wallpaper_watcher.get_new_value()[0]}"
-                    + f" {wallpaper_watcher.get_new_value()[3]}"
-                )
+        # print(wallpaper_watcher.get_new_value())
+        if wallpaper_watcher.get_new_value()[1] is not None:
+            # Get light/dark scheme status
+            theme_selector.apply_themes(
+                config_watcher,
+                wallpaper_watcher,
+                wallpaper_modified,
+                group1_watcher,
+                light_mode_watcher,
+                schemes_watcher,
+                material_colors,
+                first_run_watcher,
+                konsole_profile_modified,
+            )
+        else:
+            notify.send_notification(
+                "Could not get wallpaper",
+                f"{wallpaper_watcher.get_new_value()[0]} \
+                    {wallpaper_watcher.get_new_value()[3]}",
+            )
+            logging.error(
+                f"Could not get wallpaper {wallpaper_watcher.get_new_value()[0]}"
+                + f" {wallpaper_watcher.get_new_value()[3]}"
+            )
         time.sleep(1)
 
 
