@@ -60,9 +60,9 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
                 const value = desktop.readConfig(key);
                 if (value !== "") {
                     if (key == "Provider") {
-                        return key+","+value+","+desktop.readConfig("Category");
+                        return key + "," + value + "," + desktop.readConfig("Category");
                     }
-                    return key+","+value
+                    return key + "," + value;
                 }
             }
         }
@@ -74,20 +74,25 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
         var config = getConfig(desktop, keys);
         print(config);
         """
-        script_output = evaluate_script(script, monitor)
-        wallpaper_data = [] if script_output is None else script_output.split(",")
+        # split type and wallpaper data, this allows commas in wallpaper data
+        script_output = evaluate_script(script, monitor).split(",", 1)
+        # wallpaper_data = script_output.split(",", 1)
+        # print(script_output)
 
         # special case for picture of the day plugin that requires a
         # directory, provider and sometimes a category
         if plugin == settings.PICTURE_OF_DAY_PLUGIN:
             img_provider = None
             provider_category = None
-            if len(wallpaper_data) >= 2:
-                img_provider = wallpaper_data[1]
+            # potd output has format Provider,provider_name,provider_category
+            if len(script_output) >= 2:
+                wallpaper_data = script_output[1].split(",", 1)
+                img_provider = wallpaper_data[0]
                 # some potd providers also have a category
-                if len(wallpaper_data) == 3:
-                    provider_category = wallpaper_data[2]
+                if len(wallpaper_data) == 2:
+                    provider_category = wallpaper_data[1]
 
+            # no provider means using defaults
             if img_provider:
                 potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + img_provider
             else:
@@ -125,45 +130,43 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
                 return (plugin, "image", potd)
 
         # Color based wallpapers
-        elif wallpaper_data[0] in ["color", "Color"]:
-            if len(wallpaper_data) >= 2:
-                color = ",".join(wallpaper_data[1:])
-                color_fmt = color_utils.validate_color(color)
-                # print(color, "fmt:", color_fmt)
-                if color_fmt:
-                    try:
-                        if color_fmt == 1:
-                            color_rgb = tuple(color.split(","))
-                            color = color_utils.rgb2hex(
-                                r=int(color_rgb[0]),
-                                g=int(color_rgb[1]),
-                                b=int(color_rgb[2]),
-                            )
-                        return (plugin, "color", color)
-                    except Exception as e:
-                        error = f"Could not resolve color from {plugin}: {e}"
-                        logging.error(error)
-                        return (f"plugin:{plugin}", None, None, error)
+        elif script_output[0] in ["color", "Color"] and len(script_output) >= 2:
+            color = script_output[1]
+            # convert color if needed
+            color_fmt = color_utils.validate_color(color)
+            if color_fmt:
+                try:
+                    if color_fmt == 1:
+                        color_rgb = tuple(color.split(","))
+                        color = color_utils.rgb2hex(
+                            r=int(color_rgb[0]),
+                            g=int(color_rgb[1]),
+                            b=int(color_rgb[2]),
+                        )
+                    return (plugin, "color", color)
+                except Exception as e:
+                    error = f"Could not resolve color from {plugin}: {e}"
+                    logging.error(error)
+                    return (f"plugin:{plugin}", None, None, error)
         else:
             # wallpaper plugin that stores current image
-            if wallpaper_data and wallpaper_data[0] in ["Image"]:
-                if len(wallpaper_data) == 2:
-                    # if script returns a directory check for mormal/dark variant
-                    wallpaper = wallpaper_data[1]
-                    if os.path.isdir(wallpaper):
-                        if (
-                            os.path.exists(wallpaper + "contents/images_dark")
-                            and light is False
-                        ):
-                            wallpaper = file_utils.get_smallest_image(
-                                wallpaper + "contents/images_dark/"
-                            )
+            if script_output[0] in ["Image"] and len(script_output) >= 2:
+                wallpaper = script_output[1]
+                # if script returns a directory check for mormal/dark variant
+                if os.path.isdir(wallpaper):
+                    if (
+                        os.path.exists(wallpaper + "contents/images_dark")
+                        and light is False
+                    ):
+                        wallpaper = file_utils.get_smallest_image(
+                            wallpaper + "contents/images_dark/"
+                        )
 
-                        elif os.path.exists(wallpaper + "contents/images"):
-                            wallpaper = file_utils.get_smallest_image(
-                                wallpaper + "contents/images/"
-                            )
-                    return (plugin, "image", wallpaper)
+                    elif os.path.exists(wallpaper + "contents/images"):
+                        wallpaper = file_utils.get_smallest_image(
+                            wallpaper + "contents/images/"
+                        )
+                return (plugin, "image", wallpaper)
 
         return (f"plugin:{plugin}", None, None, "Plugin unsupported")
 
@@ -192,3 +195,4 @@ def evaluate_script(script, monitor):
         error = f"Error getting wallpaper from dbus:\n{e}"
         logging.error(error)
         notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
+    return ""
