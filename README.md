@@ -8,7 +8,6 @@ This is a Python program that uses the [Python implementation](https://github.co
 Which is used to generate Light and Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, automatically.
 
 ![](https://img.shields.io/static/v1?style=for-the-badge&label=Made%20with&message=Python&color=1f425f&logo=python&labelColor=2d333b)
-![](https://img.shields.io/static/v1?style=for-the-badge&label=Maintained&message=yes&color=1f425f&eColor=181818&labelColor=2d333b)
 ![](https://img.shields.io/github/v/release/luisbocanegra/kde-material-you-colors?include_prereleases&style=for-the-badge&color=1f425f&labelColor=2d333b)
 </div>
 
@@ -59,7 +58,7 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 pip install kde-material-you-colors
 # Optional
 # pywal to theme other programs using Material You Colors
-pip install pywal colr
+pip install pywal
 # Colr to display colored palette and seed colors from terminal (approximate)
 pip install colr
 ```
@@ -103,24 +102,20 @@ zypper install kde-material-you-colors
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
   - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) to theme supported programs
 
-# Running
+# Running from terminal to debug your configuration
 
-## From terminal to debug your configuration
+- Run `kde-material-you-colors`
 
-- Run `kde-material-you-colors` from terminal, this should change your Desktop colors right after.
+- Flags take precedence over sonfiguration file, run `kde-material-you-colors -h` to see the list of available options
 
-**NOTE:** Without any configuration/arguments your wallpaper will be reset to Image Wallpaper Plugin
+## Starting/Stopping Desktop entries
 
-### Options
+Run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
 
-- Run `kde-material-you-colors -h` to see the list of available options
-
-### Desktop entries
-
-- To start/restart the program launch **KDE Material You Colors** from your applications list
+- To start the program launch **KDE Material You Colors** from your applications list
 - To stop it launch **Stop KDE Material You Colors** from your applications list
 
-# Startup script
+# Running on Startup
 
 After finishing the setup, you can make it run automatically on boot
 
@@ -132,38 +127,34 @@ After finishing the setup, you can make it run automatically on boot
 
     `kde-material-you-colors -a`
 
-3. Reboot or logout/login and test the changes,
+3. Reboot or logout/login and test the changes
 
-**NOTE:** your wallpaper will be reset to Image Wallpaper Plugin
-
-## Removing the autostart script
+## Removing from autostart
 
 1. Open `System Settings` > `Startup and Shutdown`
 2. Remove `kde-material-you-colors` by clicking on the `-` button.
 
-# Changing Current Wallpaper plugin
+# Supported Wallpaper plugins
 
-<span style="color:#ff6568"> **Use the configuration file !!** </span>
+**Wallpaper plugins must store the current wallpaper in `~/.config/plasma-org.kde.plasma.desktop-appletsrc`**
 
-Using Plasma Wallpaper Settings may Crash Plasmashell and will set again the plugin from Configuration file
+Confirmed working Plasma Wallpaper Plugins:
 
-# Working Wallpaper plugins
-
-This is a list of compatible Plasma Wallpaper Plugins
-
-| Name        | ID          |
+| Name | ID |
 | ----------- | ----------- |
-| Image (default)      | `org.kde.image`  |
+| Image (default) | `org.kde.image` |
 | Picture of the day | `org.kde.potd` |
 | Slideshow | `org.kde.slideshow` |
 | Plain color | `org.kde.color` |
+| Conway's Game of Life (cell color) | `org.kde.plasma.gameoflife` |
+| Active blur | `a2n.blur` |
 
 # Configuration file
 
 - Copy default configuration: run `kde-material-you-colors -c`
 - Edit ~/.config/kde-material-you-colors/config.conf
 - Run `kde-material-you-colors` with no arguments from terminal to test it.
-- **You can view the sample configuration file [here](https://github.com/luisbocanegra/kde-material-you-colors/blob/main/src/sample_config.conf)**
+- **You can view the sample configuration file [here](https://github.com/luisbocanegra/kde-material-you-colors/blob/plasmoid/src/kde_material_you_colors/data/sample_config.conf)**
 
 # Notes
 
@@ -178,5 +169,5 @@ Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 - [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required by this project.
 - [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
-- [Pywal](https://github.com/dylanaraps/pywal) developers 
+- [Pywal](https://github.com/dylanaraps/pywal) developers
 - [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities (used until v0.8.0).
