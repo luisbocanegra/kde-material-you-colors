@@ -228,25 +228,24 @@ ColumnLayout {
                     }
                 }
 
-                // May find an use for it in the future idk
-                // PlasmaComponents3.ToolButton {
-                //     display: PlasmaComponents3.AbstractButton.IconOnly
-                //     icon.name: 'configure'
-                //     text: Plasmoid.action("configure").text
+                PlasmaComponents3.ToolButton {
+                    display: PlasmaComponents3.AbstractButton.IconOnly
+                    visible: !onDesktop
+                    icon.name: 'configure'
+                    text: Plasmoid.action("configure").text
 
-                //     onClicked: {
-                //         plasmoid.action("configure").trigger()
-                //     }
+                    onClicked: {
+                        plasmoid.action("configure").trigger()
+                    }
 
-                //     PlasmaComponents3.ToolTip {
-                //         text: parent.text
-                //     }
-                // }
+                    PlasmaComponents3.ToolTip {
+                        text: parent.text
+                    }
+                }
 
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
 
-                    // hide keep open on the desktop
                     visible: !onDesktop
 
                     icon.name: 'pin'
@@ -286,7 +285,6 @@ ColumnLayout {
 
                 // scroll ScrollView to the bottom
                 // https://stackoverflow.com/a/64449107
-                // scroll ScrollView to the bottom
                 function scrollToBottom() {
                     ScrollBar.vertical.position = 1.0 - ScrollBar.vertical.size
                 }

@@ -7,9 +7,4 @@ ConfigModel {
         icon: "preferences-desktop"
         source: "configGeneral.qml"
     }
-    // ConfigCategory {
-    //     name: i18n("Troubleshoot")
-    //     icon: "tools-report-bug"
-    //     source: "configDebugging.qml"
-    // }
 }

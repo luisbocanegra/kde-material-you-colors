@@ -3,8 +3,8 @@
     <kcfgfile name=""/>
 
     <group name="General">
-        <entry name="variableName" type="Bool">
-            <default>true</default>
-        </entry>
+        <entry name="icon" type="String">
+          <default></default>
+      </entry>
     </group>
 </kcfg>

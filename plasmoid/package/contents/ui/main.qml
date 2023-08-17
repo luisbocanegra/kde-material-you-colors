@@ -15,6 +15,10 @@ Item {
                                     Plasmoid.fullRepresentation :
                                     Plasmoid.compactRepresentation
 
+    Plasmoid.compactRepresentation: CompactRepresentation {
+        anchors.fill: parent
+    }
+
     property bool doSettingsReload: false
 
     Plasmoid.fullRepresentation: FullRepresentation {
@@ -34,6 +38,5 @@ Item {
 
     Component.onCompleted: function() {
         Plasmoid.setAction('reloadConfig', i18n("Reload configuration file"), 'view-refresh');
-        Plasmoid.removeAction("configure"); // May find an use for it in the future idk
     }
 }
