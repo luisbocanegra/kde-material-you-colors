@@ -324,15 +324,13 @@ def main():
                 konsole_profile_modified,
             )
         else:
-            notify.send_notification(
-                "Could not get wallpaper",
-                f"{wallpaper_watcher.get_new_value()[0]} \
-                    {wallpaper_watcher.get_new_value()[3]}",
-            )
-            logging.error(
-                f"Could not get wallpaper {wallpaper_watcher.get_new_value()[0]}"
-                + f" {wallpaper_watcher.get_new_value()[3]}"
-            )
+            if wallpaper_watcher.has_changed():
+                error_msg = (
+                    wallpaper_watcher.get_new_value()[0]
+                    + wallpaper_watcher.get_new_value()[3]
+                )
+                notify.send_notification("Could not get wallpaper", error_msg)
+                logging.error(f"Could not get wallpaper {error_msg}")
         time.sleep(1)
 
 
