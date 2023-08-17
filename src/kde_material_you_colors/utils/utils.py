@@ -2,18 +2,17 @@ import gettext
 import logging
 import os
 import signal
-import stat
 import subprocess
 import argparse
 import sys
 import re
 import shutil
-from .. import settings
 import configparser
+from .. import settings
 
 
 def run_hook(hook):
-    if hook != None:
+    if hook is not None:
         subprocess.Popen(hook, shell=True)
 
 
@@ -57,7 +56,7 @@ def copy_user_files(dests):
             )
 
 
-def update_desktop_exec():
+def update_desktop_entry():
     if settings.PKG_INSTALL_DIR.startswith("/home"):
         entries = [
             {
@@ -75,9 +74,7 @@ def update_desktop_exec():
         ]
         for entry in entries:
             if os.path.exists(entry["dest"]):
-                logging.info(
-                    f'Updating desktop entry {entry["dest"]}\n\tExec={entry["cmd"]}'
-                )
+                logging.debug(f'Updating Exec {entry["dest"]}')
                 config = configparser.ConfigParser()
                 config.optionxform = str
                 config.read(entry["dest"])
@@ -87,7 +84,7 @@ def update_desktop_exec():
 
 
 def one_shot_actions(args):
-    if args.autostart == True:
+    if args.autostart is True:
         # Autostart desktop entries
         dests = [
             {
@@ -98,35 +95,11 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
-        update_desktop_exec()
-        # # Add .local/bin to PATH if installed as user
-        # if settings.PKG_INSTALL_DIR.startswith("/home"):
-        #     dests_env = [
-        #         {
-        #             "origin": settings.PLASMA_WORKSPACE_ENV_PATH,
-        #             "dest": settings.USER_PLASMA_WORKSPACE_ENV_PATH,
-        #             "file": settings.PLASMA_WORKSPACE_ENV_FILE,
-        #             "file_dest": settings.PLASMA_WORKSPACE_ENV_FILE,
-        #         },
-        #     ]
-        #     copy_user_files(dests_env)
-        #     # Make env file executable
-        #     st = os.stat(
-        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
-        #         + settings.PLASMA_WORKSPACE_ENV_FILE
-        #     )
-        #     os.chmod(
-        #         settings.USER_PLASMA_WORKSPACE_ENV_PATH
-        #         + settings.PLASMA_WORKSPACE_ENV_FILE,
-        #         st.st_mode | stat.S_IEXEC,
-        #     )
-        #     logging.info(
-        #         f"Saved Pre-startup script {settings.USER_PLASMA_WORKSPACE_ENV_PATH+settings.PLASMA_WORKSPACE_ENV_FILE} \nREBOOT IS REQUIRED IF YOU WANT TO START BACKEND FROM WIDGET"
-        #     )
+        update_desktop_entry()
 
         sys.exit(0)
 
-    if args.copylauncher == True:
+    if args.copylauncher is True:
         # Start/Stop Desktop entries
         dests = [
             {
@@ -143,10 +116,10 @@ def one_shot_actions(args):
             },
         ]
         copy_user_files(dests)
-        update_desktop_exec()
+        update_desktop_entry()
         sys.exit(0)
 
-    elif args.copyconfig == True:
+    elif args.copyconfig is True:
         dests = [
             {
                 "origin": settings.SAMPLE_CONFIG_PATH,
@@ -159,7 +132,7 @@ def one_shot_actions(args):
         copy_user_files(dests)
         sys.exit(0)
 
-    elif args.stop == True:
+    elif args.stop is True:
         kill_existing()
         sys.exit(0)
 
@@ -275,9 +248,9 @@ def color_text(message: str):
     for i, line in enumerate(message.splitlines()):
         # find options (--op, -o), config_names
         match_opts = [
-            "([\s-]-{1,2}[a-zA-Z-]+)",
-            "(?<=\[)(-{1,2}[a-zA-Z]+)",
-            "([a-zA-Z]+_[a-zA-Z]+)",
+            r"([\s-]-{1,2}[a-zA-Z-]+)",
+            r"(?<=\[)(-{1,2}[a-zA-Z]+)",
+            r"([a-zA-Z]+_[a-zA-Z]+)",
         ]
         line = re.sub(
             "|".join(match_opts),
@@ -286,7 +259,7 @@ def color_text(message: str):
         )
 
         # color argument <meta> values
-        match_args = ["(\<(.*?)\>)"]
+        match_args = [r"(\<(.*?)\>)"]
         line = re.sub(
             "|".join(match_args),
             rf"{settings.TERM_COLOR_YEL}\1{settings.TERM_STY_RESET}",
@@ -295,7 +268,7 @@ def color_text(message: str):
 
         # color sections usage: , options:\n
         match_sect = [
-            "((\)|^)([a-zA-Z]+):($|)(?!/))",
+            r"((\)|^)([a-zA-Z]+):($|)(?!/))",
         ]
         line = re.sub(
             "|".join(match_sect),
@@ -306,9 +279,9 @@ def color_text(message: str):
         # programs, commands
         progname = sys.argv[0].split(" ")[0].split("/")[-1]
         match_progname = [
-            f"(" + progname + ")",
+            "(" + progname + ")",
             "( konsole)",
-            "([\s](.*)[a-zA-Z]-[\s][a-zA-Z](.+?)[\s])",
+            r"([\s](.*)[a-zA-Z]-[\s][a-zA-Z](.+?)[\s])",
         ]
         line = re.sub(
             "|".join(match_progname),
@@ -322,7 +295,7 @@ def color_text(message: str):
             line = line.replace(w, w.upper())
 
         # Error red
-        match_progname = [f"(ERROR:)"]
+        match_progname = ["(ERROR:)"]
         line = re.sub(
             "|".join(match_progname),
             rf"{settings.TERM_COLOR_RED}{settings.TERM_STY_BOLD}{settings.TERM_STY_INVERT}\1{settings.TERM_STY_RESET}",
@@ -335,5 +308,5 @@ def color_text(message: str):
             line = line.replace(w, w.capitalize())
 
         formatted_text += line + "\n"
-    formatted_text + settings.TERM_STY_RESET
+    formatted_text += settings.TERM_STY_RESET
     return formatted_text
