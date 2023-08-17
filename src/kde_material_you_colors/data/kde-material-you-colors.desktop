@@ -5,3 +5,4 @@ Icon=colors
 Name=KDE Material You Colors
 Comment=Starts/Restarts background process
 Type=Application
+X-KDE-AutostartScript=true
