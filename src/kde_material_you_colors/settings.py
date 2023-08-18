@@ -3,6 +3,7 @@ import getpass
 import tempfile
 from pathlib import Path
 import importlib.util
+import shutil
 import sysconfig
 
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
@@ -50,6 +51,7 @@ PIDFILE_PATH = Path(
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"
 USER_LOCAL_BIN_PATH = HOME + "/.local/bin/"
+IN_PATH = bool(shutil.which("kde-material-you-colors"))
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"
