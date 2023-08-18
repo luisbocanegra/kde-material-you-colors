@@ -59,6 +59,7 @@ ColumnLayout {
 
     onPlasmoidExpandedChanged: {
         checkConfigChange.exec(checkConfigChangeCommand)
+        findExecutablePath()
     }
 
     onConfigSha1Changed: {
@@ -70,11 +71,18 @@ ColumnLayout {
     }
 
     function findExecutablePath() {
-        execPath = StandardPaths.findExecutable(execName).toString().substring(7)
-        if (execPath == "") {
-            execPath = StandardPaths.findExecutable(execName,
+        var temp = ""
+        temp = StandardPaths.findExecutable(execName).toString().substring(7)
+        if (temp == "") {
+            temp = StandardPaths.findExecutable(execName,
                         homeDir+"/.local/bin").toString().substring(7)
         }
+
+        // if (temp == "") {
+        //     exec
+        // }
+        execPath = temp
+
     }
     Component.onCompleted: {
         findExecutablePath()
@@ -355,9 +363,7 @@ ColumnLayout {
                                 checkBackend.exec(checkBackendCommand)
                                 checkConfigChange.exec(checkConfigChangeCommand)
                                 readMaterialYouData.exec()
-                                if (execPath == "") {
-                                    findExecutablePath()
-                                }
+                                findExecutablePath()
                             }
                         }
 
