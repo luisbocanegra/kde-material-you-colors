@@ -110,7 +110,7 @@ zypper install kde-material-you-colors
 
 ## Starting/Stopping Desktop entries
 
-Run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
+**If not installed by your package manager**, run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
 
 - To start the program launch **KDE Material You Colors** from your applications list
 - To stop it launch **Stop KDE Material You Colors** from your applications list
@@ -171,3 +171,4 @@ Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
 - [Pywal](https://github.com/dylanaraps/pywal) developers
 - [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities (used until v0.8.0).
+[Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) for the widget icon
