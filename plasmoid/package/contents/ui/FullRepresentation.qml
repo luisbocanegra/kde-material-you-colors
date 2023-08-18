@@ -42,7 +42,6 @@ ColumnLayout {
 
     // used to trigger a reload if the config file has changed
     property string configPath: homeDir + "/.config/kde-material-you-colors/config.conf"
-    property string customConfigPath
     property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
     property string configSha1
 
@@ -71,10 +70,6 @@ ColumnLayout {
     }
 
     function findExecutablePath() {
-        if (customConfigPath != "") {
-            execPath = StandardPaths.findExecutable(customConfigPath).toString().substring(7)
-            return
-        }
         execPath = StandardPaths.findExecutable(execName).toString().substring(7)
         if (execPath == "") {
             execPath = StandardPaths.findExecutable(execName,
@@ -360,6 +355,9 @@ ColumnLayout {
                                 checkBackend.exec(checkBackendCommand)
                                 checkConfigChange.exec(checkConfigChangeCommand)
                                 readMaterialYouData.exec()
+                                if (execPath == "") {
+                                    findExecutablePath()
+                                }
                             }
                         }
 
@@ -409,7 +407,6 @@ ColumnLayout {
                                         "/.config/kde-material-you-colors/config.conf"
                             customTextColorsCheck.checked = settings.custom_colors_list == ""
                             customColorCheck.checked = settings.color == ""
-                            root.customConfigPath = settings.gui_custom_exec_location
 
                         }
 
@@ -510,23 +507,12 @@ ColumnLayout {
                             level: 3
                             // visible: execPath == ""
                             Layout.preferredWidth: mainLayout.width
-                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, enter the location in advanced settings"
+                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, make sure to execute with -a flag e.g /tmp/testenv/bin/kde-material-you-colors -a"
                             Layout.alignment: Qt.AlignHCenter
                             color: Kirigami.Theme.neutralTextColor
                             wrapMode: Text.WordWrap
                             horizontalAlignment: Text.AlignHCenter
                             visible: root.execPath == ""
-                        }
-
-                        PlasmaComponents3.ToolButton {
-                            Layout.alignment: Qt.AlignHCenter
-                            text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
-                            icon.name: 'configure'
-                            visible: root.execPath == ""
-                            checked: root.showAdvanced
-                            onClicked: {
-                                root.showAdvanced = !root.showAdvanced
-                            }
                         }
 
                         // NORMAL SETTINGS
@@ -1053,36 +1039,6 @@ ColumnLayout {
                             onVisibleChanged: {
                                 if (visible) {
                                     scrollTimer.start()
-                                }
-                            }
-
-                            // Custom backend location
-                            PlasmaExtras.Heading {
-                                level: 1
-                                text: "Backend executable location"
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-
-                            RowLayout {
-                                TextField {
-                                    placeholderText: qsTr("Executable location e.g /tmp/testenv/bin/kde-material-you-colors")
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
-                                    Layout.fillWidth: true
-                                    text: settings.gui_custom_exec_location
-                                    onAccepted: {
-                                        settings.gui_custom_exec_location = text
-                                        root.customConfigPath = text
-                                        findExecutablePath()
-                                    }
-                                }
-                                Button {
-                                    icon.name: "document-open"
-                                    onClicked: {
-                                        fileDialogHookExec.open()
-                                    }
                                 }
                             }
 
