@@ -507,7 +507,7 @@ ColumnLayout {
                             level: 3
                             // visible: execPath == ""
                             Layout.preferredWidth: mainLayout.width
-                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, make sure to execute with -a flag e.g /tmp/testenv/bin/kde-material-you-colors -a"
+                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, make sure to execute outside python environment with -a/-cl flag e.g /tmp/testenv/bin/kde-material-you-colors -cl"
                             Layout.alignment: Qt.AlignHCenter
                             color: Kirigami.Theme.neutralTextColor
                             wrapMode: Text.WordWrap
