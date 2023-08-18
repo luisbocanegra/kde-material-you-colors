@@ -96,7 +96,7 @@ def main():
         "--copylauncher",
         "-cl",
         action="store_true",
-        help="Copies desktop entries to ~/.local/share/applications/",
+        help="Copies desktop entries to ~/.local/share/applications/. Use only if they were not installed by a package manager",
     )
 
     parser.add_argument(
@@ -278,6 +278,7 @@ def main():
     first_run_watcher = utils.Watcher(True)
     konsole_profile_modified = utils.Watcher(None)
     logging.info("###### STARTED NEW SESSION ######")
+    logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
     config_modified = utils.Watcher(
         file_utils.get_last_modification(
             settings.USER_CONFIG_PATH + settings.CONFIG_FILE
