@@ -13,7 +13,7 @@
         "Icon":"preferences-desktop-theme-global",
         "License": "GPL-3.0",
         "Name": "KDE Material You Colors",
-        "Version": "1.6.0",
+        "Version": "0.1.0",
         "Website": "https://github.com/luisbocanegra/kde-material-you-colors"
     },
     "KPackageStructure": "Plasma/Applet",
