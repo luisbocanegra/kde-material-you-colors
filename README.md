@@ -2,10 +2,9 @@
 
 # 🎨 KDE Material You Colors
 
-## Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop
+<img src="https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e" alt="Screenshot" height="250px">
 
-This is a Python program that uses the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) to generate a Material Design 3 color scheme.
-Which is used to generate Light and Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, automatically.
+Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, using [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
 
 ![](https://img.shields.io/static/v1?style=for-the-badge&label=Made%20with&message=Python&color=1f425f&logo=python&labelColor=2d333b)
 ![](https://img.shields.io/github/v/release/luisbocanegra/kde-material-you-colors?include_prereleases&style=for-the-badge&color=1f425f&labelColor=2d333b)
@@ -52,7 +51,16 @@ Which is used to generate Light and Dark Color Themes for KDE (and pywal if inst
 
 # Installing
 
-## Using pypi
+## Plasma widget
+
+Install from the [KDE Store](https://store.kde.org/p/2073783)
+
+1. Right click on panel > Add Widgets > Get New Widgets > Download New Plasma Widgets
+2. Search for "KDE Material You Colors"
+
+## Backend (MANDATORY)
+
+### Using pypi
 
 ```sh
 pip install kde-material-you-colors
@@ -63,13 +71,13 @@ pip install pywal
 pip install colr
 ```
 
-## Arch Linux
+### Arch Linux
 
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper
 
-## openSUSE Build Service packages by [marknefedov](https://github.com/marknefedov)
+### openSUSE Build Service packages by [marknefedov](https://github.com/marknefedov)
 
-### Fedora
+#### Fedora
 
 Add repository and install as root:
 
@@ -78,7 +86,7 @@ dnf config-manager --add-repo https://download.opensuse.org/repositories/home:Ma
 dnf install kde-material-you-colors
 ```
 
-### openSUSE
+#### openSUSE
 
 For **openSUSE Tumbleweed** add repository and install as root:
 
@@ -96,7 +104,7 @@ zypper refresh
 zypper install kde-material-you-colors
 ```
 
-## Optional features
+### Optional features
 
 - Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
