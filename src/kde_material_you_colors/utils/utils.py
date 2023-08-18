@@ -57,30 +57,45 @@ def copy_user_files(dests):
 
 
 def update_desktop_entry():
-    if settings.PKG_INSTALL_DIR.startswith("/home"):
-        entries = [
-            {
-                "dest": settings.USER_APPS_PATH + settings.AUTOSTART_SCRIPT,
-                "cmd": settings.USER_LOCAL_BIN_PATH,
-            },
-            {
-                "dest": settings.USER_APPS_PATH + settings.STOP_SCRIPT,
-                "cmd": settings.USER_LOCAL_BIN_PATH + " --stop",
-            },
-            {
-                "dest": settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT,
-                "cmd": settings.USER_LOCAL_BIN_PATH,
-            },
-        ]
-        for entry in entries:
-            if os.path.exists(entry["dest"]):
-                logging.debug(f'Updating Exec {entry["dest"]}')
-                config = configparser.ConfigParser()
-                config.optionxform = str
-                config.read(entry["dest"])
-                config.set("Desktop Entry", "Exec", entry["cmd"])
-                with open(entry["dest"], "w", encoding="utf-8") as f:
-                    config.write(f, space_around_delimiters=False)
+    entries = [
+        {
+            "dest": settings.USER_APPS_PATH + settings.AUTOSTART_SCRIPT,
+            "cmd": settings.PKG_BIN,
+        },
+        {
+            "dest": settings.USER_APPS_PATH + settings.STOP_SCRIPT,
+            "cmd": settings.PKG_BIN + " --stop",
+        },
+        {
+            "dest": settings.USER_AUTOSTART_SCRIPT_PATH + settings.AUTOSTART_SCRIPT,
+            "cmd": settings.PKG_BIN,
+        },
+    ]
+    for entry in entries:
+        if os.path.exists(entry["dest"]):
+            logging.debug(f'Updating Exec {entry["dest"]}')
+            config = configparser.ConfigParser()
+            config.optionxform = str
+            config.read(entry["dest"])
+            config.set("Desktop Entry", "Exec", entry["cmd"])
+            with open(entry["dest"], "w", encoding="utf-8") as f:
+                config.write(f, space_around_delimiters=False)
+    # create symbolic link to user PATH
+    if not settings.PKG_INSTALL_DIR.startswith(
+        "/usr"
+    ) or not settings.PKG_INSTALL_DIR.startswith("/home"):
+        if not os.path.exists(settings.USER_LOCAL_BIN_PATH):
+            os.makedirs(settings.USER_LOCAL_BIN_PATH)
+        link_path = settings.USER_LOCAL_BIN_PATH + "kde-material-you-colors"
+        if os.path.exists(link_path):
+            os.remove(link_path)
+            logging.debug(f"Updating link {settings.PKG_BIN} -> {link_path}")
+        else:
+            logging.debug(f"Creating link {settings.PKG_BIN} -> {link_path}")
+        os.symlink(
+            settings.PKG_BIN,
+            link_path,
+        )
 
 
 def one_shot_actions(args):

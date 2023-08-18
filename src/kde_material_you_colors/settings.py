@@ -3,11 +3,14 @@ import getpass
 import tempfile
 from pathlib import Path
 import importlib.util
+import sysconfig
 
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
 PKG_INSTALL_DIR = os.path.dirname(__file__)
+PKG_BIN = sysconfig.get_path("scripts") + "/kde-material-you-colors"
+
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
 SAMPLE_CONFIG_PATH = PKG_INSTALL_DIR + "/data/"
@@ -46,7 +49,7 @@ PIDFILE_PATH = Path(
 # PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"
-USER_LOCAL_BIN_PATH = HOME + "/.local/bin/kde-material-you-colors"
+USER_LOCAL_BIN_PATH = HOME + "/.local/bin/"
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"
