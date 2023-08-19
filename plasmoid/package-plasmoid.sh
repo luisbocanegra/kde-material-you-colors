@@ -10,7 +10,7 @@ mkdir build
 cd build
 
 # skip building/installing
-cmake cmake -DINSTALL_PLASMOID=OFF -DCMAKE_BUILD_TYPE=Release ..
+cmake -DINSTALL_PLASMOID=OFF -DCMAKE_BUILD_TYPE=Release ..
 
 # package the plasmoid file
 make plasmoid
