@@ -6,6 +6,7 @@ import importlib.util
 import shutil
 import sysconfig
 
+USERNAME = getpass.getuser()
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
@@ -42,11 +43,9 @@ KONSOLE_TEMP_PROFILE = KONSOLE_DIR + "TempMyou.profile"
 KSYNTAX_THEMES_DIR = HOME + "/.local/share/org.kde.syntax-highlighting/themes/"
 LOG_FILE_PATH = HOME + "/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
-MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors.json"
+MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors-" + USERNAME + ".json"
 KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
-PIDFILE_PATH = Path(
-    f"{tempfile.gettempdir()}/kde-material-you-colors-{getpass.getuser()}.pid"
-)
+PIDFILE_PATH = Path(f"{tempfile.gettempdir()}/kde-material-you-colors-{USERNAME}.pid")
 # PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"
