@@ -26,10 +26,11 @@ ColumnLayout {
     property bool backendRunning: true
     property string homeDir: StandardPaths.writableLocation(
                             StandardPaths.HomeLocation).toString().substring(7)
+    property string username: ""
 
     property string execName: 'kde-material-you-colors'
     property string execPath: ""
-    property string checkBackendCommand: 'ps -C '+execName+' -F --no-headers'
+    property string checkBackendCommand: 'ps -o user,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | awk \'{print $2}\''
     property string startBackendCommand: execPath
     property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
 
@@ -84,8 +85,16 @@ ColumnLayout {
         execPath = temp
 
     }
+    function getUsername() {
+        var parts = homeDir.split('/');
+        if (parts.length > 2 && parts[1] === "home") {
+            username = parts[2];
+        }
+    }
+
     Component.onCompleted: {
         findExecutablePath()
+        getUsername()
     }
 
     PlasmaCore.DataSource {
@@ -452,7 +461,9 @@ ColumnLayout {
                             }
 
                                 function exec() {
-                                    readMaterialYouData.connectSource("cat /tmp/kde-material-you-colors.json")
+                                    readMaterialYouData.connectSource(
+                                        "cat /tmp/kde-material-you-colors-"+username+".json"
+                                        )
                             }
 
                             signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
