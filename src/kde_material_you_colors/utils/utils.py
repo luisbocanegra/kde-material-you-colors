@@ -324,3 +324,25 @@ def color_text(message: str):
         formatted_text += line + "\n"
     formatted_text += settings.TERM_STY_RESET
     return formatted_text
+
+
+def find_executable(name: str):
+    """Find executable path using util-linux `whereis`
+
+    Args:
+        name (str): Executable name to find
+
+    Returns:
+        (str|None): Executable path or None if wasn't found
+    """
+    out = (
+        subprocess.check_output(
+            "whereis " + name,
+            shell=True,
+            universal_newlines=True,
+        )
+        .strip()
+        .split()
+    )
+
+    return None if len(out) == 1 else out[1]

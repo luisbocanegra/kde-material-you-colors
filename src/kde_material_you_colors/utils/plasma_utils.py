@@ -87,15 +87,20 @@ def set_icons(icons_light, icons_dark, light=False):
         icons_dark (str): Dark mode icon theme
         light (bool): wether using light or dark mode
     """
-    if light and icons_light != None:
+    if light and icons_light is not None:
         icons = icons_light
-    elif not light and icons_dark != None:
+    elif not light and icons_dark is not None:
         icons = icons_dark
     else:
         icons = None
-    if icons != None:
+    if icons is not None:
+        if settings.PLASMA_CHANGEICONS_PATH is None:
+            logging.warning(
+                f"{settings.CHANGE_ICONS_PROGRAM} wasn't found, can't apply icon themes"
+            )
+            return
         changeicons_error = subprocess.check_output(
-            "/usr/lib/plasma-changeicons " + icons,
+            settings.PLASMA_CHANGEICONS_PATH + " " + icons,
             shell=True,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
