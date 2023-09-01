@@ -5,6 +5,7 @@ from pathlib import Path
 import importlib.util
 import shutil
 import sysconfig
+from kde_material_you_colors.utils.utils import find_executable
 
 USERNAME = getpass.getuser()
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
@@ -51,6 +52,8 @@ PIDFILE_PATH = Path(f"{tempfile.gettempdir()}/kde-material-you-colors-{USERNAME}
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"
 USER_LOCAL_BIN_PATH = HOME + "/.local/bin/"
 IN_PATH = bool(shutil.which("kde-material-you-colors"))
+CHANGE_ICONS_PROGRAM = "plasma-changeicons"
+PLASMA_CHANGEICONS_PATH = find_executable(CHANGE_ICONS_PROGRAM)
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"
