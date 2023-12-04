@@ -43,26 +43,26 @@ def apply_themes(
     )
 
     # Get wallpaper type and data
+    wallpaper_new_plugin = None
     wallpaper_new_type = None
     wallpaper_new_data = None
     if (
         wallpaper_watcher.get_new_value() is not None
         and wallpaper_watcher.get_new_value()[2] is not None
     ):
+        wallpaper_new_plugin = wallpaper_watcher.get_new_value()[0]
         wallpaper_new_type = wallpaper_watcher.get_new_value()[1]
         wallpaper_new_data = wallpaper_watcher.get_new_value()[2]
 
-    # if wallpaper is image save time of last modification
+    # if wallpaper is image save hash of last modification
     if wallpaper_new_type and wallpaper_new_type == "image":
-        wallpaper_modified.set_value(
-            file_utils.get_last_modification(wallpaper_new_data)
-        )
+        wallpaper_modified.set_value(file_utils.get_file_sha1(wallpaper_new_data))
     else:
         wallpaper_modified.set_value(None)
 
     if config_watcher.get_new_value()["konsole_profile"] is not None:
         konsole_profile_modified.set_value(
-            file_utils.get_last_modification(
+            file_utils.get_file_sha1(
                 settings.KONSOLE_DIR
                 + config_watcher.get_new_value()["konsole_profile"]
                 + ".profile"
@@ -92,7 +92,9 @@ def apply_themes(
         or wallpaper_modified.has_changed()
     ):
         if wallpaper_watcher.has_changed() or wallpaper_modified.has_changed():
-            logging.info(f"Using source ({wallpaper_new_type}): {wallpaper_new_data}")
+            logging.info(
+                f"Using source {wallpaper_new_plugin} ({wallpaper_new_type}): {wallpaper_new_data}"
+            )
         material_colors.set_value(
             m3_scheme_utils.get_color_schemes(
                 wallpaper_watcher.get_new_value(),

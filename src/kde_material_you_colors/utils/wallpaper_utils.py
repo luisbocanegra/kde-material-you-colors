@@ -6,6 +6,7 @@ from . import color_utils
 from . import file_utils
 from . import math_utils
 from . import notify
+from . import kwin_utils
 
 
 def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
@@ -196,3 +197,21 @@ def evaluate_script(script, monitor):
         logging.error(error)
         notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
     return ""
+
+
+def get_desktop_screenshot():
+    # take screenshot of desktop
+    window_handle = kwin_utils.get_desktop_window_id(0)  # TODO: make configurable
+    if window_handle is not None:
+        screenshot_taken = kwin_utils.screenshot_window(
+            window_handle, settings.SCREENSHOT_PATH
+        )
+        if screenshot_taken:
+            return ("desktop_screenshot", "image", settings.SCREENSHOT_PATH)
+
+    return (
+        f"desktop_screenshot",
+        None,
+        None,
+        " Couldn't take screenshot",
+    )
