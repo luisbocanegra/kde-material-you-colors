@@ -6,6 +6,7 @@ from . import color_utils
 from . import file_utils
 from . import math_utils
 from . import notify
+from . import kwin_utils
 
 
 def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
@@ -45,39 +46,39 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
         return (f"color:{color}", None, None, error)
 
     else:
-        # Get current wallpaper plugin id
-        script = """
-            var desktops = desktops();
-                d = desktops[%s];
-                print(d.wallpaperPlugin)
-            """
-        plugin = evaluate_script(script, monitor)
-
         # Get wallpaper data
-        script = """
-        function getConfig(desktop, keys) {
-            for (const key of keys) {
+        script = f"""
+        function getConfig(desktop, keys) {{
+            for (const key of keys) {{
                 const value = desktop.readConfig(key);
-                if (value !== "") {
-                    if (key == "Provider") {
+                if (value !== "") {{
+                    if (key == "Provider") {{
                         return key + "," + value + "," + desktop.readConfig("Category");
-                    }
+                    }}
                     return key + "," + value;
-                }
-            }
-        }
+                }}
+            }}
+        }}
         var desktops = desktops();
-        var desktop = desktops[%s];
+        var screen = {monitor}
+        if (screen > desktops.length) {{
+            screen = 0
+        }}
+        for (let i=0; i<desktops.length; i++) {{
+            if (desktops[i].screen == screen) {{
+                desktop = desktops[i];
+                break
+            }}
+        }}
         var plugin = desktop.wallpaperPlugin
         desktop.currentConfigGroup = Array("Wallpaper", plugin, "General");
         const keys = ["Image", "Color","color","Provider"];
         var config = getConfig(desktop, keys);
-        print(config);
+        print(plugin+","+config);
         """
-        # split type and wallpaper data, this allows commas in wallpaper data
-        script_output = evaluate_script(script, monitor).split(",", 1)
-        # wallpaper_data = script_output.split(",", 1)
-        # print(script_output)
+        # split type and wallpaper data, this allows commas in wallpaper name
+        plugin, script_output = evaluate_script(script).split(",", 1)
+        script_output = script_output.split(",", 1)
 
         # special case for picture of the day plugin that requires a
         # directory, provider and sometimes a category
@@ -168,10 +169,11 @@ def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
                         )
                 return (plugin, "image", wallpaper)
 
+        # nothing matches
         return (f"plugin:{plugin}", None, None, "Plugin unsupported")
 
 
-def evaluate_script(script, monitor):
+def evaluate_script(script):
     """Make a dbus call to org.kde.PlasmaShell.evaluateScript to get wallpaper data
 
     Args:
@@ -187,12 +189,28 @@ def evaluate_script(script, monitor):
             bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
             dbus_interface="org.kde.PlasmaShell",
         )
-        wallpaper_data = str(plasma.evaluateScript(script % (monitor,))).replace(
-            "file://", ""
-        )
+        wallpaper_data = str(plasma.evaluateScript(script)).replace("file://", "")
         return wallpaper_data
     except Exception as e:
         error = f"Error getting wallpaper from dbus:\n{e}"
         logging.error(error)
         notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
     return ""
+
+
+def get_desktop_screenshot(screen=0):
+    # take screenshot of desktop
+    window_handle = kwin_utils.get_desktop_window_id(screen)
+    if window_handle is not None:
+        screenshot_taken = kwin_utils.screenshot_window(
+            window_handle, settings.SCREENSHOT_PATH
+        )
+        if screenshot_taken:
+            return ("desktop_screenshot", "image", settings.SCREENSHOT_PATH)
+
+    return (
+        f"desktop_screenshot",
+        None,
+        None,
+        " Couldn't take screenshot",
+    )

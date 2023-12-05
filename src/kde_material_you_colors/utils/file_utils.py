@@ -45,11 +45,13 @@ def get_smallest_image(directory):
         return None
 
 
-def get_file_sha1(file_path: str):
-    try:
-        with open(file_path, "r") as f:
-            data = f.read()
-            file_sha1 = hashlib.sha1(data.encode("utf-8")).hexdigest()
-            return file_sha1
-    except Exception as e:
-        print(f"Error:\n{e}")
+def get_file_sha1(file_path):
+    if file_path is not None:
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, "rb") as f:
+                    data = f.read()
+                    file_sha1 = hashlib.sha1(data).hexdigest()
+                    return file_sha1
+            except Exception as e:
+                print(f"Error:\n{e}")

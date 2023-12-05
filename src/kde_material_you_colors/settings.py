@@ -11,6 +11,7 @@ USERNAME = getpass.getuser()
 USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
+TEMPDIR = tempfile.gettempdir()
 PKG_INSTALL_DIR = os.path.dirname(__file__)
 PKG_BIN = sysconfig.get_path("scripts") + "/kde-material-you-colors"
 
@@ -44,9 +45,14 @@ KONSOLE_TEMP_PROFILE = KONSOLE_DIR + "TempMyou.profile"
 KSYNTAX_THEMES_DIR = HOME + "/.local/share/org.kde.syntax-highlighting/themes/"
 LOG_FILE_PATH = HOME + "/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
-MATERIAL_YOU_COLORS_JSON = "/tmp/kde-material-you-colors-" + USERNAME + ".json"
+MATERIAL_YOU_COLORS_JSON = f"{TEMPDIR}/kde-material-you-colors-" + USERNAME + ".json"
 KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
-PIDFILE_PATH = Path(f"{tempfile.gettempdir()}/kde-material-you-colors-{USERNAME}.pid")
+PIDFILE_PATH = f"{TEMPDIR}/kde-material-you-colors-{USERNAME}.pid"
+SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNAME}.jpg"
+KWIN_DESKTOP_ID_JSCRIPT = (
+    f"{TEMPDIR}/kde-material-you-colors-desktop-win-id-{USERNAME}.js"
+)
+print(SCREENSHOT_PATH)
 # PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"

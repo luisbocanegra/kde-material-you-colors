@@ -291,6 +291,7 @@ def main():
                 settings.USER_CONFIG_PATH + settings.CONFIG_FILE
             )
         )
+        wait_time = 1
 
         # Get config from file and compare it with passed args
         if (
@@ -301,14 +302,26 @@ def main():
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
         # Get wallpaper
-        wallpaper_watcher.set_value(
-            wallpaper_utils.get_wallpaper_data(
-                monitor=config_watcher.get_new_value()["monitor"],
-                color=config_watcher.get_new_value()["color"],
-                light=config_watcher.get_new_value()["light"],
-                file=config_watcher.get_new_value()["file"],
-            )
+        wallpaper_data = None
+        wallpaper_data = wallpaper_utils.get_wallpaper_data(
+            monitor=config_watcher.get_new_value()["monitor"],
+            color=config_watcher.get_new_value()["color"],
+            light=config_watcher.get_new_value()["light"],
+            file=config_watcher.get_new_value()["file"],
         )
+
+        if wallpaper_data[1] is not None:
+            wallpaper_watcher.set_value(wallpaper_data)
+        else:
+            screenshot = wallpaper_utils.get_desktop_screenshot(
+                config_watcher.get_new_value()["monitor"]
+            )
+            # if screenshot is not None:
+            wallpaper_watcher.set_value(screenshot)
+
+        # throttle screenshots
+        if wallpaper_watcher.get_new_value()[0] == "desktop_screenshot":
+            wait_time = 2  # TODO: make it configurable
 
         # print(wallpaper_watcher.get_new_value())
         if wallpaper_watcher.get_new_value()[1] is not None:
@@ -332,7 +345,7 @@ def main():
                 )
                 notify.send_notification("Could not get wallpaper", error_msg)
                 logging.error(f"Could not get wallpaper {error_msg}")
-        time.sleep(1)
+        time.sleep(wait_time)
 
 
 main()
