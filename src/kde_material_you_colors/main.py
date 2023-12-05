@@ -313,7 +313,9 @@ def main():
         if wallpaper_data[1] is not None:
             wallpaper_watcher.set_value(wallpaper_data)
         else:
-            screenshot = wallpaper_utils.get_desktop_screenshot()
+            screenshot = wallpaper_utils.get_desktop_screenshot(
+                config_watcher.get_new_value()["monitor"]
+            )
             # if screenshot is not None:
             wallpaper_watcher.set_value(screenshot)
 
