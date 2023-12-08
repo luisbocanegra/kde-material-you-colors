@@ -12,11 +12,15 @@ def get_conf(conf_path: str):
         try:
             config.read(conf_path)
             if "CUSTOM" not in config:
+                logging.warning(
+                    "[CUSTOM] section not found in config file, ignoring it"
+                )
                 config.add_section("CUSTOM")
         except Exception as e:
             logging.error(f"{e}\n")
     else:
         logging.debug("No configuration file was found")
+        config.add_section("CUSTOM")
     return config
 
 
