@@ -29,45 +29,65 @@ def blend_changes():
         logging.warning(
             f"Could not start blend effect (requires Plasma 5.25 or later):\n{e}"
         )
-        return None
 
 
 def load_desktop_window_id_script():
-    is_loaded = bool(
-        subprocess.check_output(
-            "qdbus org.kde.KWin /Scripting org.kde.kwin.Scripting.isScriptLoaded kde_material_you_get_desktop_view_id",
-            shell=True,
-            universal_newlines=True,
-            stderr=subprocess.DEVNULL,
-        )
-    )
+    is_loaded = False
+    try:
+        bus = dbus.SessionBus()
+        kwin = bus.get_object("org.kde.KWin", "/Scripting")
+        kwin_iface = dbus.Interface(kwin, dbus_interface="org.kde.kwin.Scripting")
+        is_loaded = kwin_iface.isScriptLoaded("kde_material_you_get_desktop_view_id")
+    except dbus.DBusException as e:
+        logging.exception(f"An error occurred with D-Bus: {e.get_dbus_message()}")
+        raise
+    except Exception as e:
+        logging.exception(f"An unexpected error occurred: {e}")
+        raise
 
     if is_loaded:
-        subprocess.run(
-            "qdbus org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript kde_material_you_get_desktop_view_id",
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        try:
+            bus = dbus.SessionBus()
+            kwin = bus.get_object("org.kde.KWin", "/Scripting")
+            kwin_iface = dbus.Interface(kwin, dbus_interface="org.kde.kwin.Scripting")
+            is_loaded = kwin_iface.unloadScript("kde_material_you_get_desktop_view_id")
+        except dbus.DBusException as e:
+            logging.exception(f"An error occurred with D-Bus: {e.get_dbus_message()}")
+            raise
+        except Exception as e:
+            logging.exception(f"An unexpected error occurred: {e}")
+            raise
 
     # Calling this overloaded method raises TypeError:
     # Fewer items found in D-Bus signature than in Python arguments
     # So have use subprocess with qdbus instead :(
-    script_id = (
-        subprocess.check_output(
-            [
-                "qdbus",
-                "org.kde.KWin",
-                "/Scripting",
-                "loadScript",
-                settings.KWIN_DESKTOP_ID_JSCRIPT,
-                "kde_material_you_get_desktop_view_id",
-            ]
-        )
-        .decode()
-        .strip()
-    )
-    return script_id
+    try:
+        # Construct the command with the necessary arguments
+        command = [
+            "qdbus",
+            "org.kde.KWin",
+            "/Scripting",
+            "org.kde.kwin.Scripting.loadScript",
+            settings.KWIN_DESKTOP_ID_JSCRIPT,
+            "kde_material_you_get_desktop_view_id",
+        ]
+
+        # Execute the command and decode the output
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        script_id = result.stdout.strip()
+
+        # Check if the script_id is an integer and convert it
+        if script_id.isdigit():
+            return script_id
+        else:
+            raise ValueError(f"Invalid script ID returned: {script_id}")
+
+    except subprocess.CalledProcessError as e:
+        logging.exception(f"An error occurred while loading the script: {e}")
+        raise
+    except ValueError as e:
+        logging.exception(f"An error occurred: {e}")
+        raise
 
 
 def get_desktop_window_id(screen: int = 0) -> str | None:
@@ -94,45 +114,57 @@ for (var i = 0; i < windows.length; i++) {{
         js.write(script_str)
 
     # Load the script using qdbus
-    script_id = load_desktop_window_id_script()
-
-    # print(script_id)
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    subprocess.run(["qdbus", "org.kde.KWin", "/" + script_id, "run"])
-    bus = dbus.SessionBus()
+    try:
+        script_id = load_desktop_window_id_script()
+    except Exception as error:
+        logging.error(error)
+        raise
 
     try:
         # run the script
+        bus = dbus.SessionBus()
         kwin = bus.get_object("org.kde.KWin", "/" + script_id)
         script = dbus.Interface(kwin, "org.kde.kwin.Script")
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         script.run()
-        # stop the script
         try:
-            output = (
-                subprocess.check_output(
-                    [
-                        "journalctl",
-                        "--since",
-                        timestamp,
-                        "--user",
-                        "-u",
-                        "plasma-kwin_wayland.service",
-                        "--output",
-                        "cat",
-                        "-g",
-                        "js: " + "KMYC-desktop-window-id",
-                    ],
-                    stderr=subprocess.STDOUT,
-                )
-                .decode()
-                .strip()
+            command = [
+                "journalctl",
+                "--since",
+                timestamp,
+                "--user",
+                "-u",
+                "plasma-kwin_wayland.service",
+                "--output",
+                "cat",
+                "-g",
+                "js: KMYC-desktop-window-id",
+            ]
+
+            # Execute the command using subprocess.run
+            result = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=True,
             )
+
+            # The output is now stored in result.stdout
+            output = result.stdout.strip()
             win_id = output.split(" ")[2]
         except subprocess.CalledProcessError as e:
-            pass
-        script.stop()
+            error = f"Script id {script_id} didn't return a desktop id for screen {screen}: {e}"
+            cmd = str(e).replace(timestamp, "TIME_NOW")
+            logging.exception(error)
+            script.run()
+            raise subprocess.CalledProcessError(e.returncode, cmd, e.output, e.stderr)
     except dbus.exceptions.DBusException as e:
-        logging.error(f"Error taking Desktop screenshot for screen {screen}:\n{e}")
+        msg = f"Error running script with id {script_id}: {e.get_dbus_message()}"
+        logging.exception(msg)
+        raise
+    else:
+        script.stop()
 
     return win_id
 
@@ -163,7 +195,10 @@ def screenshot_window(window_handle, output_file):
         )
 
     except dbus.exceptions.DBusException as e:
-        logging.error(f"Couldn't take screenshot of desktop: {window_handle}:\n{e}")
+        logging.exception(
+            f"Couldn't take screenshot of desktop: {window_handle}: {e.get_dbus_message()}"
+        )
+        raise
 
     os.close(write_fd)
 
