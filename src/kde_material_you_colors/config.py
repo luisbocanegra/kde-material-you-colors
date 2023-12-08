@@ -78,7 +78,8 @@ class Configs:
         else:
             pywal_light = None
 
-        # 'config' : [value,fallback,type[0=bool,1=int,2=float,3=str]]
+        # property : [value, fallback, type]
+        # Types: 0 = bool, 1 = int, 2 = float, 3 = str
         defaults = {
             "light": [light, None, 0],
             "file": [args.file, None, 3],
@@ -104,6 +105,9 @@ class Configs:
             "startup_delay": [args.startup_delay, 0, 1],
             "plasma_follows_scheme": [None, None, 0],
             "pywal_follows_scheme": [None, None, 0],
+            "main_loop_delay": [args.main_loop_delay, 1, 2],
+            "after_change_delay": [args.after_change_delay, 1, 2],
+            "once_after_change": [args.once_after_change, False, 0],
         }
         options = {}
         config = get_conf(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
