@@ -9,11 +9,12 @@ from .utils import utils
 from .utils import wallpaper_utils
 from .utils import file_utils
 from .utils import notify
+from .utils import plasma_utils
 from . import theme_selector
 from .logging_config import MyLogFormatter
 
 
-MyLogFormatter.set_format()
+logger = MyLogFormatter.set_format()
 
 
 def main():
@@ -260,91 +261,95 @@ def main():
 
     # read config
     config = Configs(args)
-    # startup delay
-    time.sleep(
-        utils.startup_delay(
-            config.options["use_startup_delay"], config.options["startup_delay"]
-        )
-    )
 
     # set initial state so first apply is done
     config_watcher = utils.Watcher(None)
     wallpaper_watcher = utils.Watcher(None)
     wallpaper_modified = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
-    group1_watcher = utils.Watcher(None)
-    schemes_watcher = utils.Watcher(None)
-    material_colors = utils.Watcher(None)
     first_run_watcher = utils.Watcher(True)
     konsole_profile_modified = utils.Watcher(None)
+    error_watcher = utils.Watcher(None)
     logging.info("###### STARTED NEW SESSION ######")
     logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
-    config_modified = utils.Watcher(
-        file_utils.get_last_modification(
-            settings.USER_CONFIG_PATH + settings.CONFIG_FILE
-        )
-    )
+    config_modified = utils.Watcher(None)
+    wallpaper = wallpaper_utils.WallpaperReader()
+    # light_mode_watcher.set_value(plasma_utils.get_initial_mode())
 
     while True:
         config_modified.set_value(
-            file_utils.get_last_modification(
-                settings.USER_CONFIG_PATH + settings.CONFIG_FILE
-            )
+            file_utils.get_file_sha1(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
         )
         wait_time = 1
 
         # Get config from file and compare it with passed args
-        if (
-            config_modified.has_changed()
-            and config_modified.get_new_value() is not None
-        ):
+        if config_modified.has_changed():
             config = Configs(args)
-        # Get current options, pass to watcher
-        config_watcher.set_value(config.options)
-        # Get wallpaper
-        wallpaper_data = None
-        wallpaper_data = wallpaper_utils.get_wallpaper_data(
-            monitor=config_watcher.get_new_value()["monitor"],
-            color=config_watcher.get_new_value()["color"],
-            light=config_watcher.get_new_value()["light"],
-            file=config_watcher.get_new_value()["file"],
+
+        # startup delay
+        time.sleep(
+            utils.startup_delay(
+                config.options["use_startup_delay"], config.options["startup_delay"]
+            )
         )
 
-        if wallpaper_data[1] is not None:
-            wallpaper_watcher.set_value(wallpaper_data)
-        else:
-            screenshot = wallpaper_utils.get_desktop_screenshot(
-                config_watcher.get_new_value()["monitor"]
-            )
-            # if screenshot is not None:
-            wallpaper_watcher.set_value(screenshot)
+        # Get current options, pass to watcher
+        config_watcher.set_value(config.options)
 
-        # throttle screenshots
-        if wallpaper_watcher.get_new_value()[0] == "desktop_screenshot":
-            wait_time = 2  # TODO: make it configurable
+        # update wallpaper
+        wallpaper.update(
+            monitor=config.read("monitor"),
+            file=config.read("file"),
+            color=config.read("color"),
+            light=config.read("light"),
+        )
+        wallpaper_watcher.set_value(wallpaper.current)
+        error_watcher.set_value(wallpaper.error)
 
-        # print(wallpaper_watcher.get_new_value())
-        if wallpaper_watcher.get_new_value()[1] is not None:
-            # Get light/dark scheme status
-            theme_selector.apply_themes(
-                config_watcher,
-                wallpaper_watcher,
-                wallpaper_modified,
-                group1_watcher,
-                light_mode_watcher,
-                schemes_watcher,
-                material_colors,
-                first_run_watcher,
-                konsole_profile_modified,
-            )
+        if wallpaper.is_image() or wallpaper.is_screenshot():
+            wallpaper_modified.set_value(file_utils.get_file_sha1(wallpaper.data))
+
+        if wallpaper.is_screenshot():
+            wait_time = 2
+
+        if config.read("light") is not None:
+            light_mode_watcher.set_value(config.read("light"))
+        # try to get the initial theme with from hash
+        elif first_run_watcher.get_new_value() is True:
+            light_mode_watcher.set_value(plasma_utils.get_initial_mode())
+            # initial_dark_light = light_mode_watcher.get_new_value()
         else:
-            if wallpaper_watcher.has_changed():
-                error_msg = (
-                    wallpaper_watcher.get_new_value()[0]
-                    + wallpaper_watcher.get_new_value()[3]
+            light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+
+        light_dark = light_mode_watcher.get_new_value()
+        # print("l_mode_changed", light_mode_watcher.changed, light_mode_watcher.value)
+
+        if (
+            wallpaper_watcher.changed
+            or config_watcher.changed
+            or wallpaper_modified.changed
+            or light_mode_watcher.changed
+        ):
+            if config_watcher.changed:
+                logging.debug(f"Config: {config.options}")
+
+            if wallpaper_watcher.changed or wallpaper_modified.changed:
+                logging.debug(f"Wallpaper: {wallpaper.current}")
+
+            if error_watcher.value is not None:
+                notify.send_notification(
+                    "Could not get wallpaper", str(error_watcher.value)
                 )
-                notify.send_notification("Could not get wallpaper", error_msg)
-                logging.error(f"Could not get wallpaper {error_msg}")
+
+            if wallpaper.data is not None:
+                # print(time.strftime("%Y-%m-%d %H:%M:%S"))
+                # print("wallpaper changed")
+                theme_selector.apply(config, wallpaper, light_dark)
+
+            if light_mode_watcher.changed:
+                print("light:", light_mode_watcher.value)
+
+        first_run_watcher.set_value(False)
         time.sleep(wait_time)
 
 
