@@ -154,31 +154,64 @@ def one_shot_actions(args):
 class Watcher:
     """A simple class to watch variable changes."""
 
-    def __init__(self, value: any):
-        self.value = value
-        self.changed = False
-        self.old_value = None
-
-    def set_value(self, new_value: any) -> None:
-        if self.value != new_value:
-            self.old_value = self.value
-            self.value = new_value
-            self.changed = True
+    def __init__(self, value):
+        if isinstance(value, dict):
+            self.value = value.copy()
         else:
-            self.changed = False
+            self.value = value
+        self.changed = False
+        self.old_value = value
+
+    def set_value(self, new_value):
+        if isinstance(new_value, dict):
+            if self.value is None or new_value != self.value:
+                # handle the case where self.value is None
+                self.old_value = None if self.value is None else self.value.copy()
+                self.value = new_value.copy()
+                self.changed = True
+            else:
+                self.changed = False
+        else:
+            if self.value != new_value:
+                self.old_value = self.value
+                self.value = new_value
+                self.changed = True
+            else:
+                self.changed = False
 
     def has_changed(self):
         return self.changed
 
-    def get_old_value(self):
+    def get_old_value(self, property=None):
+        if self.old_value is None:
+            raise ValueError("No previous value has been set.")
+        if property is not None:
+            try:
+                return self.old_value[property]
+            except TypeError:
+                raise ValueError("The old value is not a subscriptable object.")
+            except KeyError:
+                raise ValueError(
+                    f"Property '{property}' does not exist in the old value."
+                )
         return self.old_value
 
-    def get_new_value(self):
+    def get_new_value(self, property=None):
+        if self.value is None:
+            raise ValueError("No previous value has been set.")
+        if property is not None:
+            try:
+                return self.value[property]
+            except TypeError:
+                raise ValueError("The old value is not a subscriptable object.")
+            except KeyError:
+                raise ValueError(
+                    f"Property '{property}' does not exist in the old value."
+                )
         return self.value
 
 
 def startup_delay(use_startup_delay, delay_conf):
-    # print(f'use delay:{use_startup_delay}, delay: {delay_conf}')
     if use_startup_delay:
         return delay_conf
     else:
