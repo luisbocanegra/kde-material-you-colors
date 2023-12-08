@@ -146,7 +146,7 @@ def main():
         type=float,
         help="The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)",
         default=None,
-        metavar="<integer>",
+        metavar="<float>",
     )
 
     parser.add_argument(
@@ -155,7 +155,7 @@ def main():
         type=float,
         help="The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)",
         default=None,
-        metavar="<integer>",
+        metavar="<float>",
     )
 
     parser.add_argument(
@@ -248,6 +248,33 @@ def main():
         default=None,
         metavar="<integer>",
     )
+
+    parser.add_argument(
+        "--main-loop-delay",
+        "-mld",
+        type=float,
+        help="Main loop delay (in seconds), usefull for decreasing unnecesary detections or save a bit of power (default is 1)",
+        default=None,
+        metavar="<float>",
+    )
+
+    parser.add_argument(
+        "--after-change-delay",
+        "-acd",
+        type=float,
+        help="Delay after wallpaper change (in seconds), useful for wallpapers that start with a smooth transition to avoid repeated false detections (default is 1)",
+        default=None,
+        metavar="<float>",
+    )
+
+    parser.add_argument(
+        "--once-after-change",
+        "-ofc",
+        action="store_true",
+        help="Apply colors only after wallpaper plugin changes, useful for animated wallpapers that would trigger color generation indefinitely",
+        default=None,
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments
@@ -258,6 +285,8 @@ def main():
     with open(settings.PIDFILE_PATH, "w", encoding="utf-8") as pidfile:
         pidfile.write(str(os.getpid()))
         pidfile.close()
+
+    config = Configs(args)
 
     # set initial state so first apply is done
     config_watcher = utils.Watcher(None)
@@ -271,13 +300,14 @@ def main():
     logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
     config_modified = utils.Watcher(None)
     wallpaper = wallpaper_utils.WallpaperReader()
-    # light_mode_watcher.set_value(plasma_utils.get_initial_mode())
+    source_watcher = utils.Watcher(None)
+    apply = False
+    stop_apply = False
 
     while True:
         config_modified.set_value(
             file_utils.get_file_sha1(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
         )
-        wait_time = 1
 
         # Get config from file and compare it with passed args
         if config_modified.has_changed() or first_run:
@@ -314,37 +344,49 @@ def main():
         # try to get the initial theme with from hash
         elif first_run is True:
             light_mode_watcher.set_value(plasma_utils.get_initial_mode())
-            # initial_dark_light = light_mode_watcher.get_new_value()
         else:
             light_mode_watcher.set_value(plasma_utils.kde_globals_light())
 
         light_dark = light_mode_watcher.get_new_value()
-        # print("l_mode_changed", light_mode_watcher.changed, light_mode_watcher.value)
 
-        if (
+        group1 = (
             wallpaper_watcher.changed
             or config_watcher.changed
             or wallpaper_modified.changed
             or light_mode_watcher.changed
-        ):
+        )
+
+        if wallpaper.source_name is not None:
+            source_watcher.set_value(wallpaper.source_name)
+
+        if apply and wallpaper.data is not None and not stop_apply:
+            logging.debug(f"Wallpaper: {wallpaper.current}")
+            apply_themes.apply(config, wallpaper, light_dark)
+            apply = False
+
+        # stop applying theme until plugin changes
+        if source_watcher.changed is False and config.read("once_after_change"):
+            stop_apply = True
+        else:
+            stop_apply = False
+
+        if group1:
             if config_watcher.changed:
                 logging.debug(f"Config: {config.options}")
-
-            if wallpaper_watcher.changed or wallpaper_modified.changed:
-                logging.debug(f"Wallpaper: {wallpaper.current}")
 
             if error_watcher.value is not None:
                 notify.send_notification(
                     "Could not get wallpaper", str(error_watcher.value)
                 )
 
-            if wallpaper.data is not None:
-                # print(time.strftime("%Y-%m-%d %H:%M:%S"))
-                # print("wallpaper changed")
-                apply_themes.apply(config, wallpaper, light_dark)
+            if wallpaper.data:
+                # try to avoid false detection by applying on next iteration
+                apply = True
+                if source_watcher.changed and first_run is False:
+                    time.sleep(config.read("after_change_delay"))
 
         first_run = False
-        time.sleep(wait_time)
+        time.sleep(config.read("main_loop_delay"))
 
 
 main()
