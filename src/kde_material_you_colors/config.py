@@ -5,22 +5,19 @@ from . import settings
 from .utils import color_utils
 
 
-def get_conf(conf_path):
-    """Open the config file and do simple checks on it"""
+def get_conf(conf_path: str):
+    """Open the config file"""
+    config = configparser.ConfigParser(empty_lines_in_values=True)
     if os.path.exists(conf_path):
         try:
-            config = configparser.ConfigParser(empty_lines_in_values=True)
             config.read(conf_path)
             if "CUSTOM" not in config:
-                logging.error(
-                    f"Config file {conf_path} must start a ['CUSTOM'] section continuing without it"
-                )
-            else:
-                return config
+                config.add_section("CUSTOM")
         except Exception as e:
             logging.error(f"{e}\n")
     else:
         logging.debug("No configuration file was found")
+    return config
 
 
 def show_conf_err(exception, conf_name, fallback):
@@ -36,7 +33,7 @@ def eval_conf(config: configparser.ConfigParser, val, conf_type, arg, fallback):
         # check for empty configuration values and fallback right away
         res = section.get(val, fallback) if arg is None else arg
         if isinstance(res, str) and len(res) == 0:
-            logging.info(f'Config "{val}": empty, using fallback: {fallback}')
+            logging.debug(f'Config "{val}": empty, using fallback: {fallback}')
             return fallback
         try:
             if conf_type == 0:
@@ -104,13 +101,11 @@ class Configs:
             "plasma_follows_scheme": [None, None, 0],
             "pywal_follows_scheme": [None, None, 0],
         }
-        options = defaults
+        options = {}
         config = get_conf(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
 
         # loop and read configs
         for key, val in defaults.items():
-            # print(
-            #     f'key: {key}  values: {val}')
             options[key] = eval_conf(
                 config=config, val=key, conf_type=val[2], arg=val[0], fallback=val[1]
             )
@@ -120,9 +115,6 @@ class Configs:
 
         if options["pywal_follows_scheme"]:
             options["pywal_light"] = None
-
-        # if config["pywal_follows_scheme"]:
-        #    options["pywal_light"] = None
 
         # Some logging for out of range values
         if options["monitor"] < 0:
@@ -205,3 +197,7 @@ class Configs:
     @property
     def options(self):
         return self._options
+
+    def read(self, key: str):
+        if key in self._options:
+            return self._options[key]

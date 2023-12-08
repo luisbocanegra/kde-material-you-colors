@@ -288,7 +288,7 @@ def validate_color(color):
         return None
 
 
-def color2hex(color):
+def color2hex(color: str):
     format = validate_color(color)
     if format == 1:
         r, g, b = [int(c) for c in color.split(",")]

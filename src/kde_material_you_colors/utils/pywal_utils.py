@@ -9,7 +9,7 @@ if settings.USER_HAS_COLR:
     import colr
 
 
-def apply_schemes(light=None, pywal_light=None, use_pywal=False, schemes=None):
+def apply_schemes(light=None, pywal_light=None, use_pywal=None, schemes=None):
     pywal_colors = None
     if pywal_light != None:
         if pywal_light == True:
