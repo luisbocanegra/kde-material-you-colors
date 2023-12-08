@@ -60,49 +60,20 @@ Install from the [KDE Store](https://store.kde.org/p/2073783)
 
 ## Backend (MANDATORY)
 
-### Using pypi
+### Using pypi with `pipx` (recommended) or `pip`
 
 ```sh
-pip install kde-material-you-colors
+pipx install kde-material-you-colors
 # Optional
 # pywal to theme other programs using Material You Colors
-pip install pywal
+pipx install pywal
 # Colr to display colored palette and seed colors from terminal (approximate)
-pip install colr
+pipx install colr
 ```
 
 ### Arch Linux
 
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper
-
-### openSUSE Build Service packages by [marknefedov](https://github.com/marknefedov)
-
-#### Fedora
-
-Add repository and install as root:
-
-```sh
-dnf config-manager --add-repo https://download.opensuse.org/repositories/home:MarkNefedov/Fedora_37/home:MarkNefedov.repo
-dnf install kde-material-you-colors
-```
-
-#### openSUSE
-
-For **openSUSE Tumbleweed** add repository and install as root:
-
-```sh
-zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/openSUSE_Tumbleweed/home:MarkNefedov.repo
-zypper refresh
-zypper install kde-material-you-colors
-```
-
-For **openSUSE 15.4** add repository and install as root:
-
-```sh
-zypper addrepo https://download.opensuse.org/repositories/home:MarkNefedov/15.4/home:MarkNefedov.repo
-zypper refresh
-zypper install kde-material-you-colors
-```
 
 ### Optional features
 
@@ -114,7 +85,7 @@ zypper install kde-material-you-colors
 
 - Run `kde-material-you-colors`
 
-- Flags take precedence over sonfiguration file, run `kde-material-you-colors -h` to see the list of available options
+- Flags take precedence over configuration file, run `kde-material-you-colors -h` to see the list of available options
 
 ## Starting/Stopping Desktop entries
 
@@ -142,21 +113,6 @@ After finishing the setup, you can make it run automatically on boot
 1. Open `System Settings` > `Startup and Shutdown`
 2. Remove `kde-material-you-colors` by clicking on the `-` button.
 
-# Supported Wallpaper plugins
-
-**Wallpaper plugins must store the current wallpaper in `~/.config/plasma-org.kde.plasma.desktop-appletsrc`**
-
-Confirmed working Plasma Wallpaper Plugins:
-
-| Name | ID |
-| ----------- | ----------- |
-| Image (default) | `org.kde.image` |
-| Picture of the day | `org.kde.potd` |
-| Slideshow | `org.kde.slideshow` |
-| Plain color | `org.kde.color` |
-| Conway's Game of Life (cell color) | `org.kde.plasma.gameoflife` |
-| Active blur | `a2n.blur` |
-
 # Configuration file
 
 - Copy default configuration: run `kde-material-you-colors -c`
@@ -167,6 +123,12 @@ Confirmed working Plasma Wallpaper Plugins:
 # Notes
 
 - To update color with `plasma-apply-colorscheme` (utility provided by plasma developers), the file containing the new color scheme must have a different name than the current one, to workaround this the program creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
+
+- The wallpaper is obtained in the following order:
+
+  - First, uses the [Plasma Desktop Scripting API](https://develop.kde.org/docs/plasma/scripting/api/) to read Wallpaper plugin configuration.
+
+  - If the previous fails it uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot) to take a Screenshot of the Desktop view
 
 ## Bug reporting / Feature requests / Contributing
 
