@@ -11,30 +11,39 @@ logging.getLogger("PIL").setLevel(logging.WARNING)
 
 
 class MyLogFormatter(logging.Formatter):
-    term_fmt = "{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s"
+    term_fmt = "{}[%(levelname).1s]{} %(module)s: %(funcName)s: {}%(message)s{}"
     file_fmt = "%(asctime)s.%(msecs)03d [%(levelname).1s] %(module)s: %(funcName)s: %(message)s"
+    normal = settings.TERM_STY_NORMAL
+    invert = settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT
+    bold_white = (
+        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI
+    )
     dbg_fmt = term_fmt.format(
-        settings.TERM_COLOR_BLU + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
-        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
-        settings.TERM_STY_NORMAL + settings.TERM_COLOR_BLU,
+        settings.TERM_COLOR_BLU + invert,
+        bold_white,
+        normal + settings.TERM_COLOR_BLU,
+        settings.TERM_STY_RESET,
     )
 
     info_fmt = term_fmt.format(
-        settings.TERM_COLOR_GRE + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
-        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
-        settings.TERM_STY_NORMAL + settings.TERM_COLOR_GRE,
+        settings.TERM_COLOR_GRE + invert,
+        bold_white,
+        normal + settings.TERM_COLOR_GRE,
+        settings.TERM_STY_RESET,
     )
 
     warn_fmt = term_fmt.format(
-        settings.TERM_COLOR_YEL + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
-        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
-        settings.TERM_STY_NORMAL + settings.TERM_COLOR_YEL,
+        settings.TERM_COLOR_YEL + invert,
+        bold_white,
+        normal + settings.TERM_COLOR_YEL,
+        settings.TERM_STY_RESET,
     )
 
     err_fmt = term_fmt.format(
-        settings.TERM_COLOR_RED + settings.TERM_STY_NORMAL + settings.TERM_STY_INVERT,
-        settings.TERM_STY_INVERT_OFF + settings.TERM_STY_BOLD + settings.TERM_COLOR_WHI,
-        settings.TERM_STY_NORMAL + settings.TERM_COLOR_RED,
+        settings.TERM_COLOR_RED + invert,
+        bold_white,
+        normal + settings.TERM_COLOR_RED,
+        settings.TERM_STY_RESET,
     )
 
     def __init__(self, to_file):
@@ -71,6 +80,7 @@ class MyLogFormatter(logging.Formatter):
 
         return result
 
+    @staticmethod
     def set_format():
         # Format for terminal
         term_fmt = MyLogFormatter(to_file=False)
@@ -89,7 +99,7 @@ class MyLogFormatter(logging.Formatter):
             maxBytes=1 * 1024 * 1024,
             backupCount=1,
             encoding=None,
-            delay=0,
+            delay=False,
         )
         fh.setFormatter(file_fmt)
         logging.root.addHandler(hdlr)
