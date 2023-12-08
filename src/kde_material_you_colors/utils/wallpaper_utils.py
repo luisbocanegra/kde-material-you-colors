@@ -9,208 +9,317 @@ from . import notify
 from . import kwin_utils
 
 
-def get_wallpaper_data(monitor=0, file=None, color=None, light=None):
-    """Get current wallpaper or color from text file or plugin + containment combo
-    and return a string with its type (color or image file)
+class WallpaperReader:
+    """Class containing the current wallpaper properties"""
 
-    Args:
-        script (str): javascript to evaluate
-        monitor (int): containment (monitor) number
-
-    Returns:
-        tuple: (source name (str), type (int), data (str), error (str))
-    """
-
-    if monitor and not monitor is None:
-        monitor = math_utils.clip(monitor, 0, 999, 0)
-    else:
-        monitor = 0
-
-    if file:
-        # TODO: detect if path is image
-        if os.path.exists(file):
-            with open(file, encoding="utf-8") as text_file:
-                wallpaper = str(text_file.read()).replace("file://", "").strip()
-                if wallpaper:
-                    return ("file", "image", wallpaper)
-        else:
-            error = f'File "{file}" does not exist'
-            logging.error(error)
-            return (f"file:{file}", None, None, error)
-
-    elif color:
-        if color_utils.validate_color(color):
-            return ("Custom color", "color", color)
-        error = f'Error: Color format "{color}" is incorrect'
-        logging.error(error)
-        return (f"color:{color}", None, None, error)
-
-    else:
-        # Get wallpaper data
-        script = f"""
-        function getConfig(desktop, keys) {{
-            for (const key of keys) {{
-                const value = desktop.readConfig(key);
-                if (value !== "") {{
-                    if (key == "Provider") {{
-                        return key + "," + value + "," + desktop.readConfig("Category");
-                    }}
-                    return key + "," + value;
-                }}
-            }}
-        }}
-        var desktops = desktops();
-        var screen = {monitor}
-        if (screen > desktops.length) {{
-            screen = 0
-        }}
-        for (let i=0; i<desktops.length; i++) {{
-            if (desktops[i].screen == screen) {{
-                desktop = desktops[i];
-                break
-            }}
-        }}
-        var plugin = desktop.wallpaperPlugin
-        desktop.currentConfigGroup = Array("Wallpaper", plugin, "General");
-        const keys = ["Image", "Color","color","Provider"];
-        var config = getConfig(desktop, keys);
-        print(plugin+","+config);
+    def __init__(self, monitor=None, file=None, color=None, light=None):
         """
-        # split type and wallpaper data, this allows commas in wallpaper name
-        plugin, script_output = evaluate_script(script).split(",", 1)
-        script_output = script_output.split(",", 1)
+        Args:
+            monitor (_type_, optional): _description_. Defaults to None.
+            file (_type_, optional): _description_. Defaults to None.
+            color (_type_, optional): _description_. Defaults to None.
+            light (_type_, optional): _description_. Defaults to None.
+        """
+        self._monitor = self.validate_monitor(monitor)
+        self._file = file
+        self._color = color
+        self._light = light
+        self._source_name = None
+        self._data_type = None
+        self._data = None
+        self._error = None
+        self.reload()
+
+    @staticmethod
+    def validate_monitor(monitor) -> int:
+        return math_utils.clip(monitor, 0, 999, 0)
+
+    def validate_color(self):
+        if self._color:
+            self._source_name = "Custom color"
+            self._data_type = "color"
+            if color_utils.validate_color(self._color):
+                self._data = self._color
+            else:
+                error = f"Error: Color format '{self._color}' is incorrect"
+                logging.error(error)
+                self._error = error
+
+    def validate_file(self):
+        if self._file:
+            self._source_name = "file"
+            # TODO: detect image file too
+            self._data_type = "image"
+            if os.path.exists(self._file):
+                with open(self._file, encoding="utf-8") as text_file:
+                    wallpaper = str(text_file.read()).replace("file://", "").strip()
+                    if wallpaper:
+                        self._data = wallpaper
+            else:
+                error = f"File '{self._file}' does not exist"
+                logging.error(error)
+                self._error = error
+
+    @property
+    def source_name(self):
+        return self._source_name
+
+    @property
+    def data_type(self):
+        return self._data_type
+
+    @property
+    def data(self):
+        return self._data
+
+    @property
+    def error(self):
+        return self._error
+
+    @property
+    def current(self):
+        o = {
+            "source": self._source_name,
+            "type": self.data_type,
+            "data": self._data,
+            "error": self._error,
+        }
+        return o
+
+    def reload(self):
+        """Reload current wallpaper"""
+        # Validate color first
+        self.validate_color()
+        if self._data:
+            return
+
+        # Validate file
+        self.validate_file()
+        if self._data:
+            return
+
+        try:
+            output = get_wallpaper_config(self._monitor)
+        except dbus.DBusException as e:
+            logging.error(e.get_dbus_message())
+            self._error = e.get_dbus_message()
+            return
+        except Exception as e:
+            logging.error(e)
+            self._error = str(e)
+            return
+        # Get plugin data, allow commas in plugin config
+        plugin, plugin_config = (output).split(",", 1)
+        # split config and value
+        plugin_config = plugin_config.split(",", 1)
 
         # special case for picture of the day plugin that requires a
         # directory, provider and sometimes a category
+        self._source_name = plugin
         if plugin == settings.PICTURE_OF_DAY_PLUGIN:
-            img_provider = None
-            provider_category = None
-            # potd output has format Provider,provider_name,provider_category
-            if len(script_output) >= 2:
-                wallpaper_data = script_output[1].split(",", 1)
-                img_provider = wallpaper_data[0]
-                # some potd providers also have a category
-                if len(wallpaper_data) == 2:
-                    provider_category = wallpaper_data[1]
-
-            # no provider means using defaults
-            if img_provider:
-                potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + img_provider
-            else:
-                # default provider is astronomic picture of the day
-                potd = (
-                    settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR
-                    + settings.PICTURE_OF_DAY_DEFAULT_PROVIDER
-                )
-
-            # unsplash also has a category
-            if img_provider == settings.PICTURE_OF_DAY_UNSPLASH_PROVIDER:
-                # defaul category doesnt doesnt return id, add it
-                if not provider_category:
-                    provider_category = (
-                        settings.PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
-                    )
-                potd = f"{potd}:{provider_category}"
-
-            # Bing file now has the wallpaper resolution in the name
-            if img_provider == settings.PICTURE_OF_DAY_BING_PROVIDER:
-                # find and return files that start with bing and don't end with json
-                # and use the largest one
-                potd = [
-                    file
-                    for file in os.listdir(settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR)
-                    if os.path.isfile(
-                        os.path.join(settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR, file)
-                    )
-                    if file.startswith(settings.PICTURE_OF_DAY_BING_PROVIDER)
-                    and not file.endswith("json")
-                ]
-                potd = settings.PICTURE_OF_DAY_PLUGIN_IMGS_DIR + max(potd)
-
-            if os.path.exists(potd):
-                return (plugin, "image", potd)
+            self._data_type = "image"
+            potd = get_picture_of_the_day(plugin_config)
+            if potd:
+                self._data = potd
+                return
 
         # Color based wallpapers
-        elif script_output[0] in ["color", "Color"] and len(script_output) >= 2:
-            color = script_output[1]
-            # convert color if needed
-            color_fmt = color_utils.validate_color(color)
-            if color_fmt:
-                try:
-                    if color_fmt == 1:
-                        color_rgb = tuple(color.split(","))
-                        color = color_utils.rgb2hex(
-                            r=int(color_rgb[0]),
-                            g=int(color_rgb[1]),
-                            b=int(color_rgb[2]),
-                        )
-                    return (plugin, "color", color)
-                except Exception as e:
-                    error = f"Could not resolve color from {plugin}: {e}"
-                    logging.error(error)
-                    return (f"plugin:{plugin}", None, None, error)
+        elif plugin_config[0] in ["color", "Color"] and len(plugin_config) >= 2:
+            self._data_type = "color"
+            color = color_utils.color2hex(plugin_config[1])
+            if color:
+                self._data = color
+                return
+            else:
+                error = f"Could not resolve color from {plugin}: {plugin_config[1]}"
+                logging.error(error)
+                self._error = error
+
+        # wallpaper plugin that stores current image
+        wallpaper = get_wallpaper_image(plugin_config, self._light)
+        if wallpaper:
+            self._data_type = "image"
+            self._data = wallpaper
+            return
+
+        # if everything fails, take as creenshot of the desktop
+        self._data_type = "screenshot"
+        try:
+            screenshot_taken = get_desktop_screenshot(self._monitor)
+        except Exception as e:
+            logging.error(e)
+            self._error = str(e)
+            return
         else:
-            # wallpaper plugin that stores current image
-            if script_output[0] in ["Image"] and len(script_output) >= 2:
-                wallpaper = script_output[1]
-                # if script returns a directory check for mormal/dark variant
-                if os.path.isdir(wallpaper):
-                    if (
-                        os.path.exists(wallpaper + "contents/images_dark")
-                        and light is False
-                    ):
-                        wallpaper = file_utils.get_smallest_image(
-                            wallpaper + "contents/images_dark/"
-                        )
+            if screenshot_taken:
+                self._data = settings.SCREENSHOT_PATH
+            else:
+                error = f"Could not take Desktop screenshot"
+                logging.error(error)
+                self._error = error
 
-                    elif os.path.exists(wallpaper + "contents/images"):
-                        wallpaper = file_utils.get_smallest_image(
-                            wallpaper + "contents/images/"
-                        )
-                return (plugin, "image", wallpaper)
+    def update(self, monitor=None, file=None, color=None, light=None):
+        """Update from config and reload wallpaper"""
+        self._monitor = self.validate_monitor(monitor)
+        self._file = file
+        self._color = color
+        self._light = light
+        self._source_name = None
+        self._data_type = None
+        self._data = None
+        self._error = None
+        self.reload()
 
-        # nothing matches
-        return (f"plugin:{plugin}", None, None, "Plugin unsupported")
+    def is_image(self):
+        return self._data_type == "image"
+
+    def is_screenshot(self):
+        return self._data_type == "screenshot"
 
 
-def evaluate_script(script):
-    """Make a dbus call to org.kde.PlasmaShell.evaluateScript to get wallpaper data
+def evaluate_script(script: str):
+    """Make a dbus call to org.kde.PlasmaShell.evaluateScript
 
     Args:
         script (str): js string to evaluate
-        monitor (int): containment (monitor) number
 
     Returns:
-        string : wallpaper data (wallpaper path or color)
+        string : Script output
     """
+    script_output = ""
     try:
         bus = dbus.SessionBus()
         plasma = dbus.Interface(
             bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
             dbus_interface="org.kde.PlasmaShell",
         )
-        wallpaper_data = str(plasma.evaluateScript(script)).replace("file://", "")
-        return wallpaper_data
-    except Exception as e:
-        error = f"Error getting wallpaper from dbus:\n{e}"
-        logging.error(error)
-        notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
-    return ""
+        script_output = str(plasma.evaluateScript(script)).replace("file://", "")
+    except dbus.DBusException as e:
+        error = f"Error getting wallpaper from dbus: {e.get_dbus_message()}"
+        logging.exception(error)
+        # notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
+        raise
+    return script_output
 
 
 def get_desktop_screenshot(screen=0):
     # take screenshot of desktop
-    window_handle = kwin_utils.get_desktop_window_id(screen)
-    if window_handle is not None:
-        screenshot_taken = kwin_utils.screenshot_window(
-            window_handle, settings.SCREENSHOT_PATH
-        )
-        if screenshot_taken:
-            return ("desktop_screenshot", "image", settings.SCREENSHOT_PATH)
+    try:
+        window_handle = kwin_utils.get_desktop_window_id(screen)
+    except Exception as e:
+        logging.error(e)
+        raise
 
-    return (
-        f"desktop_screenshot",
-        None,
-        None,
-        " Couldn't take screenshot",
-    )
+    screenshot_taken = False
+    if window_handle is not None:
+        try:
+            screenshot_taken = kwin_utils.screenshot_window(
+                window_handle, settings.SCREENSHOT_PATH
+            )
+        except Exception as e:
+            logging.error(e)
+            raise
+    return screenshot_taken
+
+
+def get_wallpaper_config(monitor=0):
+    script = f"""
+function getConfig(desktop, keys) {{
+    for (const key of keys) {{
+        const value = desktop.readConfig(key);
+        if (value !== "") {{
+            if (key == "Provider") {{
+                return key + "," + value + "," + desktop.readConfig("Category");
+            }}
+            return key + "," + value;
+        }}
+    }}
+}}
+var desktops = desktops();
+var desktop;
+if ({monitor} < desktops.length) {{
+    for (let i=0; i<desktops.length; i++) {{
+        if (desktops[i].screen == {monitor}) {{
+            desktop = desktops[i];
+            break
+        }}
+    }}
+    if (desktop !== undefined) {{
+        if ('wallpaperPlugin' in desktop) {{
+            var plugin = desktop.wallpaperPlugin
+            desktop.currentConfigGroup = Array("Wallpaper", plugin, "General");
+            const keys = ["Image", "Color","color","Provider"];
+            var config = getConfig(desktop, keys);
+            print(plugin+","+config);
+        }}
+    }} else {{
+        print("monitor value '{monitor}' didn't match any Desktop")
+    }}
+}} else {{
+    print("monitor value '{monitor}' out of range")
+}}
+"""
+    script_output = ""
+    try:
+        script_output = evaluate_script(script)
+    except dbus.DBusException as e:
+        logging.error(e.get_dbus_message())
+        raise
+    except Exception as e:
+        logging.error(e)
+        raise
+    else:
+        try:
+            if len(script_output.split(",")) < 2:
+                raise ValueError(f"Plasma Scripting API says: {script_output}")
+            return script_output
+        except ValueError as e:
+            logging.exception(e)
+            raise
+
+
+def get_picture_of_the_day(plugin_config):
+    potd_cache_dir = settings.PICTURE_OF_DAY_PLUGIN_CACHE_DIR
+    plugin_config = plugin_config[1] if len(plugin_config) > 1 else ""
+    img_provider, provider_category = (plugin_config + ",").split(",")[:2]
+
+    if not img_provider:
+        img_provider = settings.PICTURE_OF_DAY_DEFAULT_PROVIDER
+
+    potd_image = os.path.join(potd_cache_dir, img_provider)
+
+    # unsplash also has a category
+    if img_provider == settings.PICTURE_OF_DAY_UNSPLASH_PROVIDER:
+        # defaul category doesnt return id, add it
+        if not provider_category:
+            provider_category = settings.PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY
+        potd_image = f"{potd_image}:{provider_category}"
+
+    if img_provider == settings.PICTURE_OF_DAY_BING_PROVIDER:
+        potd_files = [
+            file
+            for file in os.listdir(potd_cache_dir)
+            if file.startswith(img_provider) and not file.endswith("json")
+        ]
+        potd_image = os.path.join(potd_cache_dir, max(potd_files, default=""))
+
+    return potd_image if os.path.exists(potd_image) else None
+
+
+def get_wallpaper_image(plugin_config, light):
+    if plugin_config[0] != "Image" or len(plugin_config) < 2:
+        return None
+
+    wallpaper = plugin_config[1]
+    if not os.path.isdir(wallpaper):
+        return wallpaper
+
+    dark_path = os.path.join(wallpaper, "contents/images_dark/")
+    normal_path = os.path.join(wallpaper, "contents/images/")
+
+    if not light and os.path.exists(dark_path):
+        return file_utils.get_smallest_image(dark_path)
+    elif os.path.exists(normal_path):
+        return file_utils.get_smallest_image(normal_path)
+
+    return wallpaper

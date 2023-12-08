@@ -7,6 +7,7 @@ if settings.USER_HAS_COLR:
 from . import color_utils
 from . import math_utils
 from . import notify
+from .wallpaper_utils import WallpaperReader
 from .extra_image_utils import sourceColorsFromImage
 from material_color_utilities_python.utils.theme_utils import *
 
@@ -60,7 +61,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             # open image file
             img = Image.open(wallpaper_data)
             # resize image proportionally
-            basewidth = 64
+            basewidth = 128
             wpercent = basewidth / float(img.size[0])
             hsize = int((float(img.size[1]) * float(wpercent)))
             img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
@@ -137,13 +138,12 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         return None
 
 
-def get_color_schemes(wallpaper, ncolor=None):
+def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
     """Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
     Args:
         wallpaper (tuple): wallpaper (type and data)
-        light (bool): wether use or not light scheme
         ncolor (int): Alternative color number flag passed to material-color-utility
 
     Returns:
@@ -151,25 +151,23 @@ def get_color_schemes(wallpaper, ncolor=None):
     """
     if wallpaper is not None:
         materialYouColors = None
-        wallpaper_type = wallpaper[1]
-        wallpaper_data = wallpaper[2]
-        if wallpaper_type == "image":
-            source_type = "image"
-            if os.path.exists(wallpaper_data):
+        wallpaper_type = wallpaper.data_type
+        wallpaper_data = wallpaper.data
+        if wallpaper_type in ["image", "screenshot"]:
+            if wallpaper_data and os.path.exists(wallpaper_data):
                 if not os.path.isdir(wallpaper_data):
-                    # get colors from material-color-utility
                     materialYouColors = get_material_you_colors(
-                        wallpaper_data, ncolor=ncolor, source_type=source_type
+                        wallpaper_data, ncolor=ncolor, source_type="image"
                     )
                 else:
                     logging.error(f'"{wallpaper_data}" is a directory, aborting')
 
         elif wallpaper_type == "color":
-            source_type = "color"
-            wallpaper_data = color_utils.color2hex(wallpaper_data)
-            materialYouColors = get_material_you_colors(
-                wallpaper_data, ncolor=ncolor, source_type=source_type
-            )
+            if wallpaper_data:
+                wallpaper_data = color_utils.color2hex(wallpaper_data)
+                materialYouColors = get_material_you_colors(
+                    wallpaper_data, ncolor=ncolor, source_type=wallpaper_type
+                )
 
         if materialYouColors is not None:
             try:
