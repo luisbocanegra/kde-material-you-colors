@@ -18,11 +18,10 @@ Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) 
 
 ## Plasma specific
 
+- [Plasma Widget](https://store.kde.org/p/2073783)
+- Support for all Wallpaper plugins (color, image, slideshows, animated, Plasma 5.26+ dark wallpaper variants)
 - Update automatically on wallpaper change
-- Multiple wallpaper [plugins supported](#working-wallpaper-plugins)
-- Support for selecting Wallpaper plugin from secondary monitors
-- Dark and Light Icon theme
-- Support Plasma 5.26+ dark wallpaper variants
+- Change icon themes
 - Start automatically on login
 - Make titlebar darker to match specified applications like terminals, code editors and other programs themed by pywal
 - Follow Plasma Material You Dark/Light change to work with theme schedulers like [Koi](https://github.com/baduhai/Koi)
