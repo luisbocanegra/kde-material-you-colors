@@ -52,7 +52,6 @@ SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNA
 KWIN_DESKTOP_ID_JSCRIPT = (
     f"{TEMPDIR}/kde-material-you-colors-desktop-win-id-{USERNAME}.js"
 )
-print(SCREENSHOT_PATH)
 # PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"

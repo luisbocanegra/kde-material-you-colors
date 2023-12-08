@@ -10,7 +10,7 @@ from .utils import wallpaper_utils
 from .utils import file_utils
 from .utils import notify
 from .utils import plasma_utils
-from . import theme_selector
+from . import apply_themes
 from .logging_config import MyLogFormatter
 
 
@@ -259,15 +259,12 @@ def main():
         pidfile.write(str(os.getpid()))
         pidfile.close()
 
-    # read config
-    config = Configs(args)
-
     # set initial state so first apply is done
     config_watcher = utils.Watcher(None)
     wallpaper_watcher = utils.Watcher(None)
     wallpaper_modified = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
-    first_run_watcher = utils.Watcher(True)
+    first_run = True
     konsole_profile_modified = utils.Watcher(None)
     error_watcher = utils.Watcher(None)
     logging.info("###### STARTED NEW SESSION ######")
@@ -283,7 +280,7 @@ def main():
         wait_time = 1
 
         # Get config from file and compare it with passed args
-        if config_modified.has_changed():
+        if config_modified.has_changed() or first_run:
             config = Configs(args)
 
         # startup delay
@@ -315,7 +312,7 @@ def main():
         if config.read("light") is not None:
             light_mode_watcher.set_value(config.read("light"))
         # try to get the initial theme with from hash
-        elif first_run_watcher.get_new_value() is True:
+        elif first_run is True:
             light_mode_watcher.set_value(plasma_utils.get_initial_mode())
             # initial_dark_light = light_mode_watcher.get_new_value()
         else:
@@ -344,12 +341,9 @@ def main():
             if wallpaper.data is not None:
                 # print(time.strftime("%Y-%m-%d %H:%M:%S"))
                 # print("wallpaper changed")
-                theme_selector.apply(config, wallpaper, light_dark)
+                apply_themes.apply(config, wallpaper, light_dark)
 
-            if light_mode_watcher.changed:
-                print("light:", light_mode_watcher.value)
-
-        first_run_watcher.set_value(False)
+        first_run = False
         time.sleep(wait_time)
 
 
