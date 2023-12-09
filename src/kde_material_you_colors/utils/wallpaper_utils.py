@@ -142,7 +142,7 @@ class WallpaperReader:
             self._data = wallpaper
             return
 
-        # if everything fails, take as creenshot of the desktop
+        # if everything fails, take as screenshot of the desktop
         self._data_type = "screenshot"
         try:
             screenshot_taken = get_desktop_screenshot(self._monitor)
@@ -150,13 +150,13 @@ class WallpaperReader:
             logging.error(e)
             self._error = str(e)
             return
+
+        if screenshot_taken:
+            self._data = settings.SCREENSHOT_PATH
         else:
-            if screenshot_taken:
-                self._data = settings.SCREENSHOT_PATH
-            else:
-                error = f"Could not take Desktop screenshot"
-                logging.error(error)
-                self._error = error
+            error = f"Could not take Desktop screenshot"
+            logging.error(error)
+            self._error = error
 
     def update(self, monitor=None, file=None, color=None, light=None):
         """Update from config and reload wallpaper"""
