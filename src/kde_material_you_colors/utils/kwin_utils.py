@@ -37,7 +37,9 @@ def load_desktop_window_id_script():
         bus = dbus.SessionBus()
         kwin = bus.get_object("org.kde.KWin", "/Scripting")
         kwin_iface = dbus.Interface(kwin, dbus_interface="org.kde.kwin.Scripting")
-        is_loaded = kwin_iface.isScriptLoaded("kde_material_you_get_desktop_view_id")
+        is_loaded = bool(
+            kwin_iface.isScriptLoaded("kde_material_you_get_desktop_view_id")
+        )
     except dbus.DBusException as e:
         logging.exception(f"An error occurred with D-Bus: {e.get_dbus_message()}")
         raise
@@ -50,7 +52,7 @@ def load_desktop_window_id_script():
             bus = dbus.SessionBus()
             kwin = bus.get_object("org.kde.KWin", "/Scripting")
             kwin_iface = dbus.Interface(kwin, dbus_interface="org.kde.kwin.Scripting")
-            is_loaded = kwin_iface.unloadScript("kde_material_you_get_desktop_view_id")
+            kwin_iface.unloadScript("kde_material_you_get_desktop_view_id")
         except dbus.DBusException as e:
             logging.exception(f"An error occurred with D-Bus: {e.get_dbus_message()}")
             raise
@@ -155,9 +157,10 @@ for (var i = 0; i < windows.length; i++) {{
             win_id = output.split(" ")[2]
         except subprocess.CalledProcessError as e:
             error = f"Script id {script_id} didn't return a desktop id for screen {screen}: {e}"
+            # Replace time to make notify show the error only one time
             cmd = str(e).replace(timestamp, "TIME_NOW")
             logging.exception(error)
-            script.run()
+            script.stop()
             raise subprocess.CalledProcessError(e.returncode, cmd, e.output, e.stderr)
     except dbus.exceptions.DBusException as e:
         msg = f"Error running script with id {script_id}: {e.get_dbus_message()}"
@@ -221,7 +224,7 @@ def screenshot_window(window_handle, output_file):
         # image from the raw data
         image = Image.frombytes("RGBA", (img_width, img_height), screenshot_data, "raw")
 
-        # convert from ABGR??? to RGBA
+        # convert from BGRA??? to RGB
         b, g, r, a = image.split()
         image = Image.merge("RGB", (r, g, b))
 
