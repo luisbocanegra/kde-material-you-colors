@@ -5,9 +5,13 @@ import subprocess
 from .. import settings
 from . import kwin_utils
 from . import file_utils
+from ..schemeconfigs import ThemeConfig
+from ..config import Configs
+from .utils import Watcher
+from . import plasma_utils
 
 
-def make_scheme(schemes=None):
+def make_scheme(schemes: ThemeConfig):
     # Make sure the schemes path exists
     if not os.path.exists(settings.USER_SCHEMES_PATH):
         os.makedirs(settings.USER_SCHEMES_PATH)
@@ -40,7 +44,7 @@ def make_scheme(schemes=None):
 def apply_color_schemes(light=False):
     color_scheme = settings.THEME_LIGHT_PATH if light else settings.THEME_DARK_PATH
     # TODO: Check if plasma-apply-colorscheme does blending already
-    kwin_utils.blend_changes()
+    # kwin_utils.blend_changes()
     subprocess.run(
         "plasma-apply-colorscheme " + color_scheme + "2.colors",
         shell=True,
@@ -217,3 +221,15 @@ def plasma_darker_header(schemes):
 
     except Exception as e:
         logging.error(f"Error:\n{e}")
+
+
+def update_light_mode(config: Configs, light_mode_watcher: Watcher, first_run: bool):
+    if config.read("light") is not None:
+        light_mode_watcher.set_value(config.read("light"))
+    # try to get the initial theme with from hash
+    elif first_run is True:
+        light_mode_watcher.set_value(plasma_utils.get_initial_mode())
+    else:
+        light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+
+    return light_mode_watcher
