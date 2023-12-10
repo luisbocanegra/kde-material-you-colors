@@ -182,32 +182,32 @@ class Watcher:
     def has_changed(self):
         return self.changed
 
-    def get_old_value(self, property=None):
+    def get_old_value(self, prop_name=None):
         if self.old_value is None:
             raise ValueError("No previous value has been set.")
-        if property is not None:
+        if prop_name is not None:
             try:
-                return self.old_value[property]
-            except TypeError:
-                raise ValueError("The old value is not a subscriptable object.")
-            except KeyError:
+                return self.old_value[prop_name]
+            except TypeError as e:
+                raise ValueError("The old value is not a subscriptable object.") from e
+            except KeyError as e:
                 raise ValueError(
-                    f"Property '{property}' does not exist in the old value."
-                )
+                    f"prop_name '{prop_name}' does not exist in the old value."
+                ) from e
         return self.old_value
 
-    def get_new_value(self, property=None):
+    def get_new_value(self, prop_name=None):
         if self.value is None:
             raise ValueError("No previous value has been set.")
-        if property is not None:
+        if prop_name is not None:
             try:
-                return self.value[property]
-            except TypeError:
-                raise ValueError("The old value is not a subscriptable object.")
-            except KeyError:
+                return self.value[prop_name]
+            except TypeError as e:
+                raise ValueError("The old value is not a subscriptable object.") from e
+            except KeyError as e:
                 raise ValueError(
-                    f"Property '{property}' does not exist in the old value."
-                )
+                    f"prop_name '{prop_name}' does not exist in the old value."
+                ) from e
         return self.value
 
 
