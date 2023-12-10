@@ -19,10 +19,11 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         wallpaper,
         config.read("ncolor"),
     )
-
+    if material_colors is None:
+        return
     schemes = schemeconfigs.ThemeConfig(
         material_colors,
-        wallpaper.data,
+        wallpaper.source,
         config.read("light_blend_multiplier"),
         config.read("dark_blend_multiplier"),
         config.read("toolbar_opacity"),

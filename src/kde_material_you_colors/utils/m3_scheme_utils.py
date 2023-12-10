@@ -151,8 +151,8 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
     """
     if wallpaper is not None:
         materialYouColors = None
-        wallpaper_type = wallpaper.data_type
-        wallpaper_data = wallpaper.data
+        wallpaper_type = wallpaper.type
+        wallpaper_data = wallpaper.source
         if wallpaper_type in ["image", "screenshot"]:
             if wallpaper_data and os.path.exists(wallpaper_data):
                 if not os.path.isdir(wallpaper_data):

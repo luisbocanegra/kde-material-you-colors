@@ -5,14 +5,14 @@ from .. import settings
 from . import color_utils
 from . import file_utils
 from . import math_utils
-from . import notify
 from . import kwin_utils
+from ..config import Configs
 
 
 class WallpaperReader:
     """Class containing the current wallpaper properties"""
 
-    def __init__(self, monitor=None, file=None, color=None, light=None):
+    def __init__(self, config: Configs):
         """
         Args:
             monitor (_type_, optional): _description_. Defaults to None.
@@ -20,13 +20,13 @@ class WallpaperReader:
             color (_type_, optional): _description_. Defaults to None.
             light (_type_, optional): _description_. Defaults to None.
         """
-        self._monitor = self.validate_monitor(monitor)
-        self._file = file
-        self._color = color
-        self._light = light
-        self._source_name = None
-        self._data_type = None
-        self._data = None
+        self._monitor = self.validate_monitor(config.read("monitor"))
+        self._file = config.read("file")
+        self._color = config.read("color")
+        self._light = config.read("light")
+        self._plugin = None
+        self._type = None
+        self._source = None
         self._error = None
         self.reload()
 
@@ -36,10 +36,10 @@ class WallpaperReader:
 
     def validate_color(self):
         if self._color:
-            self._source_name = "Custom color"
-            self._data_type = "color"
+            self._plugin = "Custom color"
+            self._type = "color"
             if color_utils.validate_color(self._color):
-                self._data = self._color
+                self._source = self._color
             else:
                 error = f"Error: Color format '{self._color}' is incorrect"
                 logging.error(error)
@@ -47,30 +47,30 @@ class WallpaperReader:
 
     def validate_file(self):
         if self._file:
-            self._source_name = "file"
+            self._plugin = "file"
             # TODO: detect image file too
-            self._data_type = "image"
+            self._type = "image"
             if os.path.exists(self._file):
                 with open(self._file, encoding="utf-8") as text_file:
                     wallpaper = str(text_file.read()).replace("file://", "").strip()
                     if wallpaper:
-                        self._data = wallpaper
+                        self._source = wallpaper
             else:
                 error = f"File '{self._file}' does not exist"
                 logging.error(error)
                 self._error = error
 
     @property
-    def source_name(self):
-        return self._source_name
+    def plugin(self):
+        return self._plugin
 
     @property
-    def data_type(self):
-        return self._data_type
+    def type(self):
+        return self._type
 
     @property
-    def data(self):
-        return self._data
+    def source(self):
+        return self._source
 
     @property
     def error(self):
@@ -79,9 +79,9 @@ class WallpaperReader:
     @property
     def current(self):
         o = {
-            "source": self._source_name,
-            "type": self.data_type,
-            "data": self._data,
+            "source": self._plugin,
+            "type": self._type,
+            "data": self._source,
             "error": self._error,
         }
         return o
@@ -90,12 +90,12 @@ class WallpaperReader:
         """Reload current wallpaper"""
         # Validate color first
         self.validate_color()
-        if self._data:
+        if self._source:
             return
 
         # Validate file
         self.validate_file()
-        if self._data:
+        if self._source:
             return
 
         try:
@@ -115,20 +115,20 @@ class WallpaperReader:
 
         # special case for picture of the day plugin that requires a
         # directory, provider and sometimes a category
-        self._source_name = plugin
+        self._plugin = plugin
         if plugin == settings.PICTURE_OF_DAY_PLUGIN:
-            self._data_type = "image"
+            self._type = "image"
             potd = get_picture_of_the_day(plugin_config)
             if potd:
-                self._data = potd
+                self._source = potd
                 return
 
         # Color based wallpapers
         elif plugin_config[0] in ["color", "Color"] and len(plugin_config) >= 2:
-            self._data_type = "color"
+            self._type = "color"
             color = color_utils.color2hex(plugin_config[1])
             if color:
-                self._data = color
+                self._source = color
                 return
             else:
                 error = f"Could not resolve color from {plugin}: {plugin_config[1]}"
@@ -138,12 +138,12 @@ class WallpaperReader:
         # wallpaper plugin that stores current image
         wallpaper = get_wallpaper_image(plugin_config, self._light)
         if wallpaper:
-            self._data_type = "image"
-            self._data = wallpaper
+            self._type = "image"
+            self._source = wallpaper
             return
 
         # if everything fails, take as screenshot of the desktop
-        self._data_type = "screenshot"
+        self._type = "screenshot"
         try:
             screenshot_taken = get_desktop_screenshot(self._monitor)
         except Exception as e:
@@ -152,29 +152,29 @@ class WallpaperReader:
             return
 
         if screenshot_taken:
-            self._data = settings.SCREENSHOT_PATH
+            self._source = settings.SCREENSHOT_PATH
         else:
             error = f"Could not take Desktop screenshot"
             logging.error(error)
             self._error = error
 
-    def update(self, monitor=None, file=None, color=None, light=None):
+    def update(self, config: Configs):
         """Update from config and reload wallpaper"""
-        self._monitor = self.validate_monitor(monitor)
-        self._file = file
-        self._color = color
-        self._light = light
-        self._source_name = None
-        self._data_type = None
-        self._data = None
+        self._monitor = self.validate_monitor(config.read("monitor"))
+        self._file = config.read("file")
+        self._color = config.read("color")
+        self._light = config.read("light")
+        self._plugin = None
+        self._type = None
+        self._source = None
         self._error = None
         self.reload()
 
     def is_image(self):
-        return self._data_type == "image"
+        return self._type == "image"
 
     def is_screenshot(self):
-        return self._data_type == "screenshot"
+        return self._type == "screenshot"
 
 
 def evaluate_script(script: str):
@@ -197,7 +197,6 @@ def evaluate_script(script: str):
     except dbus.DBusException as e:
         error = f"Error getting wallpaper from dbus: {e.get_dbus_message()}"
         logging.exception(error)
-        # notify.send_notification("Error getting wallpaper from dbus:", f"{e}")
         raise
     return script_output
 
