@@ -30,6 +30,9 @@ class WallpaperReader:
         self._error = None
         self.reload()
 
+    def __str__(self) -> str:
+        return f"Wallpaper: {self._plugin} ({self._type}): {self._source}"
+
     @staticmethod
     def validate_monitor(monitor) -> int:
         return math_utils.clip(monitor, 0, 999, 0)
@@ -79,9 +82,9 @@ class WallpaperReader:
     @property
     def current(self):
         o = {
-            "source": self._plugin,
+            "plugin": self._plugin,
             "type": self._type,
-            "data": self._source,
+            "source": self._source,
             "error": self._error,
         }
         return o
