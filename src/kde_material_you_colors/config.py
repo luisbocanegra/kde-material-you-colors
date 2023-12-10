@@ -106,7 +106,7 @@ class Configs:
             "plasma_follows_scheme": [None, None, 0],
             "pywal_follows_scheme": [None, None, 0],
             "main_loop_delay": [args.main_loop_delay, 1, 2],
-            "screenshot_delay": [args.screenshot_delay, 1, 2],
+            "screenshot_delay": [args.screenshot_delay, 900, 2],
             "once_after_change": [args.once_after_change, False, 0],
         }
         options = {}
@@ -199,6 +199,11 @@ class Configs:
         except Exception as e:
             options["custom_colors_list"] = None
             logging.error(f"Please fix your settings file: {e}, using wallpaper colors")
+
+        if options["main_loop_delay"] > options["screenshot_delay"]:
+            logging.warning(
+                f"Value for main_loop_delay ({options['main_loop_delay']}) should be smaller than screenshot_delay ({options['screenshot_delay']}), will be set to {options['screenshot_delay']}"
+            )
 
         self._options = options
 

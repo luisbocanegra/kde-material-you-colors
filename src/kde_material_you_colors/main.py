@@ -262,7 +262,7 @@ def main():
         "--screenshot-delay",
         "-scd",
         type=float,
-        help="Delay after taking screenshot (in seconds), useful for live wallpapers that display a constant transition based on time or other circumstances, which would trigger colors generation too often (default is 900 seconds which is 15 minutes)",
+        help="Delay after taking screenshot (in seconds), useful for live wallpapers that display a constant transition based on time or other circumstances, which would trigger colors generation too often (default is 900 seconds which is 15 minutes), must be bigger than --main-loop-delay",
         default=None,
         metavar="<float>",
     )
@@ -314,6 +314,8 @@ def main():
     if wallpaper.error:
         notify.send_notification("Could not get wallpaper", str(wallpaper.error))
 
+    counter = 0
+
     while True:
         config_modified.set_value(file_utils.get_file_sha1(config_file))
 
@@ -330,6 +332,10 @@ def main():
         # update wallpaper
         wallpaper.update(config)
         wallpaper_watcher.set_value(wallpaper.current)
+
+        target_cycles = config.read("screenshot_delay") / (
+            config.read("main_loop_delay") or 1
+        )
 
         # Monitor file for changes (image and screenshot only)
         if wallpaper.is_image() or wallpaper.is_screenshot():
@@ -359,9 +365,10 @@ def main():
             stop_apply = config.read("once_after_change")
 
         if apply and wallpaper.source and stop_apply is False or first_run:
-            print(f"{time.strftime('%H:%M:%S')} GEN COLORS {wallpaper.current}")
-            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
-            apply = False
+            if counter == 0:
+                logging.info(f"{wallpaper.current}")
+                apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+                apply = False
 
         if group1 or plugin_watcher.changed:
             if wallpaper.error:
@@ -374,12 +381,21 @@ def main():
         if plugin_watcher.changed:
             apply = False
             stop_apply = False
-            print(f"{time.strftime('%H:%M:%S')} GEN COLORS {wallpaper.current}")
+            logging.info(f"{wallpaper.current}")
+            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+            counter = 0
+
+        if wallpaper.is_screenshot():
+            if target_cycles > counter:
+                counter += 1
+            else:
+                counter = 0
+
+        if counter >= target_cycles and stop_apply is False:
+            logging.info(f"{wallpaper.current}")
             apply_themes.apply(config, wallpaper, light_mode_watcher.value)
 
-        if wallpaper.is_screenshot() and wallpaper_modified.changed is False:
-            print("WALLPAPER SCREENSHOT DELAY...")
-            time.sleep(config.read("screenshot_delay"))
+        # print("counter:", counter)
 
         time.sleep(config.read("main_loop_delay"))
         first_run = False
