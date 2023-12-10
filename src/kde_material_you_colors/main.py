@@ -303,7 +303,7 @@ def main():
     first_run = True
     apply = False
     stop_apply = False
-    config_watcher = utils.Watcher(None)
+    config_watcher = utils.Watcher(config.options)
     wallpaper_watcher = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
     config_modified = utils.Watcher(file_utils.get_file_sha1(config_file))
@@ -378,7 +378,7 @@ def main():
             if wallpaper.source:
                 apply = True
 
-        if plugin_watcher.changed:
+        if plugin_watcher.changed or config_watcher.changed:
             apply = False
             stop_apply = False
             logging.info(f"{wallpaper.current}")
@@ -394,8 +394,9 @@ def main():
         if counter >= target_cycles and stop_apply is False:
             logging.info(f"{wallpaper.current}")
             apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+            counter = 0
 
-        # print("counter:", counter)
+        print("counter:", counter)
 
         time.sleep(config.read("main_loop_delay"))
         first_run = False
