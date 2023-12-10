@@ -106,7 +106,7 @@ class Configs:
             "plasma_follows_scheme": [None, None, 0],
             "pywal_follows_scheme": [None, None, 0],
             "main_loop_delay": [args.main_loop_delay, 1, 2],
-            "after_change_delay": [args.after_change_delay, 1, 2],
+            "screenshot_delay": [args.screenshot_delay, 1, 2],
             "once_after_change": [args.once_after_change, False, 0],
         }
         options = {}

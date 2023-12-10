@@ -253,16 +253,16 @@ def main():
         "--main-loop-delay",
         "-mld",
         type=float,
-        help="Main loop delay (in seconds), usefull for decreasing unnecesary detections or save a bit of power (default is 1)",
+        help="Main loop delay (in seconds), useful for decreasing unnecessary detections or save a bit of power (default is 1)",
         default=None,
         metavar="<float>",
     )
 
     parser.add_argument(
-        "--after-change-delay",
-        "-acd",
+        "--screenshot-delay",
+        "-scd",
         type=float,
-        help="Delay after wallpaper change (in seconds), useful for wallpapers that start with a smooth transition to avoid repeated false detections (default is 1)",
+        help="Delay after taking screenshot (in seconds), useful for live wallpapers that display a constant transition based on time or other circumstances, which would trigger colors generation too often (default is 900 seconds which is 15 minutes)",
         default=None,
         metavar="<float>",
     )
@@ -271,7 +271,7 @@ def main():
         "--once-after-change",
         "-ofc",
         action="store_true",
-        help="Apply colors only after wallpaper plugin changes, useful for animated wallpapers that would trigger color generation indefinitely",
+        help="Apply colors from screenshot only after wallpaper plugin changes, useful for animated looped wallpapers that would trigger color generation indefinitely but unnecessarily",
         default=None,
     )
 
@@ -282,111 +282,107 @@ def main():
     # Kill existing instance if found
     utils.kill_existing()
 
+    logging.info("###### STARTED NEW SESSION ######")
+    logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
+
     with open(settings.PIDFILE_PATH, "w", encoding="utf-8") as pidfile:
         pidfile.write(str(os.getpid()))
         pidfile.close()
 
     config = Configs(args)
 
+    # startup delay
+    time.sleep(
+        utils.startup_delay(
+            config.options["use_startup_delay"], config.options["startup_delay"]
+        )
+    )
+
     # set initial state so first apply is done
-    config_watcher = utils.Watcher(None)
-    wallpaper_watcher = utils.Watcher(None)
-    wallpaper_modified = utils.Watcher(None)
-    light_mode_watcher = utils.Watcher(None)
+    config_file = settings.USER_CONFIG_PATH + settings.CONFIG_FILE
     first_run = True
-    konsole_profile_modified = utils.Watcher(None)
-    error_watcher = utils.Watcher(None)
-    logging.info("###### STARTED NEW SESSION ######")
-    logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
-    config_modified = utils.Watcher(None)
-    wallpaper = wallpaper_utils.WallpaperReader()
-    source_watcher = utils.Watcher(None)
     apply = False
     stop_apply = False
+    config_watcher = utils.Watcher(None)
+    wallpaper_watcher = utils.Watcher(None)
+    light_mode_watcher = utils.Watcher(None)
+    config_modified = utils.Watcher(file_utils.get_file_sha1(config_file))
+    wallpaper = wallpaper_utils.WallpaperReader(config)
+    wallpaper_modified = utils.Watcher(file_utils.get_file_sha1(wallpaper.source))
+    plugin_watcher = utils.Watcher(wallpaper.plugin)
+    source_watcher = utils.Watcher(wallpaper.source)
+    if wallpaper.error:
+        notify.send_notification("Could not get wallpaper", str(wallpaper.error))
 
     while True:
-        config_modified.set_value(
-            file_utils.get_file_sha1(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
-        )
+        config_modified.set_value(file_utils.get_file_sha1(config_file))
 
         # Get config from file and compare it with passed args
-        if config_modified.has_changed() or first_run:
+        if config_modified.changed:
             config = Configs(args)
-
-        # startup delay
-        time.sleep(
-            utils.startup_delay(
-                config.options["use_startup_delay"], config.options["startup_delay"]
-            )
-        )
 
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
-
+        #
+        #
+        #
+        #
         # update wallpaper
-        wallpaper.update(
-            monitor=config.read("monitor"),
-            file=config.read("file"),
-            color=config.read("color"),
-            light=config.read("light"),
-        )
+        wallpaper.update(config)
         wallpaper_watcher.set_value(wallpaper.current)
-        error_watcher.set_value(wallpaper.error)
 
+        # Monitor file for changes (image and screenshot only)
         if wallpaper.is_image() or wallpaper.is_screenshot():
-            wallpaper_modified.set_value(file_utils.get_file_sha1(wallpaper.data))
+            wallpaper_modified.set_value(file_utils.get_file_sha1(wallpaper.source))
 
-        if wallpaper.is_screenshot():
-            wait_time = 2
+        # Update plugin name
+        if wallpaper.plugin is not None:
+            plugin_watcher.set_value(wallpaper.plugin)
 
-        if config.read("light") is not None:
-            light_mode_watcher.set_value(config.read("light"))
-        # try to get the initial theme with from hash
-        elif first_run is True:
-            light_mode_watcher.set_value(plasma_utils.get_initial_mode())
-        else:
-            light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+        # Update source name (colors source)
+        if wallpaper.source is not None:
+            source_watcher.set_value(wallpaper.source)
 
-        light_dark = light_mode_watcher.get_new_value()
+        # Update light mode
+        light_mode_watcher = plasma_utils.update_light_mode(
+            config, light_mode_watcher, first_run
+        )
 
         group1 = (
-            wallpaper_watcher.changed
-            or config_watcher.changed
+            plugin_watcher.changed
+            or source_watcher.changed
             or wallpaper_modified.changed
-            or light_mode_watcher.changed
         )
 
-        if wallpaper.source_name is not None:
-            source_watcher.set_value(wallpaper.source_name)
+        # stop applying theme until plugin changes (for screenshot)
+        if wallpaper.is_screenshot():
+            stop_apply = config.read("once_after_change")
 
-        if apply and wallpaper.data is not None and not stop_apply:
-            logging.debug(f"Wallpaper: {wallpaper.current}")
-            apply_themes.apply(config, wallpaper, light_dark)
+        if apply and wallpaper.source and stop_apply is False or first_run:
+            print(f"{time.strftime('%H:%M:%S')} GEN COLORS {wallpaper.current}")
+            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
             apply = False
 
-        # stop applying theme until plugin changes
-        if source_watcher.changed is False and config.read("once_after_change"):
-            stop_apply = True
-        else:
-            stop_apply = False
-
-        if group1:
-            if config_watcher.changed:
-                logging.debug(f"Config: {config.options}")
-
-            if error_watcher.value is not None:
+        if group1 or plugin_watcher.changed:
+            if wallpaper.error:
                 notify.send_notification(
-                    "Could not get wallpaper", str(error_watcher.value)
+                    "Could not get wallpaper", str(wallpaper.error)
                 )
-
-            if wallpaper.data:
-                # try to avoid false detection by applying on next iteration
+            if wallpaper.source:
                 apply = True
-                if source_watcher.changed and first_run is False:
-                    time.sleep(config.read("after_change_delay"))
 
-        first_run = False
+        if plugin_watcher.changed:
+            apply = False
+            stop_apply = False
+            print(f"{time.strftime('%H:%M:%S')} GEN COLORS {wallpaper.current}")
+            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+
+        if wallpaper.is_screenshot() and wallpaper_modified.changed is False:
+            print("WALLPAPER SCREENSHOT DELAY...")
+            time.sleep(config.read("screenshot_delay"))
+
         time.sleep(config.read("main_loop_delay"))
+        first_run = False
 
 
 main()
