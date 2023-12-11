@@ -13,11 +13,24 @@ from ..schemeconfigs import ThemeConfig
 def export_scheme(
     light=None, pywal_light=None, schemes: ThemeConfig = None, konsole_opacity=100
 ):
-    if konsole_opacity is None:
-        konsole_opacity = 100
-    else:
-        konsole_opacity = float(clip(konsole_opacity, 0, 100, 100) / 100)
-    # print(f"konsole_opacity: {konsole_opacity}")
+    """Exports the color scheme files to the konsole configuration folder
+
+    Args:
+        light (_type_, optional): Light mode from plasma. Defaults to None.
+        pywal_light (_type_, optional): Light mode from pywal setting. Defaults to None.
+        schemes (ThemeConfig, optional): Theme configuration. Defaults to None.
+        konsole_opacity (int, optional): Konsole background opacity. Defaults to 100.
+    """
+    # Make sure the konsole config path exists
+    if not os.path.exists(settings.KONSOLE_DIR):
+        os.makedirs(settings.KONSOLE_DIR)
+
+    konsole_opacity = (
+        100
+        if konsole_opacity is None
+        else float(clip(konsole_opacity, 0, 100, 100) / 100)
+    )
+
     pywal_colors = (
         schemes.get_wal_light_scheme()
         if (pywal_light or light)
@@ -88,6 +101,7 @@ def export_scheme(
     with open(settings.KONSOLE_COLOR_SCHEME_PATH, "w", encoding="utf-8") as configfile:
         config.write(configfile, space_around_delimiters=False)
 
+    # mirror color scheme
     config["General"]["Description"] = "MaterialYouAlt"
 
     with open(
@@ -96,111 +110,186 @@ def export_scheme(
         config.write(configfile, space_around_delimiters=False)
 
 
-def make_mirror_profile(profile=None):
-    if profile is not None:
-        profile_path = settings.KONSOLE_DIR + profile + ".profile"
-        if os.path.exists(profile_path):
-            logging.info(f"Konsole profile: ({profile})")
-            subprocess.check_output(
-                "cp -f '" + profile_path + "' " + settings.KONSOLE_TEMP_PROFILE,
-                shell=True,
-            )
-            profile = configparser.ConfigParser()
-            # preserve case
-            profile.optionxform = str
-            if os.path.exists(profile_path):
-                try:
-                    profile.read(profile_path)
-                    if "Appearance" not in profile:
-                        profile.add_section("Appearance")
+def apply_color_scheme():
+    """Applies the color scheme to the existing default profile or a new one"""
+    profile_name = set_default_profile(settings.KONSOLE_DEFAULT_THEMED_PROFILE)
+    profile_path = settings.KONSOLE_DIR + profile_name + ".profile"
+    create_profile(profile_path, profile_name)
+    reload_profile(profile_name)
 
-                    if profile["Appearance"]["ColorScheme"] != "MaterialYou":
-                        profile["Appearance"]["ColorScheme"] = "MaterialYou"
-                        with open(profile_path, "w", encoding="utf-8") as configfile:
-                            profile.write(configfile, space_around_delimiters=False)
-                except Exception as e:
-                    logging.error(f"Error applying Konsole profile:\n{e}")
+    profile = configparser.ConfigParser()
+    # preserve case
+    profile.optionxform = str
 
-            # Mirror profile
-            profile = configparser.ConfigParser()
-            profile.optionxform = str
-            if os.path.exists(settings.KONSOLE_TEMP_PROFILE):
-                try:
-                    profile.read(settings.KONSOLE_TEMP_PROFILE)
-                    if "Appearance" not in profile:
-                        profile.add_section("Appearance")
-                    profile["Appearance"]["ColorScheme"] = "MaterialYouAlt"
-                    profile["General"]["Name"] = "TempMyou"
-                except Exception as e:
-                    logging.error(f"Error applying Konsole profile:\n{e}")
-                with open(
-                    settings.KONSOLE_TEMP_PROFILE, "w", encoding="utf-8"
-                ) as configfile:
-                    profile.write(configfile, space_around_delimiters=False)
+    try:
+        profile.read(profile_path)
+        if "Appearance" not in profile:
+            profile.add_section("Appearance")
+
+        profile.set("Appearance", "ColorScheme", "MaterialYou")
+        with open(profile_path, "w", encoding="utf-8") as configfile:
+            profile.write(configfile, space_around_delimiters=False)
+
+        # Mirror profile
+        profile.set("Appearance", "ColorScheme", "MaterialYouAlt")
+        profile["General"]["Name"] = "TempMyou"
+        with open(settings.KONSOLE_TEMP_PROFILE, "w", encoding="utf-8") as configfile:
+            profile.write(configfile, space_around_delimiters=False)
+
+    except Exception as e:
+        logging.exception(f"Error applying Konsole profile:\n{e}")
 
 
-def reload_profile(profile=None):
-    if profile is not None:
-        bus = dbus.SessionBus()
-        konsole_dbus_services = bus.list_names() or []
-        # Get konsole instances (windows)
-        konsole_dbus_services = [
-            service for service in konsole_dbus_services if "org.kde.konsole" in service
-        ]
+def reload_profile(profile: str):
+    """Reload the konsole profile for all running konsole sessions
 
-        if konsole_dbus_services:
-            logging.debug(
-                f"Konsole services (windows) running ({len(konsole_dbus_services)}):"
-            )
-            for service in konsole_dbus_services:
-                try:
-                    # get open sessions (tabs and splits)
-                    cmd = ["qdbus", service]
-                    result = subprocess.run(
-                        cmd,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True,
-                        check=True,
+    Args:
+        profile (str): Konsole profile
+    """
+    bus = dbus.SessionBus()
+    konsole_dbus_services = bus.list_names() or []
+    # Get konsole instances (windows)
+    konsole_dbus_services = [
+        service for service in konsole_dbus_services if "org.kde.konsole" in service
+    ]
+
+    if konsole_dbus_services:
+        logging.debug(
+            f"Konsole services (windows) running ({len(konsole_dbus_services)}):"
+        )
+        for service in konsole_dbus_services:
+            try:
+                # get open sessions (tabs and splits)
+                cmd = ["qdbus", service]
+                result = subprocess.run(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    check=True,
+                )
+
+                sessions = [
+                    line
+                    for line in result.stdout.splitlines()
+                    if line.startswith("/Sessions/")
+                ]
+                logging.debug(f"{service} ({len(sessions)} sessions)")
+
+                # reload colors by switching profiles
+                for session in sessions:
+                    session_obj = bus.get_object(service, session)
+                    session_iface = dbus.Interface(
+                        session_obj, "org.kde.konsole.Session"
+                    )
+                    # logging.debug(f"{service}, {session} reading profile...")
+                    current_profile = session_iface.profile()
+                    # logging.debug(f"{current_profile}")
+                    new_profile = "TempMyou" if profile == current_profile else profile
+
+                    # logging.debug(f"{service}, {session} setting profile...")
+                    session_iface.setProfile(new_profile)
+                    # logging.debug("done")
+
+            except dbus.exceptions.DBusException as e:
+                logging.exception(f"{e}")
+            except (FileNotFoundError, subprocess.CalledProcessError) as e:
+                logging.exception(f"{e}")
+
+
+def create_profile(profile_path, profile_name: str):
+    """If the profile doesn't exist make it
+
+    Args:
+        profile_name (str): _description_
+    """
+
+    if not os.path.exists(profile_path):
+        logging.info(f"Konsole profile '{profile_name}' doesn't exist, creating it")
+        profile = configparser.ConfigParser()
+        profile.optionxform = str
+        profile.read(profile_path)
+        profile.add_section("General")
+        profile.add_section("Appearance")
+
+        profile.set("General", "Name", profile_name)
+        profile.set("General", "Parent", "FALLBACK/")
+
+        profile.set("Appearance", "ColorScheme", "MaterialYou")
+
+        with open(profile_path, "w", encoding="utf-8") as configfile:
+            profile.write(configfile, space_around_delimiters=False)
+
+
+def set_default_profile(profile_name):
+    """If there is not default profile, set the generated one,
+    if there is a default profile defined return it
+    """
+
+    if os.path.exists(settings.KONSOLE_RC):
+        default_profile = get_default_profile()
+
+        with open(settings.KONSOLE_RC, "r", encoding="utf-8") as f:
+            contents = f.read()
+
+            if default_profile:
+                # it was defined, we will use it
+                profile_name = default_profile
+            else:
+                if default_profile is None:
+                    # means not defined
+                    # we will add it
+                    if "[Desktop Entry]" in contents:
+                        logging.debug(
+                            f"[Desktop Entry] found, appending profile '{profile_name}'"
+                        )
+                        contents = contents.replace(
+                            "[Desktop Entry]",
+                            f"[Desktop Entry]\nDefaultProfile={profile_name}.profile\n",
+                        )
+                    else:
+                        logging.debug(
+                            f"[Desktop Entry] not found, adding with profile '{profile_name}'"
+                        )
+                        contents += (
+                            f"[Desktop Entry]\nDefaultProfile={profile_name}.profile\n"
+                        )
+                else:
+                    # means it was empty
+                    # we will set it
+                    logging.debug(f"Setting default profile '{profile_name}'")
+                    contents = contents.replace(
+                        "DefaultProfile=", f"DefaultProfile={profile_name}.profile"
                     )
 
-                    sessions = [
-                        line
-                        for line in result.stdout.splitlines()
-                        if line.startswith("/Sessions/")
-                    ]
-                    logging.debug(f"{service} ({len(sessions)} sessions)")
+                with open(settings.KONSOLE_RC, "w", encoding="utf-8") as f:
+                    f.write(contents)
+    else:
+        # konsolerc doesn't exist add it with the profile
+        logging.debug(
+            f"konsolerc wasn't found, creating it with default profile '{profile_name}.profile'"
+        )
+        with open(settings.KONSOLE_RC, "w", encoding="utf-8") as f:
+            f.write(f"[Desktop Entry]\nDefaultProfile={profile_name}.profile\n")
 
-                    # reload colors by switching profiles
-                    for session in sessions:
-                        session_obj = bus.get_object(service, session)
-                        session_iface = dbus.Interface(
-                            session_obj, "org.kde.konsole.Session"
-                        )
-                        # logging.debug(f"{service}, {session} reading profile...")
-                        current_profile = session_iface.profile()
-                        # logging.debug(f"{current_profile}")
-                        new_profile = (
-                            "TempMyou" if profile == current_profile else profile
-                        )
-
-                        # logging.debug(f"{service}, {session} setting profile...")
-                        session_iface.setProfile(new_profile)
-                        # logging.debug("done")
-
-                except dbus.exceptions.DBusException:
-                    pass
-                except (FileNotFoundError, subprocess.CalledProcessError) as e:
-                    logging.error(f"{e}")
+    return profile_name
 
 
-def apply_color_scheme(
-    light=None, pywal_light=None, schemes=None, profile=None, konsole_opacity=None
-):
-    if profile is not None:
-        profile_path = settings.KONSOLE_DIR + profile + ".profile"
-        if os.path.exists(profile_path):
-            export_scheme(light, pywal_light, schemes, konsole_opacity)
-            reload_profile(profile)
-        else:
-            logging.error(f"Konsole Profile: {profile_path} does not exist")
+def get_default_profile() -> str | None:
+    """Get default profile
+
+    Returns:
+        str|None: Default profile, empty string if not found, None if DefaultProfile is not in config
+    """
+    default_profile = None
+
+    with open(settings.KONSOLE_RC, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith("DefaultProfile="):
+                part = line.split("=")[1].strip()
+                if part:
+                    logging.info(f"Found default profile '{part}'")
+                default_profile = part.replace(".profile", "")
+
+    return default_profile
