@@ -93,7 +93,7 @@ class Configs:
             "dark_blend_multiplier": [args.dbmultiplier, 1, 2],
             "on_change_hook": [args.on_change_hook, None, 3],
             "sierra_breeze_buttons_color": [args.sierra_breeze_buttons_color, None, 0],
-            "konsole_profile": [args.konsole_profile, None, 3],
+            "disable_konsole": [args.disable_konsole, False, 0],
             "titlebar_opacity": [args.titlebar_opacity, None, 1],
             "toolbar_opacity": [args.toolbar_opacity, None, 1],
             "konsole_opacity": [args.konsole_opacity, None, 1],
