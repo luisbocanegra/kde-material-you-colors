@@ -51,15 +51,14 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     if config.read("titlebar_opacity"):
         titlebar_utils.titlebar_opacity(config.read("titlebar_opacity"))
         needs_kwin_reload = True
-    if config.read("konsole_profile"):
-        konsole_utils.make_mirror_profile(config.read("konsole_profile"))
-        konsole_utils.apply_color_scheme(
-            dark_light,
-            config.read("pywal_light"),
-            schemes,
-            config.read("konsole_profile"),
-            konsole_opacity=config.read("konsole_opacity"),
-        )
+    konsole_utils.export_scheme(
+        light=config.read("light"),
+        pywal_light=config.read("pywal_light"),
+        schemes=schemes,
+        konsole_opacity=config.read("konsole_opacity"),
+    )
+    if config.read("disable_konsole") is not True:
+        konsole_utils.apply_color_scheme()
     if config.read("darker_window_list"):
         titlebar_utils.kwin_rule_darker_titlebar(
             dark_light

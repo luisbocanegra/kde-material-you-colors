@@ -175,12 +175,11 @@ def main():
     )
 
     parser.add_argument(
-        "--konsole-profile",
-        "-kp",
-        type=str,
-        help="The name of your (existing) Konsole profile that is going to be themed, you can check your current profiles with konsole --list-profiles",
+        "--disable-konsole",
+        "-dk",
+        action="store_true",
+        help="Disable Konsole automatic theming (color schemes are still generated)",
         default=None,
-        metavar="<profile>",
     )
 
     parser.add_argument(
@@ -316,12 +315,15 @@ def main():
 
     counter = 0
 
+    logging.debug(config.options)
+
     while True:
         config_modified.set_value(file_utils.get_file_sha1(config_file))
 
         # Get config from file and compare it with passed args
         if config_modified.changed:
             config = Configs(args)
+            logging.debug(config.options)
 
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
