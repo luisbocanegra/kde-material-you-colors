@@ -27,6 +27,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         config.read("light_blend_multiplier"),
         config.read("dark_blend_multiplier"),
         config.read("toolbar_opacity"),
+        config.read("toolbar_opacity_dark"),
         config.read("custom_colors_list"),
     )
 
@@ -48,14 +49,19 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     if config.read("klassy_windeco_outline"):
         titlebar_utils.klassy_windeco_outline_color(schemes, dark_light)
         needs_kwin_reload = True
-    if config.read("titlebar_opacity"):
-        titlebar_utils.titlebar_opacity(config.read("titlebar_opacity"))
+    if config.read("titlebar_opacity") or config.read("titlebar_opacity_dark"):
+        titlebar_utils.titlebar_opacity(
+            config.read("titlebar_opacity"),
+            config.read("titlebar_opacity_dark"),
+            dark_light,
+        )
         needs_kwin_reload = True
     konsole_utils.export_scheme(
         light=config.read("light"),
         pywal_light=config.read("pywal_light"),
         schemes=schemes,
         konsole_opacity=config.read("konsole_opacity"),
+        konsole_opacity_dark=config.read("konsole_opacity_dark"),
     )
     if config.read("disable_konsole") is not True:
         konsole_utils.apply_color_scheme()

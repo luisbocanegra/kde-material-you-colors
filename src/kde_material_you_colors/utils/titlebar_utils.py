@@ -78,8 +78,9 @@ def sierra_breeze_button_colors(schemes, light=None):
         )
 
 
-def titlebar_opacity(opacity):
-    if opacity != None:
+def titlebar_opacity(opacity_light, opacity_dark, light):
+    opacity = opacity_light if light else opacity_dark
+    if opacity is not None:
         opacity = math_utils.clip(opacity, 0, 100, 100)
         conf_file = configparser.ConfigParser()
         # preserve case
@@ -93,12 +94,12 @@ def titlebar_opacity(opacity):
                     reload = True
                 else:
                     reload = False
-                if reload == True:
-                    logging.info(f"Applying SierraBreezeEnhanced titlebar opacity")
-                    with open(settings.SBE_RC, "w") as configfile:
+                if reload:
+                    logging.info("Applying SierraBreezeEnhanced titlebar opacity")
+                    with open(settings.SBE_RC, "w", encoding="utf-8") as configfile:
                         conf_file.write(configfile, space_around_delimiters=False)
             except Exception as e:
-                logging.error(
+                logging.exception(
                     f"Error writing SierraBreezeEnhanced titlebar opacity:\n{e}"
                 )
 
@@ -111,12 +112,12 @@ def titlebar_opacity(opacity):
                     reload = True
                 else:
                     reload = False
-                if reload == True:
-                    logging.info(f"Applying Klassy titlebar opacity")
-                    with open(settings.KLASSY_RC, "w") as configfile:
+                if reload:
+                    logging.info("Applying Klassy titlebar opacity")
+                    with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
                         conf_file.write(configfile, space_around_delimiters=False)
             except Exception as e:
-                logging.error(f"Error writing Klassy titlebar opacity:\n{e}")
+                logging.exception(f"Error writing Klassy titlebar opacity:\n{e}")
 
 
 def klassy_windeco_outline_color(schemes, light=None):

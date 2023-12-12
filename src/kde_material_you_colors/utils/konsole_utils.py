@@ -11,7 +11,11 @@ from ..schemeconfigs import ThemeConfig
 
 
 def export_scheme(
-    light=None, pywal_light=None, schemes: ThemeConfig = None, konsole_opacity=100
+    light=None,
+    pywal_light=None,
+    schemes: ThemeConfig = None,
+    konsole_opacity=100,
+    konsole_opacity_dark=100,
 ):
     """Exports the color scheme files to the konsole configuration folder
 
@@ -25,20 +29,20 @@ def export_scheme(
     if not os.path.exists(settings.KONSOLE_DIR):
         os.makedirs(settings.KONSOLE_DIR)
 
-    konsole_opacity = (
-        100
-        if konsole_opacity is None
-        else float(clip(konsole_opacity, 0, 100, 100) / 100)
-    )
+    light = pywal_light if pywal_light is not None else light
 
     pywal_colors = (
-        schemes.get_wal_light_scheme()
-        if (pywal_light or light)
-        else schemes.get_wal_dark_scheme()
+        schemes.get_wal_light_scheme() if light else schemes.get_wal_dark_scheme()
     )
+
+    opacity = (konsole_opacity if light else konsole_opacity_dark) / 100
+
+    logging.warning(f"opacity:{opacity}")
 
     config = configparser.ConfigParser()
     config.optionxform = str
+    if os.path.exists(settings.KONSOLE_COLOR_SCHEME_PATH):
+        config.read(settings.KONSOLE_COLOR_SCHEME_PATH)
 
     sections = [
         "Background",
@@ -54,11 +58,15 @@ def export_scheme(
     for section in sections:
         if section == "Color":
             for n in range(8):
-                config.add_section(str(f"Color{n}"))
-                config.add_section(str(f"Color{n}Intense"))
-                config.add_section(str(f"Color{n}Faint"))
+                if not config.has_section(f"Color{n}"):
+                    config.add_section(f"Color{n}")
+                if not config.has_section(f"Color{n}Intense"):
+                    config.add_section(f"Color{n}Intense")
+                if not config.has_section(f"Color{n}Faint"):
+                    config.add_section(f"Color{n}Faint")
         else:
-            config.add_section(section)
+            if not config.has_section(section):
+                config.add_section(section)
 
     config["Background"]["Color"] = tup2str(
         hex2rgb(pywal_colors["special"]["background"])
@@ -96,7 +104,7 @@ def export_scheme(
     )
 
     config["General"]["Description"] = "MaterialYou"
-    config["General"]["Opacity"] = str(konsole_opacity)
+    config["General"]["Opacity"] = str(opacity)
 
     with open(settings.KONSOLE_COLOR_SCHEME_PATH, "w", encoding="utf-8") as configfile:
         config.write(configfile, space_around_delimiters=False)

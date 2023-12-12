@@ -20,9 +20,9 @@ class ThemeConfig:
         light_blend_multiplier=None,
         dark_blend_multiplier=None,
         toolbar_opacity=None,
+        toolbar_opacity_dark=None,
         custom_colors_list=None,
     ):
-        math_utils.clip(toolbar_opacity, 0, 100, 100)
         if custom_colors_list is not None:
             colors_best = custom_colors_list
             logging.info(f"Using custom colors: {colors_best}")
@@ -40,7 +40,6 @@ class ThemeConfig:
 
         lbm = math_utils.clip(light_blend_multiplier, 0, 4, 1.0)
         dbm = math_utils.clip(dark_blend_multiplier, 0, 4, 1.0)
-        toolbar_opacity = math_utils.clip(toolbar_opacity, 0, 100, 100)
 
         # Base text states taken from Breeze Color Scheme
         base_text_states = {
@@ -650,10 +649,10 @@ shadeSortColumn=true
 contrast=4
 
 [WM]
-activeBackground={hex2alpha(extras['dark']['surface3'],toolbar_opacity)}
+activeBackground={hex2alpha(extras['dark']['surface3'],toolbar_opacity_dark)}
 activeBlend=252,252,252
 activeForeground={colors_dark['onSurface']}
-inactiveBackground={hex2alpha(colors_dark['secondaryContainer'],toolbar_opacity)}
+inactiveBackground={hex2alpha(colors_dark['secondaryContainer'],toolbar_opacity_dark)}
 inactiveBlend=161,169,177
 inactiveForeground={colors_dark['onSecondaryContainer']}
         """

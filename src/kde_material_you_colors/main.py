@@ -186,7 +186,16 @@ def main():
         "--titlebar-opacity",
         "-tio",
         type=int,
-        help="Titlebar opacity (value from 0 to 100, default is 100)",
+        help="Titlebar opacity in normal mode (value from 0 to 100, default is 100)",
+        default=None,
+        metavar="<integer>",
+    )
+
+    parser.add_argument(
+        "--titlebar-opacity-dark",
+        "-tiod",
+        type=int,
+        help="Titlebar opacity in dark mode (value from 0 to 100, default is 100)",
         default=None,
         metavar="<integer>",
     )
@@ -195,7 +204,16 @@ def main():
         "--toolbar-opacity",
         "-too",
         type=int,
-        help="ToolBar opacity, needs Lightly Application Style (value from 0 to 100, default is 100)",
+        help="ToolBar opacity in normal mode, needs Lightly Application Style (value from 0 to 100, default is 100)",
+        default=None,
+        metavar="<integer>",
+    )
+
+    parser.add_argument(
+        "--toolbar-opacity-dark",
+        "-tood",
+        type=int,
+        help="ToolBar opacity in dark mode, needs Lightly Application Style (value from 0 to 100, default is 100)",
         default=None,
         metavar="<integer>",
     )
@@ -204,7 +222,16 @@ def main():
         "--konsole-opacity",
         "-ko",
         type=int,
-        help="Konsole background opacity (value from 0 to 100, default is 100)",
+        help="Konsole background opacity in normal mode (value from 0 to 100, default is 100)",
+        default=None,
+        metavar="<integer>",
+    )
+
+    parser.add_argument(
+        "--konsole-opacity-dark",
+        "-kod",
+        type=int,
+        help="Konsole background opacity in dark mode (value from 0 to 100, default is 100)",
         default=None,
         metavar="<integer>",
     )
