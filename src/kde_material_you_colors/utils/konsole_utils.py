@@ -115,7 +115,6 @@ def apply_color_scheme():
     profile_name = set_default_profile(settings.KONSOLE_DEFAULT_THEMED_PROFILE)
     profile_path = settings.KONSOLE_DIR + profile_name + ".profile"
     create_profile(profile_path, profile_name)
-    reload_profile(profile_name)
 
     profile = configparser.ConfigParser()
     # preserve case
@@ -130,14 +129,24 @@ def apply_color_scheme():
         with open(profile_path, "w", encoding="utf-8") as configfile:
             profile.write(configfile, space_around_delimiters=False)
 
-        # Mirror profile
+        # Clear the config settings and create the mirror profile as fallback
+        # It will have the cloned color scheme (for color updating to work),
+        # but inherit everything else from profile_name
+        # Fixes the problem of configuration (like font) switching between the old and new
+        # appearance when colors change and the profile switch kicks in.
+        profile.clear()
+        profile.add_section("Appearance")
+        profile.add_section("General")
         profile.set("Appearance", "ColorScheme", "MaterialYouAlt")
         profile["General"]["Name"] = "TempMyou"
+        profile["General"]["Parent"] = profile_name
         with open(settings.KONSOLE_TEMP_PROFILE, "w", encoding="utf-8") as configfile:
             profile.write(configfile, space_around_delimiters=False)
 
     except Exception as e:
         logging.exception(f"Error applying Konsole profile:\n{e}")
+
+    reload_profile(profile_name)
 
 
 def reload_profile(profile: str):
