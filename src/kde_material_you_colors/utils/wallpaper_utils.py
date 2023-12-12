@@ -142,11 +142,16 @@ class WallpaperReader:
         wallpaper = get_wallpaper_image(plugin_config, self._light)
         if wallpaper:
             self._type = "image"
-            self._source = wallpaper
-            return
-
-        # if everything fails, take as screenshot of the desktop
-        self._type = "screenshot"
+            # if a single image wasn't returned show the error
+            # and continue with screenshot method
+            if isinstance(wallpaper, list):
+                self._error = f"Could not get compatible image from plugin {plugin}, using screenshot method"
+            else:
+                self._source = wallpaper
+                return
+        else:
+            # if everything fails, take as screenshot of the desktop
+            self._type = "screenshot"
         try:
             screenshot_taken = get_desktop_screenshot(self._monitor)
         except Exception as e:
@@ -157,7 +162,7 @@ class WallpaperReader:
         if screenshot_taken:
             self._source = settings.SCREENSHOT_PATH
         else:
-            error = f"Could not take Desktop screenshot"
+            error = "Could not take Desktop screenshot"
             logging.error(error)
             self._error = error
 
