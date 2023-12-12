@@ -16,6 +16,7 @@ def export_scheme(
     schemes: ThemeConfig = None,
     konsole_opacity=100,
     konsole_opacity_dark=100,
+    dark_light=False,
 ):
     """Exports the color scheme files to the konsole configuration folder
 
@@ -29,15 +30,18 @@ def export_scheme(
     if not os.path.exists(settings.KONSOLE_DIR):
         os.makedirs(settings.KONSOLE_DIR)
 
-    light = pywal_light if pywal_light is not None else light
+    if pywal_light is not None:
+        mode = pywal_light
+    elif light is not None:
+        mode = light
+    else:
+        mode = dark_light
 
     pywal_colors = (
-        schemes.get_wal_light_scheme() if light else schemes.get_wal_dark_scheme()
+        schemes.get_wal_light_scheme() if mode else schemes.get_wal_dark_scheme()
     )
 
-    opacity = (konsole_opacity if light else konsole_opacity_dark) / 100
-
-    logging.warning(f"opacity:{opacity}")
+    opacity = (konsole_opacity if mode else konsole_opacity_dark) / 100
 
     config = configparser.ConfigParser()
     config.optionxform = str

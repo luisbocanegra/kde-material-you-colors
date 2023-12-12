@@ -62,6 +62,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         schemes=schemes,
         konsole_opacity=config.read("konsole_opacity"),
         konsole_opacity_dark=config.read("konsole_opacity_dark"),
+        dark_light=dark_light,
     )
     if config.read("disable_konsole") is not True:
         konsole_utils.apply_color_scheme()
@@ -74,10 +75,11 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         )
     if config.read("pywal"):
         pywal_utils.apply_schemes(
-            dark_light,
+            light=config.read("light"),
             use_pywal=config.read("pywal"),
             pywal_light=config.read("pywal_light"),
             schemes=schemes,
+            dark_light=dark_light,
         )
     if needs_kwin_reload is True:
         kwin_utils.reload()
