@@ -337,6 +337,11 @@ def main():
     wallpaper_modified = utils.Watcher(file_utils.get_file_sha1(wallpaper.source))
     plugin_watcher = utils.Watcher(wallpaper.plugin)
     source_watcher = utils.Watcher(wallpaper.source)
+    if wallpaper.type == "screenshot":
+        head = "Screenshot mode enabled"
+        cont = f"Waiting {config.read('screenshot_delay')}s between updates"
+        notify.send_notification(head, cont)
+        logging.warning("%s, %s", head, cont)
     if wallpaper.error:
         notify.send_notification("Could not get wallpaper", str(wallpaper.error))
 
@@ -399,11 +404,16 @@ def main():
                 apply_themes.apply(config, wallpaper, light_mode_watcher.value)
                 apply = False
 
-        if group1 or plugin_watcher.changed:
+        if group1:
             if wallpaper.error:
                 notify.send_notification(
                     "Could not get wallpaper", str(wallpaper.error)
                 )
+            if plugin_watcher.changed and wallpaper.type == "screenshot":
+                head = "Screenshot mode enabled"
+                cont = f"Waiting {config.read('screenshot_delay')}s between updates"
+                notify.send_notification(head, cont)
+                logging.warning("%s, %s", head, cont)
             if wallpaper.source:
                 apply = True
 
@@ -419,11 +429,6 @@ def main():
                 counter += 1
             else:
                 counter = 0
-
-        if counter >= target_cycles and stop_apply is False:
-            logging.info(f"{wallpaper}")
-            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
-            counter = 0
 
         # print("counter:", counter)
 
