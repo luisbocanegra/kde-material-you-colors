@@ -1,4 +1,5 @@
-from PIL import Image
+import PIL
+import PIL.Image
 import os
 import hashlib
 
@@ -30,19 +31,27 @@ def get_smallest_image(directory):
     img_list = [directory + file for file in os.listdir(directory)]
     size_sorted = sorted(img_list, key=os.path.getsize)
 
-    r = None
+    landscape_imgs = []
+    portrait_imgs = []
     for image in size_sorted:
-        img = Image.open(image)
-        if img.size[0] > img.size[1]:
-            r = image
-            break
+        try:
+            img = PIL.Image.open(image)
+            if img.size[0] > img.size[1]:
+                landscape_imgs.append(image)
+            if img.size[0] < img.size[1]:
+                portrait_imgs.append(image)
+        except PIL.UnidentifiedImageError:
+            # ignore unsupported formats
+            pass
 
-    if r != None:
-        return r
-    elif size_sorted:
-        return size_sorted[0]
-    else:
-        return None
+    if landscape_imgs:
+        return landscape_imgs[0]
+
+    if portrait_imgs:
+        return portrait_imgs[0]
+
+    # pass list so caller knows we couldn't find a compatible format
+    return size_sorted
 
 
 def get_file_sha1(file_path):
