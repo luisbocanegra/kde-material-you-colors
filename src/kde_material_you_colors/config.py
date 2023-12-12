@@ -3,6 +3,7 @@ import logging
 import os
 from . import settings
 from .utils import color_utils
+from .utils import math_utils
 
 
 def get_conf(conf_path: str):
@@ -95,8 +96,11 @@ class Configs:
             "sierra_breeze_buttons_color": [args.sierra_breeze_buttons_color, None, 0],
             "disable_konsole": [args.disable_konsole, False, 0],
             "titlebar_opacity": [args.titlebar_opacity, None, 1],
+            "titlebar_opacity_dark": [args.titlebar_opacity_dark, None, 1],
             "toolbar_opacity": [args.toolbar_opacity, None, 1],
+            "toolbar_opacity_dark": [args.toolbar_opacity_dark, None, 1],
             "konsole_opacity": [args.konsole_opacity, None, 1],
+            "konsole_opacity_dark": [args.konsole_opacity_dark, None, 1],
             "color": [args.color, None, 3],
             "klassy_windeco_outline": [args.klassy_windeco_outline, None, 0],
             "custom_colors_list": [args.custom_colors_list, None, 3],
@@ -148,29 +152,29 @@ class Configs:
                 "Value for light_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0"
             )
 
-        if options["toolbar_opacity"] is not None and (
-            options["toolbar_opacity"] < 0 or options["toolbar_opacity"] > 100
-        ):
-            logging.warning(
-                "Value for toolbar_opacity must be an integer between 0 and 100, using default 100"
-            )
-            options["toolbar_opacity"] = 100
+        options["toolbar_opacity"] = math_utils.clip(
+            options["toolbar_opacity"], 0, 100, 100
+        )
 
-        if options["konsole_opacity"] is not None and (
-            options["konsole_opacity"] < 0 or options["konsole_opacity"] > 100
-        ):
-            logging.warning(
-                "Value for konsole_opacity must be an integer between 0 and 100, using default 100"
-            )
-            options["konsole_opacity"] = 100
+        options["toolbar_opacity_dark"] = math_utils.clip(
+            options["toolbar_opacity_dark"], 0, 100, 100
+        )
 
-        if options["titlebar_opacity"] is not None and (
-            options["titlebar_opacity"] < 0 or options["titlebar_opacity"] > 100
-        ):
-            logging.warning(
-                "Value for titlebar_opacity must be an integer between 0 and 100, using default 100"
-            )
-            options["konsole_opacity"] = 100
+        options["konsole_opacity"] = math_utils.clip(
+            options["konsole_opacity"], 0, 100, 100
+        )
+
+        options["konsole_opacity_dark"] = math_utils.clip(
+            options["konsole_opacity_dark"], 0, 100, 100
+        )
+
+        options["titlebar_opacity"] = math_utils.clip(
+            options["titlebar_opacity"], 0, 100, 100
+        )
+
+        options["titlebar_opacity_dark"] = math_utils.clip(
+            options["titlebar_opacity_dark"], 0, 100, 100
+        )
 
         if options["startup_delay"] < 0:
             logging.warning(
