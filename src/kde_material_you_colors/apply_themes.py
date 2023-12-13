@@ -83,4 +83,10 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         )
     if needs_kwin_reload is True:
         kwin_utils.reload()
+    pywal_utils.print_color_palette(
+        light=config.read("light"),
+        pywal_light=config.read("pywal_light"),
+        schemes=schemes,
+        dark_light=dark_light,
+    )
     utils.run_hook(config.read("on_change_hook"))
