@@ -66,8 +66,6 @@ pipx install kde-material-you-colors
 # Optional
 # pywal to theme other programs using Material You Colors
 pipx install pywal
-# Colr to display colored palette and seed colors from terminal (approximate)
-pipx install colr
 ```
 
 ### Arch Linux
@@ -76,7 +74,6 @@ pipx install colr
 
 ### Optional features
 
-- Install the [Colr](https://pypi.org/project/Colr/) python module to display colored palette and seed colors from terminal
 - Install the [pywal](https://pypi.org/project/pywal/) python module to theme other programs using Material You Colors
   - Check [pywal Customization Wiki](https://github.com/dylanaraps/pywal/wiki/Customization) to theme supported programs
 
