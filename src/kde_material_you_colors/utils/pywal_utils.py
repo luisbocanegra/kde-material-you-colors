@@ -66,7 +66,6 @@ def print_color_palette(
     )
 
     for i, (name, color) in enumerate(pywal_colors["colors"].items()):
-        i = int(i)
         fg = "30"
         if i == 0:
             fg = "39"
