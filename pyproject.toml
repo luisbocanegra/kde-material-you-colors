@@ -28,7 +28,6 @@ kde-material-you-colors = "kde_material_you_colors.main:main"
 
 [project.optional-dependencies]
 cli = [
-    "Colr>=0.9.1",
     "pywal>=3.3.0"
 ]
 
