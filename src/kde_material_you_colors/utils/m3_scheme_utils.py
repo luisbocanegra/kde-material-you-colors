@@ -1,9 +1,6 @@
 import logging
 import os
 from .. import settings
-
-if settings.USER_HAS_COLR:
-    import colr
 from . import color_utils
 from . import math_utils
 from . import notify
@@ -174,31 +171,26 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
                 if len(materialYouColors["best"]) > 1:
                     best_colors = f"Best colors: {settings.TERM_STY_BOLD}"
 
-                    for index, col in materialYouColors["best"].items():
-                        if settings.USER_HAS_COLR:
-                            best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{index}:{colr.color(col,fore=col)}"
-                        else:
-                            best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{index}:{settings.TERM_COLOR_WHI}{col}"
-                        if int(index) < len(materialYouColors["best"]) - 1:
-                            best_colors = best_colors + ","
+                    for i, color in materialYouColors["best"].items():
+                        rgb = color_utils.hex2rgb(color)
+                        preview = (
+                            f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
+                        )
+                        best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{i}:{preview}"
                     logging.info(best_colors)
 
                 seed = materialYouColors["seed"]
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
-                if settings.USER_HAS_COLR:
-                    logging.info(
-                        f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{colr.color(sedColor, fore=sedColor)}"
-                    )
-                else:
-                    logging.info(
-                        f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{settings.TERM_COLOR_WHI}{sedColor}"
-                    )
-
+                rgb = color_utils.hex2rgb(sedColor)
+                preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{sedColor} \033[0m"
+                logging.info(
+                    f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{preview}"
+                )
                 return materialYouColors
 
             except Exception as e:
-                logging.error(f"Error:\n{e}")
+                logging.exception(f"Error:\n{e}")
                 return None
 
 

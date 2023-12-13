@@ -8,7 +8,6 @@ import sysconfig
 from kde_material_you_colors.utils.utils import find_executable
 
 USERNAME = getpass.getuser()
-USER_HAS_COLR = importlib.util.find_spec("colr") is not None
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
 TEMPDIR = tempfile.gettempdir()

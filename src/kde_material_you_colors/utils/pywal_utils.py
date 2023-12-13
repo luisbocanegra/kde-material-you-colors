@@ -6,8 +6,6 @@ from ..schemeconfigs import ThemeConfig
 if settings.USER_HAS_PYWAL:
     import pywal
     from . import pywal_sequences_timeout
-if settings.USER_HAS_COLR:
-    import colr
 
 
 def apply_schemes(
@@ -48,30 +46,32 @@ def apply_schemes(
             logging.warning(
                 "Pywal option enabled but python module is not installed, ignored"
             )
-    # print palette
-    print_color_palette(pywal_colors)
 
 
-def print_color_palette(pywal_colors):
-    if settings.USER_HAS_COLR:
-        i = 0
-        for index, col in pywal_colors["colors"].items():
-            if i % 8 == 0 and i != 0:
-                print()
-            print(f'{colr.color("    ",back=hex2rgb(col))}', end="")
-            i += 1
-        print(f"{settings.TERM_STY_RESET}")
+def print_color_palette(
+    light=None,
+    pywal_light=None,
+    schemes: ThemeConfig = None,
+    dark_light=None,
+):
+    if pywal_light is not None:
+        mode = pywal_light
+    elif light is not None:
+        mode = light
     else:
-        logging.debug(
-            "Install colr python module to tint color codes and palette as they update"
-        )
-        # Print color palette from pywal.colors.palette
-        for i in range(0, 16):
-            if i % 8 == 0 and i != 0:
-                print()
+        mode = dark_light
 
-            if i > 7:
-                i = "8;5;%s" % i
+    pywal_colors = (
+        schemes.get_wal_light_scheme() if mode else schemes.get_wal_dark_scheme()
+    )
 
-            print("\033[4%sm%s\033[0m" % (i, " " * (80 // 20)), end="")
-        print("\n", end="")
+    for i, (name, color) in enumerate(pywal_colors["colors"].items()):
+        i = int(i)
+        fg = "30"
+        if i == 0:
+            fg = "39"
+        if i % 8 == 0 and i != 0:
+            print()
+        rgb = hex2rgb(color)
+        print(f"\033[48;2;{rgb[0]};{rgb[1]};{rgb[2]};{fg}m {color} \033[0m", end="")
+    print(f"{settings.TERM_STY_RESET}")

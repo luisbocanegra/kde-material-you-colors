@@ -10,6 +10,7 @@ from .utils.color_utils import (
 )
 from .utils import math_utils
 from .utils import string_utils
+from .utils import color_utils
 
 
 class ThemeConfig:
@@ -25,7 +26,11 @@ class ThemeConfig:
     ):
         if custom_colors_list is not None:
             colors_best = custom_colors_list
-            logging.info(f"Using custom colors: {colors_best}")
+            colors_str = ""
+            for color in custom_colors_list:
+                rgb = color_utils.hex2rgb(color)
+                colors_str += f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
+            logging.info(f"Using custom colors: {colors_str}")
         else:
             colors_best = list(colors["best"].values())
         # colors_best = list(colors['best'].values())
