@@ -401,12 +401,15 @@ ColumnLayout {
                                     property real dark_brightness_multiplier: 1.0; \
                                     property bool plasma_follows_scheme: true; \
                                     property bool pywal_follows_scheme: true; \
-                                    property string konsole_profile; \
-                                    property int konsole_opacity: 100; \
+                                    property bool disable_konsole: false; \
                                     property string iconslight; \
                                     property string iconsdark; \
+                                    property int konsole_opacity: 100; \
+                                    property int konsole_opacity_dark: 100; \
                                     property int titlebar_opacity: 100; \
+                                    property int titlebar_opacity_dark: 100; \
                                     property int toolbar_opacity: 100; \
+                                    property int toolbar_opacity_dark: 100; \
                                     property bool sierra_breeze_buttons_color: false; \
                                     property bool klassy_windeco_outline: false; \
                                     property string darker_window_list; \
@@ -414,6 +417,9 @@ ColumnLayout {
                                     property string gui_custom_exec_location; \
                                     property bool use_startup_delay: false; \
                                     property int startup_delay: 0; \
+                                    property int main_loop_delay: 1; \
+                                    property int screenshot_delay: 900; \
+                                    property bool once_after_change: false; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -548,25 +554,20 @@ ColumnLayout {
                             RowLayout {
                                 Label {
                                     text: "From Wallpaper"
-                                    Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                                 }
 
                                 CheckBox {
                                     id: customColorCheck
                                     onCheckedChanged: {
                                         settings.color = checked?"":settings.color_last
-                                        //saveCustomColorsList()
                                     }
                                 }
-
-                                Item { implicitWidth: PlasmaCore.Units.gridUnit / 2}
 
                                 // Monitor number when wallpaper colors is enabled
                                 Label {
                                     visible: settings.color==""
-                                    text: "Monitor/Screen number"
-                                    Layout.alignment: Qt.AlignLeft
-                                    // Layout.fillWidth: true
+                                    text: "on screen"
+                                    Layout.alignment: Qt.AlignVBottom
                                 }
 
                                 TextField {
@@ -706,11 +707,29 @@ ColumnLayout {
                             }
 
                             // TEXT COLORS SECTION
-                            PlasmaExtras.Heading {
-                                level: 1
-                                text: "Text colors"
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "Text colors"
+                                    // Layout.alignment: Qt.AlignHCenter
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: textColorsHelpBtn
+                                    icon.name: "help-info"
+
+                                    hoverEnabled: true
+                                    onClicked: textColorsHelpPopup.show()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: textColorsHelpPopup
+                                        x: textColorsHelpBtn.width / 2
+                                        y: textColorsHelpBtn.height
+                                        text: "Applies to <strong>Konsole</strong>, <strong>Pywal</strong>, <strong>KSyntaxHighlighting</strong>"
+                                    }
+                                }
                             }
+
                             // Enable/disable taking text colors from wallpaper
                             RowLayout {
                                 Label {
@@ -779,17 +798,10 @@ ColumnLayout {
                                 }
                             }
 
-                            Label {
-                                text: "Applies to Konsole, Pywal, KSyntaxHighlighting"
-                                Layout.alignment: Qt.AlignHCenter
-                                opacity: 0.7
-                            }
-
-
                             // PYWAL
                             RowLayout {
                                 Label {
-                                    text: "Apply to pywal"
+                                    text: "Apply to Pywal"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
@@ -803,6 +815,23 @@ ColumnLayout {
                                 }
                             }
 
+                            RowLayout {
+                                Label {
+                                    text: "Apply to Konsole"
+                                    Layout.alignment: Qt.AlignLeft
+                                    // Layout.fillWidth: true
+                                }
+
+                                CheckBox {
+                                    id: enableKonsole
+                                    checked: !settings.disable_konsole
+
+                                    onCheckedChanged: {
+                                        settings.disable_konsole = !checked
+                                    }
+                                }
+                            }
+
 
                             Rectangle {
                                 Layout.preferredWidth: mainLayout.width
@@ -812,10 +841,27 @@ ColumnLayout {
                             }
 
                             // DARK MODE
-                            PlasmaExtras.Heading {
-                                level: 1
-                                text: "Dark mode"
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "Dark mode"
+                                    // Layout.alignment: Qt.AlignHCenter
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: darkModeHelpBtn
+                                    icon.name: "help-info"
+
+                                    hoverEnabled: true
+                                    onClicked: darkModeHelpPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: darkModeHelpPopup
+                                        x: darkModeHelpBtn.width / 2
+                                        y: darkModeHelpBtn.height
+                                        text: "<i>Follow color scheme</i> applies only for Material You color schemes when changed by you or other programs"
+                                    }
+                                }
                             }
                             // Headings
                             RowLayout {
@@ -922,16 +968,6 @@ ColumnLayout {
                                 }
                             }
                             // pywal dark
-                            Text {
-                                text: "<i>Follow color scheme</i> applies only for Material You color schemes when changed by you or other programs"
-                                Layout.alignment: Qt.AlignHCenter
-                                // Layout.fillWidth: true
-                                Layout.preferredWidth: parent.width
-                                opacity: 0.7
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
-                            }
 
                             Rectangle {
                                 Layout.preferredWidth: mainLayout.width
@@ -1059,13 +1095,6 @@ ColumnLayout {
                                 }
                             }
 
-                            Rectangle {
-                                Layout.preferredWidth: mainLayout.width
-                                height: 1
-                                color: dividerColor
-                                opacity: dividerOpacity
-                            }
-
                             // Konsole
                             PlasmaExtras.Heading {
                                 level: 1
@@ -1073,30 +1102,16 @@ ColumnLayout {
                                 Layout.alignment: Qt.AlignHCenter
                             }
 
-                            RowLayout {
-                                Label {
-                                    text: "Profile"
-                                    Layout.alignment: Qt.AlignLeft
-                                }
-
-                                TextField {
-                                    placeholderText: qsTr("Konsole profile name e.g Profile 1")
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
-                                    Layout.fillWidth: true
-                                    text: settings.konsole_profile
-
-                                    onAccepted: {
-                                        settings.konsole_profile = text
-                                    }
-                                }
+                            PlasmaExtras.Heading {
+                                level: 4
+                                text: "Background opacity"
+                                Layout.alignment: Qt.AlignHCenter
                             }
 
                             RowLayout {
+
                                 Label {
-                                    text: "Opacity"
+                                    text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
@@ -1119,6 +1134,35 @@ ColumnLayout {
                                     value: settings.konsole_opacity
                                     onValueModified: {
                                         settings.konsole_opacity = value
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Label {
+                                    text: "Dark"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                Slider {
+                                    value: settings.konsole_opacity_dark
+                                    from: 0
+                                    to: 100
+                                    stepSize: 5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.konsole_opacity_dark = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                SpinBox {
+                                    Layout.preferredWidth: controlWidth*1.3
+                                    leftPadding: textAreaPadding
+                                    from: 0
+                                    to: 100
+                                    value: settings.konsole_opacity_dark
+                                    onValueModified: {
+                                        settings.konsole_opacity_dark = value
                                     }
                                 }
                             }
@@ -1210,10 +1254,32 @@ ColumnLayout {
                             }
 
 
-                            // Opacity
+                            RowLayout {
+                                Layout.alignment: Qt.AlignHCenter
+                                PlasmaExtras.Heading {
+                                    level: 4
+                                    text: "Titlebar opacity"
+                                    // Layout.alignment: Qt.AlignHCenter
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: titlebarOpacityHelpBtn
+                                    icon.name: "help-info"
+
+                                    hoverEnabled: true
+                                    onClicked: titlebarOpacityHelpPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: titlebarOpacityHelpPopup
+                                        x: titlebarOpacityHelpBtn.width / 2
+                                        y: titlebarOpacityHelpBtn.height
+                                        text: "Requires <strong>Klassy</strong> or <strong>Sierra Breeze Enhanced</strong> window decoration"
+                                    }
+                                }
+                            }
+
                             RowLayout {
                                 Label {
-                                    text: "Titlebar opacity"
+                                    text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
@@ -1240,20 +1306,61 @@ ColumnLayout {
                                 }
                             }
 
-                            Text {
-                                text: "Requires Klassy or Sierra Breeze Enhanced window decoration"
+                            RowLayout {
+                                Label {
+                                    text: "Dark"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                Slider {
+                                    value: settings.titlebar_opacity_dark
+                                    from: 0
+                                    to: 100
+                                    stepSize: 5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.titlebar_opacity_dark = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                SpinBox {
+                                    Layout.preferredWidth: controlWidth*1.3
+                                    leftPadding: textAreaPadding
+                                    from: 0
+                                    to: 100
+                                    value: settings.titlebar_opacity_dark
+                                    onValueModified: {
+                                        settings.titlebar_opacity_dark = value
+                                    }
+                                }
+                            }
+
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                                // Layout.fillWidth: true
-                                Layout.preferredWidth: mainLayout.width
-                                opacity: 0.7
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
+                                PlasmaExtras.Heading {
+                                    level: 4
+                                    text: "Toolbar opacity"
+                                    // Layout.alignment: Qt.AlignHCenter
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: toolbarOpacityHelpBtn
+                                    icon.name: "help-info"
+
+                                    hoverEnabled: true
+                                    onClicked: toolbarOpacityHelpPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: toolbarOpacityHelpPopup
+                                        x: toolbarOpacityHelpBtn.width / 2
+                                        y: toolbarOpacityHelpBtn.height
+                                        text: "Requires <strong>Lightly</strong> Application Style"
+                                    }
+                                }
                             }
 
                             RowLayout {
                                 Label {
-                                    text: "Toolbar opacity"
+                                    text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
@@ -1280,15 +1387,33 @@ ColumnLayout {
                                 }
                             }
 
-                            Text {
-                                text: "Requires Lightly Application Style"
-                                Layout.alignment: Qt.AlignHCenter
-                                // Layout.fillWidth: true
-                                Layout.preferredWidth: mainLayout.width
-                                opacity: 0.7
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
+                            RowLayout {
+                                Label {
+                                    text: "Dark"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                Slider {
+                                    value: settings.toolbar_opacity_dark
+                                    from: 0
+                                    to: 100
+                                    stepSize: 5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.toolbar_opacity_dark = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                SpinBox {
+                                    Layout.preferredWidth: controlWidth*1.3
+                                    leftPadding: textAreaPadding
+                                    from: 0
+                                    to: 100
+                                    value: settings.toolbar_opacity_dark
+                                    onValueModified: {
+                                        settings.toolbar_opacity_dark = value
+                                    }
+                                }
                             }
 
                             RowLayout {
@@ -1326,29 +1451,44 @@ ColumnLayout {
                                 }
                             }
 
-                            Text {
-                                text: "Match Titlebar and Window color for these themed windows (space separated)"
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.preferredWidth: mainLayout.width
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
-                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
-                            }
 
-                            TextField {
-                                placeholderText: qsTr("Window class names e.g konsole alacritty kitty")
-                                topPadding: textAreaPadding
-                                bottomPadding: textAreaPadding
-                                leftPadding: textAreaPadding
-                                rightPadding: textAreaPadding
-                                Layout.fillWidth: true
-                                text: settings.darker_window_list
 
-                                onAccepted: {
-                                    settings.darker_window_list = text
+                            RowLayout {
+                                Label {
+                                    text: "Match Titlebar"
+                                    Layout.alignment: Qt.AlignLeft
+                                    color: Kirigami.Theme.textColor
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                TextField {
+                                    placeholderText: qsTr("Window class names e.g konsole alacritty kitty")
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    Layout.fillWidth: true
+                                    text: settings.darker_window_list
+
+                                    onAccepted: {
+                                        settings.darker_window_list = text
+                                    }
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: matchTitlebarOpacityHelpBtn
+                                    icon.name: "help"
+
+                                    hoverEnabled: true
+                                    onClicked: matchTitlebarOpacityHelpPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: matchTitlebarOpacityHelpPopup
+                                        x: matchTitlebarOpacityHelpBtn.width / 2
+                                        y: matchTitlebarOpacityHelpBtn.height
+                                        text: "Match Titlebar and Window color for these themed windows (space separated)"
+                                    }
                                 }
                             }
-
 
                             Rectangle {
                                 Layout.preferredWidth: mainLayout.width
@@ -1357,23 +1497,35 @@ ColumnLayout {
                                 opacity: dividerOpacity
                             }
 
-                            PlasmaExtras.Heading {
-                                level: 1
-                                text: "Custom script"
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                            }
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "Run script"
+                                    // Layout.alignment: Qt.AlignHCenter
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: scriptInfoBtn
+                                    icon.name: "help-info"
 
-                            Text {
-                                text: "Script to be executed on start or wallpaper/dark/light/settings change"
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.preferredWidth: mainLayout.width
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
+                                    hoverEnabled: true
+                                    onClicked: scriptInfoPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: scriptInfoPopup
+                                        x: scriptInfoBtn.width / 2
+                                        y: scriptInfoBtn.height
+                                        text: "Absolute path of script to be executed on start or wallpaper/dark/light/settings change"
+                                    }
+                                }
                             }
 
                             RowLayout {
+                                Label {
+                                    text: "Script"
+                                }
                                 TextField {
-                                    placeholderText: qsTr("Executable location e.g /home/luis/.local/bin/conky-colors.sh")
+                                    placeholderText: qsTr("e.g /home/"+username+"/scripts/script.sh")
                                     topPadding: textAreaPadding
                                     bottomPadding: textAreaPadding
                                     leftPadding: textAreaPadding
@@ -1401,27 +1553,22 @@ ColumnLayout {
 
                             PlasmaExtras.Heading {
                                 level: 1
-                                text: "Delay on boot"
+                                text: "Delay options"
                                 Layout.alignment: Qt.AlignHCenter
                             }
 
-                            Text {
-                                text: "Startup delay delay before doing anything, useful for waiting for other utilities that may change themes on boot"
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.preferredWidth: mainLayout.width
-                                color: Kirigami.Theme.textColor
-                                wrapMode: Text.WordWrap
-                            }
-
-                            RowLayout {
-                                Label {
-                                    text: "Seconds"
+                            RowLayout{
+                                Text {
+                                    text: "Startup delay (seconds)"
                                     Layout.alignment: Qt.AlignLeft
+                                    // Layout.preferredWidth: mainLayout.width
                                     // Layout.fillWidth: true
+                                    color: Kirigami.Theme.textColor
+                                    wrapMode: Text.WordWrap
                                 }
 
                                 TextField {
-                                    Layout.preferredWidth: controlWidth
+                                    Layout.preferredWidth: controlWidth * 1.5
                                     topPadding: textAreaPadding
                                     bottomPadding: textAreaPadding
                                     leftPadding: textAreaPadding
@@ -1438,6 +1585,113 @@ ColumnLayout {
                                         settings.startup_delay = parseInt(text)
                                         // reset color selection
                                         settings.use_startup_delay = settings.startup_delay > 0
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    id: startupDelayBtn
+                                    icon.name: "help"
+
+                                    hoverEnabled: true
+                                    onClicked: startupDelayPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: startupDelayPopup
+                                        x: startupDelayBtn.width / 2
+                                        y: startupDelayBtn.height
+                                        text: "Delay before doing anything.\nUseful for waiting for other utilities that may change themes on boot (default is 0)"
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Text {
+                                    text: "Wallpaper detection delay (seconds)"
+                                    Layout.alignment: Qt.AlignLeft
+                                    // Layout.preferredWidth: mainLayout.width
+                                    // Layout.fillWidth: true
+                                    color: Kirigami.Theme.textColor
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                TextField {
+                                    Layout.preferredWidth: controlWidth * 1.5
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    placeholderText: "0-?"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseInt(settings.main_loop_delay)
+                                    // Layout.fillWidth: true
+                                    validator: IntValidator {
+                                        bottom: 0
+                                    }
+
+                                    onAccepted: {
+                                        settings.main_loop_delay = parseInt(text)
+                                        // reset color selection
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    id: mainDelayBtn
+                                    icon.name: "help"
+
+                                    hoverEnabled: true
+                                    onClicked: mainDelayPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: mainDelayPopup
+                                        x: mainDelayBtn.width / 2
+                                        y: mainDelayBtn.height
+                                        text: "Main loop delay (in seconds).\nUseful for decreasing unnecessary detections or save a bit of power (default is 1)"
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Text {
+                                    text: "Screenshot method delay (seconds)"
+                                    Layout.alignment: Qt.AlignLeft
+                                    // Layout.preferredWidth: mainLayout.width
+                                    // Layout.fillWidth: true
+                                    color: Kirigami.Theme.textColor
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                TextField {
+                                    Layout.preferredWidth: controlWidth * 1.5
+                                    topPadding: textAreaPadding
+                                    bottomPadding: textAreaPadding
+                                    leftPadding: textAreaPadding
+                                    rightPadding: textAreaPadding
+                                    placeholderText: "0-?"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseInt(settings.screenshot_delay)
+                                    // Layout.fillWidth: true
+                                    validator: IntValidator {
+                                        bottom: 0
+                                    }
+
+                                    onAccepted: {
+                                        settings.screenshot_delay = parseInt(text)
+                                        // reset color selection
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    id: screenshotDelayBtn
+                                    icon.name: "help"
+
+                                    hoverEnabled: true
+                                    onClicked: screenshotDelayPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: screenshotDelayPopup
+                                        x: screenshotDelayBtn.width / 2
+                                        y: screenshotDelayBtn.height
+                                        text: "Delay after taking screenshot (in seconds).\nUseful for live wallpapers that display a constant transition based on time or other circumstances, which would trigger colors generation too often (default is 900)"
                                     }
                                 }
                             }
