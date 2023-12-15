@@ -594,7 +594,7 @@ ColumnLayout {
 
                                 PlasmaComponents3.ToolButton {
                                     id: screenInfoBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
                                     visible: plasmoid.screen !== -1
 
                                     hoverEnabled: true
@@ -731,7 +731,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: textColorsHelpBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: textColorsHelpPopup.show()
@@ -865,7 +865,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: darkModeHelpBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: darkModeHelpPopup.open()
@@ -1278,7 +1278,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: titlebarOpacityHelpBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: titlebarOpacityHelpPopup.open()
@@ -1359,7 +1359,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: toolbarOpacityHelpBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: toolbarOpacityHelpPopup.open()
@@ -1491,7 +1491,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: matchTitlebarOpacityHelpBtn
-                                    icon.name: "help"
+                                    icon.name: "help-contents"
 
                                     hoverEnabled: true
                                     onClicked: matchTitlebarOpacityHelpPopup.open()
@@ -1521,7 +1521,7 @@ ColumnLayout {
                                 }
                                 PlasmaComponents3.ToolButton {
                                     id: scriptInfoBtn
-                                    icon.name: "help-info"
+                                    icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: scriptInfoPopup.open()
@@ -1605,7 +1605,7 @@ ColumnLayout {
 
                                 PlasmaComponents3.ToolButton {
                                     id: startupDelayBtn
-                                    icon.name: "help"
+                                    icon.name: "help-contents"
 
                                     hoverEnabled: true
                                     onClicked: startupDelayPopup.open()
@@ -1651,7 +1651,7 @@ ColumnLayout {
 
                                 PlasmaComponents3.ToolButton {
                                     id: mainDelayBtn
-                                    icon.name: "help"
+                                    icon.name: "help-contents"
 
                                     hoverEnabled: true
                                     onClicked: mainDelayPopup.open()
@@ -1697,7 +1697,7 @@ ColumnLayout {
 
                                 PlasmaComponents3.ToolButton {
                                     id: screenshotDelayBtn
-                                    icon.name: "help"
+                                    icon.name: "help-contents"
 
                                     hoverEnabled: true
                                     onClicked: screenshotDelayPopup.open()
