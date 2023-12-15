@@ -567,7 +567,6 @@ ColumnLayout {
                                 Label {
                                     visible: settings.color==""
                                     text: "on screen"
-                                    Layout.alignment: Qt.AlignVBottom
                                 }
 
                                 TextField {
@@ -590,6 +589,22 @@ ColumnLayout {
                                         settings.monitor = parseInt(text)
                                         // reset color selection
                                         settings.ncolor = 0
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    id: screenInfoBtn
+                                    icon.name: "help-info"
+                                    visible: plasmoid.screen !== -1
+
+                                    hoverEnabled: true
+                                    onClicked: screenInfoPopup.show()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: screenInfoPopup
+                                        x: screenInfoBtn.width / 2
+                                        y: screenInfoBtn.height
+                                        text: "<strong>Tip:</strong> This widget is on screen " + plasmoid.screen.toString()
                                     }
                                 }
                             }
@@ -859,7 +874,7 @@ ColumnLayout {
                                         id: darkModeHelpPopup
                                         x: darkModeHelpBtn.width / 2
                                         y: darkModeHelpBtn.height
-                                        text: "<i>Follow color scheme</i> applies only for Material You color schemes when changed by you or other programs"
+                                        text: "<strong>Follow color scheme</strong> applies only for Material You color schemes when changed by you or other programs"
                                     }
                                 }
                             }
