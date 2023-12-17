@@ -30,7 +30,7 @@ class ThemeConfig:
             for color in custom_colors_list:
                 rgb = color_utils.hex2rgb(color)
                 colors_str += f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
-            logging.info(f"Using custom colors: {colors_str}")
+            logging.info(f"Using custom colors: {colors_str[:-5]}")
         else:
             colors_best = list(colors["best"].values())
         # colors_best = list(colors['best'].values())

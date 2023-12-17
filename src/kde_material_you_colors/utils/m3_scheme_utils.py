@@ -177,13 +177,13 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
                             f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
                         )
                         best_colors += f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{i}:{preview}"
-                    logging.info(best_colors)
+                    logging.info(best_colors[:-5])
 
                 seed = materialYouColors["seed"]
                 sedColor = list(seed.values())[0]
                 seedNo = list(seed.keys())[0]
                 rgb = color_utils.hex2rgb(sedColor)
-                preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{sedColor} \033[0m"
+                preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{sedColor}\033[0m"
                 logging.info(
                     f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{preview}"
                 )
