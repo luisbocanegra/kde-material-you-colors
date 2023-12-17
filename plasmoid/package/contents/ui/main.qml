@@ -7,7 +7,7 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.components 3.0 as PlasmaComponents3
 
 Item {
-    id:root
+    id:main
 
     // Allow full view on the desktop
     Plasmoid.preferredRepresentation: plasmoid.location ===
@@ -19,24 +19,43 @@ Item {
         anchors.fill: parent
     }
 
+    signal togglePauseMode()
+    signal updatePauseMode()
+
     property bool doSettingsReload: false
+    property bool pauseModeMain: true
+    property bool lastPauseState: true
+    property bool expanded: plasmoid.expanded
+    property bool inTray: (plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
+    property bool trayExpanded: (expanded && inTray)
+    property string pauseBtnIcon: pauseModeMain ? 'media-playback-start' : 'media-playback-pause'
+    property string pauseBtnText: pauseModeMain ? 'Resume automatic theming' : 'Pause automatic theming'
 
     Plasmoid.fullRepresentation: FullRepresentation {
-        doSettingsReload: root.doSettingsReload
+        id: fullRepresentationComponent
+        parentMain: main
     }
 
-    function reloadConfig() {
-        console.log("RELOAD");
-        doSettingsReload = true
-        doSettingsReload = false
+    function action_pauseBackend() {
+        console.log("action_pauseBackend called")
+        togglePauseMode()
     }
-
-    function action_reloadConfig() {
-        reloadConfig()
-    }
-
 
     Component.onCompleted: function() {
-        Plasmoid.setAction('reloadConfig', i18n("Reload configuration file"), 'view-refresh');
+        Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
+    }
+
+    Timer {
+        interval: trayExpanded ? 100 : 1000
+        running: true
+        repeat: true
+        id: startMe
+        onTriggered: function() {
+            if (pauseModeMain !== lastPauseState) {
+                Plasmoid.removeAction('pauseBackend')
+                Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
+            }
+            lastPauseState = pauseModeMain
+        }
     }
 }

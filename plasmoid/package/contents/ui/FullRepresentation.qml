@@ -16,8 +16,8 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.plasmoid 2.0
 
 ColumnLayout {
-    id: root
-    Layout.minimumWidth: PlasmaCore.Units.gridUnit * 19
+    id: fullRepresentation
+    Layout.minimumWidth: PlasmaCore.Units.gridUnit * 20
     Layout.minimumHeight: PlasmaCore.Units.gridUnit * 19
     Layout.preferredWidth: rootRep.width
     Layout.preferredHeight: rootRep.height
@@ -48,6 +48,29 @@ ColumnLayout {
 
     property bool showAdvanced: false
 
+    property bool pauseMode: false
+
+    signal savePauseMode()
+
+    property Item parentMain
+
+    Connections {
+        target: parentMain
+        function onTogglePauseMode() {
+            fullRepresentation.pauseMode = !fullRepresentation.pauseMode
+            parentMain.pauseModeMain = fullRepresentation.pauseMode
+            savePauseMode()
+        }
+    }
+
+    Connections {
+        target: parentMain
+        function onUpdatePauseMode() {
+            parentMain.pauseModeMain = fullRepresentation.pauseMode
+        }
+    }
+
+
     // Get a list of installed icon themes as id,name
     // - discard hidden themes
     // - discard cursor themes
@@ -64,11 +87,10 @@ ColumnLayout {
     }
 
     onConfigSha1Changed: {
-        if (autoReloadEnabled) {
-            console.log("@@@@@ RELOADING ID:", plasmoid.id)
-            doSettingsReload = true
-            doSettingsReload = false
-        }
+        // trigger a reload when config changes to update view
+        console.log("@@@@@ RELOADING ID:", plasmoid.id)
+        doSettingsReload = true
+        doSettingsReload = false
     }
 
     function findExecutablePath() {
@@ -78,10 +100,6 @@ ColumnLayout {
             temp = StandardPaths.findExecutable(execName,
                         homeDir+"/.local/bin").toString().substring(7)
         }
-
-        // if (temp == "") {
-        //     exec
-        // }
         execPath = temp
 
     }
@@ -228,20 +246,6 @@ ColumnLayout {
 
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
-                    icon.name: 'view-refresh'
-                    text: Plasmoid.action("reloadConfig").text
-
-                    onClicked: {
-                        reloadConfig()
-                    }
-
-                    PlasmaComponents3.ToolTip {
-                        text: parent.text
-                    }
-                }
-
-                PlasmaComponents3.ToolButton {
-                    display: PlasmaComponents3.AbstractButton.IconOnly
                     visible: !onDesktop
                     icon.name: 'configure'
                     text: Plasmoid.action("configure").text
@@ -257,22 +261,35 @@ ColumnLayout {
 
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
-
-                    visible: !onDesktop
-
-                    icon.name: 'pin'
-
-                    text: i18n("Keep Open")
-
-                    checked: !autoHide
+                    checkable: false
+                    id: pauseBtn
+                    icon.name: fullRepresentation.pauseMode ? 'media-playback-start' : 'media-playback-pause'
+                    text: fullRepresentation.pauseMode ? 'Resume automatic theming' : 'Pause automatic theming'
 
                     onClicked: {
-                        autoHide = !autoHide
-                        plasmoid.hideOnWindowDeactivate = autoHide
+                        fullRepresentation.pauseMode = !fullRepresentation.pauseMode
+                        savePauseMode()
                     }
 
                     PlasmaComponents3.ToolTip {
                         text: parent.text
+                    }
+                }
+
+                PlasmaComponents3.ToolButton {
+                    display: PlasmaComponents3.AbstractButton.IconOnly
+                    visible: !onDesktop
+                    icon.name: 'pin'
+                    text: i18n("Keep Open")
+                    checked: !autoHide
+
+                    PlasmaComponents3.ToolTip {
+                        text: parent.text
+                    }
+
+                    onClicked: {
+                        autoHide = !autoHide
+                        plasmoid.hideOnWindowDeactivate = autoHide
                     }
                 }
             }
@@ -308,11 +325,9 @@ ColumnLayout {
                 contentItem: ListView {
                     id: listView
                     // reserve space for the scrollbar
-                    property var sideMargin: PlasmaCore.Units.smallSpacing +
-                                            scrollView.ScrollBar.vertical.width
+                    property var sideMargin: PlasmaCore.Units.mediumSpacing
 
-                    leftMargin: sideMargin - (scrollView.ScrollBar.vertical.visible ?
-                                            scrollView.ScrollBar.vertical.width : 0)
+                    leftMargin: sideMargin
                     rightMargin: sideMargin
                     boundsBehavior: Flickable.StopAtBounds
                     clip: true
@@ -335,13 +350,21 @@ ColumnLayout {
                         property var materialYouData: null
                         property var materialYouDataString: null
 
-                        property string doSettingsReload: root.doSettingsReload
-                        property bool showAdvanced: root.showAdvanced
+                        property string doSettingsReload: fullRepresentation.doSettingsReload
+                        property bool showAdvanced: fullRepresentation.showAdvanced
+                        property bool pauseMode: fullRepresentation.pauseMode
 
                         onDoSettingsReloadChanged: {
                             if (doSettingsReload) {
                                 destroySettings();
                                 createSettings();
+                            }
+                        }
+
+                        Connections {
+                            target: fullRepresentation
+                            function onSavePauseMode() {
+                                settings.pause_mode = fullRepresentation.pauseMode
                             }
                         }
 
@@ -365,14 +388,16 @@ ColumnLayout {
                         }
 
                         Timer {
-                            interval: 1000;
-                            running: autoReloadEnabled
+                            interval: autoReloadEnabled ? 1000 : 2000
+                            running: true
                             repeat: true;
                             onTriggered: {
                                 checkBackend.exec(checkBackendCommand)
                                 checkConfigChange.exec(checkConfigChangeCommand)
                                 readMaterialYouData.exec()
                                 findExecutablePath()
+                                fullRepresentation.pauseMode = settings.pause_mode
+                                parentMain.updatePauseMode()
                             }
                         }
 
@@ -420,6 +445,7 @@ ColumnLayout {
                                     property int main_loop_delay: 1; \
                                     property int screenshot_delay: 900; \
                                     property bool once_after_change: false; \
+                                    property bool pause_mode: false; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -535,12 +561,12 @@ ColumnLayout {
                             color: Kirigami.Theme.neutralTextColor
                             wrapMode: Text.WordWrap
                             horizontalAlignment: Text.AlignHCenter
-                            visible: root.execPath == ""
+                            visible: fullRepresentation.execPath == ""
                         }
 
                         // NORMAL SETTINGS
                         ColumnLayout {
-                            visible: !root.showAdvanced
+                            visible: !fullRepresentation.showAdvanced
                             Layout.preferredWidth: mainLayout.width
                             spacing: PlasmaCore.Units.smallSpacing
 
@@ -618,6 +644,7 @@ ColumnLayout {
                                 Label {
                                     text: "Select color"
                                     id:selectColorLabel
+                                    Layout.fillWidth: settings.color!==""
                                 }
 
                                 // Single color picker when color is not empty
@@ -723,18 +750,22 @@ ColumnLayout {
 
                             // TEXT COLORS SECTION
                             RowLayout {
-                                Layout.alignment: Qt.AlignHCenter
+                                Item { Layout.fillWidth: true }
+
                                 PlasmaExtras.Heading {
+                                    id: headingTextColors
                                     level: 1
                                     text: "Text colors"
-                                    // Layout.alignment: Qt.AlignHCenter
+                                    anchors.centerIn: parent
                                 }
+
                                 PlasmaComponents3.ToolButton {
                                     id: textColorsHelpBtn
                                     icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: textColorsHelpPopup.show()
+                                    anchors.left: headingTextColors.right
 
                                     PlasmaComponents3.ToolTip {
                                         id: textColorsHelpPopup
@@ -762,13 +793,6 @@ ColumnLayout {
                             }
 
                             // Show color picker buttons when custom_colors_list is not set
-                            // Hint
-                            Label {
-                                visible: settings.custom_colors_list !==""
-                                text: "Tap each button to change color"
-                                Layout.alignment: Qt.AlignHCenter
-                                opacity: 0.7
-                            }
 
                             // Row of color pickers
                             RowLayout {
@@ -857,18 +881,23 @@ ColumnLayout {
 
                             // DARK MODE
                             RowLayout {
-                                Layout.alignment: Qt.AlignHCenter
+                                Item {
+                                    Layout.fillWidth: true
+                                }
                                 PlasmaExtras.Heading {
                                     level: 1
                                     text: "Dark mode"
-                                    // Layout.alignment: Qt.AlignHCenter
+                                    anchors.centerIn: parent
+                                    id: headingDarkMode
                                 }
+
                                 PlasmaComponents3.ToolButton {
                                     id: darkModeHelpBtn
                                     icon.name: "help-hint"
 
                                     hoverEnabled: true
                                     onClicked: darkModeHelpPopup.open()
+                                    anchors.left: headingDarkMode.right
 
                                     PlasmaComponents3.ToolTip {
                                         id: darkModeHelpPopup
@@ -880,6 +909,7 @@ ColumnLayout {
                             }
                             // Headings
                             RowLayout {
+                                Layout.preferredWidth: mainLayout.width
                                 ColumnLayout {
                                     Layout.preferredWidth: mainLayout.width / 2
 
@@ -910,6 +940,7 @@ ColumnLayout {
                             }
                             // plasma dark
                             RowLayout {
+                                Layout.preferredWidth: mainLayout.width
                                 ColumnLayout {
                                     Layout.preferredWidth: mainLayout.width/2
                                     Layout.alignment: Qt.AlignBottom
@@ -1089,11 +1120,11 @@ ColumnLayout {
 
                             PlasmaComponents3.ToolButton {
                                 Layout.alignment: Qt.AlignHCenter
-                                text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
+                                text: fullRepresentation.showAdvanced?"Hide advanced settings":"Show advanced settings"
                                 icon.name: 'configure'
-                                checked: root.showAdvanced
+                                checked: fullRepresentation.showAdvanced
                                 onClicked: {
-                                    root.showAdvanced = !root.showAdvanced
+                                    fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced
                                 }
                             }
                         }
@@ -1101,8 +1132,8 @@ ColumnLayout {
                         // ADVANCED SECTION
                         ColumnLayout {
                             id: advancedSection
-                            visible: root.showAdvanced
-                            // spacing: PlasmaCore.Units.smallSpacing
+                            visible: fullRepresentation.showAdvanced
+                            Layout.preferredWidth: mainLayout.width
 
                             onVisibleChanged: {
                                 if (visible) {
@@ -1265,7 +1296,10 @@ ColumnLayout {
                             PlasmaExtras.Heading {
                                 level: 1
                                 text: "Titlebar, Toolbar & Window Decorations"
-                                Layout.alignment: Qt.AlignHCenter
+                                Layout.preferredWidth: parent.width
+                                color: Kirigami.Theme.textColor
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
                             }
 
 
@@ -1614,14 +1648,14 @@ ColumnLayout {
                                         id: startupDelayPopup
                                         x: startupDelayBtn.width / 2
                                         y: startupDelayBtn.height
-                                        text: "Delay before doing anything.\nUseful for waiting for other utilities that may change themes on boot (default is 0)"
+                                        text: "Delay before doing anything\nUseful for waiting for other utilities that may change themes on boot (default is 0)"
                                     }
                                 }
                             }
 
                             RowLayout {
                                 Text {
-                                    text: "Wallpaper detection delay (seconds)"
+                                    text: "Wallpaper detection delay"
                                     Layout.alignment: Qt.AlignLeft
                                     // Layout.preferredWidth: mainLayout.width
                                     // Layout.fillWidth: true
@@ -1667,7 +1701,7 @@ ColumnLayout {
 
                             RowLayout {
                                 Text {
-                                    text: "Screenshot method delay (seconds)"
+                                    text: "Screenshot method delay"
                                     Layout.alignment: Qt.AlignLeft
                                     // Layout.preferredWidth: mainLayout.width
                                     // Layout.fillWidth: true
@@ -1711,16 +1745,34 @@ ColumnLayout {
                                 }
                             }
 
+                            RowLayout {
+                                Label {
+                                    text: "Single screenshot mode"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
 
-                            // PlasmaComponents3.ToolButton {
-                            //     Layout.alignment: Qt.AlignHCenter
-                            //     text: root.showAdvanced?"Hide advanced settings":"Show advanced settings"
-                            //     icon.name: 'configure'
-                            //     checked: root.showAdvanced
-                            //     onClicked: {
-                            //         root.showAdvanced = !root.showAdvanced
-                            //     }
-                            // }
+                                CheckBox {
+                                    checked: settings.once_after_change
+
+                                    onCheckedChanged: {
+                                        settings.once_after_change = checked
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    icon.name: "help-contents"
+
+                                    hoverEnabled: true
+                                    onClicked: pauseScreenshotDelayPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: pauseScreenshotDelayPopup
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "Only extract colors from screenshot after changing wallpaper plugin. This option makes sense for wallpaper plugins that display an animated loop that never stops. Makes the color extraction run only a single time instead of detecting every change."
+                                    }
+                                }
+                            }
 
 
                             FileDialog {
@@ -1754,7 +1806,8 @@ ColumnLayout {
 
                             onTriggered: {
                                 // Default colors
-                                if(settings.color_last==="") {
+                                // FIXME: for some reason color_last starts with red??
+                                if(settings.color_last==="" || settings.color_last ==="red") {
                                     settings.color_last = "#66a3ef"
                                 }
                                 if (settings.custom_colors_list_last==="") {
@@ -1793,37 +1846,18 @@ ColumnLayout {
             RowLayout {
                 // anchors.fill: parent
                 Layout.alignment: Qt.AlignHCenter
-                visible: root.showAdvanced
+                visible: fullRepresentation.showAdvanced
                 Layout.bottomMargin: PlasmaCore.Units.smallSpacing
                 PlasmaComponents3.ToolButton {
                     // Layout.alignment: Qt.AlignHCenter
                     text: "Hide advanced settings"
                     icon.name: 'configure'
-                    checked: root.showAdvanced
+                    checked: fullRepresentation.showAdvanced
                     onClicked: {
-                        root.showAdvanced = !root.showAdvanced
+                        fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced
                     }
                 }
             }
         }
-
-        // footer: PlasmaExtras.PlasmoidHeading {
-        //     id:footer
-
-        //     RowLayout {
-        //         anchors.fill: parent
-
-        //         PlasmaComponents3.ToolButton {
-        //             Layout.alignment: Qt.AlignHCenter
-        //             text: "Show advanced settings"
-        //             icon.name: 'configure'
-
-        //             checked: root.showAdvanced
-        //             onClicked: {
-        //                 root.showAdvanced = !root.showAdvanced
-        //             }
-        //         }
-        //     }
-        // }
     }
 }
