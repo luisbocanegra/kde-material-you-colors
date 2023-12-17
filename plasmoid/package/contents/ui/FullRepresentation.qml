@@ -33,6 +33,13 @@ ColumnLayout {
     property string checkBackendCommand: 'ps -o user,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | awk \'{print $2}\''
     property string startBackendCommand: execPath
     property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
+    property string backendVersionCommand: execPath + ' --version'
+    property string backendVersion: ""
+    property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
+    property string recommendedVersion: "1.7.0"
+    property string versionStatus: "same"
+    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than the widget was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing/not work. You can find the latest versions of the widget <a href='https://store.kde.org/p/2073783'>here</a> and the python backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
+    property bool showVersionMessage: false
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
     property bool plasmoidExpanded: plasmoid.expanded
@@ -147,6 +154,75 @@ ColumnLayout {
             // console.log("stderr:",stderr);
             backendRunning = stdout.replace('\n', '').trim().length>0
         }
+    }
+
+    PlasmaCore.DataSource {
+        id: checkBackendVersion
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+            exited(sourceName, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName) // cmd finished
+        }
+
+        function exec(cmd) {
+            checkBackendVersion.connectSource(cmd)
+        }
+
+        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    Connections {
+        target: checkBackendVersion
+        function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+            // console.log("CHECK BACLEND");
+            // console.log("cmd:",cmd);
+            // console.log("exitCode:",exitCode);
+            // console.log("stdout:",stdout);
+            // console.log("stderr:",stderr);
+            backendVersion = stdout.replace('\n', '').trim()
+            versionStatus = compareVersions(backendVersion,recommendedVersion)
+        }
+    }
+
+    function compareVersions(version1, version2) {
+        var v1 = version1.split('-')[0].split('.').map(Number);
+        var v2 = version2.split('-')[0].split('.').map(Number);
+
+        for (var i = 0; i < v1.length; ++i) {
+            if (v2.length == i) {
+                return 'newer';
+            }
+            if (v1[i] == v2[i]) {
+                continue;
+            } else if (v1[i] > v2[i]) {
+                return 'newer';
+            } else {
+                return 'older';
+            }
+        }
+
+        if (version1.includes('-') && !version2.includes('-')) {
+            return 'older';
+        } else if (!version1.includes('-') && version2.includes('-')) {
+            return 'newer';
+        } else if (version1.includes('-') && version2.includes('-')) {
+            let suffix1 = version1.split('-')[1];
+            let suffix2 = version2.split('-')[1];
+            if (suffix1 > suffix2) {
+                return 'newer';
+            } else if (suffix1 < suffix2) {
+                return 'older';
+            }
+        }
+
+        return v1.length != v2.length ? 'older' : 'same';
     }
 
     PlasmaCore.DataSource {
@@ -380,7 +456,6 @@ ColumnLayout {
 
                         Component.onCompleted: {
                             createSettings()
-                            checkBackend.exec(checkBackendCommand)
                             console.log("@@@@@ BACKEND RUNNING:", backendRunning)
                             readMaterialYouData.exec()
                             getIconThemes.exec()
@@ -398,6 +473,7 @@ ColumnLayout {
                                 findExecutablePath()
                                 fullRepresentation.pauseMode = settings.pause_mode
                                 parentMain.updatePauseMode()
+                                checkBackendVersion.exec(backendVersionCommand)
                             }
                         }
 
@@ -539,7 +615,7 @@ ColumnLayout {
                                     text: "Start && enable Autostart"
                                     onTriggered: {
                                         findExecutablePath()
-                                        checkBackend.exec(startBackendCommand)
+                                        checkBackend.exec(autoStartBackendCommand)
                                     }
                                 },
                                 Kirigami.Action {
@@ -570,11 +646,56 @@ ColumnLayout {
                             Layout.preferredWidth: mainLayout.width
                             spacing: PlasmaCore.Units.smallSpacing
 
+                            RowLayout {
+                                Item { Layout.fillWidth: true }
+                                visible: fullRepresentation.showVersionMessage
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: fullRepresentation.versionMessage
+                                    onLinkActivated: Qt.openUrlExternally(link)
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                ToolButton {
+                                    icon.name: "dialog-warning"
+                                    visible: fullRepresentation.showVersionMessage
+                                    opacity: 0.8
+                                    Kirigami.Theme.inherit: false
+                                    Kirigami.Theme.textColor: Kirigami.Theme.neutralTextColor
+                                    Kirigami.Theme.highlightColor: Kirigami.Theme.neutralTextColor
+
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
+                                    }
+                                    Layout.alignment: Qt.AlignHRight|Qt.AlignTop
+                                }
+                            }
+
                             // COLOR SELECTION FROM WALLPAPER OR CUSTOM COLOR
-                            PlasmaExtras.Heading {
-                                level: 1
-                                text: "Colors source"
-                                Layout.alignment: Qt.AlignHCenter
+                            RowLayout {
+                                Item { Layout.fillWidth: true }
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "Colors source"
+                                    anchors.centerIn: parent
+                                }
+
+                                ToolButton { // PlasmaComponents3 one doesnt take colors??
+                                    id: versionInfoBtn
+                                    icon.name: "dialog-warning"
+                                    visible: !fullRepresentation.showVersionMessage
+                                    opacity: 0.8
+                                    Kirigami.Theme.inherit: false
+                                    Kirigami.Theme.textColor: Kirigami.Theme.neutralTextColor
+                                    Kirigami.Theme.highlightColor: Kirigami.Theme.neutralTextColor
+
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
+                                    }
+                                }
+
                             }
 
                             RowLayout {
@@ -622,6 +743,7 @@ ColumnLayout {
                                     id: screenInfoBtn
                                     icon.name: "help-hint"
                                     visible: plasmoid.screen !== -1
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: screenInfoPopup.show()
@@ -762,6 +884,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: textColorsHelpBtn
                                     icon.name: "help-hint"
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: textColorsHelpPopup.show()
@@ -894,6 +1017,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: darkModeHelpBtn
                                     icon.name: "help-hint"
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: darkModeHelpPopup.open()
@@ -1313,6 +1437,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: titlebarOpacityHelpBtn
                                     icon.name: "help-hint"
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: titlebarOpacityHelpPopup.open()
@@ -1394,6 +1519,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: toolbarOpacityHelpBtn
                                     icon.name: "help-hint"
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: toolbarOpacityHelpPopup.open()
@@ -1556,6 +1682,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: scriptInfoBtn
                                     icon.name: "help-hint"
+                                    opacity: 0.7
 
                                     hoverEnabled: true
                                     onClicked: scriptInfoPopup.open()
