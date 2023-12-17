@@ -629,10 +629,10 @@ ColumnLayout {
                         }
 
                         PlasmaExtras.Heading {
-                            level: 3
+                            level: 5
                             // visible: execPath == ""
                             Layout.preferredWidth: mainLayout.width
-                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, make sure to execute outside python environment with -a/-cl flag e.g /tmp/testenv/bin/kde-material-you-colors -cl"
+                            text: "Backend not found in system PATH or ~/.local/bin. If installed somewhere else, make sure to execute outside python environment with -a/-cl argument\ne.g /tmp/testenv/bin/kde-material-you-colors -cl"
                             Layout.alignment: Qt.AlignHCenter
                             color: Kirigami.Theme.neutralTextColor
                             wrapMode: Text.WordWrap
@@ -648,6 +648,7 @@ ColumnLayout {
 
                             RowLayout {
                                 Item { Layout.fillWidth: true }
+                                // visible: fullRepresentation.versionStatus !== "same"
                                 visible: fullRepresentation.showVersionMessage
                                 Label {
                                     Layout.fillWidth: true
@@ -684,7 +685,9 @@ ColumnLayout {
                                 ToolButton { // PlasmaComponents3 one doesnt take colors??
                                     id: versionInfoBtn
                                     icon.name: "dialog-warning"
-                                    visible: !fullRepresentation.showVersionMessage
+                                    visible: !fullRepresentation.showVersionMessage &&
+                                        fullRepresentation.versionStatus !== "same" &&
+                                        fullRepresentation.execPath !== ""
                                     opacity: 0.8
                                     Kirigami.Theme.inherit: false
                                     Kirigami.Theme.textColor: Kirigami.Theme.neutralTextColor
