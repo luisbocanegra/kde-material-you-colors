@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kde-material-you-colors"
-version = "1.6.0"
+dynamic = ["version"]
 description = "Automatic Material You Colors Generator from your wallpaper for the Plasma Desktop"
 readme = "README.md"
 authors = [{name = "Luis Bocanegra", email = "luisbocanegra17b@gmail.com"}]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -22,6 +23,9 @@ dependencies = [
     "numpy>=1.20",
     "material-color-utilities-python>=0.1.5",
 ]
+
+[tool.setuptools.dynamic]
+version = {attr = "kde_material_you_colors.settings.__version__"}
 
 [project.scripts]
 kde-material-you-colors = "kde_material_you_colors.main:main"
