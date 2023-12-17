@@ -337,6 +337,10 @@ def main():
     wallpaper_modified = utils.Watcher(file_utils.get_file_sha1(wallpaper.source))
     plugin_watcher = utils.Watcher(wallpaper.plugin)
     source_watcher = utils.Watcher(wallpaper.source)
+    pause_watcher = utils.Watcher(config.read("pause_mode"))
+    if pause_watcher.value:
+        msg = "Pause mode enabled" if pause_watcher.value else "Pause mode disabled"
+        logging.warning(msg)
     if wallpaper.type == "screenshot":
         head = "Screenshot mode enabled"
         cont = f"Waiting {config.read('screenshot_delay')}s between updates"
@@ -356,9 +360,21 @@ def main():
         if config_modified.changed:
             config = Configs(args)
             logging.debug(config.options)
+        pause_watcher.set_value(config.read("pause_mode"))
 
         # Get current options, pass to watcher
         config_watcher.set_value(config.options)
+
+        if pause_watcher.has_changed():
+            msg = "Pause mode enabled" if pause_watcher.value else "Pause mode disabled"
+            logging.warning(msg)
+
+        if config.read("pause_mode"):
+            time.sleep(1)
+            # toggle first run if we sarted paused so it doesnt apply twice
+            first_run = False if first_run else True
+            continue
+
         #
         #
         #

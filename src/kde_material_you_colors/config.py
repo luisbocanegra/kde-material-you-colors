@@ -112,6 +112,7 @@ class Configs:
             "main_loop_delay": [args.main_loop_delay, 1, 2],
             "screenshot_delay": [args.screenshot_delay, 900, 2],
             "once_after_change": [args.once_after_change, False, 0],
+            "pause_mode": [None, False, 0],
         }
         options = {}
         config = get_conf(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
