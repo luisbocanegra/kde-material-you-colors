@@ -301,6 +301,13 @@ def main():
         default=None,
     )
 
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version=settings.__version__,
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments
