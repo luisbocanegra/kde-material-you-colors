@@ -2,6 +2,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 import sys
 import os
+import re
 from . import settings
 
 # Set logging level for pillow
@@ -58,7 +59,7 @@ class MyLogFormatter(logging.Formatter):
         format_orig = self._style._fmt
 
         # Replace the original format with one customized by logging level
-        if self.to_file == False:
+        if self.to_file is False:
             if record.levelno == logging.DEBUG:
                 self._style._fmt = MyLogFormatter.dbg_fmt
 
@@ -74,6 +75,12 @@ class MyLogFormatter(logging.Formatter):
             self._style._fmt = MyLogFormatter.file_fmt
         # Call the original formatter class to do the grunt work
         result = logging.Formatter.format(self, record)
+        # Remove escape codes if saving to log file
+        if self.to_file:
+            pattern1 = r"\033\[.*?;1m"
+            pattern2 = r"\033\[0m"
+            result = re.sub(pattern1, "", result)
+            result = re.sub(pattern2, "", result)
 
         # Restore the original format configured by the user
         self._style._fmt = format_orig
