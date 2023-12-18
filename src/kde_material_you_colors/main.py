@@ -304,8 +304,8 @@ def main():
     parser.add_argument(
         "--version",
         "-v",
-        action="version",
-        version=settings.__version__,
+        action="store_true",
+        help="Print version information",
     )
 
     # Get commandline arguments

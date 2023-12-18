@@ -150,6 +150,10 @@ def one_shot_actions(args):
         kill_existing()
         sys.exit(0)
 
+    elif args.version:
+        print(settings.__version__)
+        sys.exit(0)
+
 
 class Watcher:
     """A simple class to watch variable changes."""
