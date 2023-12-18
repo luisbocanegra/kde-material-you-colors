@@ -665,7 +665,7 @@ ColumnLayout {
                                     wrapMode: Text.WordWrap
                                 }
 
-                                ToolButton {
+                                ToolButton { // PlasmaComponents3 one doesnt take colors??
                                     icon.name: "dialog-warning"
                                     visible: fullRepresentation.showVersionMessage
                                     opacity: 0.8
@@ -721,11 +721,11 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "From Wallpaper"
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: customColorCheck
                                     onCheckedChanged: {
                                         settings.color = checked?"":settings.color_last
@@ -733,19 +733,15 @@ ColumnLayout {
                                 }
 
                                 // Monitor number when wallpaper colors is enabled
-                                Label {
+                                PlasmaComponents3.Label {
                                     visible: settings.color==""
                                     text: "on screen"
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     id: monitorNumber
                                     visible: settings.color==""
                                     Layout.preferredWidth: controlWidth
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-?"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseInt(settings.monitor)
@@ -785,7 +781,7 @@ ColumnLayout {
                             RowLayout {
                                 Layout.preferredWidth: mainLayout.width
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Select color"
                                     id:selectColorLabel
                                     Layout.fillWidth: settings.color!==""
@@ -923,12 +919,12 @@ ColumnLayout {
 
                             // Enable/disable taking text colors from wallpaper
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     id:customTextColorsLabel
                                     text: "From Wallpaper/color"
                                     Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
                                 }
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: customTextColorsCheck
 
                                     onCheckedChanged: {
@@ -984,12 +980,12 @@ ColumnLayout {
 
                             // PYWAL
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Apply to Pywal"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: enablePywal
                                     checked: settings.pywal
 
@@ -1000,13 +996,13 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Apply to Konsole"
                                     Layout.alignment: Qt.AlignLeft
                                     // Layout.fillWidth: true
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: enableKonsole
                                     checked: !settings.disable_konsole
 
@@ -1095,7 +1091,7 @@ ColumnLayout {
                                         id: plasmaModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         id:plasmaEnableDark
                                         checked: !settings.light
                                         text: qsTr("Enabled")
@@ -1105,14 +1101,14 @@ ColumnLayout {
                                         ButtonGroup.group: plasmaModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         checked: !plasmaEnableDark.checked && !plasmaFollowScheme.checked//settings.light
                                         text: qsTr("Disabled")
 
                                         ButtonGroup.group: plasmaModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         id: plasmaFollowScheme
                                         checked: settings.plasma_follows_scheme
                                         text: qsTr("Follow color scheme")
@@ -1131,7 +1127,7 @@ ColumnLayout {
                                         id: pywalModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         id:pywalEnableDark
                                         checked: !settings.pywal_light
                                         text: qsTr("Enabled")
@@ -1141,14 +1137,14 @@ ColumnLayout {
                                         ButtonGroup.group: pywalModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         checked: !pywalEnableDark.checked && !pywalFollowScheme.checked//settings.light
                                         text: qsTr("Disabled")
 
                                         ButtonGroup.group: pywalModeGroup
                                     }
 
-                                    RadioButton {
+                                    PlasmaComponents3.RadioButton {
                                         id: pywalFollowScheme
                                         checked: settings.pywal_follows_scheme
                                         text: qsTr("Follow color scheme")
@@ -1176,12 +1172,12 @@ ColumnLayout {
 
                             // Dark blend
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Dark blend"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     id: darkBlend
                                     value: settings.dark_blend_multiplier
                                     from: 0
@@ -1193,13 +1189,9 @@ ColumnLayout {
                                     }
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     id: darkBlendManual
                                     Layout.preferredWidth: controlWidth
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-4"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseFloat(settings.dark_blend_multiplier)
@@ -1223,12 +1215,12 @@ ColumnLayout {
                                 width: parent.width
                                 Layout.fillWidth: true
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Light blend"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     id: lightBlend
                                     value: settings.light_blend_multiplier
                                     from: 0
@@ -1240,13 +1232,9 @@ ColumnLayout {
                                     }
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     id: lightBlendManual
                                     Layout.preferredWidth: controlWidth
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-4"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseFloat(settings.light_blend_multiplier)
@@ -1302,12 +1290,12 @@ ColumnLayout {
 
                             RowLayout {
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.konsole_opacity
                                     from: 0
                                     to: 100
@@ -1318,9 +1306,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.konsole_opacity
@@ -1331,12 +1317,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Dark"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.konsole_opacity_dark
                                     from: 0
                                     to: 100
@@ -1347,9 +1333,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.konsole_opacity_dark
@@ -1374,12 +1358,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Dark"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                ComboBox {
+                                PlasmaComponents3.ComboBox {
                                     id:iconThemeDarkCombo
                                     model: iconThemeList
                                     textRole: "label"
@@ -1403,12 +1387,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                ComboBox {
+                                PlasmaComponents3.ComboBox {
                                     id:iconThemeLightCombo
                                     model: iconThemeList
                                     textRole: "label"
@@ -1474,12 +1458,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.titlebar_opacity
                                     from: 0
                                     to: 100
@@ -1490,9 +1474,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.titlebar_opacity
@@ -1503,12 +1485,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Dark"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.titlebar_opacity_dark
                                     from: 0
                                     to: 100
@@ -1519,9 +1501,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.titlebar_opacity_dark
@@ -1556,12 +1536,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Light"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.toolbar_opacity
                                     from: 0
                                     to: 100
@@ -1572,9 +1552,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.toolbar_opacity
@@ -1585,12 +1563,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Dark"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                Slider {
+                                PlasmaComponents3.Slider {
                                     value: settings.toolbar_opacity_dark
                                     from: 0
                                     to: 100
@@ -1601,9 +1579,7 @@ ColumnLayout {
                                     }
                                 }
 
-                                SpinBox {
-                                    Layout.preferredWidth: controlWidth*1.3
-                                    leftPadding: textAreaPadding
+                                PlasmaComponents3.SpinBox {
                                     from: 0
                                     to: 100
                                     value: settings.toolbar_opacity_dark
@@ -1615,12 +1591,12 @@ ColumnLayout {
 
                             RowLayout {
                                 Layout.topMargin: PlasmaCore.Units.mediumSpacing
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Tint Sierra Breeze window decoration buttons"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: enableSbeColor
                                     checked: settings.sierra_breeze_buttons_color
 
@@ -1633,12 +1609,12 @@ ColumnLayout {
                             // klassy outline color
                             RowLayout {
                                 Layout.topMargin: PlasmaCore.Units.mediumSpacing
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Tint Klassy window decoration outline"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     id: enableKlassyOutlineColor
                                     checked: settings.klassy_windeco_outline
 
@@ -1651,19 +1627,15 @@ ColumnLayout {
 
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Match Titlebar"
                                     Layout.alignment: Qt.AlignLeft
                                     color: Kirigami.Theme.textColor
                                     wrapMode: Text.WordWrap
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     placeholderText: qsTr("Window class names e.g konsole alacritty kitty")
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     Layout.fillWidth: true
                                     text: settings.darker_window_list
 
@@ -1719,22 +1691,18 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Script"
                                 }
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     placeholderText: qsTr("e.g /home/"+username+"/scripts/script.sh")
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     Layout.fillWidth: true
                                     text: settings.on_change_hook
                                     onAccepted: {
                                         settings.on_change_hook = text
                                     }
                                 }
-                                Button {
+                                PlasmaComponents3.Button {
                                     icon.name: "document-open"
                                     onClicked: {
                                         fileDialogHookExec.open()
@@ -1756,21 +1724,12 @@ ColumnLayout {
                             }
 
                             RowLayout{
-                                Text {
+                                PlasmaComponents3.Label {
                                     text: "Startup delay (seconds)"
-                                    Layout.alignment: Qt.AlignLeft
-                                    // Layout.preferredWidth: mainLayout.width
-                                    // Layout.fillWidth: true
-                                    color: Kirigami.Theme.textColor
-                                    wrapMode: Text.WordWrap
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     Layout.preferredWidth: controlWidth * 1.5
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-?"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseInt(settings.startup_delay)
@@ -1803,21 +1762,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Text {
+                                PlasmaComponents3.Label {
                                     text: "Wallpaper detection delay"
-                                    Layout.alignment: Qt.AlignLeft
-                                    // Layout.preferredWidth: mainLayout.width
-                                    // Layout.fillWidth: true
-                                    color: Kirigami.Theme.textColor
-                                    wrapMode: Text.WordWrap
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     Layout.preferredWidth: controlWidth * 1.5
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-?"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseInt(settings.main_loop_delay)
@@ -1849,21 +1799,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Text {
+                                PlasmaComponents3.Label {
                                     text: "Screenshot method delay"
-                                    Layout.alignment: Qt.AlignLeft
-                                    // Layout.preferredWidth: mainLayout.width
-                                    // Layout.fillWidth: true
-                                    color: Kirigami.Theme.textColor
-                                    wrapMode: Text.WordWrap
                                 }
 
-                                TextField {
+                                PlasmaComponents3.TextField {
                                     Layout.preferredWidth: controlWidth * 1.5
-                                    topPadding: textAreaPadding
-                                    bottomPadding: textAreaPadding
-                                    leftPadding: textAreaPadding
-                                    rightPadding: textAreaPadding
                                     placeholderText: "0-?"
                                     horizontalAlignment: TextInput.AlignHCenter
                                     text: parseInt(settings.screenshot_delay)
@@ -1895,12 +1836,12 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Single screenshot mode"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
-                                CheckBox {
+                                PlasmaComponents3.CheckBox {
                                     checked: settings.once_after_change
 
                                     onCheckedChanged: {
@@ -1941,19 +1882,19 @@ ColumnLayout {
                                     horizontalAlignment: Text.AlignHCenter
                                 }
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Plasmoid version: " + Plasmoid.metaData.version
                                     Layout.alignment: Qt.AlignHCenter
                                     onLinkActivated: Qt.openUrlExternally(link)
                                 }
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "Backend version: " + fullRepresentation.backendVersionDisplay
                                     Layout.alignment: Qt.AlignHCenter
                                     onLinkActivated: Qt.openUrlExternally(link)
                                 }
 
-                                Label {
+                                PlasmaComponents3.Label {
                                     text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2073783'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
                                     onLinkActivated: Qt.openUrlExternally(link)
                                     wrapMode: Text.WordWrap
