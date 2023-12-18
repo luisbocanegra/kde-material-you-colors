@@ -4,13 +4,7 @@ import time
 import argparse
 import logging
 from . import settings
-from .config import Configs
 from .utils import utils
-from .utils import wallpaper_utils
-from .utils import file_utils
-from .utils import notify
-from .utils import plasma_utils
-from . import apply_themes
 from .logging_config import MyLogFormatter
 
 
@@ -314,6 +308,15 @@ def main():
     utils.one_shot_actions(args)
     # Kill existing instance if found
     utils.kill_existing()
+
+    # Make oneshot actions take less cpu
+    # pylint: disable=import-outside-toplevel
+    from .config import Configs
+    from .utils import wallpaper_utils
+    from .utils import file_utils
+    from .utils import notify
+    from .utils import plasma_utils
+    from . import apply_themes
 
     logging.info("###### STARTED NEW SESSION ######")
     logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
