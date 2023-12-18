@@ -764,7 +764,7 @@ ColumnLayout {
                                 PlasmaComponents3.ToolButton {
                                     id: screenInfoBtn
                                     icon.name: "help-hint"
-                                    visible: plasmoid.screen !== -1
+                                    visible: (plasmoid.screen !== -1 && settings.color==="")
                                     opacity: 0.7
 
                                     hoverEnabled: true
