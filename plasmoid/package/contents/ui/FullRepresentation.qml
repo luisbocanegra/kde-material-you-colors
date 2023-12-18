@@ -30,7 +30,7 @@ ColumnLayout {
 
     property string execName: 'kde-material-you-colors'
     property string execPath: ""
-    property string checkBackendCommand: 'ps -o user,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | awk \'{print $2}\''
+    property string checkBackendCommand: 'ps -o user,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | grep -ve "--version" | grep "" | awk \'{print $2}\''
     property string startBackendCommand: execPath
     property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
     property string backendVersionCommand: execPath + ' --version'
@@ -38,7 +38,7 @@ ColumnLayout {
     property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
     property string recommendedVersion: "1.7.0"
     property string versionStatus: "same"
-    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than the widget was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing/not work. You can find the latest versions of the widget <a href='https://store.kde.org/p/2073783'>here</a> and the python backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
+    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2073783'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
     property bool showVersionMessage: false
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
@@ -147,7 +147,7 @@ ColumnLayout {
     Connections {
         target: checkBackend
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            // console.log("CHECK BACLEND");
+            // console.log("CHECK BACKEND");
             // console.log("cmd:",cmd);
             // console.log("exitCode:",exitCode);
             // console.log("stdout:",stdout);
@@ -467,12 +467,20 @@ ColumnLayout {
                             running: true
                             repeat: true;
                             onTriggered: {
-                                checkBackend.exec(checkBackendCommand)
                                 checkConfigChange.exec(checkConfigChangeCommand)
                                 readMaterialYouData.exec()
-                                findExecutablePath()
                                 fullRepresentation.pauseMode = settings.pause_mode
                                 parentMain.updatePauseMode()
+                            }
+                        }
+
+                        Timer {
+                            interval: autoReloadEnabled ? 2000 : 5000
+                            running: true
+                            repeat: true;
+                            onTriggered: {
+                                checkBackend.exec(checkBackendCommand)
+                                findExecutablePath()
                                 checkBackendVersion.exec(backendVersionCommand)
                             }
                         }
@@ -670,6 +678,12 @@ ColumnLayout {
                                         fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
                                     }
                                     Layout.alignment: Qt.AlignHRight|Qt.AlignTop
+
+                                    PlasmaComponents3.ToolTip {
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "Tap to hide"
+                                    }
                                 }
                             }
 
@@ -696,6 +710,11 @@ ColumnLayout {
                                     hoverEnabled: true
                                     onClicked: {
                                         fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
+                                    }
+                                    PlasmaComponents3.ToolTip {
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "Tap to show"
                                     }
                                 }
 
@@ -1904,6 +1923,45 @@ ColumnLayout {
                                 }
                             }
 
+                            Rectangle {
+                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            ColumnLayout {
+                                spacing: PlasmaCore.Units.mediumSpacing
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "About " + Plasmoid.metaData.name
+                                    Layout.alignment: Qt.AlignHCenter
+                                    wrapMode: Text.WordWrap
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                Label {
+                                    text: "Plasmoid version: " + Plasmoid.metaData.version
+                                    Layout.alignment: Qt.AlignHCenter
+                                    onLinkActivated: Qt.openUrlExternally(link)
+                                }
+
+                                Label {
+                                    text: "Backend version: " + fullRepresentation.backendVersionDisplay
+                                    Layout.alignment: Qt.AlignHCenter
+                                    onLinkActivated: Qt.openUrlExternally(link)
+                                }
+
+                                Label {
+                                    text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2073783'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
+                                    onLinkActivated: Qt.openUrlExternally(link)
+                                    wrapMode: Text.WordWrap
+                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.preferredWidth: mainLayout.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                            }
 
                             FileDialog {
                                 id: fileDialogHookExec
