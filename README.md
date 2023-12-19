@@ -2,7 +2,7 @@
 
 # 🎨 KDE Material You Colors
 
-[plasmoid screenshot](https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e)
+![plasmoid screenshot](https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e)
 
 Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, using [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
 
