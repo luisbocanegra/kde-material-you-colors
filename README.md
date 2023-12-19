@@ -2,17 +2,15 @@
 
 # 🎨 KDE Material You Colors
 
-<img src="https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e" alt="Screenshot" height="250px">
+[plasmoid screenshot](https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e)
 
 Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, using [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
 
-![](https://img.shields.io/static/v1?style=for-the-badge&label=Made%20with&message=Python&color=1f425f&logo=python&labelColor=2d333b)
-![](https://img.shields.io/github/v/release/luisbocanegra/kde-material-you-colors?include_prereleases&style=for-the-badge&color=1f425f&labelColor=2d333b)
+![made with python badge](https://img.shields.io/static/v1?style=for-the-badge&label=Made%20with&message=Python&color=1f425f&logo=python&labelColor=2d333b)
+![latest version badge](https://img.shields.io/github/v/release/luisbocanegra/kde-material-you-colors?include_prereleases&style=for-the-badge&color=1f425f&labelColor=2d333b)
 </div>
 
-<div>
-<img src="https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif"  alt="Screenshot">
-</div>
+![Screenshots](https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif)
 
 # Features
 
@@ -114,7 +112,7 @@ After finishing the setup, you can make it run automatically on boot
 - Copy default configuration: run `kde-material-you-colors -c`
 - Edit ~/.config/kde-material-you-colors/config.conf
 - Run `kde-material-you-colors` with no arguments from terminal to test it.
-- **You can view the sample configuration file [here](https://github.com/luisbocanegra/kde-material-you-colors/blob/plasmoid/src/kde_material_you_colors/data/sample_config.conf)**
+- **You can view the sample configuration file [here](https://github.com/luisbocanegra/kde-material-you-colors/blob/main/src/kde_material_you_colors/data/sample_config.conf)**
 
 # Notes
 
@@ -133,7 +131,7 @@ Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 # Thanks & Credits
 
 - [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required by this project.
-- [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz  (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
+- [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
 - Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
 - [Pywal](https://github.com/dylanaraps/pywal) developers
 - [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities (used until v0.8.0).
