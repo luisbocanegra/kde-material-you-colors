@@ -325,7 +325,7 @@ def main():
         pidfile.write(str(os.getpid()))
         pidfile.close()
 
-    config = Configs(args)
+    config = Configs(args, settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
 
     # startup delay
     time.sleep(
@@ -368,7 +368,7 @@ def main():
 
         # Get config from file and compare it with passed args
         if config_modified.changed:
-            config = Configs(args)
+            config.update_config()
             logging.debug(config.options)
         pause_watcher.set_value(config.read("pause_mode"))
 

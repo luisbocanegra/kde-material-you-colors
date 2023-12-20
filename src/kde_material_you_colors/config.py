@@ -1,127 +1,44 @@
 import configparser
 import logging
 import os
-from . import settings
 from .utils import color_utils
 from .utils import math_utils
 
 
-def get_conf(conf_path: str):
-    """Open the config file"""
-    config = configparser.ConfigParser(empty_lines_in_values=True)
-    if os.path.exists(conf_path):
-        try:
-            config.read(conf_path)
-            if "CUSTOM" not in config:
-                logging.warning(
-                    "[CUSTOM] section not found in config file, ignoring it"
-                )
-                config.add_section("CUSTOM")
-        except Exception as e:
-            logging.error(f"{e}\n")
-    else:
-        logging.debug("No configuration file was found")
-        config.add_section("CUSTOM")
-    return config
-
-
-def show_conf_err(exception, conf_name, fallback):
-    """Show the error from a given config name"""
-    logging.error(f'Config "{conf_name}": {exception}, using fallback: {fallback}')
-
-
-def eval_conf(config: configparser.ConfigParser, val, conf_type, arg, fallback):
-    """Get a config value depending on its type (0 = bool, 1 = int, 2 = float, 3 = str), with default value on error"""
-
-    if config is not None:
-        section = config["CUSTOM"]
-        # check for empty configuration values and fallback right away
-        res = section.get(val, fallback) if arg is None else arg
-        if isinstance(res, str) and len(res) == 0:
-            logging.debug(f'Config "{val}": empty, using fallback: {fallback}')
-            return fallback
-        try:
-            if conf_type == 0:
-                return section.getboolean(val, fallback) if arg is None else arg
-            elif conf_type == 1:
-                return section.getint(val, fallback) if arg is None else arg
-            elif conf_type == 2:
-                return section.getfloat(val, fallback) if arg is None else arg
-            elif conf_type == 3:
-                return section.get(val, fallback) if arg is None else arg
-        except Exception as e:
-            show_conf_err(e, val, fallback)
-            return fallback
-    else:
-        return fallback if arg is None else arg
-
-
 class Configs:
-    """
-    Select configuration based on arguments and config file
+    """Create configuration based on arguments and config file"""
 
-    Returns:
-        dict: Settings dictionary
-    """
+    def __init__(self, args, config_file):
+        self._args = args
+        self._config_file = config_file
+        self._light = None
+        self._pywal_light = None
+        self._config = configparser.ConfigParser(allow_no_value=False)
+        self._options = {}
 
-    def __init__(self, args):
         if args.dark is True:
-            light = False
+            self._light = False
         elif args.light is True:
-            light = True
+            self._light = True
         else:
-            light = None
+            self._light = None
 
         if args.pywaldark is True:
-            pywal_light = False
+            self._pywal_light = False
         elif args.pywallight is True:
-            pywal_light = True
+            self._pywal_light = True
         else:
-            pywal_light = None
+            self._pywal_light = None
 
-        # property : [value, fallback, type]
-        # Types: 0 = bool, 1 = int, 2 = float, 3 = str
-        defaults = {
-            "light": [light, None, 0],
-            "file": [args.file, None, 3],
-            "monitor": [args.monitor, 0, 1],
-            "ncolor": [args.ncolor, 0, 1],
-            "iconslight": [args.iconslight, None, 3],
-            "iconsdark": [args.iconsdark, None, 3],
-            "pywal": [args.pywal, None, 0],
-            "pywal_light": [pywal_light, None, 0],
-            "light_blend_multiplier": [args.lbmultiplier, 1, 2],
-            "dark_blend_multiplier": [args.dbmultiplier, 1, 2],
-            "on_change_hook": [args.on_change_hook, None, 3],
-            "sierra_breeze_buttons_color": [args.sierra_breeze_buttons_color, None, 0],
-            "disable_konsole": [args.disable_konsole, False, 0],
-            "titlebar_opacity": [args.titlebar_opacity, None, 1],
-            "titlebar_opacity_dark": [args.titlebar_opacity_dark, None, 1],
-            "toolbar_opacity": [args.toolbar_opacity, None, 1],
-            "toolbar_opacity_dark": [args.toolbar_opacity_dark, None, 1],
-            "konsole_opacity": [args.konsole_opacity, None, 1],
-            "konsole_opacity_dark": [args.konsole_opacity_dark, None, 1],
-            "color": [args.color, None, 3],
-            "klassy_windeco_outline": [args.klassy_windeco_outline, None, 0],
-            "custom_colors_list": [args.custom_colors_list, None, 3],
-            "darker_window_list": [args.darker_window_list, None, 3],
-            "use_startup_delay": [args.use_startup_delay, None, 0],
-            "startup_delay": [args.startup_delay, 0, 1],
-            "plasma_follows_scheme": [None, None, 0],
-            "pywal_follows_scheme": [None, None, 0],
-            "main_loop_delay": [args.main_loop_delay, 1, 2],
-            "screenshot_delay": [args.screenshot_delay, 900, 2],
-            "once_after_change": [args.once_after_change, False, 0],
-            "pause_mode": [None, False, 0],
-        }
-        options = {}
-        config = get_conf(settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
+        self.update_config()
+
+    def update_config(self):
+        self.get_conf()
 
         # loop and read configs
-        for key, val in defaults.items():
-            options[key] = eval_conf(
-                config=config, val=key, conf_type=val[2], arg=val[0], fallback=val[1]
-            )
+        self.parse_conf()
+
+        options = self._options
 
         if options["plasma_follows_scheme"]:
             options["light"] = None
@@ -129,29 +46,21 @@ class Configs:
         if options["pywal_follows_scheme"]:
             options["pywal_light"] = None
 
-        # Some logging for out of range values
-        if options["monitor"] < 0:
-            logging.warning(
-                "Value for monitor must be a positive number, using default 0"
-            )
+        # silently limit out of range values
 
-        if options["ncolor"] < 0:
-            logging.warning(
-                "Value for ncolor must be a positive number, using default 0"
-            )
+        options["monitor"] = math_utils.clip(
+            options["monitor"], 0, options["monitor"], 0
+        )
 
-        if options["dark_blend_multiplier"] < 0 or options["dark_blend_multiplier"] > 4:
-            logging.warning(
-                "Value for dark_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0"
-            )
+        options["ncolor"] = math_utils.clip(options["ncolor"], 0, options["ncolor"], 0)
 
-        if (
-            options["light_blend_multiplier"] < 0
-            or options["light_blend_multiplier"] > 4
-        ):
-            logging.warning(
-                "Value for light_blend_multiplier must be a number between 0.0 and 4.0, using default 1.0"
-            )
+        options["dark_blend_multiplier"] = math_utils.clip(
+            options["dark_blend_multiplier"], 0, 4, 1
+        )
+
+        options["light_blend_multiplier"] = math_utils.clip(
+            options["light_blend_multiplier"], 0, 4, 1
+        )
 
         options["toolbar_opacity"] = math_utils.clip(
             options["toolbar_opacity"], 0, 100, 100
@@ -177,11 +86,9 @@ class Configs:
             options["titlebar_opacity_dark"], 0, 100, 100
         )
 
-        if options["startup_delay"] < 0:
-            logging.warning(
-                "Value for startup_delay must be an positive integer, using default 0"
-            )
-            options["startup_delay"] = 0
+        options["startup_delay"] = math_utils.clip(
+            options["startup_delay"], 0, options["startup_delay"], 0
+        )
 
         try:
             if options["custom_colors_list"] is not None:
@@ -195,7 +102,7 @@ class Configs:
                         fmt = color_utils.validate_color(color)
                         if fmt is None:
                             raise TypeError(
-                                "Value for custom_colors_list only accepts rgb or hex colors"
+                                "Value for custom_colors_list only accepts colors in rgb or hex format"
                             )
                         elif fmt == 1:
                             options["custom_colors_list"][i] = color_utils.color2hex(
@@ -203,7 +110,9 @@ class Configs:
                             )
         except Exception as e:
             options["custom_colors_list"] = None
-            logging.error(f"Please fix your settings file: {e}, using wallpaper colors")
+            logging.exception(
+                f"Please fix your settings file: {e}, using wallpaper colors"
+            )
 
         if options["main_loop_delay"] > options["screenshot_delay"]:
             logging.warning(
@@ -219,3 +128,93 @@ class Configs:
     def read(self, key: str):
         if key in self._options:
             return self._options[key]
+
+    @property
+    def defaults(self):
+        # property : [value, fallback, type]
+        # Types: 0 = bool, 1 = int, 2 = float, 3 = str
+        args = self._args
+        return {
+            "light": [self._light, None, 0],
+            "file": [args.file, None, 3],
+            "monitor": [args.monitor, 0, 1],
+            "ncolor": [args.ncolor, 0, 1],
+            "iconslight": [args.iconslight, None, 3],
+            "iconsdark": [args.iconsdark, None, 3],
+            "pywal": [args.pywal, None, 0],
+            "pywal_light": [self._pywal_light, None, 0],
+            "light_blend_multiplier": [args.lbmultiplier, 1, 2],
+            "dark_blend_multiplier": [args.dbmultiplier, 1, 2],
+            "on_change_hook": [args.on_change_hook, None, 3],
+            "sierra_breeze_buttons_color": [args.sierra_breeze_buttons_color, None, 0],
+            "disable_konsole": [args.disable_konsole, False, 0],
+            "titlebar_opacity": [args.titlebar_opacity, None, 1],
+            "titlebar_opacity_dark": [args.titlebar_opacity_dark, None, 1],
+            "toolbar_opacity": [args.toolbar_opacity, None, 1],
+            "toolbar_opacity_dark": [args.toolbar_opacity_dark, None, 1],
+            "konsole_opacity": [args.konsole_opacity, None, 1],
+            "konsole_opacity_dark": [args.konsole_opacity_dark, None, 1],
+            "color": [args.color, None, 3],
+            "klassy_windeco_outline": [args.klassy_windeco_outline, None, 0],
+            "custom_colors_list": [args.custom_colors_list, None, 3],
+            "darker_window_list": [args.darker_window_list, None, 3],
+            "use_startup_delay": [args.use_startup_delay, None, 0],
+            "startup_delay": [args.startup_delay, 0, 1],
+            "plasma_follows_scheme": [None, None, 0],
+            "pywal_follows_scheme": [None, None, 0],
+            "main_loop_delay": [args.main_loop_delay, 1, 2],
+            "screenshot_delay": [args.screenshot_delay, 900, 2],
+            "once_after_change": [args.once_after_change, False, 0],
+            "pause_mode": [None, False, 0],
+        }
+
+    def parse_conf(self):
+        """Create options dictionary from configuration or arguments/defaults"""
+        for key, val in self.defaults.items():
+            self._options[key] = self.eval_conf(
+                key=key,
+                conf_type=val[2],
+                value=val[0],
+                fallback=val[1],
+            )
+
+    def get_conf(self):
+        """Open the config file"""
+        if os.path.exists(self._config_file):
+            try:
+                self._config.read(self._config_file)
+                if "CUSTOM" not in self._config:
+                    logging.warning(
+                        "[CUSTOM] section not found in config file, ignoring it"
+                    )
+                    self._config.add_section("CUSTOM")
+            except Exception as e:
+                logging.exception(f"{e}\n")
+        else:
+            logging.debug("No configuration file was found")
+            self._config.add_section("CUSTOM")
+
+    def eval_conf(self, key, conf_type, value, fallback):
+        """Get a config value depending on its type (0 = bool, 1 = int, 2 = float, 3 = str), with default value on error"""
+
+        if self._config is not None:
+            section = self._config["CUSTOM"]
+            # check for empty configuration values and fallback right away
+            res = section.get(key, fallback) if value is None else value
+            if isinstance(res, str) and len(res) == 0:
+                logging.debug(f'Config "{key}": empty, using fallback: {fallback}')
+                return fallback
+            try:
+                if conf_type == 0:
+                    return section.getboolean(key, fallback) if value is None else value
+                if conf_type == 1:
+                    return section.getint(key, fallback) if value is None else value
+                if conf_type == 2:
+                    return section.getfloat(key, fallback) if value is None else value
+                if conf_type == 3:
+                    return section.get(key, fallback) if value is None else value
+            except Exception as e:
+                logging.exception(f'Config "{key}": {e}, using fallback: {fallback}')
+                return fallback
+        else:
+            return fallback if value is None else value
