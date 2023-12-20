@@ -434,6 +434,10 @@ ColumnLayout {
                             if (doSettingsReload) {
                                 destroySettings();
                                 createSettings();
+                                // FIXME: really should figure this red thing out...
+                                if (settings.color_last === "red") {
+                                    settings.color_last = "#d0265c"
+                                }
                             }
                         }
 
@@ -495,7 +499,7 @@ ColumnLayout {
                                     category: "CUSTOM"; \
                                     property int monitor: 0; \
                                     property string color; \
-                                    property string color_last; \
+                                    property string color_last: "#d0265c"; \
                                     property string custom_colors_list; \
                                     property string custom_colors_list_last; \
                                     property bool light: false; \
@@ -757,20 +761,22 @@ ColumnLayout {
                                     }
                                 }
 
-                                PlasmaComponents3.ToolButton {
+                                PlasmaComponents3.Button {
                                     id: screenInfoBtn
-                                    icon.name: "help-hint"
                                     visible: (plasmoid.screen !== -1 && settings.color==="")
                                     opacity: 0.7
+                                    text: "This screen"
 
                                     hoverEnabled: true
-                                    onClicked: screenInfoPopup.show()
+                                    onClicked: {
+                                        settings.monitor = plasmoid.screen
+                                    }
 
                                     PlasmaComponents3.ToolTip {
                                         id: screenInfoPopup
                                         x: screenInfoBtn.width / 2
                                         y: screenInfoBtn.height
-                                        text: "<strong>Tip:</strong> This widget is on screen " + plasmoid.screen.toString()
+                                        text: "This widget is on screen " + plasmoid.screen.toString()
                                     }
                                 }
                             }
@@ -1930,14 +1936,14 @@ ColumnLayout {
 
                         Timer {
                             id: statupTimer
-                            interval: 500
+                            interval: 1000
                             repeat: false
 
                             onTriggered: {
                                 // Default colors
                                 // FIXME: for some reason color_last starts with red??
                                 if(settings.color_last==="" || settings.color_last ==="red") {
-                                    settings.color_last = "#66a3ef"
+                                    settings.color_last = "#d0265c"
                                 }
                                 if (settings.custom_colors_list_last==="") {
                                     settings.custom_colors_list_last = "#d0265c #74e448 #eece4f #66a3ef #532066 #297d81 #ccc1c1"
