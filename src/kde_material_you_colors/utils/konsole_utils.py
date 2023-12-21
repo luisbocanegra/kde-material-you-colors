@@ -4,7 +4,6 @@ import configparser
 import logging
 import dbus
 from .color_utils import hex2rgb
-from .math_utils import clip
 from .string_utils import tup2str
 from .. import settings
 from ..schemeconfigs import ThemeConfig
@@ -203,14 +202,15 @@ def reload_profile(profile: str):
                     session_iface = dbus.Interface(
                         session_obj, "org.kde.konsole.Session"
                     )
-                    # logging.debug(f"{service}, {session} reading profile...")
                     current_profile = session_iface.profile()
-                    # logging.debug(f"{current_profile}")
                     new_profile = "TempMyou" if profile == current_profile else profile
 
-                    # logging.debug(f"{service}, {session} setting profile...")
                     session_iface.setProfile(new_profile)
-                    # logging.debug("done")
+                    # save profile to sync new sessions from shell rc file
+                    with open(
+                        settings.KONSOLE_ACTIVE_PROFILE_NAME, "w", encoding="utf-8"
+                    ) as tmp:
+                        tmp.write(new_profile)
 
             except dbus.exceptions.DBusException as e:
                 logging.exception(f"{e}")
