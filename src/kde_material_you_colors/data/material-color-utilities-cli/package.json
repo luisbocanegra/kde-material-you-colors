@@ -1,0 +1,6 @@
+{
+    "type": "module",
+    "dependencies": {
+        "@material/material-color-utilities": "^0.2.7"
+    }
+}

@@ -17,7 +17,7 @@ PKG_BIN = sysconfig.get_path("scripts") + "/kde-material-you-colors"
 
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
-SAMPLE_CONFIG_PATH = PKG_INSTALL_DIR + "/data/"
+MODULE_DATA_PATH = PKG_INSTALL_DIR + "/data/"
 USER_CONFIG_PATH = HOME + "/.config/kde-material-you-colors/"
 USER_APPS_PATH = HOME + "/.local/share/applications/"
 USER_SCHEMES_PATH = HOME + "/.local/share/color-schemes"
@@ -57,6 +57,8 @@ KWIN_DESKTOP_ID_JSCRIPT = (
 KONSOLE_ACTIVE_PROFILE_NAME = (
     f"{TEMPDIR}/kde-material-you-colors-konsole-profile-{USERNAME}"
 )
+SOURCE_INFO_FOR_NODE = f"{TEMPDIR}/kde-material-you-colors-source-info-{USERNAME}.json"
+MATERIAL_CLI_PATH = f"{MODULE_DATA_PATH}" + "material-color-utilities-cli/main.js"
 # PLASMA_WORKSPACE_ENV_FILE = "kde-material-you-colors-set-path.sh"
 # PLASMA_WORKSPACE_ENV_PATH = PKG_INSTALL_DIR + "/data/"
 # USER_PLASMA_WORKSPACE_ENV_PATH = HOME + "/.config/plasma-workspace/env/"

@@ -30,20 +30,31 @@ class ThemeConfig:
             for color in custom_colors_list:
                 rgb = color_utils.hex2rgb(color)
                 colors_str += f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
-            logging.info(f"Using custom colors: {colors_str[:-5]}")
+            logging.info(f"Using custom colors: {colors_str}")
         else:
-            colors_best = list(colors["best"].values())
+            colors_best = colors["best"]
         # colors_best = list(colors['best'].values())
-        tones_primary = colors["palettes"]["primary"]
-        tones_secondary = colors["palettes"]["secondary"]
-        tones_neutral = colors["palettes"]["neutral"]
-        tones_neutral_variant = colors["palettes"]["neutralVariant"]
-        tones_tertiary = colors["palettes"]["tertiary"]
-        tones_error = colors["palettes"]["error"]
+        tones_primary_light = colors["palettes"]["light"]["primary"]
+        tones_secondary_light = colors["palettes"]["light"]["secondary"]
+        tones_neutral_light = colors["palettes"]["light"]["neutral"]
+        tones_neutral_variant_light = colors["palettes"]["light"]["neutralVariant"]
+        tones_tertiary_light = colors["palettes"]["light"]["tertiary"]
+        tones_error_light = colors["palettes"]["light"]["error"]
+
+        tones_primary_dark = colors["palettes"]["dark"]["primary"]
+        tones_secondary_dark = colors["palettes"]["dark"]["secondary"]
+        tones_neutral_dark = colors["palettes"]["dark"]["neutral"]
+        tones_neutral_variant_dark = colors["palettes"]["dark"]["neutralVariant"]
+        tones_tertiary_dark = colors["palettes"]["dark"]["tertiary"]
+        tones_error_dark = colors["palettes"]["dark"]["error"]
+
         colors_light = colors["schemes"]["light"]
         colors_dark = colors["schemes"]["dark"]
 
-        lbm = math_utils.clip(light_blend_multiplier, 0, 4, 1.0)
+        custom_colors_light = colors["custom"]["light"]
+        custom_colors_dark = colors["custom"]["dark"]
+
+        lbm = 4 - math_utils.clip(light_blend_multiplier, 0, 4, 1.0)
         dbm = math_utils.clip(dark_blend_multiplier, 0, 4, 1.0)
 
         # Base text states taken from Breeze Color Scheme
@@ -60,15 +71,17 @@ class ThemeConfig:
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
             "dark": {
-                "surface": blendColors(tones_neutral[5], tones_primary[40], 0.08 * dbm),
+                "surface": blendColors(
+                    tones_neutral_dark[5], tones_primary_dark[40], 0.08 * dbm
+                ),
                 "surface1": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.05 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.05 * dbm
                 ),
                 "surface2": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.08 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.08 * dbm
                 ),
                 "surface3": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.18 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.18 * dbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_dark["onPrimary"], base_text_states["Link"], 0.5
@@ -107,16 +120,16 @@ class ThemeConfig:
             },
             "light": {
                 "surface": blendColors(
-                    colors_light["background"], tones_primary[70], 0.08 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.08 * lbm
                 ),
                 "surface1": blendColors(
-                    colors_light["background"], tones_primary[70], 0.18 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.18 * lbm
                 ),
                 "surface2": blendColors(
-                    colors_light["background"], tones_primary[70], 0.23 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.23 * lbm
                 ),
                 "surface3": blendColors(
-                    colors_light["background"], tones_primary[70], 0.20 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.20 * lbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_light["onPrimary"], base_text_states["Link"], 0.5
@@ -157,10 +170,14 @@ class ThemeConfig:
         self._extras["dark"].update(
             {
                 "selectionAlt": blendColors(
-                    tones_secondary[30], self._extras["dark"]["surface3"], 0.05 * dbm
+                    tones_secondary_dark[30],
+                    self._extras["dark"]["surface3"],
+                    0.05 * dbm,
                 ),
                 "selectionHover": blendColors(
-                    tones_secondary[50], self._extras["dark"]["surface3"], 0.1 * dbm
+                    tones_secondary_dark[50],
+                    self._extras["dark"]["surface3"],
+                    0.1 * dbm,
                 ),
             }
         )
@@ -168,10 +185,14 @@ class ThemeConfig:
         self._extras["light"].update(
             {
                 "selectionAlt": blendColors(
-                    self._extras["light"]["surface3"], tones_primary[30], 0.05 * lbm
+                    self._extras["light"]["surface3"],
+                    tones_primary_light[30],
+                    0.05 * lbm,
                 ),
                 "selectionHover": blendColors(
-                    self._extras["light"]["surface3"], tones_primary[50], 0.1 * lbm
+                    self._extras["light"]["surface3"],
+                    tones_primary_light[50],
+                    0.1 * lbm,
                 ),
             }
         )
@@ -183,139 +204,77 @@ class ThemeConfig:
         pywal_colors_dark = (extras["dark"]["surface"],)
         # gray? bold, ansi 30
         pywal_colors_dark_intense = (
-            blendColors(pywal_colors_dark[0], tones_secondary[90], 0.8),
+            blendColors(pywal_colors_dark[0], tones_secondary_dark[90], 0.8),
         )
         # dark gray? faint ansi 30
         pywal_colors_dark_faint = (
-            blendColors(pywal_colors_dark[0], tones_secondary[90], 0.7),
+            blendColors(pywal_colors_dark[0], tones_secondary_dark[90], 0.7),
         )
-        tone = 50
 
-        for x in range(7):
-            if len(pywal_colors_dark) <= 7:
-                if x < best_colors_count:
-                    c = lighteen_color(colors_best[x], 0.2, tones_neutral[99])
-                    pywal_colors_dark += (
-                        blend2contrast(
-                            c, pywal_colors_dark[0], tones_neutral[99], 4.5, 0.01, True
-                        ),
-                    )
-                else:
-                    if len(pywal_colors_dark) <= 7:
-                        c = lighteen_color(tones_primary[tone], 0.2, tones_neutral[99])
-                        pywal_colors_dark += (
-                            blend2contrast(
-                                c,
-                                pywal_colors_dark[0],
-                                tones_neutral[99],
-                                4.5,
-                                0.01,
-                                True,
-                            ),
-                        )
-                    if len(pywal_colors_dark) <= 7:
-                        c = lighteen_color(tones_tertiary[tone], 0.2, tones_neutral[99])
-                        pywal_colors_dark += (
-                            blend2contrast(
-                                c,
-                                pywal_colors_dark[0],
-                                tones_neutral[99],
-                                4.5,
-                                0.01,
-                                True,
-                            ),
-                        )
-                    if tone < 91:
-                        tone += 8
-            else:
-                break
+        for custom_color in custom_colors_dark:
+            color = lighteen_color(custom_color, 0.2, tones_neutral_dark[99])
+            color = blend2contrast(
+                color, pywal_colors_dark[0], tones_neutral_dark[99], 4.5, 0.01, True
+            )
+            pywal_colors_dark += (color,)
 
         all_colors = pywal_colors_dark
         pywal_colors_dark = (pywal_colors_dark[0],)
         # sort colors if they don't come from custom colors
-        if custom_colors_list is None:
-            all_colors = sort_colors_luminance(all_colors[-7:])
-        else:
-            all_colors = all_colors[-7:]
+        # if custom_colors_list is None:
+        #    all_colors = sort_colors_luminance(all_colors[-7:])
+        # else:
+        all_colors = all_colors[-7:]
 
         for n in range(7):
-            pywal_colors_dark += (blendColors(tones_neutral[99], all_colors[n], 0.95),)
+            pywal_colors_dark += (
+                blendColors(tones_neutral_dark[99], all_colors[n], 0.95),
+            )
 
             pywal_colors_dark_intense += (
-                blendColors(tones_neutral[99], all_colors[n], 0.82),
+                blendColors(tones_neutral_dark[99], all_colors[n], 0.82),
             )
 
             pywal_colors_dark_faint += (
                 blendColors(pywal_colors_dark[0], all_colors[n], 0.7),
             )
 
-        tone = 50
         # ansi 30
         pywal_colors_light = (extras["light"]["surface"],)
         pywal_colors_light_intense = (
-            blendColors(pywal_colors_light[0], tones_secondary[25], 0.8),
+            blendColors(pywal_colors_light[0], tones_secondary_light[25], 0.8),
         )
         pywal_colors_light_faint = (
-            blendColors(pywal_colors_light[0], tones_secondary[25], 0.7),
+            blendColors(pywal_colors_light[0], tones_secondary_light[25], 0.7),
         )
 
-        for x in range(7):
-            if len(pywal_colors_light) <= 7:
-                if x < best_colors_count:
-                    c = scale_saturation(colors_best[x], 1)
-                    c = lighteen_color(c, 0.2, tones_neutral[99])
-                    pywal_colors_light += (
-                        blend2contrast(
-                            c,
-                            pywal_colors_light[0],
-                            tones_neutral[10],
-                            4.5,
-                            0.01,
-                            False,
-                        ),
-                    )
-                else:
-                    if len(pywal_colors_light) <= 7:
-                        c = scale_saturation(tones_primary[tone], 1)
-                        pywal_colors_light += (
-                            blend2contrast(
-                                c,
-                                pywal_colors_light[0],
-                                tones_neutral[10],
-                                4.5,
-                                0.01,
-                                False,
-                            ),
-                        )
-                    if len(pywal_colors_light) <= 7:
-                        c = scale_saturation(tones_tertiary[tone], 1)
-                        pywal_colors_light += (
-                            blend2contrast(
-                                c,
-                                pywal_colors_light[0],
-                                tones_neutral[10],
-                                4.5,
-                                0.01,
-                                False,
-                            ),
-                        )
-                    if tone < 91:
-                        tone += 8
-            else:
-                break
+        for custom_color in custom_colors_light:
+            color = scale_saturation(custom_color, 1)
+            color = lighteen_color(color, 0.2, tones_neutral_light[99])
+            color = blend2contrast(
+                color,
+                pywal_colors_light[0],
+                tones_neutral_light[10],
+                4.5,
+                0.01,
+                False,
+            )
+            pywal_colors_light += (color,)
 
         all_colors = pywal_colors_light
         pywal_colors_light = (pywal_colors_light[0],)
         # sort colors if they don't come from custom colors
-        if custom_colors_list is None:
-            all_colors = sort_colors_luminance(all_colors[-7:])
-        else:
-            all_colors = all_colors[-7:]
+        # if custom_colors_list is None:
+        #    all_colors = sort_colors_luminance(all_colors[-7:])
+        # else:
+        all_colors = all_colors[-7:]
         for n in range(7):
-            pywal_colors_light += (blendColors(tones_neutral[1], all_colors[n], 0.95),)
+            pywal_colors_light += (
+                blendColors(tones_neutral_light[1], all_colors[n], 0.95),
+            )
 
             pywal_colors_light_intense += (
-                blendColors(tones_neutral[1], all_colors[n], 0.82),
+                blendColors(tones_neutral_light[1], all_colors[n], 0.82),
             )
 
             pywal_colors_light_faint += (
@@ -537,7 +496,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors_dark['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
@@ -551,7 +510,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
@@ -565,7 +524,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
@@ -579,7 +538,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
 ForegroundPositive={base_text_states['Positive']}
@@ -609,7 +568,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 ForegroundNormal={colors_dark['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
@@ -638,7 +597,7 @@ DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
-ForegroundNegative={tones_error[50]}
+ForegroundNegative={tones_error_dark[50]}
 ForegroundNeutral={base_text_states['Neutral']}
 #--- Window titles, context icons
 ForegroundNormal={colors_dark['onSurfaceVariant']}
@@ -668,17 +627,17 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             "special": {
                 "background": pywal_colors_light[0],
                 "backgroundIntense": blendColors(
-                    tones_neutral[8], colors_light["primary"], 0.0
+                    tones_neutral_light[8], colors_light["primary"], 0.0
                 ),
                 "backgroundFaint": blendColors(
-                    tones_neutral[8], colors_light["primary"], 0.35
+                    tones_neutral_light[8], colors_light["primary"], 0.35
                 ),
                 "foreground": blendColors(
-                    pywal_colors_light[0], tones_secondary[25], 0.98
+                    pywal_colors_light[0], tones_secondary_light[25], 0.98
                 ),
-                "foregroundIntense": tones_secondary[25],
+                "foregroundIntense": tones_secondary_light[25],
                 "foregroundFaint": blendColors(
-                    pywal_colors_light[0], tones_secondary[25], 0.88
+                    pywal_colors_light[0], tones_secondary_light[25], 0.88
                 ),
                 "cursor": colors_dark["onSurface"],
             },
@@ -716,20 +675,20 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             "special": {
                 "background": pywal_colors_dark[0],
                 "backgroundIntense": blendColors(
-                    tones_neutral[8], colors_dark["primary"], 0.0
+                    tones_neutral_dark[8], colors_dark["primary"], 0.0
                 ),
                 "backgroundFaint": blendColors(
-                    tones_neutral[8], colors_dark["primary"], 0.35
+                    tones_neutral_dark[8], colors_dark["primary"], 0.35
                 ),
                 # Normal, ansi 39
                 "foreground": blendColors(
-                    pywal_colors_dark[0], tones_secondary[90], 0.98
+                    pywal_colors_dark[0], tones_secondary_dark[90], 0.98
                 ),
                 # bold, ansi 39
-                "foregroundIntense": tones_secondary[90],
+                "foregroundIntense": tones_secondary_dark[90],
                 # faint, ansi 39
                 "foregroundFaint": blendColors(
-                    pywal_colors_dark[0], tones_secondary[90], 0.88
+                    pywal_colors_dark[0], tones_secondary_dark[90], 0.88
                 ),
                 "cursor": colors_dark["onSurface"],
             },
@@ -768,13 +727,13 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
 
         self._sierra_breeze_dark_colors = {
             "btn_close_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(dark_active, tones_primary[80], 0.7))
+                hex2rgb(blendColors(dark_active, tones_primary_dark[80], 0.7))
             ),
             "btn_minimize_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(dark_active, tones_primary[70], 0.7))
+                hex2rgb(blendColors(dark_active, tones_primary_dark[70], 0.7))
             ),
             "btn_maximize_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(dark_active, tones_primary[70], 0.7))
+                hex2rgb(blendColors(dark_active, tones_primary_dark[70], 0.7))
             ),
             "btn_keep_above_active_color": string_utils.tup2str(
                 hex2rgb(blendColors(dark_active, "#118cff", 0.7))
@@ -795,13 +754,13 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
 
         self._sierra_breeze_light_colors = {
             "btn_close_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(tones_primary[50], light_active, 0.05 * lbm))
+                hex2rgb(blendColors(tones_primary_light[50], light_active, 0.05 * lbm))
             ),
             "btn_minimize_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(tones_primary[60], light_active, 0.05 * lbm))
+                hex2rgb(blendColors(tones_primary_light[60], light_active, 0.05 * lbm))
             ),
             "btn_maximize_active_color": string_utils.tup2str(
-                hex2rgb(blendColors(tones_primary[70], light_active, 0.05 * lbm))
+                hex2rgb(blendColors(tones_primary_light[70], light_active, 0.05 * lbm))
             ),
             "btn_keep_above_active_color": string_utils.tup2str(
                 hex2rgb(blendColors("#118cff", light_active, 0.05 * lbm))
@@ -832,13 +791,13 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             },
             "editor-colors": {
                 "BackgroundColor": pywal_colors_dark[0],
-                "BracketMatching": tones_secondary[35],
+                "BracketMatching": tones_secondary_dark[35],
                 "CodeFolding": "#224e65",
-                "CurrentLine": tones_secondary[20],
+                "CurrentLine": tones_secondary_dark[20],
                 "CurrentLineNumber": colors_dark["onSurface"],
                 "IconBorder": pywal_colors_dark[0],
-                "IndentationLine": tones_secondary[20],
-                "LineNumbers": tones_neutral[45],
+                "IndentationLine": tones_secondary_dark[20],
+                "LineNumbers": tones_neutral_dark[45],
                 "MarkBookmark": "#0404bf",
                 "MarkBreakpointActive": "#8b0607",
                 "MarkBreakpointDisabled": "#820683",
@@ -853,11 +812,11 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 "Separator": "#3f4347",
                 "SpellChecking": "#c0392b",
                 "TabMarker": "#4d4d4d",
-                "TemplateBackground": tones_secondary[20],
+                "TemplateBackground": tones_secondary_dark[20],
                 "TemplateFocusedPlaceholder": "#123723",
                 "TemplatePlaceholder": "#123723",
                 "TemplateReadOnlyPlaceholder": "#4d1f24",
-                "TextSelection": tones_secondary[30],
+                "TextSelection": tones_secondary_dark[30],
                 "WordWrapMarker": "#3a3f44",
             },
             "text-styles": {
@@ -968,11 +927,11 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
             "editor-colors": {
                 "BackgroundColor": pywal_colors_light[0],
                 "CodeFolding": "#94caef",
-                "BracketMatching": tones_secondary[65],
-                "CurrentLine": tones_secondary[80],
+                "BracketMatching": tones_secondary_light[65],
+                "CurrentLine": tones_secondary_light[80],
                 "IconBorder": pywal_colors_light[0],
-                "IndentationLine": tones_secondary[80],
-                "LineNumbers": tones_neutral[55],
+                "IndentationLine": tones_secondary_light[80],
+                "LineNumbers": tones_neutral_light[55],
                 "CurrentLineNumber": colors_light["onSurface"],
                 "MarkBookmark": "#0000ff",
                 "MarkBreakpointActive": "#ff0000",
@@ -985,11 +944,11 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 "ReplaceHighlight": "#00ff00",
                 "SavedLines": "#2ecc71",
                 "SearchHighlight": "#ffff00",
-                "TextSelection": tones_secondary[80],
+                "TextSelection": tones_secondary_light[80],
                 "Separator": "#d5d5d5",
                 "SpellChecking": "#bf0303",
                 "TabMarker": "#d2d2d2",
-                "TemplateBackground": tones_secondary[80],
+                "TemplateBackground": tones_secondary_light[80],
                 "TemplatePlaceholder": "#baf8ce",
                 "TemplateFocusedPlaceholder": "#76da98",
                 "TemplateReadOnlyPlaceholder": "#f6e6e6",

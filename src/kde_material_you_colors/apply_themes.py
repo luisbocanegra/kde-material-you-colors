@@ -18,6 +18,10 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     material_colors = m3_scheme_utils.get_color_schemes(
         wallpaper,
         config.read("ncolor"),
+        config.read("custom_colors_list"),
+        config.read("scheme_type"),
+        config.read("light_chroma_mult"),
+        config.read("dark_chroma_mult"),
     )
     if material_colors is None:
         return

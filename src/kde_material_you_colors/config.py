@@ -90,6 +90,10 @@ class Configs:
             options["startup_delay"], 0, options["startup_delay"], 0
         )
 
+        options["scheme_type"] = math_utils.clip(
+            options["scheme_type"], 0, options["scheme_type"], 8
+        )
+
         try:
             if options["custom_colors_list"] is not None:
                 options["custom_colors_list"] = options["custom_colors_list"].split(" ")
@@ -143,7 +147,7 @@ class Configs:
             "iconsdark": [args.iconsdark, None, 3],
             "pywal": [args.pywal, None, 0],
             "pywal_light": [self._pywal_light, None, 0],
-            "light_blend_multiplier": [args.lbmultiplier, 1, 2],
+            "light_blend_multiplier": [args.lbmultiplier, 4, 2],
             "dark_blend_multiplier": [args.dbmultiplier, 1, 2],
             "on_change_hook": [args.on_change_hook, None, 3],
             "sierra_breeze_buttons_color": [args.sierra_breeze_buttons_color, None, 0],
@@ -166,6 +170,9 @@ class Configs:
             "screenshot_delay": [args.screenshot_delay, 900, 2],
             "once_after_change": [args.once_after_change, False, 0],
             "pause_mode": [None, False, 0],
+            "scheme_type": [args.scheme_type, 1, 1],
+            "light_chroma_mult": [args.lchmultiplier, 1, 2],
+            "dark_chroma_mult": [args.dchmultiplier, 1, 2],
         }
 
     def parse_conf(self):

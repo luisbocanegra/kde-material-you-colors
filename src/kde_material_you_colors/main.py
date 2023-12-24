@@ -138,7 +138,7 @@ def main():
         "--lbmultiplier",
         "-lbm",
         type=float,
-        help="The amount of color for backgrounds in Light mode (value from 0 to 4.0, default is 1)",
+        help="The amount of color brightness for backgrounds in Light mode (value from 0 to 4.0, default is 3)",
         default=None,
         metavar="<float>",
     )
@@ -147,7 +147,7 @@ def main():
         "--dbmultiplier",
         "-dbm",
         type=float,
-        help="The amount of color for backgrounds in Dark mode (value from 0 to 4.0, default is 1)",
+        help="The amount of color brightness for backgrounds in Dark mode (value from 0 to 4.0, default is 1)",
         default=None,
         metavar="<float>",
     )
@@ -300,6 +300,33 @@ def main():
         "-v",
         action="store_true",
         help="Print version information",
+    )
+
+    parser.add_argument(
+        "--scheme-type",
+        "-st",
+        type=int,
+        help="Scheme type",
+        default=None,
+        metavar="<integer>",
+    )
+
+    parser.add_argument(
+        "--lchmultiplier",
+        "-lchm",
+        type=float,
+        help="The chroma of colors in light mode)",
+        default=None,
+        metavar="<float>",
+    )
+
+    parser.add_argument(
+        "--dchmultiplier",
+        "-dchm",
+        type=float,
+        help="The chroma of colors in dark mode)",
+        default=None,
+        metavar="<float>",
     )
 
     # Get commandline arguments
