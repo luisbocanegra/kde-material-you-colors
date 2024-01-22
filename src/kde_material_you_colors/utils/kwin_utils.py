@@ -139,6 +139,8 @@ for (var i = 0; i < windows.length; i++) {{
                 "--user",
                 "-u",
                 "plasma-kwin_wayland.service",
+                "-u",
+                "plasma-kwin_x11.service",
                 "--output",
                 "cat",
                 "-g",
