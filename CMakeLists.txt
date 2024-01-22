@@ -16,10 +16,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(Qt5 REQUIRED COMPONENTS DBus)
-find_package(KF5WindowSystem REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS DBus Gui)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
@@ -33,7 +32,7 @@ add_executable("${PROJECT_NAME}"
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries("${PROJECT_NAME}" PRIVATE Qt5::DBus KF5::WindowSystem)
+target_link_libraries("${PROJECT_NAME}" PRIVATE Qt5::DBus Qt5::Gui)
 
 install(TARGETS "${PROJECT_NAME}"
     BUNDLE DESTINATION .
