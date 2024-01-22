@@ -32,6 +32,7 @@ def blend_changes():
 
 
 def load_desktop_window_id_script():
+    # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     is_loaded = False
     try:
         bus = dbus.SessionBus()
@@ -93,6 +94,7 @@ def load_desktop_window_id_script():
 
 
 def get_desktop_window_id(screen: int = 0) -> str | None:
+    # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     """_summary_
 
     Args:
@@ -173,63 +175,21 @@ for (var i = 0; i < windows.length; i++) {{
 
 
 def screenshot_window(window_handle, output_file):
-    # create a pipe where the screenshot will be written
-    read_fd, write_fd = os.pipe()
-    results = None
     screenshot_taken = False
-
+    command = [settings.SCREENSHOT_HELPER_PATH, window_handle, output_file]
     try:
-        # Create a connection to the session bus
-        bus = dbus.SessionBus()
-
-        # Get a proxy for the KWin object
-        kwin = bus.get_object("org.kde.KWin", "/org/kde/KWin/ScreenShot2")
-        screenshot = dbus.Interface(kwin, "org.kde.KWin.ScreenShot2")
-
-        options = {
-            "include-cursor": False,
-            "native-resolution": True,
-            "include-shadow": False,
-            "include-decoration": False,
-        }
-
-        results = screenshot.CaptureWindow(
-            window_handle, options, dbus.types.UnixFd(write_fd)
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=True,
         )
+        output = result.returncode
+    except subprocess.CalledProcessError as e:
+        error = f"Error taking screenshot for window {window_handle}: {e}"
+        logging.exception(error)
+        raise subprocess.CalledProcessError(e.returncode, command, e.output, e.stdout)
 
-    except dbus.exceptions.DBusException as e:
-        logging.exception(
-            f"Couldn't take screenshot of desktop: {window_handle}: {e.get_dbus_message()}"
-        )
-        raise
-
-    os.close(write_fd)
-
-    if results is not None:
-        # Read the screenshot data from the pipe
-        screenshot_data = b""
-        while True:
-            chunk = os.read(read_fd, 1048576)
-            if not chunk:
-                break
-            screenshot_data += chunk
-
-        os.close(read_fd)
-
-        # get image dimensions and format from the results
-        img_width = results["width"]
-        img_height = results["height"]
-        # img_format = results["format"]  # 5
-
-        # image from the raw data
-        image = Image.frombytes("RGBA", (img_width, img_height), screenshot_data, "raw")
-
-        # convert from BGRA??? to RGB
-        b, g, r, a = image.split()
-        image = Image.merge("RGB", (r, g, b))
-
-        image.save(fp=output_file, compress_level=0)
-
-        screenshot_taken = True
-
+    screenshot_taken = output == 0
     return screenshot_taken

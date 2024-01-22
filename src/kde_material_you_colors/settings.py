@@ -50,7 +50,7 @@ LOG_FILE_NAME = "kde-material-you-colors.log"
 MATERIAL_YOU_COLORS_JSON = f"{TEMPDIR}/kde-material-you-colors-" + USERNAME + ".json"
 KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
 PIDFILE_PATH = f"{TEMPDIR}/kde-material-you-colors-{USERNAME}.pid"
-SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNAME}.jpg"
+SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNAME}.png"
 KWIN_DESKTOP_ID_JSCRIPT = (
     f"{TEMPDIR}/kde-material-you-colors-desktop-win-id-{USERNAME}.js"
 )
@@ -64,6 +64,9 @@ USER_LOCAL_BIN_PATH = HOME + "/.local/bin/"
 IN_PATH = bool(shutil.which("kde-material-you-colors"))
 CHANGE_ICONS_PROGRAM = "plasma-changeicons"
 PLASMA_CHANGEICONS_PATH = find_executable(CHANGE_ICONS_PROGRAM)
+
+SCREENSHOT_HELPER = "kde-material-you-colors-screenshot-helper"
+SCREENSHOT_HELPER_PATH = find_executable(SCREENSHOT_HELPER)
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"

@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "hello_world_qt6 (MSVC)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      // Resolved by CMake Tools:
+      "program": "${command:cmake.launchTargetPath}",
+      "cwd": "${command:cmake.launchTargetDirectory}",
+      "visualizerFile": "${workspaceFolder}/qt6.natvis",
+      "sourceFileMap": {
+        "C:/work/build/qt5_workdir/w/s": "${QTDIR}../Src",
+        "Q:/qt5_workdir/w/s": "${QTDIR}../Src",
+        "C:/Users/qt/work/install": "${QTDIR}../Src",
+        "C:/Users/qt/work/qt": "${QTDIR}../Src"
+      }
+    },
+    {
+      "name": "hello_world_qt6 (macOS/Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "cwd": "${command:cmake.launchTargetDirectory}",
+      "linux": {
+        "MIMode": "gdb"
+      },
+      "osx": {
+        "MIMode": "lldb",
+      }
+    }
+  ]
+}

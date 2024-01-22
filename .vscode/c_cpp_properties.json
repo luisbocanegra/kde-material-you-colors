@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "qt6",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${QTDIR}include/**"
+            ],
+            "cppStandard": "c++17",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
