@@ -1,0 +1,131 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base-msvc",
+      "description": "Windows preset where compiler PATH is set by the IDE instead of via terminal env vars",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "base-ninja",
+      "generator": "Ninja",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "base-debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "base-release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "base-profile",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "base-macos",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "base-linux",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "debug",
+      "description": "Preset which expects Qt and compiler to be put into PATH before launching vscode",
+      "binaryDir": "${sourceDir}/build-debug",
+      "inherits": [
+        "base-ninja",
+        "base-debug"
+      ]
+    },
+    {
+      "name": "release",
+      "description": "Preset which expects Qt and compiler to be put into PATH before launching vscode",
+      "binaryDir": "${sourceDir}/build-release",
+      "inherits": [
+        "base-ninja",
+        "base-release"
+      ]
+    },
+    {
+      "name": "profile",
+      "description": "Preset which expects Qt and compiler to be put into PATH before launching vscode",
+      "binaryDir": "${sourceDir}/build-profile",
+      "inherits": [
+        "base-ninja",
+        "base-profile"
+      ]
+    },
+    {
+      "name": "debug-msvc",
+      "description": "Preset which expects Qt to be put into PATH before launching vscode. vsvars64.bat is called by the IDE automatically.",
+      "binaryDir": "${sourceDir}/build-debug-msvc",
+      "inherits": [
+        "base-debug",
+        "base-ninja",
+        "base-msvc"
+      ]
+    },
+    {
+      "name": "release-msvc",
+      "description": "Preset which expects Qt to be put into PATH before launching vscode. vsvars64.bat is called by the IDE automatically.",
+      "binaryDir": "${sourceDir}/build-release-msvc",
+      "inherits": [
+        "base-release",
+        "base-ninja",
+        "base-msvc"
+      ]
+    },
+    {
+      "name": "profile-msvc",
+      "description": "Preset which expects Qt to be put into PATH before launching vscode. vsvars64.bat is called by the IDE automatically.",
+      "binaryDir": "${sourceDir}/build-profile-msvc",
+      "inherits": [
+        "base-profile",
+        "base-ninja",
+        "base-msvc"
+      ]
+    }
+  ]
+}

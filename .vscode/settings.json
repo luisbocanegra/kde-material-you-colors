@@ -1,10 +1,16 @@
 {
-    "python.formatting.provider": "black",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
+    "python.languageServer": "Pylance",
     "[python]": {
         "editor.formatOnType": true,
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "ms-python.python"
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    "files.associations": {
+        "qwidget": "cpp"
+    },
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "clangd.arguments": [ "-header-insertion=never" ],
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSave": true
 }
