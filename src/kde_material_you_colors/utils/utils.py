@@ -38,22 +38,18 @@ def copy_user_files(dests):
         if not os.path.exists(dest["dest"]):
             os.makedirs(dest["dest"])
 
-        if not os.path.exists(dest["dest"] + dest["file_dest"]):
-            try:
-                shutil.copy(
-                    dest["origin"] + dest["file"],
-                    dest["dest"] + dest["file_dest"],
-                )
-                logging.info(
-                    f'Copied {dest["file"]} -> {dest["dest"] + dest["file_dest"]}'
-                )
-            except shutil.Error as err:
-                logging.error(f"Error: {err}")
-                sys.exit(1)
+        if os.path.exists(dest["dest"] + dest["file_dest"]):
+            logging.warning(f'Replacing {dest["dest"]+dest["file_dest"]}')
         else:
-            logging.warning(
-                f'File {dest["file"]} already exists in: {dest["dest"]+dest["file_dest"]}'
+            logging.info(f'Copying {dest["dest"] + dest["file_dest"]}')
+        try:
+            shutil.copy(
+                dest["origin"] + dest["file"],
+                dest["dest"] + dest["file_dest"],
             )
+        except shutil.Error as err:
+            logging.error(f"Error: {err}")
+            sys.exit(1)
 
 
 def update_desktop_entry():
