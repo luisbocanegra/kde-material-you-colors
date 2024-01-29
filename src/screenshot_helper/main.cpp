@@ -7,21 +7,20 @@
  * SPDX-FileCopyrightText: 2024 Luis Bocanegra <luisbocanegra17b@gmail.com>
  */
 
+#include <QByteArray>
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusReply>
 #include <QDBusUnixFileDescriptor>
+#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QFuture>
 #include <QImage>
-#include <QDebug>
-#include <QByteArray>
-#include <qplatformdefs.h>
 #include <poll.h>
+#include <qplatformdefs.h>
 
-static int readData(int fd, QByteArray &data)
-{
+static int readData(int fd, QByteArray &data) {
     char buffer[4096];
     pollfd pfds[1];
     pfds[0].fd = fd;
@@ -60,8 +59,7 @@ static int readData(int fd, QByteArray &data)
     Q_UNREACHABLE();
 }
 
-int saveImage(int pipeFd, QVariantMap imageInfo, QString output_file)
-{
+int saveImage(int pipeFd, QVariantMap imageInfo, QString output_file) {
     QByteArray content;
     if (readData(pipeFd, content) != 0) {
         close(pipeFd);
@@ -76,7 +74,8 @@ int saveImage(int pipeFd, QVariantMap imageInfo, QString output_file)
     int imageFormat = imageInfo.value("format").toUInt();
 
     QImage::Format qimageFormat = static_cast<QImage::Format>(imageFormat);
-    QImage image = QImage(reinterpret_cast<uchar *>(content.data()), imageWidth, imageHeight, imageStride, qimageFormat);
+    QImage image = QImage(reinterpret_cast<uchar *>(content.data()), imageWidth,
+                          imageHeight, imageStride, qimageFormat);
     image.save(output_file, "PNG", 100);
     return 0;
 }
@@ -84,37 +83,31 @@ int saveImage(int pipeFd, QVariantMap imageInfo, QString output_file)
 bool isPathWritable(QString path) {
     QFileInfo fileInfo(path);
     QFileInfo parentDirInfo(fileInfo.dir().absolutePath());
-    if (!fileInfo.dir().exists())
-    {
-        qWarning("Output location '%s' doesn't exist", qPrintable(fileInfo.dir().absolutePath()));
+    if (!fileInfo.dir().exists()) {
+        qWarning("Output location '%s' doesn't exist",
+                 qPrintable(fileInfo.dir().absolutePath()));
         return false;
     }
-    if (!parentDirInfo.isWritable())
-    {
+    if (!parentDirInfo.isWritable()) {
         qWarning("Output location '%s' not writable", qPrintable(path));
         return false;
     }
     return true;
 }
 
-
-QString getAbsolutePath(const QString& path)
-{
+QString getAbsolutePath(const QString &path) {
     QDir dir(path);
     return dir.absolutePath();
 }
 
-
-QDBusReply<QVariantMap> takeScreenshot(QString window_handle,int pipeFd)
-{
+QDBusReply<QVariantMap> takeScreenshot(QString window_handle, int pipeFd) {
     // Create a connection to the session bus
     QDBusConnection bus = QDBusConnection::sessionBus();
 
     // Get a proxy for the KWin object
     QDBusInterface screenshot(QStringLiteral("org.kde.KWin"),
-                                QStringLiteral("/org/kde/KWin/ScreenShot2"),
-                                QStringLiteral("org.kde.KWin.ScreenShot2"),
-                                bus);
+                              QStringLiteral("/org/kde/KWin/ScreenShot2"),
+                              QStringLiteral("org.kde.KWin.ScreenShot2"), bus);
 
     // Options for the screenshot
     QVariantMap options;
@@ -124,18 +117,14 @@ QDBusReply<QVariantMap> takeScreenshot(QString window_handle,int pipeFd)
     options["include-decoration"] = false;
 
     // Call CaptureWindow method
-    QDBusReply<QVariantMap> reply = screenshot.call("CaptureWindow",
-                                window_handle,
-                                options,
-                                QVariant::fromValue(QDBusUnixFileDescriptor(pipeFd))
-                                );
+    QDBusReply<QVariantMap> reply =
+        screenshot.call("CaptureWindow", window_handle, options,
+                        QVariant::fromValue(QDBusUnixFileDescriptor(pipeFd)));
     return reply;
 }
 
-int main(int argc, char *argv[])
-{
-    if(argc != 3)
-    {
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
         qWarning("Please provide window id and output filename");
         return 1;
     }
@@ -143,16 +132,14 @@ int main(int argc, char *argv[])
     QString window_handle = argv[1];
     QString output_file = argv[2];
 
-    if(output_file.trimmed().isEmpty())
-    {
+    if (output_file.trimmed().isEmpty()) {
         qWarning("Empty filename");
         return 1;
     }
 
     output_file = getAbsolutePath(output_file);
 
-    if(!isPathWritable(output_file))
-    {
+    if (!isPathWritable(output_file)) {
         return 1;
     }
 
@@ -162,11 +149,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    QDBusReply<QVariantMap> reply = takeScreenshot(window_handle,pipeFds[1]);
+    QDBusReply<QVariantMap> reply = takeScreenshot(window_handle, pipeFds[1]);
 
-    if (!reply.isValid())
-    {
-        qWarning("Failed to capture window %s: %s",qPrintable(window_handle), qPrintable(reply.error().message()));
+    if (!reply.isValid()) {
+        qWarning("Failed to capture window %s: %s", qPrintable(window_handle),
+                 qPrintable(reply.error().message()));
         return 1;
     }
 
