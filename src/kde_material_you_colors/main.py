@@ -358,6 +358,7 @@ def main():
         logging.warning("%s, %s", head, cont)
     if wallpaper.error:
         notify.send_notification("Could not get wallpaper", str(wallpaper.error))
+        logging.error(f"Could not get wallpaper {str(wallpaper.error)}")
 
     counter = 0
 
@@ -435,6 +436,7 @@ def main():
                 notify.send_notification(
                     "Could not get wallpaper", str(wallpaper.error)
                 )
+                logging.error(f"Could not get wallpaper {str(wallpaper.error)}")
             if plugin_watcher.changed and wallpaper.type == "screenshot":
                 head = "Screenshot mode enabled"
                 cont = f"Waiting {config.read('screenshot_delay')}s between updates"

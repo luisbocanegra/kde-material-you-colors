@@ -152,6 +152,9 @@ class WallpaperReader:
         else:
             # if everything fails, take as screenshot of the desktop
             self._type = "screenshot"
+        if settings.SCREENSHOT_HELPER_PATH is None:
+            self._error = "Screenshot helper is not installed. Use another plugin or install the helper"
+            return
         try:
             screenshot_taken = get_desktop_screenshot(self._monitor)
         except Exception as e:
@@ -211,10 +214,6 @@ def evaluate_script(script: str):
 
 def get_desktop_screenshot(screen=0):
     # take screenshot of desktop
-    if settings.SCREENSHOT_HELPER_PATH is None:
-        raise FileNotFoundError(
-            "Screenshot helper is not installed. Use another plugin or install the helper"
-        )
     try:
         window_handle = kwin_utils.get_desktop_window_id(screen)
     except Exception as e:
