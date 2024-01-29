@@ -10,7 +10,9 @@
     },
     "C_Cpp.intelliSenseEngine": "disabled",
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
-    "clangd.arguments": [ "-header-insertion=never" ],
+    "clangd.arguments": [
+        "-header-insertion=never"
+    ],
     "files.trimTrailingWhitespace": true,
     "editor.formatOnSave": true
 }
