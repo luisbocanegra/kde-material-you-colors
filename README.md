@@ -8,7 +8,7 @@ Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) 
 
 [![AUR version](https://img.shields.io/aur/version/kde-material-you-colors?style=for-the-badge&logo=archlinux&labelColor=2d333b&color=1f425f)](https://aur.archlinux.org/packages/kde-material-you-colors)
 [![PyPI - Version](https://img.shields.io/pypi/v/kde-material-you-colors?style=for-the-badge&logo=python&labelColor=2d333b&color=1f425f)](https://pypi.org/project/kde-material-you-colors/)
-[![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2073783)
+[![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2073783)
 
 </div>
 
@@ -68,6 +68,24 @@ pipx install kde-material-you-colors
 pipx install pywal
 ```
 
+## Desktop screenshot helper (support for all wallpaper plugins)
+
+The python backend only looks for a specific set of files and other wallpaper plugin properties to get the source color(s). For the rest an alternative Desktop screenshot helper can be installed (if not provided by distro package)
+
+### User install
+
+```sh
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=~/.local && cmake --build build
+cmake --install build
+```
+
+### System-wide install
+
+```sh
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr && cmake --build build
+sudo cmake --install build
+```
+
 ### Arch Linux
 
 - [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper
@@ -123,18 +141,21 @@ After finishing the setup, you can make it run automatically on boot
 - The wallpaper is obtained in the following order:
 
   - First, uses the [Plasma Desktop Scripting API](https://develop.kde.org/docs/plasma/scripting/api/) to read Wallpaper plugin configuration.
+  - If the previous fails, the screenshot helper (if installed):
 
-  - If the previous fails it uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot) to take a Screenshot of the Desktop view
+    - The backend uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and calls the screenshot helper to take a Screenshot of the Desktop view using the [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot)
 
 ## Bug reporting / Feature requests / Contributing
 
 Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 
-# Thanks & Credits
+# Credits & Resources
 
-- [Avanish Subbiah](https://github.com/avanishsubbiah) for the [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities required by this project.
-- [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [@pashazz (Pavel Borisov) ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as starting point.
-- Everyone that made [material-color-utilities](https://github.com/material-foundation/material-color-utilities) possible.
-- [Pywal](https://github.com/dylanaraps/pywal) developers
-- [Albert Ragány-Németh](https://github.com/albi005) for the [C# implementation](https://github.com/albi005/MaterialColorUtilities) of Material Color Utilities (used until v0.8.0).
-[Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) for the widget icon
+- [material-color-utilities-python](https://github.com/avanishsubbiah/material-color-utilities-python)
+- [material-color-utilities](https://github.com/material-foundation/material-color-utilities)
+- [Pywal](https://github.com/dylanaraps/pywal)
+- [MaterialColorUtilities (C#)](https://github.com/albi005/MaterialColorUtilities) (used until v0.8.0).
+- [xdg-desktop-portal-kde](https://invent.kde.org/plasma/xdg-desktop-portal-kde) screenshot code.
+- [kdotool](https://github.com/jinliu/kdotool) code to get a window id.
+- [Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) for the widget icon.
+- [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as inspiration.
