@@ -149,13 +149,13 @@ After finishing the setup, you can make it run automatically on boot
 
 Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
 
-# Credits & Resources
+# Credits
 
-- [material-color-utilities-python](https://github.com/avanishsubbiah/material-color-utilities-python)
-- [material-color-utilities](https://github.com/material-foundation/material-color-utilities)
-- [Pywal](https://github.com/dylanaraps/pywal)
+- [Python Implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities used by this project.
+- [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
+- [Pywal](https://github.com/dylanaraps/pywal) used to apply material colors to pywal supported software
 - [MaterialColorUtilities (C#)](https://github.com/albi005/MaterialColorUtilities) (used until v0.8.0).
-- [xdg-desktop-portal-kde](https://invent.kde.org/plasma/xdg-desktop-portal-kde) screenshot code.
-- [kdotool](https://github.com/jinliu/kdotool) code to get a window id.
+- [xdg-desktop-portal-kde](https://invent.kde.org/plasma/xdg-desktop-portal-kde) base for desktop screenshot helper.
+- [kdotool](https://github.com/jinliu/kdotool) base for getting desktop window id.
 - [Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) for the widget icon.
-- [This comment by throwaway6560192 on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the script to get the current Wallpaper that served me as inspiration.
+- [This comment on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the code to get the current Wallpaper that served me as inspiration.
