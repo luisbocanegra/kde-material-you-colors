@@ -36,7 +36,7 @@ ColumnLayout {
     property string backendVersionCommand: execPath + ' --version'
     property string backendVersion: ""
     property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
-    property string recommendedVersion: "1.7.0"
+    property string recommendedVersion: "1.7.1"
     property string versionStatus: "same"
     property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2073783'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
     property bool showVersionMessage: false
@@ -1880,8 +1880,9 @@ ColumnLayout {
 
                             ColumnLayout {
                                 spacing: PlasmaCore.Units.mediumSpacing
+                                opacity: 0.9
                                 PlasmaExtras.Heading {
-                                    level: 1
+                                    level: 2
                                     text: "About " + Plasmoid.metaData.name
                                     Layout.alignment: Qt.AlignHCenter
                                     wrapMode: Text.WordWrap
