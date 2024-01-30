@@ -14,5 +14,10 @@
         "-header-insertion=never"
     ],
     "files.trimTrailingWhitespace": true,
-    "editor.formatOnSave": true
+    "[cpp]": {
+        "editor.formatOnSave": true
+    },
+    "[qml]": {
+        "editor.formatOnSave": false
+    }
 }
