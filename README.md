@@ -61,12 +61,12 @@ pipx install kde-material-you-colors
 pipx install pywal
 ```
 
-[!IMPORTANT]
+> [!IMPORTANT]
 > You may need to install `gcc python-dbus-dev libglib2.0-dev` system packages or their equivalent for your distribution. Additionally, installing some libraries for Pillow may be necessary, see [Pillow docs](https://pillow.readthedocs.io/en/latest/installation.html#external-libraries)
 
 ## 2. Plasma widget and desktop screenshot helper (support for all wallpaper plugins)
 
-[!IMPORTANT]
+> [!IMPORTANT]
 > Install `extra-cmake-modules qt5-qttools-devel kf5-plasma-devel` system packages or their equivalent for your distribution.
 
 ### User install
@@ -85,7 +85,7 @@ cmake --build build
 sudo cmake --install build
 ```
 
-[!NOTE]
+> [!NOTE]
 > You can also install the widget from the [KDE Store](https://store.kde.org/p/2073783) and set `-DINSTALL_PLASMOID=OFF` in the command above
 >
 > 1. Right click on panel > Add Widgets > Get New Widgets > Download New Plasma Widgets
@@ -108,7 +108,7 @@ sudo cmake --install build
 
 ## Starting/Stopping Desktop entries
 
-[!NOTE]
+> [!NOTE]
 > **If not installed by your package manager**, run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
 
 - To start the program launch **KDE Material You Colors** from your applications list
