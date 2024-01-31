@@ -66,8 +66,7 @@ pipx install pywal
 
 ## 2. Plasma widget and desktop screenshot helper (support for all wallpaper plugins)
 
-> [!IMPORTANT]
-> Install `extra-cmake-modules qt5-qttools-devel kf5-plasma-devel` system packages or their equivalent for your distribution.
+Install `extra-cmake-modules qt5-qttools-devel kf5-plasma-devel` system packages or their equivalent for your distribution.
 
 ### User install
 
