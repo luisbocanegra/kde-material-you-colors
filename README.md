@@ -45,21 +45,14 @@ Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) 
 - Custom colors list used for konsole/pywal
 - Custom amount for background color tint
 - Dark/light Color schemes (Plasma and pywal/konsole independently)
-- Set a script/command that will be executed on start or wallpaper/dark/light/settings change
+- Set a script that will be executed on start or wallpaper/dark/light/settings change
 - Configuration file
 
 # Installing
 
-## Plasma widget
+## 1. Backend
 
-Install from the [KDE Store](https://store.kde.org/p/2073783)
-
-1. Right click on panel > Add Widgets > Get New Widgets > Download New Plasma Widgets
-2. Search for "KDE Material You Colors"
-
-## Backend (MANDATORY)
-
-### Using pypi with `pipx` (recommended) or `pip`
+Using pypi with `pipx` (recommended) or `pip`
 
 ```sh
 pipx install kde-material-you-colors
@@ -68,23 +61,35 @@ pipx install kde-material-you-colors
 pipx install pywal
 ```
 
-## Desktop screenshot helper (support for all wallpaper plugins)
+[!IMPORTANT]
+> You may need to install `gcc python-dbus-dev libglib2.0-dev` system packages or their equivalent for your distribution. Additionally, installing some libraries for Pillow may be necessary, see [Pillow docs](https://pillow.readthedocs.io/en/latest/installation.html#external-libraries)
 
-The python backend only looks for a specific set of files and other wallpaper plugin properties to get the source color(s). For the rest an alternative Desktop screenshot helper can be installed (if not provided by distro package)
+## 2. Plasma widget and desktop screenshot helper (support for all wallpaper plugins)
+
+[!IMPORTANT]
+> Install `extra-cmake-modules qt5-qttools-devel kf5-plasma-devel` system packages or their equivalent for your distribution.
 
 ### User install
 
 ```sh
-cmake -B build -S . -DCMAKE_INSTALL_PREFIX=~/.local && cmake --build build
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=~/.local -DINSTALL_PLASMOID=ON
+cmake --build build
 cmake --install build
 ```
 
 ### System-wide install
 
 ```sh
-cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr && cmake --build build
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr -DINSTALL_PLASMOID=ON
+cmake --build build
 sudo cmake --install build
 ```
+
+[!NOTE]
+> You can also install the widget from the [KDE Store](https://store.kde.org/p/2073783) and set `-DINSTALL_PLASMOID=OFF` in the command above
+>
+> 1. Right click on panel > Add Widgets > Get New Widgets > Download New Plasma Widgets
+> 2. Search for "KDE Material You Colors"
 
 ### Arch Linux
 
@@ -103,7 +108,8 @@ sudo cmake --install build
 
 ## Starting/Stopping Desktop entries
 
-**If not installed by your package manager**, run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
+[!NOTE]
+> **If not installed by your package manager**, run `kde-material-you-colors -cl` to copy desktop entries to ~/.local/share/applications/
 
 - To start the program launch **KDE Material You Colors** from your applications list
 - To stop it launch **Stop KDE Material You Colors** from your applications list
@@ -141,9 +147,9 @@ After finishing the setup, you can make it run automatically on boot
 - The wallpaper is obtained in the following order:
 
   - First, uses the [Plasma Desktop Scripting API](https://develop.kde.org/docs/plasma/scripting/api/) to read Wallpaper plugin configuration.
-  - If the previous fails, the screenshot helper (if installed):
+  - If the previous fails, the screenshot helper (if installed) is used
 
-    - The backend uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and calls the screenshot helper to take a Screenshot of the Desktop view using the [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot)
+    The backend uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and calls the screenshot helper to take a Screenshot of the Desktop view using the [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot)
 
 ## Bug reporting / Feature requests / Contributing
 
