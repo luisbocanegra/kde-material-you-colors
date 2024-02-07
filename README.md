@@ -52,13 +52,20 @@ Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) 
 
 ## 1. Backend
 
-Using pypi with `pipx` (recommended) or `pip`
-
+Using pypi with `pipx` (recommended) using this command,
 ```sh
 pipx install kde-material-you-colors
 # Optional
 # pywal to theme other programs using Material You Colors
-pipx install pywal
+pipx inject kde-material-you-colors pywal
+```
+
+or `pip` using this command
+```sh
+pip install kde-material-you-colors
+# Optional
+# pywal to theme other programs using Material You Colors
+pip install pywal
 ```
 
 > [!IMPORTANT]
