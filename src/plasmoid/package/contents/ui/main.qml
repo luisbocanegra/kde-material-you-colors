@@ -1,23 +1,11 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.15
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.extras 2.0 as PlasmaExtras
-import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.components 3.0 as PlasmaComponents3
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
 
-Item {
-    id:main
-
-    // Allow full view on the desktop
-    Plasmoid.preferredRepresentation: plasmoid.location ===
-                                    PlasmaCore.Types.Floating ?
-                                    Plasmoid.fullRepresentation :
-                                    Plasmoid.compactRepresentation
-
-    Plasmoid.compactRepresentation: CompactRepresentation {
-        anchors.fill: parent
-    }
+PlasmoidItem {
+    id: main
 
     signal togglePauseMode()
     signal updatePauseMode()
@@ -25,25 +13,50 @@ Item {
     property bool doSettingsReload: false
     property bool pauseModeMain: true
     property bool lastPauseState: true
-    property bool expanded: plasmoid.expanded
     property bool inTray: (plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
-    property bool trayExpanded: (expanded && inTray)
+    property bool trayExpanded: (expanded && inTray )
     property string pauseBtnIcon: pauseModeMain ? 'media-playback-start' : 'media-playback-pause'
     property string pauseBtnText: pauseModeMain ? 'Resume automatic theming' : 'Pause automatic theming'
 
-    Plasmoid.fullRepresentation: FullRepresentation {
+    compactRepresentation: CompactRepresentation {
+        anchors.fill: parent
+    }
+
+    fullRepresentation: FullRepresentation {
         id: fullRepresentationComponent
         parentMain: main
     }
+
+    // MouseArea {
+    //     id: mouseArea
+    //     anchors.fill: parent
+    //     hoverEnabled: true
+    //     onClicked: {
+    //         main.expanded = !main.expanded
+    //     }
+    // }
 
     function action_pauseBackend() {
         console.log("action_pauseBackend called")
         togglePauseMode()
     }
 
-    Component.onCompleted: function() {
-        Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
-    }
+    // Component.onCompleted: function() {
+    //     Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
+    // }
+
+    Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            id: pauseAction
+            text: pauseBtnText
+            checkable: false
+            icon.name: pauseBtnIcon
+            // cheched:
+            onTriggered: {
+                togglePauseMode()
+            }
+        }
+    ]
 
     Timer {
         interval: trayExpanded ? 100 : 1000
@@ -52,8 +65,10 @@ Item {
         id: startMe
         onTriggered: function() {
             if (pauseModeMain !== lastPauseState) {
-                Plasmoid.removeAction('pauseBackend')
-                Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
+                // Plasmoid.removeAction('pauseBackend')
+                // Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
+                pauseAction.text = pauseBtnText
+                pauseAction.icon.name = pauseBtnIcon
             }
             lastPauseState = pauseModeMain
         }
