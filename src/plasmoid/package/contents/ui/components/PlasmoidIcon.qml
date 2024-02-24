@@ -5,28 +5,16 @@ import org.kde.ksvg as KSvg
 Item {
     anchors.centerIn: parent
     property string customIcon: ""
-    KSvg.SvgItem {
-        id: svgItem
-        opacity: 1
-        width: parent.width
-        height: width
-        property int sourceIndex: 0
-        anchors.centerIn: parent
-        visible: customIcon == ""
-        smooth: true
-        svg: KSvg.Svg {
-            id: svg
-            colorSet: Kirigami.Theme.colorSet
-            imagePath: Qt.resolvedUrl("../../icons/icon.svg")
-        }
-    }
+    anchors.fill: parent
 
     Kirigami.Icon {
         anchors.centerIn: parent
-        width: parent.width
+        width: Math.min(parent.height, parent.width)
         height: width
-        visible: customIcon != ""
-        source: customIcon
-        smooth: true
+        source: customIcon || Qt.resolvedUrl("../../icons/icon.svg")
+        active: compact.containsMouse
+        isMask: true
+        color: compact.onDesktop ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.textColor
+        opacity: compact.isEnabled ? 1 : 0.5
     }
 }
