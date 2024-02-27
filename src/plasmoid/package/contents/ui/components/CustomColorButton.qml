@@ -10,12 +10,12 @@ PlasmaComponents3.Button {
     /**
      * The user selected color
      */
-    property alias color: colorDialog.selectedColor
+    property color color
 
     /**
      * Title to show in the dialog
      */
-    property alias dialogTitle: colorDialog.title
+    property string dialogTitle
 
     /**
      * Allow the user to configure an alpha value
@@ -35,14 +35,7 @@ PlasmaComponents3.Button {
         color: colorButton.color
     }
 
-    ColorDialog {
-        id: colorDialog
-        selectedColor: undefined
-        onAccepted: colorButton.accepted(color)
-        // showAlphaChannel: colorButton.showAlphaChannel ? true : undefined
-    }
-
-        Component {
+    Component {
         id: colorWindowComponent
 
         Window { // QTBUG-119055 https://invent.kde.org/plasma/kdeplasma-addons/-/commit/797cef06882acdf4257d8c90b8768a74fdef0955
@@ -56,7 +49,8 @@ PlasmaComponents3.Button {
                 title: Plasmoid.title
                 selectedColor: colorButton.color || undefined /* Prevent transparent colors */
                 onAccepted: {
-                    root.colorPicked(selectedColor);
+                    colorButton.color = color
+                    colorButton.accepted(selectedColor);
                     window.destroy();
                 }
                 onRejected: window.destroy()

@@ -805,7 +805,7 @@ ColumnLayout {
                                     Layout.preferredWidth: controlWidth
                                     color: settings.color?settings.color:settings.color_last
                                     onAccepted: {
-                                        settings.color = colorButton.color.toString()
+                                        settings.color = color.toString()
                                         settings.color_last = settings.color
                                     }
                                 }
@@ -959,7 +959,16 @@ ColumnLayout {
                                                                 settings.custom_colors_list_last
                                         color: colorList.split(" ")[index]
 
-                                        onAccepted: saveCustomColorsList()
+                                        onAccepted: {
+                                            let colors = settings.custom_colors_list.split(" ")
+                                            colors[index] = color
+                                            if (customTextColorsCheck.checked) {
+                                                settings.custom_colors_list = ""
+                                            } else {
+                                                settings.custom_colors_list = colors.join(" ");
+                                                settings.custom_colors_list_last = colors.join(" ");
+                                            }
+                                        }
                                     }
                                 }
                                 // Component.onCompleted: saveCustomColorsList()
