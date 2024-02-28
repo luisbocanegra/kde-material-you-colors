@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import org.kde.plasma.components as PlasmaComponents3
+import org.kde.kirigami as Kirigami
 
 PlasmaComponents3.Button {
     id: colorButton
@@ -40,16 +41,16 @@ PlasmaComponents3.Button {
 
         Window { // QTBUG-119055 https://invent.kde.org/plasma/kdeplasma-addons/-/commit/797cef06882acdf4257d8c90b8768a74fdef0955
             id: window
-            width: Kirigami.Units.gridUnit * 19
+            width: Kirigami.Units.gridUnit * 16
             height: Kirigami.Units.gridUnit * 23
             visible: true
-            title: Plasmoid.title
+            title: plasmoid.title
             ColorDialog {
                 id: colorDialog
-                title: Plasmoid.title
+                title: plasmoid.title
                 selectedColor: colorButton.color || undefined /* Prevent transparent colors */
                 onAccepted: {
-                    colorButton.color = color
+                    colorButton.color = selectedColor
                     colorButton.accepted(selectedColor);
                     window.destroy();
                 }
