@@ -119,8 +119,11 @@ for (var i = 0; i < windows.length; i++) {{
         desktopWindows.push({{ "id": id, "pos": pos }})
     }}
 }}
-//TODO: make sure this is reliable for more than two monitors
-desktopWindows.sort((b,a) => (a.pos.x - b.pos.x))
+// TODO: Make sure this is reliable for more than two monitors,
+// Looks like KWin already returns the windows in a predictable way,
+// it seems the list of windows is sorted by the screens positions(?)
+// and (at least on my machine) this works for any arrangement
+//desktopWindows.sort((b,a) => (a.pos.x - b.pos.x))
 print("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
 """
     with open(settings.KWIN_DESKTOP_ID_JSCRIPT, "w", encoding="utf-8") as js:
