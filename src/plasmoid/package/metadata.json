@@ -1,4 +1,5 @@
 {
+    "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Authors": [
             {
@@ -16,9 +17,7 @@
         "Version": "0.2.1",
         "Website": "https://github.com/luisbocanegra/kde-material-you-colors"
     },
-    "KPackageStructure": "Plasma/Applet",
-    "X-Plasma-API": "declarativeappletscript",
-    "X-Plasma-MainScript": "ui/main.qml",
-    "X-Plasma-NotificationArea": "true",
-    "X-Plasma-NotificationAreaCategory": "ApplicationStatus"
+    "X-Plasma-NotificationArea": true,
+    "X-Plasma-NotificationAreaCategory": "ApplicationStatus",
+    "X-Plasma-API-Minimum-Version": "6.0"
 }

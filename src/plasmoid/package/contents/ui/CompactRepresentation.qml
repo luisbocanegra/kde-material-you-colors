@@ -1,35 +1,31 @@
 import QtQuick 2.0
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.core 2.0 as PlasmaCore
 import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
 import "components" as Components
 
 Item {
-    id: root
+    id: compact
 
     property bool isVertical: plasmoid.formFactor === PlasmaCore.Types.Vertical
 
-    Layout.minimumWidth: PlasmaCore.Units.iconSizes.small
-    Layout.minimumHeight: PlasmaCore.Units.iconSizes.small
+    Layout.minimumWidth: Kirigami.Units.iconSizes.small
+    Layout.minimumHeight: Kirigami.Units.iconSizes.small
 
-    Layout.preferredWidth: root.height
-    Layout.preferredHeight: root.width
+    Layout.preferredWidth: compact.height
+    Layout.preferredHeight: compact.width
+    property bool wasExpanded
 
 
     Components.PlasmoidIcon {
-        width: isVertical ? root.height : root.width
+        width: isVertical ? compact.height : compact.width
         customIcon: plasmoid.configuration.icon
     }
 
     MouseArea {
         anchors.fill: parent
-        hoverEnabled: true
-        onClicked: plasmoid.expanded = !plasmoid.expanded
+        onPressed: wasExpanded = main.expanded
+        onClicked: main.expanded = !wasExpanded
     }
-
-    // Rectangle {
-    //     anchors.fill: parent
-    //     color: "red"
-    //     opacity: 0.1
-    // }
 }

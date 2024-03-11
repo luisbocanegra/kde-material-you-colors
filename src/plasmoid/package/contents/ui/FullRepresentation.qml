@@ -1,24 +1,25 @@
-import Qt.labs.platform 1.1
-import Qt.labs.settings 1.0
-import QtGraphicalEffects 1.12
+import Qt.labs.platform
+import Qt.labs.settings
+import Qt5Compat.GraphicalEffects
 
-import QtQuick 2.0
-import QtQuick.Dialogs 1.3
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.0
+import QtQuick
+import QtQuick.Dialogs
+import QtQuick.Controls
+import QtQuick.Layouts
 
 import "components" as Components
-import org.kde.kirigami 2.20 as Kirigami
-import org.kde.kquickcontrols 2.0
-import org.kde.plasma.components 3.0 as PlasmaComponents3
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.extras 2.0 as PlasmaExtras
-import org.kde.plasma.plasmoid 2.0
+import org.kde.kirigami as Kirigami
+import org.kde.kquickcontrols
+import org.kde.plasma.components as PlasmaComponents3
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasma5support as P5Support
+import org.kde.plasma.extras as PlasmaExtras
+import org.kde.plasma.plasmoid
 
 ColumnLayout {
     id: fullRepresentation
-    Layout.minimumWidth: PlasmaCore.Units.gridUnit * 20
-    Layout.minimumHeight: PlasmaCore.Units.gridUnit * 19
+    Layout.minimumWidth: Kirigami.Units.gridUnit * 20
+    Layout.minimumHeight: Kirigami.Units.gridUnit * 19
     Layout.preferredWidth: rootRep.width
     Layout.preferredHeight: rootRep.height
 
@@ -42,7 +43,7 @@ ColumnLayout {
     property bool showVersionMessage: false
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
-    property bool plasmoidExpanded: plasmoid.expanded
+    property bool plasmoidExpanded: main.expanded
     property bool autoReloadEnabled: onDesktop || plasmoidExpanded
 
     // used to trigger reload from parent if true
@@ -122,22 +123,22 @@ ColumnLayout {
         getUsername()
     }
 
-    PlasmaCore.DataSource {
+    P5Support.DataSource {
         id: checkBackend
         engine: "executable"
         connectedSources: []
 
-        onNewData: {
+        onNewData: function(source, data) {
             var exitCode = data["exit code"]
             var exitStatus = data["exit status"]
             var stdout = data["stdout"]
             var stderr = data["stderr"]
-            exited(sourceName, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName) // cmd finished
+            exited(source, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(source) // cmd finished
         }
 
         function exec(cmd) {
-            checkBackend.connectSource(cmd)
+            checkBackend.connectSource(cmd )
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
@@ -156,18 +157,18 @@ ColumnLayout {
         }
     }
 
-    PlasmaCore.DataSource {
+    P5Support.DataSource {
         id: checkBackendVersion
         engine: "executable"
         connectedSources: []
 
-        onNewData: {
+        onNewData: function(source, data) {
             var exitCode = data["exit code"]
             var exitStatus = data["exit status"]
             var stdout = data["stdout"]
             var stderr = data["stderr"]
-            exited(sourceName, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName) // cmd finished
+            exited(source, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(source) // cmd finished
         }
 
         function exec(cmd) {
@@ -225,18 +226,18 @@ ColumnLayout {
         return v1.length != v2.length ? 'older' : 'same';
     }
 
-    PlasmaCore.DataSource {
+    P5Support.DataSource {
         id: checkConfigChange
         engine: "executable"
         connectedSources: []
 
-        onNewData: {
+        onNewData: function(source, data) {
             var exitCode = data["exit code"]
             var exitStatus = data["exit status"]
             var stdout = data["stdout"]
             var stderr = data["stderr"]
-            exited(sourceName, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName) // cmd finished
+            exited(source, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(source) // cmd finished
         }
 
         function exec(cmd) {
@@ -261,18 +262,18 @@ ColumnLayout {
         }
     }
 
-    PlasmaCore.DataSource {
+    P5Support.DataSource {
         id: getIconThemes
         engine: "executable"
         connectedSources: []
 
-        onNewData: {
+        onNewData: function(source, data) {
             var exitCode = data["exit code"]
             var exitStatus = data["exit status"]
             var stdout = data["stdout"]
             var stderr = data["stderr"]
-            exited(sourceName, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName) // cmd finished
+            exited(source, exitCode, exitStatus, stdout, stderr)
+            disconnectSource(source) // cmd finished
         }
 
         function exec() {
@@ -309,7 +310,7 @@ ColumnLayout {
             id:heading
             visible: !(plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
 
-            leftPadding: PlasmaCore.Units.smallSpacing
+            leftPadding: Kirigami.Units.smallSpacing
 
             RowLayout {
                 anchors.fill: parent
@@ -324,10 +325,10 @@ ColumnLayout {
                     display: PlasmaComponents3.AbstractButton.IconOnly
                     visible: !onDesktop
                     icon.name: 'configure'
-                    text: Plasmoid.action("configure").text
+                    text: plasmoid.internalAction("configure").text
 
                     onClicked: {
-                        plasmoid.action("configure").trigger()
+                        plasmoid.internalAction("configure").trigger()
                     }
 
                     PlasmaComponents3.ToolTip {
@@ -365,7 +366,7 @@ ColumnLayout {
 
                     onClicked: {
                         autoHide = !autoHide
-                        plasmoid.hideOnWindowDeactivate = autoHide
+                        main.hideOnWindowDeactivate = autoHide
                     }
                 }
             }
@@ -380,8 +381,8 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                topPadding: PlasmaCore.Units.smallSpacing
-                bottomPadding: PlasmaCore.Units.smallSpacing
+                topPadding: Kirigami.Units.smallSpacing
+                bottomPadding: Kirigami.Units.smallSpacing
 
                 PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
                 PlasmaComponents3.ScrollBar.vertical.policy: PlasmaComponents3.ScrollBar.AsNeeded
@@ -401,7 +402,7 @@ ColumnLayout {
                 contentItem: ListView {
                     id: listView
                     // reserve space for the scrollbar
-                    property var sideMargin: PlasmaCore.Units.mediumSpacing
+                    property var sideMargin: Kirigami.Units.mediumSpacing
 
                     leftMargin: sideMargin
                     rightMargin: sideMargin
@@ -419,9 +420,9 @@ ColumnLayout {
 
                         property var dividerColor: Kirigami.Theme.textColor
                         property var dividerOpacity: 0.1
-                        property var controlHeight: 36 * PlasmaCore.Units.devicePixelRatio
-                        property var controlWidth: 48 * PlasmaCore.Units.devicePixelRatio
-                        property var textAreaPadding: 10 * PlasmaCore.Units.devicePixelRatio
+                        property var controlHeight: 36
+                        property var controlWidth: 48
+                        property var textAreaPadding: 10
 
                         property var materialYouData: null
                         property var materialYouDataString: null
@@ -566,18 +567,18 @@ ColumnLayout {
                             }
                         }
 
-                        PlasmaCore.DataSource {
+                        P5Support.DataSource {
                             id: readMaterialYouData
                             engine: "executable"
                             connectedSources: []
 
-                            onNewData: {
+                            onNewData: function(source, data) {
                                 var exitCode = data["exit code"]
                                 var exitStatus = data["exit status"]
                                 var stdout = data["stdout"]
                                 var stderr = data["stderr"]
-                                exited(sourceName, exitCode, exitStatus, stdout, stderr)
-                                disconnectSource(sourceName) // cmd finished
+                                exited(source, exitCode, exitStatus, stdout, stderr)
+                                disconnectSource(source) // cmd finished
                             }
 
                                 function exec() {
@@ -656,7 +657,7 @@ ColumnLayout {
                         ColumnLayout {
                             visible: !fullRepresentation.showAdvanced
                             Layout.preferredWidth: mainLayout.width
-                            spacing: PlasmaCore.Units.smallSpacing
+                            spacing: Kirigami.Units.smallSpacing
 
                             RowLayout {
                                 Item { Layout.fillWidth: true }
@@ -763,20 +764,20 @@ ColumnLayout {
 
                                 PlasmaComponents3.Button {
                                     id: screenInfoBtn
-                                    visible: (plasmoid.screen !== -1 && settings.color==="")
+                                    visible: (main.screen !== -1 && settings.color==="")
                                     opacity: 0.7
                                     text: "This screen"
 
                                     hoverEnabled: true
                                     onClicked: {
-                                        settings.monitor = plasmoid.screen
+                                        settings.monitor = main.screen
                                     }
 
                                     PlasmaComponents3.ToolTip {
                                         id: screenInfoPopup
                                         x: screenInfoBtn.width / 2
                                         y: screenInfoBtn.height
-                                        text: "This widget is on screen " + plasmoid.screen.toString()
+                                        text: "This widget is on screen " + main.screen.toString()
                                     }
                                 }
                             }
@@ -804,7 +805,7 @@ ColumnLayout {
                                     Layout.preferredWidth: controlWidth
                                     color: settings.color?settings.color:settings.color_last
                                     onAccepted: {
-                                        settings.color = colorButton.color.toString()
+                                        settings.color = color.toString()
                                         settings.color_last = settings.color
                                     }
                                 }
@@ -812,7 +813,7 @@ ColumnLayout {
                                 // Choose color from wallpaper when colors is not set
                                 // IDEA: center buttons in separate row maybe?
                                 GridLayout { //PlasmaComponents3.ScrollView
-                                    property var gridSpacing: PlasmaCore.Units.mediumSpacing
+                                    property var gridSpacing: Kirigami.Units.mediumSpacing
                                     visible: settings.color===""
                                     columns: Math.floor((mainLayout.width - selectColorLabel.width) / (
                                         controlHeight * .75 + gridSpacing))
@@ -958,7 +959,16 @@ ColumnLayout {
                                                                 settings.custom_colors_list_last
                                         color: colorList.split(" ")[index]
 
-                                        onAccepted: saveCustomColorsList()
+                                        onAccepted: {
+                                            let colors = settings.custom_colors_list.split(" ")
+                                            colors[index] = color
+                                            if (customTextColorsCheck.checked) {
+                                                settings.custom_colors_list = ""
+                                            } else {
+                                                settings.custom_colors_list = colors.join(" ");
+                                                settings.custom_colors_list_last = colors.join(" ");
+                                            }
+                                        }
                                     }
                                 }
                                 // Component.onCompleted: saveCustomColorsList()
@@ -1376,7 +1386,7 @@ ColumnLayout {
                                     Layout.fillWidth: true
                                     valueRole: "name"
                                     currentIndex:0
-                                    popup.height: 300 * PlasmaCore.Units.devicePixelRatio
+                                    popup.height: 300
 
                                     onCurrentIndexChanged: {
                                         settings.iconsdark = model.get(currentIndex)["name"]
@@ -1405,7 +1415,7 @@ ColumnLayout {
                                     Layout.fillWidth: true
                                     valueRole: "name"
                                     currentIndex:0
-                                    popup.height: 300 * PlasmaCore.Units.devicePixelRatio
+                                    popup.height: 300
 
                                     onCurrentIndexChanged: {
                                         settings.iconslight = model.get(currentIndex)["name"]
@@ -1596,7 +1606,7 @@ ColumnLayout {
                             }
 
                             RowLayout {
-                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
                                 PlasmaComponents3.Label {
                                     text: "Tint Sierra Breeze window decoration buttons"
                                     Layout.alignment: Qt.AlignLeft
@@ -1614,7 +1624,7 @@ ColumnLayout {
 
                             // klassy outline color
                             RowLayout {
-                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
                                 PlasmaComponents3.Label {
                                     text: "Tint Klassy window decoration outline"
                                     Layout.alignment: Qt.AlignLeft
@@ -1871,7 +1881,7 @@ ColumnLayout {
                             }
 
                             Rectangle {
-                                Layout.topMargin: PlasmaCore.Units.mediumSpacing
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
                                 Layout.preferredWidth: mainLayout.width
                                 height: 1
                                 color: dividerColor
@@ -1879,7 +1889,7 @@ ColumnLayout {
                             }
 
                             ColumnLayout {
-                                spacing: PlasmaCore.Units.mediumSpacing
+                                spacing: Kirigami.Units.mediumSpacing
                                 opacity: 0.9
                                 PlasmaExtras.Heading {
                                     level: 2
@@ -1983,7 +1993,7 @@ ColumnLayout {
                 // anchors.fill: parent
                 Layout.alignment: Qt.AlignHCenter
                 visible: fullRepresentation.showAdvanced
-                Layout.bottomMargin: PlasmaCore.Units.smallSpacing
+                Layout.bottomMargin: Kirigami.Units.smallSpacing
                 PlasmaComponents3.ToolButton {
                     // Layout.alignment: Qt.AlignHCenter
                     text: "Hide advanced settings"

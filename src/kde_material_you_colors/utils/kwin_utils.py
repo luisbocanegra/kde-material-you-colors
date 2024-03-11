@@ -2,8 +2,6 @@ import logging
 import subprocess
 import dbus
 import time
-import os
-from PIL import Image
 from .. import settings
 
 
@@ -79,6 +77,8 @@ def load_desktop_window_id_script():
         result = subprocess.run(command, capture_output=True, text=True, check=True)
         script_id = result.stdout.strip()
 
+        # logging.debug(f"Script loaded id: {command}")
+
         # Check if the script_id is an integer and convert it
         if script_id.isdigit():
             return script_id
@@ -105,14 +105,26 @@ def get_desktop_window_id(screen: int = 0) -> str | None:
     """
 
     win_id = None
-    script_str = f"""var windows = workspace.clientList()
+    script_str = f"""var windows = workspace.windowList()
+desktopWindows = []
 for (var i = 0; i < windows.length; i++) {{
-    let window = windows[i];
-    var regex = /Desktop @ QRect\\((.*?)\\) — Plasma/;
-    if (window.caption.match(regex) != null && window.screen == {screen}) {{
-        print("KMYC-desktop-window-id:", window.internalId)
+    let w = windows[i];
+    let wClass = w.resourceClass
+    let name = w.resourceName
+    var id = w.internalId
+    isDesktop = w.desktopWindow
+    pos = w.pos
+    const nameMatches = (name == "plasmashell" && wClass == "plasmashell")
+    if(nameMatches && isDesktop) {{
+        desktopWindows.push({{ "id": id, "pos": pos }})
     }}
 }}
+// TODO: Make sure this is reliable for more than two monitors,
+// Looks like KWin already returns the windows in a predictable way,
+// it seems the list of windows is sorted by the screens positions(?)
+// and (at least on my machine) this works for any arrangement
+//desktopWindows.sort((b,a) => (a.pos.x - b.pos.x))
+print("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
 """
     with open(settings.KWIN_DESKTOP_ID_JSCRIPT, "w", encoding="utf-8") as js:
         js.write(script_str)
@@ -127,7 +139,7 @@ for (var i = 0; i < windows.length; i++) {{
     try:
         # run the script
         bus = dbus.SessionBus()
-        kwin = bus.get_object("org.kde.KWin", "/" + script_id)
+        kwin = bus.get_object("org.kde.KWin", "/Scripting/Script" + script_id)
         script = dbus.Interface(kwin, "org.kde.kwin.Script")
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         script.run()
@@ -173,6 +185,7 @@ for (var i = 0; i < windows.length; i++) {{
     else:
         script.stop()
 
+    # logging.debug(f"HANDLE: {win_id}")
     return win_id
 
 

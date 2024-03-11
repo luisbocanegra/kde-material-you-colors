@@ -1,32 +1,20 @@
-import QtQuick 2.15
-import org.kde.plasma.core 2.0 as PlasmaCore
-import QtQuick.Layouts 1.1
+import QtQuick
+import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
 
 Item {
     anchors.centerIn: parent
     property string customIcon: ""
-    PlasmaCore.SvgItem {
-        id: svgItem
-        opacity: 1
-        width: parent.width
-        height: width
-        property int sourceIndex: 0
-        anchors.centerIn: parent
-        visible: customIcon == ""
-        smooth: true
-        svg: PlasmaCore.Svg {
-            id: svg
-            colorGroup: PlasmaCore.ColorScope.colorGroup
-            imagePath: Qt.resolvedUrl("../../icons/icon.svg")
-        }
-    }
+    anchors.fill: parent
 
-    PlasmaCore.IconItem {
+    Kirigami.Icon {
         anchors.centerIn: parent
-        width: parent.width
+        width: Math.min(parent.height, parent.width)
         height: width
-        visible: customIcon != ""
-        source: customIcon
-        smooth: true
+        source: customIcon || Qt.resolvedUrl("../../icons/icon.svg")
+        active: compact.containsMouse
+        isMask: true
+        color: compact.onDesktop ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.textColor
+        opacity: compact.isEnabled ? 1 : 0.5
     }
 }
