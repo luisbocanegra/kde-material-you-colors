@@ -4,11 +4,11 @@
 
 <img src="https://github.com/luisbocanegra/kde-material-you-colors/assets/15076387/6bd4e04a-48a7-48bc-8dd1-3a75524cd10e" alt="Screenshot" height="250px">
 
-Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) from your current wallpaper, using [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
+Automatically generate light/dark color themes for KDE (and pywal if installed) from your current wallpaper, using [Python implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
 
 [![AUR version](https://img.shields.io/aur/version/kde-material-you-colors?style=for-the-badge&logo=archlinux&labelColor=2d333b&color=1f425f)](https://aur.archlinux.org/packages/kde-material-you-colors)
 [![PyPI - Version](https://img.shields.io/pypi/v/kde-material-you-colors?style=for-the-badge&logo=python&labelColor=2d333b&color=1f425f)](https://pypi.org/project/kde-material-you-colors/)
-[![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2073783)
+[![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2136963)
 
 </div>
 
@@ -18,7 +18,7 @@ Automatically generate Light/Dark Color Themes for KDE (and pywal if installed) 
 
 ## Plasma specific
 
-- [Plasma Widget](https://store.kde.org/p/2073783)
+- [Plasma Widget](https://store.kde.org/p/2136963) (Plasma 6 version)
 - Support for all Wallpaper plugins (color, image, slideshows, animated, Plasma 5.26+ dark wallpaper variants)
 - Update automatically on wallpaper change
 - Change icon themes
@@ -73,7 +73,7 @@ pip install pywal
 
 ## 2. Plasma widget and desktop screenshot helper (support for all wallpaper plugins)
 
-Install `extra-cmake-modules qt5-qttools-devel kf5-plasma-devel` system packages or their equivalent for your distribution.
+Install `extra-cmake-modules libplasma plasma5support` system packages or their equivalent for your distribution.
 
 ### User install
 
@@ -92,7 +92,7 @@ sudo cmake --install build
 ```
 
 > [!NOTE]
-> You can also install the widget from the [KDE Store](https://store.kde.org/p/2073783) and set `-DINSTALL_PLASMOID=OFF` in the command above
+> You can also install the widget from the KDE Store [Plasma 6 version](https://store.kde.org/p/2136963) and set `-DINSTALL_PLASMOID=OFF` in the command above
 >
 > 1. Right click on panel > Add Widgets > Get New Widgets > Download New Plasma Widgets
 > 2. Search for "KDE Material You Colors"
@@ -148,7 +148,7 @@ After finishing the setup, you can make it run automatically on boot
 
 # Notes
 
-- To update color with `plasma-apply-colorscheme` (utility provided by plasma developers), the file containing the new color scheme must have a different name than the current one, to workaround this the program creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
+- To update color with `plasma-apply-colorscheme` (utility provided by KDE developers), the file containing the new color scheme must have a different name than the current one, to workaround this the program creates two scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
 
 - The wallpaper is obtained in the following order:
 
