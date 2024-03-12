@@ -296,6 +296,13 @@ def main():
     )
 
     parser.add_argument(
+        "--screenshot-only-mode",
+        action="store_true",
+        help="Only use screenshot method to get the current wallpaper",
+        default=None,
+    )
+
+    parser.add_argument(
         "--version",
         "-v",
         action="store_true",

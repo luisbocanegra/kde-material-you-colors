@@ -535,6 +535,7 @@ ColumnLayout {
                                     property int screenshot_delay: 900; \
                                     property bool once_after_change: false; \
                                     property bool pause_mode: false; \
+                                    property bool screenshot_only_mode: false; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1735,7 +1736,7 @@ ColumnLayout {
 
                             PlasmaExtras.Heading {
                                 level: 1
-                                text: "Delay options"
+                                text: "Delay & screenshot options"
                                 Layout.alignment: Qt.AlignHCenter
                             }
 
@@ -1847,6 +1848,35 @@ ColumnLayout {
                                         x: screenshotDelayBtn.width / 2
                                         y: screenshotDelayBtn.height
                                         text: "Delay after taking screenshot (in seconds).\nUseful for live wallpapers that display a constant transition based on time or other circumstances, which would trigger colors generation too often (default is 900)"
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Only use screenshot method"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    checked: settings.screenshot_only_mode
+
+                                    onCheckedChanged: {
+                                        settings.screenshot_only_mode = checked
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    icon.name: "help-contents"
+
+                                    hoverEnabled: true
+                                    onClicked: screenshotModePopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: screenshotModePopup
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "Forces the backend to take screenshot of the desktop, instead of trying to get the wallpaper from Plasma.\nThis method uses more resources if the time between screenshots is too small!"
                                     }
                                 }
                             }

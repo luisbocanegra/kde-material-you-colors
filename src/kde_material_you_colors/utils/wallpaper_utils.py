@@ -15,12 +15,10 @@ class WallpaperReader:
     def __init__(self, config: Configs):
         """
         Args:
-            monitor (_type_, optional): _description_. Defaults to None.
-            file (_type_, optional): _description_. Defaults to None.
-            color (_type_, optional): _description_. Defaults to None.
-            light (_type_, optional): _description_. Defaults to None.
+            config (Configs): Current configuration from args and file.
         """
         self._monitor = self.validate_monitor(config.read("monitor"))
+        self._screenshot_only_mode = config.read("screenshot_only_mode")
         self._file = config.read("file")
         self._color = config.read("color")
         self._light = config.read("light")
@@ -89,17 +87,42 @@ class WallpaperReader:
         }
         return o
 
-    def reload(self):
-        """Reload current wallpaper"""
-        # Validate color first
-        self.validate_color()
-        if self._source:
+    def screenshot(self):
+        self._type = "screenshot"
+        if settings.SCREENSHOT_HELPER_PATH is None:
+            self._error = "Screenshot helper is not installed. Use another wallpaper plugin or install the helper"
+            return
+        try:
+            screenshot_taken = get_desktop_screenshot(self._monitor)
+        except Exception as e:
+            logging.exception(e)
+            self._error = str(e)
             return
 
-        # Validate file
-        self.validate_file()
-        if self._source:
+        if screenshot_taken:
+            self._source = settings.SCREENSHOT_PATH
+        else:
+            error = "Could not take Desktop screenshot"
+            logging.error(error)
+            self._error = error
+
+    def reload(self):
+        """Reload current wallpaper"""
+        if self._screenshot_only_mode:
+            self.screenshot()
             return
+
+        # Validate color
+        if self._type == "":
+            self.validate_color()
+            if self._source:
+                return
+
+        # Validate file
+        if self._type == "":
+            self.validate_file()
+            if self._source:
+                return
 
         try:
             output = get_wallpaper_config(self._monitor)
@@ -150,28 +173,13 @@ class WallpaperReader:
                 self._source = wallpaper
                 return
         else:
-            # if everything fails, take as screenshot of the desktop
-            self._type = "screenshot"
-        if settings.SCREENSHOT_HELPER_PATH is None:
-            self._error = "Screenshot helper is not installed. Use another plugin or install the helper"
-            return
-        try:
-            screenshot_taken = get_desktop_screenshot(self._monitor)
-        except Exception as e:
-            logging.exception(e)
-            self._error = str(e)
-            return
-
-        if screenshot_taken:
-            self._source = settings.SCREENSHOT_PATH
-        else:
-            error = "Could not take Desktop screenshot"
-            logging.error(error)
-            self._error = error
+            # if everything fails, try taking a screenshot of the desktop
+            self.screenshot()
 
     def update(self, config: Configs):
         """Update from config and reload wallpaper"""
         self._monitor = self.validate_monitor(config.read("monitor"))
+        self._screenshot_only_mode = config.read("screenshot_only_mode")
         self._file = config.read("file")
         self._color = config.read("color")
         self._light = config.read("light")

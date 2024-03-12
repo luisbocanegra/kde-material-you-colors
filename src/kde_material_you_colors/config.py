@@ -166,6 +166,7 @@ class Configs:
             "screenshot_delay": [args.screenshot_delay, 900, 2],
             "once_after_change": [args.once_after_change, False, 0],
             "pause_mode": [None, False, 0],
+            "screenshot_only_mode": [args.screenshot_only_mode, False, 0],
         }
 
     def parse_conf(self):
