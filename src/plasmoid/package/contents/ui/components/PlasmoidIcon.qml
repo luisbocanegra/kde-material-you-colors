@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg as KSvg
+import org.kde.plasma.core as PlasmaCore
 
 Item {
     anchors.centerIn: parent
@@ -14,7 +15,7 @@ Item {
         source: customIcon || Qt.resolvedUrl("../../icons/icon.svg")
         active: compact.containsMouse
         isMask: true
-        color: compact.onDesktop ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.textColor
-        opacity: compact.isEnabled ? 1 : 0.5
+        color: Kirigami.Theme.textColor
+        opacity: 1
     }
 }
