@@ -5,10 +5,15 @@ import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
 import "components" as Components
 
-Item {
+MouseArea {
     id: compact
+    hoverEnabled: true
+    onPressed: wasExpanded = main.expanded
+    onClicked: main.expanded = !wasExpanded
+    onEntered: console.log("ENTERED");
 
     property bool isVertical: plasmoid.formFactor === PlasmaCore.Types.Vertical
+    anchors.fill: parent
 
     Layout.minimumWidth: Kirigami.Units.iconSizes.small
     Layout.minimumHeight: Kirigami.Units.iconSizes.small
@@ -21,11 +26,5 @@ Item {
     Components.PlasmoidIcon {
         width: isVertical ? compact.height : compact.width
         customIcon: plasmoid.configuration.icon
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onPressed: wasExpanded = main.expanded
-        onClicked: main.expanded = !wasExpanded
     }
 }
