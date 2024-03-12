@@ -113,16 +113,14 @@ class WallpaperReader:
             return
 
         # Validate color
-        if self._type == "":
-            self.validate_color()
-            if self._source:
-                return
+        self.validate_color()
+        if self._source:
+            return
 
         # Validate file
-        if self._type == "":
-            self.validate_file()
-            if self._source:
-                return
+        self.validate_file()
+        if self._source:
+            return
 
         try:
             output = get_wallpaper_config(self._monitor)
