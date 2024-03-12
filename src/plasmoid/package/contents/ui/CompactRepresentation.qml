@@ -10,7 +10,6 @@ MouseArea {
     hoverEnabled: true
     onPressed: wasExpanded = main.expanded
     onClicked: main.expanded = !wasExpanded
-    onEntered: console.log("ENTERED");
 
     property bool isVertical: plasmoid.formFactor === PlasmaCore.Types.Vertical
     anchors.fill: parent
