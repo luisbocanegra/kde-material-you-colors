@@ -398,9 +398,8 @@ def main():
         #
         #
         # update wallpaper
-        if counter == 0:
-            wallpaper.update(config)
-            wallpaper_watcher.set_value(wallpaper.current)
+        wallpaper.update(config, skip_screenshot=counter != 0)
+        wallpaper_watcher.set_value(wallpaper.current)
 
         target_cycles = config.read("screenshot_delay") / (
             config.read("main_loop_delay") or 1

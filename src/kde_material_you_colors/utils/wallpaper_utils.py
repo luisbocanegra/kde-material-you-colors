@@ -26,6 +26,7 @@ class WallpaperReader:
         self._type = None
         self._source = None
         self._error = None
+        self._skip_screenshot = False
         self.reload()
 
     def __str__(self) -> str:
@@ -87,8 +88,10 @@ class WallpaperReader:
         }
         return o
 
-    def screenshot(self):
+    def screenshot(self, skip_screenshot):
         self._type = "screenshot"
+        if skip_screenshot:
+            return
         if settings.SCREENSHOT_HELPER_PATH is None:
             self._error = "Screenshot helper is not installed. Use another wallpaper plugin or install the helper"
             return
@@ -109,7 +112,7 @@ class WallpaperReader:
     def reload(self):
         """Reload current wallpaper"""
         if self._screenshot_only_mode:
-            self.screenshot()
+            self.screenshot(self._skip_screenshot)
             return
 
         # Validate color
@@ -172,12 +175,13 @@ class WallpaperReader:
                 return
         else:
             # if everything fails, try taking a screenshot of the desktop
-            self.screenshot()
+            self.screenshot(self._skip_screenshot)
 
-    def update(self, config: Configs):
+    def update(self, config: Configs, skip_screenshot=False):
         """Update from config and reload wallpaper"""
         self._monitor = self.validate_monitor(config.read("monitor"))
         self._screenshot_only_mode = config.read("screenshot_only_mode")
+        self._skip_screenshot = skip_screenshot
         self._file = config.read("file")
         self._color = config.read("color")
         self._light = config.read("light")
