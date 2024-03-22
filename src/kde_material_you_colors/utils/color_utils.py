@@ -2,8 +2,11 @@ import operator
 import numpy
 import colorsys
 import re
-from . import math_utils
-from material_color_utilities_python.utils.theme_utils import *
+from kde_material_you_colors.utils import math_utils
+from materialyoucolor.blend import Blend
+from materialyoucolor.utils.color_utils import red_from_argb
+from materialyoucolor.utils.color_utils import green_from_argb
+from materialyoucolor.utils.color_utils import blue_from_argb
 
 
 def hex2rgb(hex):
@@ -14,6 +17,11 @@ def hex2rgb(hex):
 
 
 def rgb2hex(r, g, b):
+    hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
+    return hex
+
+
+def rgba_to_opaque_hex(r, g, b, a):
     hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
     return hex
 
@@ -297,6 +305,55 @@ def color2hex(color: str):
         return color
 
 
+def hexFromArgb(argb):
+    r = red_from_argb(argb)
+    g = green_from_argb(argb)
+    b = blue_from_argb(argb)
+    outParts = [f"{r:x}", f"{g:x}", f"{b:x}"]
+    # Pad single-digit output values
+    for i, part in enumerate(outParts):
+        if len(part) == 1:
+            outParts[i] = "0" + part
+    return "#" + "".join(outParts)
+
+
+def parseIntHex(value):
+    return int(value, 16)
+
+
+def rshift(val, n):
+    return val >> n if val >= 0 else (val + 0x100000000) >> n
+
+
+def argbFromHex(hex):
+    hex = hex.replace("#", "")
+    isThree = len(hex) == 3
+    isSix = len(hex) == 6
+    isEight = len(hex) == 8
+    if not isThree and not isSix and not isEight:
+        raise Exception("unexpected hex " + hex)
+
+    r = 0
+    g = 0
+    b = 0
+    if isThree:
+        r = parseIntHex(hex[0:1] * 2)
+        g = parseIntHex(hex[1:2] * 2)
+        b = parseIntHex(hex[2:3] * 2)
+    elif isSix:
+        r = parseIntHex(hex[0:2])
+        g = parseIntHex(hex[2:4])
+        b = parseIntHex(hex[4:6])
+    elif isEight:
+        r = parseIntHex(hex[2:4])
+        g = parseIntHex(hex[4:6])
+        b = parseIntHex(hex[6:8])
+
+    return rshift(
+        ((255 << 24) | ((r & 0x0FF) << 16) | ((g & 0x0FF) << 8) | (b & 0x0FF)), 0
+    )
+
+
 # Tests
 if __name__ == "__main__":
     # Test color blend
@@ -347,7 +404,7 @@ if __name__ == "__main__":
     print("> Oklab vs cam16 blend '#ff0000', '#0000ff', .5")
     print(f"oklab: {blendColors('#ff0000', '#0000ff', .5)}")
     print(
-        f"cam16: {hexFromArgb(Blend.cam16Ucs(argbFromHex('#ff0000'),argbFromHex('#0000ff'),0.5))}"
+        f"cam16: {hexFromArgb(Blend.cam16_ucs(argbFromHex('#ff0000'),argbFromHex('#0000ff'),0.5))}"
     )
 
     print("> lighteen_color '#b70708',.15,'#ffffff'")
