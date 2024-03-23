@@ -55,9 +55,9 @@ schemes = [
 ]
 
 
-def getScheme(scheme_type, source, isDark, contrastLevel):
-    schene_class = schemes[scheme_type]
-    return schene_class(source, isDark, contrastLevel)
+def getScheme(scheme_variant, source, isDark, contrastLevel):
+    scheme_class = schemes[scheme_variant]
+    return scheme_class(source, isDark, contrastLevel)
 
 
 def getColors(scheme):
@@ -71,11 +71,10 @@ def getColors(scheme):
     return colors
 
 
-def themeFromSourceColor(seed_color):
+def themeFromSourceColor(seed_color, scheme_variant=5):
     source = Hct.from_int(seed_color)
-    scheme_type = 5
-    scheme = getScheme(scheme_type, source, False, 0)
-    schemeDark = getScheme(scheme_type, source, True, 0)
+    scheme = getScheme(scheme_variant, source, False, 0)
+    schemeDark = getScheme(scheme_variant, source, True, 0)
     colorsLight = getColors(scheme)
     colorsDark = getColors(schemeDark)
 
@@ -130,7 +129,7 @@ def get_custom_colors(custom_colors):
     return colors
 
 
-def get_material_you_colors(wallpaper_data, ncolor, source_type):
+def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant):
     """Get material you colors from wallpaper or hex color using material-color-utility
 
     Args:
@@ -176,7 +175,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             ncolor = 0
         seedColor = hexFromArgb(source_colors[ncolor])
 
-        theme = themeFromSourceColor(argbFromHex(seedColor))
+        theme = themeFromSourceColor(argbFromHex(seedColor), scheme_variant)
 
         dark_scheme = theme["schemes"]["dark"]
         light_scheme = theme["schemes"]["light"]
@@ -234,7 +233,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         return None
 
 
-def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
+def get_color_schemes(wallpaper: WallpaperReader, ncolor=None, scheme_variant=5):
     """Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
@@ -253,7 +252,10 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
             if wallpaper_data and os.path.exists(wallpaper_data):
                 if not os.path.isdir(wallpaper_data):
                     materialYouColors = get_material_you_colors(
-                        wallpaper_data, ncolor=ncolor, source_type="image"
+                        wallpaper_data,
+                        ncolor=ncolor,
+                        source_type="image",
+                        scheme_variant=scheme_variant,
                     )
                 else:
                     logging.error(f'"{wallpaper_data}" is a directory, aborting')
@@ -262,7 +264,10 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None):
             if wallpaper_data:
                 wallpaper_data = color_utils.color2hex(wallpaper_data)
                 materialYouColors = get_material_you_colors(
-                    wallpaper_data, ncolor=ncolor, source_type=wallpaper_type
+                    wallpaper_data,
+                    ncolor=ncolor,
+                    source_type=wallpaper_type,
+                    scheme_variant=scheme_variant,
                 )
 
         if materialYouColors is not None:

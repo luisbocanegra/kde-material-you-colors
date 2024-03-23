@@ -15,7 +15,7 @@ SCORE_OPTIONS = ScoreOptions(
 )
 
 
-def sourceColorsFromImage(image, top=False):
+def sourceColorsFromImage(image):
     if image.mode == "RGB":
         image = image.convert("RGBA")
     if image.mode != "RGBA":
@@ -30,6 +30,4 @@ def sourceColorsFromImage(image, top=False):
     # // Convert Pixels to Material Colors
     result = QuantizeCelebi(pixel_array, 128)
     ranked = Score.score(result, SCORE_OPTIONS)
-    if top is True:
-        return ranked[0]
     return ranked

@@ -89,6 +89,19 @@ ColumnLayout {
         id: iconThemeList
     }
 
+    ListModel {
+        id: schemeVariantsModel
+        ListElement { text: "Content"; value: 0 }
+        ListElement { text: "Expressive"; value: 1 }
+        ListElement { text: "Fidelity"; value: 2 }
+        ListElement { text: "Monochrome"; value: 3 }
+        ListElement { text: "Neutral"; value: 4 }
+        ListElement { text: "TonalSpot"; value: 5 }
+        ListElement { text: "Vibrant"; value: 6 }
+        ListElement { text: "Rainbow"; value: 7 }
+        ListElement { text: "FruitSalad"; value: 8 }
+    }
+
     onPlasmoidExpandedChanged: {
         checkConfigChange.exec(checkConfigChangeCommand)
         findExecutablePath()
@@ -536,6 +549,7 @@ ColumnLayout {
                                     property bool once_after_change: false; \
                                     property bool pause_mode: false; \
                                     property bool screenshot_only_mode: false; \
+                                    property int scheme_variant: 5; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1183,9 +1197,49 @@ ColumnLayout {
 
                             PlasmaExtras.Heading {
                                 level: 1
-                                text: "Color amount"
+                                text: "Color scheme"
                                 Layout.alignment: Qt.AlignHCenter
                             }
+
+                            // RowLayout {
+                            //     PlasmaComponents3.Label {
+                            //         text: "Variant"
+                            //         Layout.alignment: Qt.AlignLeft
+                            //     }
+                            //     PlasmaComponents3.ComboBox {
+                            //         model: schemeVariantsModel
+                            //         Layout.fillWidth: true
+                            //         textRole: "text"
+                            //         valueRole: "value"
+                            //         currentIndex: settings.scheme_variant
+
+                            //         onCurrentIndexChanged: {
+                            //             settings.scheme_variant = model.get(currentIndex)["value"]
+                            //         }
+                            //     }
+                            // }
+
+                            Flow {
+                                Layout.preferredWidth: mainLayout.width
+                                spacing: 6
+
+                                ButtonGroup { id: buttonGroup }
+
+                                Repeater {
+                                    model: schemeVariantsModel
+
+                                    PlasmaComponents3.Button {
+                                        checkable: true
+                                        ButtonGroup.group: buttonGroup
+                                        text: checked ? model.text : model.text
+                                        checked: index === settings.scheme_variant
+                                        onCheckedChanged: {
+                                            if (checked) settings.scheme_variant = index
+                                        }
+                                    }
+                                }
+                            }
+
 
                             // Dark blend
                             RowLayout {

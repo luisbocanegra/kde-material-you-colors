@@ -167,6 +167,7 @@ class Configs:
             "once_after_change": [args.once_after_change, False, 0],
             "pause_mode": [None, False, 0],
             "screenshot_only_mode": [args.screenshot_only_mode, False, 0],
+            "scheme_variant": [args.scheme_variant, 5, 1],
         }
 
     def parse_conf(self):

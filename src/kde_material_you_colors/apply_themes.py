@@ -16,8 +16,7 @@ from .utils import (
 def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     needs_kwin_reload = False
     material_colors = m3_scheme_utils.get_color_schemes(
-        wallpaper,
-        config.read("ncolor"),
+        wallpaper, config.read("ncolor"), config.read("scheme_variant")
     )
     if material_colors is None:
         return
@@ -68,9 +67,11 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         konsole_utils.apply_color_scheme()
     if config.read("darker_window_list"):
         titlebar_utils.kwin_rule_darker_titlebar(
-            dark_light
-            if config.read("pywal_light") is None
-            else config.read("pywal_light"),
+            (
+                dark_light
+                if config.read("pywal_light") is None
+                else config.read("pywal_light")
+            ),
             config.read("darker_window_list"),
         )
     if config.read("pywal"):
