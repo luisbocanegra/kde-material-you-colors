@@ -54,6 +54,15 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
 2. Install the backend
 
+    **For Plasma 5** this is the last version, development has switched to plasma 6
+
+    ```sh
+    pipx install kde-material-you-colors==1.7.1
+    pipx inject kde-material-you-colors pywal
+    ```
+
+    **For Plasma 6**
+
     ```sh
     pipx install kde-material-you-colors
     pipx inject kde-material-you-colors pywal
