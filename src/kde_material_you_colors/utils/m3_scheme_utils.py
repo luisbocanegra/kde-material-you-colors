@@ -153,7 +153,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             hsize = int((float(img.size[1]) * float(wpercent)))
             img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
             # get best colors
-            source_colors = sourceColorsFromImage(img, top=False)
+            source_colors = sourceColorsFromImage(img)
             # close image file
             img.close()
             seed_color = source_colors[0]
@@ -167,24 +167,16 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
             best_colors.update({str(i): hexFromArgb(color)})
         # generate theme from seed color
 
-        theme = themeFromSourceColor(seed_color)
-
-        # Given a image, the alt color and hex color
-        # return a selected color or a single color for hex code
+        # Given the best colors and the alt color index
+        # return a selected color or the first one if index is out of bounds
         totalColors = len(best_colors)
-        if ncolor and ncolor is not None:
-            ncolor = math_utils.clip(ncolor, 0, totalColors, 0)
-        else:
+        if ncolor is None:
             ncolor = 0
+        if ncolor > totalColors - 1:
+            ncolor = 0
+        seedColor = hexFromArgb(source_colors[ncolor])
 
-        if totalColors > ncolor:
-            seedColor = hexFromArgb(source_colors[ncolor])
-            seedNo = ncolor
-        else:
-            seedColor = hexFromArgb(source_colors[-1])
-            seedNo = totalColors - 1
-        if seedColor != 0:
-            theme = themeFromSourceColor(argbFromHex(seedColor))
+        theme = themeFromSourceColor(argbFromHex(seedColor))
 
         dark_scheme = theme["schemes"]["dark"]
         light_scheme = theme["schemes"]["light"]
@@ -207,7 +199,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type):
         materialYouColors = {
             "best": best_colors,
             "seed": {
-                seedNo: hexFromArgb(theme["source"]),
+                ncolor: hexFromArgb(theme["source"]),
             },
             "schemes": {
                 "light": light_scheme,
