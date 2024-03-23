@@ -34,12 +34,20 @@ class ThemeConfig:
         else:
             colors_best = list(colors["best"].values())
         # colors_best = list(colors['best'].values())
-        tones_primary = colors["palettes"]["primary"]
-        tones_secondary = colors["palettes"]["secondary"]
-        tones_neutral = colors["palettes"]["neutral"]
-        tones_neutral_variant = colors["palettes"]["neutralVariant"]
-        tones_tertiary = colors["palettes"]["tertiary"]
-        tones_error = colors["palettes"]["error"]
+        tones_primary = colors["palettes"]["light"]["primary"]
+        tones_secondary = colors["palettes"]["light"]["secondary"]
+        tones_neutral = colors["palettes"]["light"]["neutral"]
+        tones_neutral_variant = colors["palettes"]["light"]["neutralVariant"]
+        tones_tertiary = colors["palettes"]["light"]["tertiary"]
+        tones_error = colors["palettes"]["light"]["error"]
+
+        tones_primary_dark = colors["palettes"]["dark"]["primary"]
+        tones_secondary_dark = colors["palettes"]["dark"]["secondary"]
+        tones_neutral_dark = colors["palettes"]["dark"]["neutral"]
+        tones_neutral_variant_dark = colors["palettes"]["dark"]["neutralVariant"]
+        tones_tertiary_dark = colors["palettes"]["dark"]["tertiary"]
+        tones_error_dark = colors["palettes"]["dark"]["error"]
+
         colors_light = colors["schemes"]["light"]
         colors_dark = colors["schemes"]["dark"]
 
@@ -60,15 +68,17 @@ class ThemeConfig:
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
             "dark": {
-                "surface": blendColors(tones_neutral[5], tones_primary[40], 0.08 * dbm),
+                "surface": blendColors(
+                    tones_neutral_dark[5], tones_primary_dark[40], 0.08 * dbm
+                ),
                 "surface1": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.05 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.05 * dbm
                 ),
                 "surface2": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.08 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.08 * dbm
                 ),
                 "surface3": blendColors(
-                    colors_dark["background"], tones_primary[40], 0.18 * dbm
+                    colors_dark["background"], tones_primary_dark[40], 0.18 * dbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_dark["onPrimary"], base_text_states["Link"], 0.5
@@ -107,16 +117,16 @@ class ThemeConfig:
             },
             "light": {
                 "surface": blendColors(
-                    colors_light["background"], tones_primary[70], 0.08 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.08 * lbm
                 ),
                 "surface1": blendColors(
-                    colors_light["background"], tones_primary[70], 0.18 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.18 * lbm
                 ),
                 "surface2": blendColors(
-                    colors_light["background"], tones_primary[70], 0.23 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.23 * lbm
                 ),
                 "surface3": blendColors(
-                    colors_light["background"], tones_primary[70], 0.20 * lbm
+                    colors_light["background"], tones_primary_dark[70], 0.20 * lbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_light["onPrimary"], base_text_states["Link"], 0.5
@@ -157,10 +167,14 @@ class ThemeConfig:
         self._extras["dark"].update(
             {
                 "selectionAlt": blendColors(
-                    tones_secondary[30], self._extras["dark"]["surface3"], 0.05 * dbm
+                    tones_secondary_dark[30],
+                    self._extras["dark"]["surface3"],
+                    0.05 * dbm,
                 ),
                 "selectionHover": blendColors(
-                    tones_secondary[50], self._extras["dark"]["surface3"], 0.1 * dbm
+                    tones_secondary_dark[50],
+                    self._extras["dark"]["surface3"],
+                    0.1 * dbm,
                 ),
             }
         )
