@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-find_package(Qt5 REQUIRED COMPONENTS DBus Gui)
+find_package(Qt6 REQUIRED COMPONENTS DBus Gui)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
@@ -28,7 +28,7 @@ add_executable("${PROJECT_NAME}"
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries("${PROJECT_NAME}" PRIVATE Qt5::DBus Qt5::Gui)
+target_link_libraries("${PROJECT_NAME}" PRIVATE Qt6::DBus Qt6::Gui)
 
 install(TARGETS "${PROJECT_NAME}"
     BUNDLE DESTINATION .
