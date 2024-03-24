@@ -608,8 +608,17 @@ ColumnLayout {
                         Connections {
                             target: readMaterialYouData
                             function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
+                                console.error("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                                console.log("cmd:",cmd);
+                                console.log("exitCode:",exitCode);
+                                console.log("exitStatus:",exitStatus);
+                                console.log("stdout:",stdout);
+                                console.log("stderr:",stderr);
                                 try {
                                     materialYouData = JSON.parse(stdout)
+                                    console.log("materialYouData:",JSON.stringify(materialYouData, null, 2));
+                                    console.log("materialYouData.best:",JSON.stringify(materialYouData.best, null, 2))
+                                    console.log("materialYouData.pywal.dark.colors:",JSON.stringify(materialYouData.pywal.dark.colors, null, 2))
                                 } catch(error) {
                                     if (error instanceof SyntaxError) {
                                         console.log("@@@@@ Error parsing JSON data:", error.message);
