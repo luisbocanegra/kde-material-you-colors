@@ -8,6 +8,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import "components" as Components
+import org.kde.coreaddons 1.0 as KCoreAddons // kuser
 import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrols
 import org.kde.plasma.components as PlasmaComponents3
@@ -27,7 +28,7 @@ ColumnLayout {
     property bool backendRunning: true
     property string homeDir: StandardPaths.writableLocation(
                             StandardPaths.HomeLocation).toString().substring(7)
-    property string username: ""
+    property string username: kuser.loginName
 
     property string execName: 'kde-material-you-colors'
     property string execPath: ""
@@ -61,6 +62,10 @@ ColumnLayout {
     signal savePauseMode()
 
     property Item parentMain
+
+    KCoreAddons.KUser {
+        id: kuser
+    }
 
     Connections {
         target: parentMain
@@ -124,16 +129,9 @@ ColumnLayout {
         execPath = temp
 
     }
-    function getUsername() {
-        var parts = homeDir.split('/');
-        if (parts.length > 2 && parts[1] === "home") {
-            username = parts[2];
-        }
-    }
 
     Component.onCompleted: {
         findExecutablePath()
-        getUsername()
     }
 
     P5Support.DataSource {
