@@ -1,11 +1,11 @@
 import logging
 
 # C++ QuantizeCelebi
-from materialyoucolor.utils.platform_utils import QuantizeCelebi
+from materialyoucolor.quantize import QuantizeCelebi
 
 # Material You's default scoring of colors
-from kde_material_you_colors.utils.m3.custom_score import Score
-from kde_material_you_colors.utils.m3.custom_score import ScoreOptions
+from materialyoucolor.score.score import Score
+from materialyoucolor.score.score import ScoreOptions
 
 SCORE_OPTIONS = ScoreOptions(
     desired=7,  # ANSI colors target
@@ -13,8 +13,6 @@ SCORE_OPTIONS = ScoreOptions(
     filter=True,  # Avoid unsuitable colors.
     dislike_filter=True,  # Fix globally disliked colors
 )
-
-Score.CUTOFF_TONE = 10.0
 
 
 def sourceColorsFromImage(image):
