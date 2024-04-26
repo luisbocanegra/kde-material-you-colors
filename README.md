@@ -187,7 +187,7 @@ Both methods are somewhat robust but there are edge cases when detection will fa
 
 ## Bug reporting / Feature requests / Contributing
 
-Please read the [Contributing guidelines in this repository](CONTRIBUTING.md)
+Please read the [Contributing guidelines in this repository](https://github.com/luisbocanegra/kde-material-you-colors/blob/main/CONTRIBUTING.md)
 
 ## Credits
 
