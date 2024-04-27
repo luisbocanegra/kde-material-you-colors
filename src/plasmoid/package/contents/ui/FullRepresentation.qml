@@ -676,11 +676,23 @@ ColumnLayout {
                                 Item { Layout.fillWidth: true }
                                 // visible: fullRepresentation.versionStatus !== "same"
                                 visible: fullRepresentation.showVersionMessage
-                                Label {
+                                TextEdit {
                                     Layout.fillWidth: true
                                     text: fullRepresentation.versionMessage
-                                    onLinkActivated: Qt.openUrlExternally(link)
                                     wrapMode: Text.WordWrap
+                                    textFormat: TextEdit.RichText
+                                    readOnly: true
+
+                                    color: Kirigami.Theme.textColor
+                                    selectedTextColor: Kirigami.Theme.highlightedTextColor
+                                    selectionColor: Kirigami.Theme.highlightColor
+
+                                    onLinkActivated: (url) => Qt.openUrlExternally(url)
+
+                                    HoverHandler {
+                                        acceptedButtons: Qt.NoButton
+                                        cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                    }
                                 }
 
                                 ToolButton { // PlasmaComponents3 one doesnt take colors??
@@ -1984,22 +1996,32 @@ ColumnLayout {
                                 PlasmaComponents3.Label {
                                     text: "Plasmoid version: " + Plasmoid.metaData.version
                                     Layout.alignment: Qt.AlignHCenter
-                                    onLinkActivated: Qt.openUrlExternally(link)
                                 }
 
                                 PlasmaComponents3.Label {
                                     text: "Backend version: " + fullRepresentation.backendVersionDisplay
                                     Layout.alignment: Qt.AlignHCenter
-                                    onLinkActivated: Qt.openUrlExternally(link)
                                 }
 
-                                PlasmaComponents3.Label {
+                                TextEdit {
                                     text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2073783'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
-                                    onLinkActivated: Qt.openUrlExternally(link)
                                     wrapMode: Text.WordWrap
+                                    readOnly: true
+                                    textFormat: TextEdit.RichText
                                     Layout.alignment: Qt.AlignHCenter
                                     Layout.preferredWidth: mainLayout.width
                                     horizontalAlignment: Text.AlignHCenter
+
+                                    color: Kirigami.Theme.textColor
+                                    selectedTextColor: Kirigami.Theme.highlightedTextColor
+                                    selectionColor: Kirigami.Theme.highlightColor
+
+                                    onLinkActivated: (url) => Qt.openUrlExternally(url)
+
+                                    HoverHandler {
+                                        acceptedButtons: Qt.NoButton
+                                        cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                    }
                                 }
                             }
 
