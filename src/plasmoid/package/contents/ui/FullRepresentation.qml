@@ -40,7 +40,7 @@ ColumnLayout {
     property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
     property string recommendedVersion: "1.8.0"
     property string versionStatus: "same"
-    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2073783'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
+    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2136963'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
     property bool showVersionMessage: false
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
@@ -2004,7 +2004,7 @@ ColumnLayout {
                                 }
 
                                 TextEdit {
-                                    text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2073783'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
+                                    text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2136963'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
                                     wrapMode: Text.WordWrap
                                     readOnly: true
                                     textFormat: TextEdit.RichText
