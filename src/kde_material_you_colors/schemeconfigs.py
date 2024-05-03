@@ -194,7 +194,7 @@ class ThemeConfig:
 
         best_colors_count = len(colors_best)
         # bg , ansi 30
-        pywal_colors_dark = (extras["dark"]["surface"],)
+        pywal_colors_dark = (colors_dark["surface"],)
         # gray? bold, ansi 30
         pywal_colors_dark_intense = (
             blendColors(pywal_colors_dark[0], tones_secondary[90], 0.8),
@@ -265,7 +265,7 @@ class ThemeConfig:
 
         tone = 50
         # ansi 30
-        pywal_colors_light = (extras["light"]["surface"],)
+        pywal_colors_light = (colors_light["surface"],)
         pywal_colors_light_intense = (
             blendColors(pywal_colors_light[0], tones_secondary[25], 0.8),
         )
@@ -373,28 +373,28 @@ class ThemeConfig:
         # print()
 
         self._light_scheme = f"""[ColorEffects:Disabled]
-Color={extras['light']['surface1']}
-ColorAmount=0.55
-ColorEffect=0
-ContrastAmount=0.65
+Color={colors_light["surface"]}
+ColorAmount=0.3
+ColorEffect=3
+ContrastAmount=0.4
 ContrastEffect=1
 IntensityAmount=0.1
-IntensityEffect=2
+IntensityEffect=0
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=true
-Color={colors_light['surfaceVariant']}
+Color={colors_light['surfaceContainerLowest']}
 ColorAmount=0.025
-ColorEffect=2
+ColorEffect=0
 ContrastAmount=0.1
-ContrastEffect=2
+ContrastEffect=0
 Enable=false
 IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
 BackgroundAlternate={colors_light['surfaceVariant']}
-BackgroundNormal={extras['light']['selectionAlt']}
+BackgroundNormal={colors_light['surfaceContainerHigh']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['onSurface']}
@@ -408,7 +408,7 @@ ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Complementary]
 BackgroundAlternate={extras['light']['surface']}
-BackgroundNormal={extras['light']['surface3']}
+BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
@@ -421,8 +421,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
-BackgroundAlternate={extras['light']['surface']}
-BackgroundNormal={extras['light']['surface3']}
+BackgroundAlternate={colors_light['surface']}
+BackgroundNormal={colors_light['surface']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
@@ -430,13 +430,13 @@ ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
 ForegroundNegative={colors_light['error']}
 ForegroundNeutral={base_text_states['Neutral']}
-ForegroundNormal={colors_light['onSurfaceVariant']}
+ForegroundNormal={colors_light['onSurface']}
 ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header][Inactive]
-BackgroundAlternate={extras['light']['surface']}
-BackgroundNormal={extras['light']['surface3']}
+BackgroundAlternate={colors_light['surface']}
+BackgroundNormal={colors_light['surface']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
@@ -452,7 +452,7 @@ ForegroundVisited={base_text_states['Visited']}
 BackgroundAlternate={colors_light['primary']}
 BackgroundNormal={colors_light['primary']}
 DecorationFocus={colors_light['primary']}
-DecorationHover={colors_light['primary']}
+DecorationHover={colors_light['secondary']}
 ForegroundActive={colors_light['onPrimary']}
 ForegroundInactive={colors_light['onPrimary']}
 ForegroundLink={extras['light']['linkOnPrimary']}
@@ -464,7 +464,7 @@ ForegroundVisited={extras['light']['linkVisitedOnPrimary']}
 
 [Colors:Tooltip]
 BackgroundAlternate={colors_light['surfaceVariant']}
-BackgroundNormal={extras['light']['surface']}
+BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['onSurface']}
@@ -477,8 +477,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={extras['light']['surface2']}
-BackgroundNormal={extras['light']['surface']}
+BackgroundAlternate={colors_light['surfaceContainer']}
+BackgroundNormal={colors_light['surfaceBright']}
 DecorationFocus={colors_light['primary']}
 #-----------------------------------------------
 DecorationHover={extras['light']['selectionHover']}
@@ -487,16 +487,16 @@ ForegroundInactive={colors_light['outline']}
 ForegroundLink={extras['light']['linkOnSurface']}
 ForegroundNegative={colors_light['error']}
 ForegroundNeutral={extras['light']['neutralOnSurface']}
-ForegroundNormal={colors_light['onSurfaceVariant']}
+ForegroundNormal={colors_light['onSurface']}
 ForegroundPositive={extras['light']['positiveOnSurface']}
 ForegroundVisited={extras['light']['linkVisitedOnSurface']}
 
 [Colors:Window]
-BackgroundAlternate={extras['light']['surface']}
-BackgroundNormal={extras['light']['surface3']}
+BackgroundAlternate={colors_light['surfaceVariant']}
+BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
-ForegroundActive={colors_light['inverseSurface']}
+ForegroundActive={base_text_states['Link']}
 ForegroundInactive={colors_light['outline']}
 ForegroundLink={base_text_states['Link']}
 ForegroundNegative={colors_light['error']}
@@ -524,28 +524,28 @@ inactiveForeground={colors_light['onSurfaceVariant']}
         """
 
         self._dark_scheme = f"""[ColorEffects:Disabled]
-Color={extras['dark']['surface1']}
-ColorAmount=0
-ColorEffect=0
-ContrastAmount=0.65
+Color={colors_dark["surface"]}
+ColorAmount=0.3
+ColorEffect=3
+ContrastAmount=0.4
 ContrastEffect=1
 IntensityAmount=0.1
-IntensityEffect=2
+IntensityEffect=0
 
 [ColorEffects:Inactive]
 ChangeSelectionColor=true
-Color=Color={colors_dark['surfaceVariant']}
+Color={colors_dark['surfaceContainerLowest']}
 ColorAmount=0.025
-ColorEffect=2
+ColorEffect=0
 ContrastAmount=0.1
-ContrastEffect=2
-Enable=false
+ContrastEffect=0
+Enable=true
 IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
 BackgroundAlternate={colors_dark['surfaceVariant']}
-BackgroundNormal={extras['dark']['selectionAlt']}
+BackgroundNormal={colors_dark['surfaceContainerHigh']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
@@ -559,7 +559,7 @@ ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Complementary]
 BackgroundAlternate={extras['dark']['surface']}
-BackgroundNormal={extras['dark']['surface3']}
+BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
@@ -572,8 +572,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header]
-BackgroundAlternate={extras['dark']['surface']}
-BackgroundNormal={extras['dark']['surface3']}
+BackgroundAlternate={colors_dark['surface']}
+BackgroundNormal={colors_dark['surface']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
@@ -586,8 +586,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:Header][Inactive]
-BackgroundAlternate={extras['dark']['surface']}
-BackgroundNormal={extras['dark']['surface3']}
+BackgroundAlternate={colors_dark['surface']}
+BackgroundNormal={colors_dark['surface']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
@@ -603,7 +603,7 @@ ForegroundVisited={base_text_states['Visited']}
 BackgroundAlternate={colors_dark['primary']}
 BackgroundNormal={colors_dark['primary']}
 DecorationFocus={colors_dark['primary']}
-DecorationHover={colors_dark['primary']}
+DecorationHover={colors_dark['secondary']}
 ForegroundActive={colors_dark['onPrimary']}
 ForegroundInactive={colors_dark['onPrimary']}
 ForegroundLink={extras['dark']['linkOnPrimary']}
@@ -613,11 +613,9 @@ ForegroundNormal={colors_dark['onPrimary']}
 ForegroundPositive={extras['dark']['positiveOnPrimary']}
 ForegroundVisited={extras['dark']['linkVisitedOnPrimary']}
 
-
-
 [Colors:Tooltip]
 BackgroundAlternate={colors_dark['surfaceVariant']}
-BackgroundNormal={extras['dark']['surface']}
+BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
@@ -630,8 +628,8 @@ ForegroundPositive={base_text_states['Positive']}
 ForegroundVisited={base_text_states['Visited']}
 
 [Colors:View]
-BackgroundAlternate={extras['dark']['surface2']}
-BackgroundNormal={extras['dark']['surface']}
+BackgroundAlternate={colors_dark['surfaceContainer']}
+BackgroundNormal={colors_dark['surfaceDim']}
 DecorationFocus={colors_dark['primary']}
 #-----------------------------------------------
 DecorationHover={colors_dark['inversePrimary']}
@@ -640,16 +638,16 @@ ForegroundInactive={colors_dark['outline']}
 ForegroundLink={extras['dark']['linkOnSurface']}
 ForegroundNegative={extras['dark']['negativeOnSurface']}
 ForegroundNeutral={extras['dark']['neutralOnSurface']}
-ForegroundNormal={colors_dark['onSurfaceVariant']}
+ForegroundNormal={colors_dark['onSurface']}
 ForegroundPositive={extras['dark']['positiveOnSurface']}
 ForegroundVisited={extras['dark']['linkVisitedOnSurface']}
 
 [Colors:Window]
-BackgroundAlternate={extras['dark']['surface']}
-BackgroundNormal={extras['dark']['surface3']}
+BackgroundAlternate={colors_dark['surfaceVariant']}
+BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
-ForegroundActive={colors_dark['inverseSurface']}
+ForegroundActive={base_text_states['Link']}
 ForegroundInactive={colors_dark['outline']}
 ForegroundLink={base_text_states['Link']}
 ForegroundNegative={tones_error[50]}
