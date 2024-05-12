@@ -373,12 +373,12 @@ class ThemeConfig:
         # print()
 
         self._light_scheme = f"""[ColorEffects:Disabled]
-Color={colors_light["surface"]}
-ColorAmount=0.3
+Color={colors_light["surfaceContainer"]}
+ColorAmount=0.5
 ColorEffect=3
-ContrastAmount=0.4
-ContrastEffect=1
-IntensityAmount=0.1
+ContrastAmount=0
+ContrastEffect=0
+IntensityAmount=0
 IntensityEffect=0
 
 [ColorEffects:Inactive]
@@ -524,12 +524,12 @@ inactiveForeground={colors_light['onSurfaceVariant']}
         """
 
         self._dark_scheme = f"""[ColorEffects:Disabled]
-Color={colors_dark["surface"]}
-ColorAmount=0.3
+Color={colors_dark["surfaceContainer"]}
+ColorAmount=0.5
 ColorEffect=3
-ContrastAmount=0.4
-ContrastEffect=1
-IntensityAmount=0.1
+ContrastAmount=0
+ContrastEffect=0
+IntensityAmount=0
 IntensityEffect=0
 
 [ColorEffects:Inactive]
