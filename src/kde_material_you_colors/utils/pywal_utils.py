@@ -1,11 +1,11 @@
 import logging
-from .color_utils import hex2rgb
-from .. import settings
-from ..schemeconfigs import ThemeConfig
+from kde_material_you_colors.utils.color_utils import hex2rgb
+from kde_material_you_colors import settings
+from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 if settings.USER_HAS_PYWAL:
+    from kde_material_you_colors.utils import pywal_sequences_timeout
     import pywal
-    from . import pywal_sequences_timeout
 
 
 def apply_schemes(
@@ -65,7 +65,7 @@ def print_color_palette(
         schemes.get_wal_light_scheme() if mode else schemes.get_wal_dark_scheme()
     )
 
-    for i, (name, color) in enumerate(pywal_colors["colors"].items()):
+    for i, color in enumerate(pywal_colors["colors"]):
         fg = "30"
         if i == 0:
             fg = "39"

@@ -1,5 +1,5 @@
 import logging
-from .utils.color_utils import (
+from kde_material_you_colors.utils.color_utils import (
     blendColors,
     lighteen_color,
     scale_saturation,
@@ -8,9 +8,8 @@ from .utils.color_utils import (
     hex2alpha,
     hex2rgb,
 )
-from .utils import math_utils
-from .utils import string_utils
-from .utils import color_utils
+from kde_material_you_colors.utils import math_utils
+from kde_material_you_colors.utils import string_utils
 
 
 class ThemeConfig:
@@ -28,25 +27,17 @@ class ThemeConfig:
             colors_best = custom_colors_list
             colors_str = ""
             for color in custom_colors_list:
-                rgb = color_utils.hex2rgb(color)
+                rgb = hex2rgb(color)
                 colors_str += f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
             logging.info(f"Using custom colors: {colors_str[:-5]}")
         else:
-            colors_best = list(colors["best"].values())
-        # colors_best = list(colors['best'].values())
-        tones_primary = colors["palettes"]["light"]["primary"]
-        tones_secondary = colors["palettes"]["light"]["secondary"]
-        tones_neutral = colors["palettes"]["light"]["neutral"]
-        tones_neutral_variant = colors["palettes"]["light"]["neutralVariant"]
-        tones_tertiary = colors["palettes"]["light"]["tertiary"]
-        tones_error = colors["palettes"]["light"]["error"]
-
-        tones_primary_dark = colors["palettes"]["dark"]["primary"]
-        tones_secondary_dark = colors["palettes"]["dark"]["secondary"]
-        tones_neutral_dark = colors["palettes"]["dark"]["neutral"]
-        tones_neutral_variant_dark = colors["palettes"]["dark"]["neutralVariant"]
-        tones_tertiary_dark = colors["palettes"]["dark"]["tertiary"]
-        tones_error_dark = colors["palettes"]["dark"]["error"]
+            colors_best = colors["best"]
+        tones_primary = colors["palettes"]["primary"]
+        tones_secondary = colors["palettes"]["secondary"]
+        tones_neutral = colors["palettes"]["neutral"]
+        tones_neutral_variant = colors["palettes"]["neutralVariant"]
+        tones_tertiary = colors["palettes"]["tertiary"]
+        tones_error = colors["palettes"]["error"]
 
         colors_light = colors["schemes"]["light"]
         colors_dark = colors["schemes"]["dark"]
@@ -68,17 +59,15 @@ class ThemeConfig:
         # Blend some extra colors by factor left(0.0) to right(1.0)
         self._extras = {
             "dark": {
-                "surface": blendColors(
-                    tones_neutral_dark[5], tones_primary_dark[40], 0.08 * dbm
-                ),
+                "surface": blendColors(tones_neutral[5], tones_primary[40], 0.08 * dbm),
                 "surface1": blendColors(
-                    colors_dark["background"], tones_primary_dark[40], 0.05 * dbm
+                    colors_dark["background"], tones_primary[40], 0.05 * dbm
                 ),
                 "surface2": blendColors(
-                    colors_dark["background"], tones_primary_dark[40], 0.08 * dbm
+                    colors_dark["background"], tones_primary[40], 0.08 * dbm
                 ),
                 "surface3": blendColors(
-                    colors_dark["background"], tones_primary_dark[40], 0.18 * dbm
+                    colors_dark["background"], tones_primary[40], 0.18 * dbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_dark["onPrimary"], base_text_states["Link"], 0.5
@@ -117,16 +106,16 @@ class ThemeConfig:
             },
             "light": {
                 "surface": blendColors(
-                    colors_light["background"], tones_primary_dark[70], 0.08 * lbm
+                    colors_light["background"], tones_primary[70], 0.08 * lbm
                 ),
                 "surface1": blendColors(
-                    colors_light["background"], tones_primary_dark[70], 0.18 * lbm
+                    colors_light["background"], tones_primary[70], 0.18 * lbm
                 ),
                 "surface2": blendColors(
-                    colors_light["background"], tones_primary_dark[70], 0.23 * lbm
+                    colors_light["background"], tones_primary[70], 0.23 * lbm
                 ),
                 "surface3": blendColors(
-                    colors_light["background"], tones_primary_dark[70], 0.20 * lbm
+                    colors_light["background"], tones_primary[70], 0.20 * lbm
                 ),
                 "linkOnPrimary": blendColors(
                     colors_light["onPrimary"], base_text_states["Link"], 0.5
@@ -167,12 +156,12 @@ class ThemeConfig:
         self._extras["dark"].update(
             {
                 "selectionAlt": blendColors(
-                    tones_secondary_dark[30],
+                    tones_secondary[30],
                     self._extras["dark"]["surface3"],
                     0.05 * dbm,
                 ),
                 "selectionHover": blendColors(
-                    tones_secondary_dark[50],
+                    tones_secondary[50],
                     self._extras["dark"]["surface3"],
                     0.1 * dbm,
                 ),
@@ -211,7 +200,7 @@ class ThemeConfig:
                     c = lighteen_color(colors_best[x], 0.2, tones_neutral[99])
                     pywal_colors_dark += (
                         blend2contrast(
-                            c, pywal_colors_dark[0], tones_neutral[99], 4.5, 0.01, True
+                            c, pywal_colors_dark[0], tones_neutral[99], 2.5, 0.01, True
                         ),
                     )
                 else:
@@ -222,7 +211,7 @@ class ThemeConfig:
                                 c,
                                 pywal_colors_dark[0],
                                 tones_neutral[99],
-                                4.5,
+                                2.5,
                                 0.01,
                                 True,
                             ),
@@ -234,7 +223,7 @@ class ThemeConfig:
                                 c,
                                 pywal_colors_dark[0],
                                 tones_neutral[99],
-                                4.5,
+                                2.5,
                                 0.01,
                                 True,
                             ),
@@ -283,7 +272,7 @@ class ThemeConfig:
                             c,
                             pywal_colors_light[0],
                             tones_neutral[10],
-                            4.5,
+                            2,
                             0.01,
                             False,
                         ),
@@ -296,7 +285,7 @@ class ThemeConfig:
                                 c,
                                 pywal_colors_light[0],
                                 tones_neutral[10],
-                                4.5,
+                                2,
                                 0.01,
                                 False,
                             ),
@@ -308,7 +297,7 @@ class ThemeConfig:
                                 c,
                                 pywal_colors_light[0],
                                 tones_neutral[10],
-                                4.5,
+                                2,
                                 0.01,
                                 False,
                             ),
@@ -694,32 +683,32 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 ),
                 "cursor": colors_dark["onSurface"],
             },
-            "colors": {
-                "color0": pywal_colors_light[0],
-                "color1": pywal_colors_light[1],
-                "color2": pywal_colors_light[2],
-                "color3": pywal_colors_light[3],
-                "color4": pywal_colors_light[4],
-                "color5": pywal_colors_light[5],
-                "color6": pywal_colors_light[6],
-                "color7": pywal_colors_light[7],
-                "color8": pywal_colors_light_intense[0],
-                "color9": pywal_colors_light_intense[1],
-                "color10": pywal_colors_light_intense[2],
-                "color11": pywal_colors_light_intense[3],
-                "color12": pywal_colors_light_intense[4],
-                "color13": pywal_colors_light_intense[5],
-                "color14": pywal_colors_light_intense[6],
-                "color15": pywal_colors_light_intense[7],
-                "color16": pywal_colors_light_faint[0],
-                "color17": pywal_colors_light_faint[1],
-                "color18": pywal_colors_light_faint[2],
-                "color19": pywal_colors_light_faint[3],
-                "color20": pywal_colors_light_faint[4],
-                "color21": pywal_colors_light_faint[5],
-                "color22": pywal_colors_light_faint[6],
-                "color23": pywal_colors_light_faint[7],
-            },
+            "colors": [
+                pywal_colors_light[0],
+                pywal_colors_light[1],
+                pywal_colors_light[2],
+                pywal_colors_light[3],
+                pywal_colors_light[4],
+                pywal_colors_light[5],
+                pywal_colors_light[6],
+                pywal_colors_light[7],
+                pywal_colors_light_intense[0],
+                pywal_colors_light_intense[1],
+                pywal_colors_light_intense[2],
+                pywal_colors_light_intense[3],
+                pywal_colors_light_intense[4],
+                pywal_colors_light_intense[5],
+                pywal_colors_light_intense[6],
+                pywal_colors_light_intense[7],
+                pywal_colors_light_faint[0],
+                pywal_colors_light_faint[1],
+                pywal_colors_light_faint[2],
+                pywal_colors_light_faint[3],
+                pywal_colors_light_faint[4],
+                pywal_colors_light_faint[5],
+                pywal_colors_light_faint[6],
+                pywal_colors_light_faint[7],
+            ],
         }
 
         self._wal_dark_scheme = {
@@ -745,32 +734,32 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 ),
                 "cursor": colors_dark["onSurface"],
             },
-            "colors": {
-                "color0": pywal_colors_dark[0],
-                "color1": pywal_colors_dark[1],
-                "color2": pywal_colors_dark[2],
-                "color3": pywal_colors_dark[3],
-                "color4": pywal_colors_dark[4],
-                "color5": pywal_colors_dark[5],
-                "color6": pywal_colors_dark[6],
-                "color7": pywal_colors_dark[7],
-                "color8": pywal_colors_dark_intense[0],
-                "color9": pywal_colors_dark_intense[1],
-                "color10": pywal_colors_dark_intense[2],
-                "color11": pywal_colors_dark_intense[3],
-                "color12": pywal_colors_dark_intense[4],
-                "color13": pywal_colors_dark_intense[5],
-                "color14": pywal_colors_dark_intense[6],
-                "color15": pywal_colors_dark_intense[7],
-                "color16": pywal_colors_dark_faint[0],
-                "color17": pywal_colors_dark_faint[1],
-                "color18": pywal_colors_dark_faint[2],
-                "color19": pywal_colors_dark_faint[3],
-                "color20": pywal_colors_dark_faint[4],
-                "color21": pywal_colors_dark_faint[5],
-                "color22": pywal_colors_dark_faint[6],
-                "color23": pywal_colors_dark_faint[7],
-            },
+            "colors": [
+                pywal_colors_dark[0],
+                pywal_colors_dark[1],
+                pywal_colors_dark[2],
+                pywal_colors_dark[3],
+                pywal_colors_dark[4],
+                pywal_colors_dark[5],
+                pywal_colors_dark[6],
+                pywal_colors_dark[7],
+                pywal_colors_dark_intense[0],
+                pywal_colors_dark_intense[1],
+                pywal_colors_dark_intense[2],
+                pywal_colors_dark_intense[3],
+                pywal_colors_dark_intense[4],
+                pywal_colors_dark_intense[5],
+                pywal_colors_dark_intense[6],
+                pywal_colors_dark_intense[7],
+                pywal_colors_dark_faint[0],
+                pywal_colors_dark_faint[1],
+                pywal_colors_dark_faint[2],
+                pywal_colors_dark_faint[3],
+                pywal_colors_dark_faint[4],
+                pywal_colors_dark_faint[5],
+                pywal_colors_dark_faint[6],
+                pywal_colors_dark_faint[7],
+            ],
         }
         dark_active = colors_dark["onBackground"]
         dark_inactive = extras["dark"]["surface3"]

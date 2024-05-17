@@ -3,10 +3,10 @@ import subprocess
 import configparser
 import logging
 import dbus
-from .color_utils import hex2rgb
-from .string_utils import tup2str
-from .. import settings
-from ..schemeconfigs import ThemeConfig
+from kde_material_you_colors.utils.color_utils import hex2rgb
+from kde_material_you_colors.utils.string_utils import tup2str
+from kde_material_you_colors import settings
+from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 
 def export_scheme(
@@ -82,18 +82,16 @@ def export_scheme(
     )
 
     for i in range(0, 8):
-        config[f"Color{i}"]["Color"] = tup2str(
-            hex2rgb(pywal_colors["colors"][f"color{i}"])
-        )
+        config[f"Color{i}"]["Color"] = tup2str(hex2rgb(pywal_colors["colors"][i]))
 
     for i in range(0, 8):
         config[f"Color{i}Intense"]["Color"] = tup2str(
-            hex2rgb(pywal_colors["colors"][f"color{i+8}"])
+            hex2rgb(pywal_colors["colors"][i + 8])
         )
 
     for i in range(0, 8):
         config[f"Color{i}Faint"]["Color"] = tup2str(
-            hex2rgb(pywal_colors["colors"][f"color{i+16}"])
+            hex2rgb(pywal_colors["colors"][i + 16])
         )
 
     config["Foreground"]["Color"] = tup2str(
