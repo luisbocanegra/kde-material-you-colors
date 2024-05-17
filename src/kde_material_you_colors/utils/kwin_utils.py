@@ -108,7 +108,7 @@ def get_desktop_window_id(screen: int = 0) -> str | None:
     script_str = f"""var windows = workspace.clientList()
 for (var i = 0; i < windows.length; i++) {{
     let window = windows[i];
-    var regex = /Desktop @ QRect\\((.*?)\\) — Plasma/;
+    var regex = /^Desktop .*— Plasma$/;
     if (window.caption.match(regex) != null && window.screen == {screen}) {{
         print("KMYC-desktop-window-id:", window.internalId)
     }}
