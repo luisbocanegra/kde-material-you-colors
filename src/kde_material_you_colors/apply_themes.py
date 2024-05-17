@@ -1,7 +1,7 @@
-from . import schemeconfigs
-from .config import Configs
-from .utils.wallpaper_utils import WallpaperReader
-from .utils import (
+from kde_material_you_colors import schemeconfigs
+from kde_material_you_colors.config import Configs
+from kde_material_you_colors.utils.wallpaper_utils import WallpaperReader
+from kde_material_you_colors.utils import (
     utils,
     m3_scheme_utils,
     pywal_utils,

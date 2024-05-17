@@ -169,3 +169,4 @@ dmypy.json
 
 compile_commands.json
 CMakeUserPresets.json
+playground/

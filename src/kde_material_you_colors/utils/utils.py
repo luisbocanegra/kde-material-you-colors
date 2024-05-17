@@ -8,7 +8,7 @@ import sys
 import re
 import shutil
 import configparser
-from .. import settings
+from kde_material_you_colors import settings
 
 
 def run_hook(hook):

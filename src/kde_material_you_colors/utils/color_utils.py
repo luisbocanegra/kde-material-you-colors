@@ -1,12 +1,12 @@
-import operator
-import numpy
 import colorsys
 import re
-from kde_material_you_colors.utils import math_utils
+import operator
+import numpy
 from materialyoucolor.blend import Blend
 from materialyoucolor.utils.color_utils import red_from_argb
 from materialyoucolor.utils.color_utils import green_from_argb
 from materialyoucolor.utils.color_utils import blue_from_argb
+from kde_material_you_colors.utils import math_utils
 
 
 def hex2rgb(hex):

@@ -2,13 +2,12 @@ import configparser
 import logging
 import os
 import subprocess
-from .. import settings
-from . import kwin_utils
-from . import file_utils
-from ..schemeconfigs import ThemeConfig
-from ..config import Configs
-from .utils import Watcher
-from . import plasma_utils
+from kde_material_you_colors import settings
+from kde_material_you_colors.utils import file_utils
+from kde_material_you_colors.schemeconfigs import ThemeConfig
+from kde_material_you_colors.config import Configs
+from kde_material_you_colors.utils.utils import Watcher
+from kde_material_you_colors.utils import plasma_utils
 
 
 def make_scheme(schemes: ThemeConfig):
@@ -43,8 +42,6 @@ def make_scheme(schemes: ThemeConfig):
 
 def apply_color_schemes(light=False):
     color_scheme = settings.THEME_LIGHT_PATH if light else settings.THEME_DARK_PATH
-    # TODO: Check if plasma-apply-colorscheme does blending already
-    # kwin_utils.blend_changes()
     subprocess.run(
         "plasma-apply-colorscheme " + color_scheme + "2.colors",
         shell=True,

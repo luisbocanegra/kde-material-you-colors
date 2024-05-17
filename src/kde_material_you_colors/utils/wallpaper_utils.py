@@ -1,12 +1,12 @@
 import os
 import logging
 import dbus
-from .. import settings
-from . import color_utils
-from . import file_utils
-from . import math_utils
-from . import kwin_utils
-from ..config import Configs
+from kde_material_you_colors import settings
+from kde_material_you_colors.utils import color_utils
+from kde_material_you_colors.utils import file_utils
+from kde_material_you_colors.utils import math_utils
+from kde_material_you_colors.utils import kwin_utils
+from kde_material_you_colors.config import Configs
 
 
 class WallpaperReader:

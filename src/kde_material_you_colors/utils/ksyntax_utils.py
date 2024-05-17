@@ -1,6 +1,6 @@
 import json
 import os
-from .. import settings
+from kde_material_you_colors import settings
 
 
 def export_schemes(schemes=None):

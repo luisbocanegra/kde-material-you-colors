@@ -3,7 +3,7 @@ import logging
 import sys
 import os
 import re
-from . import settings
+from kde_material_you_colors import settings
 
 # Set logging level for pillow
 logging.getLogger("PIL").setLevel(logging.WARNING)

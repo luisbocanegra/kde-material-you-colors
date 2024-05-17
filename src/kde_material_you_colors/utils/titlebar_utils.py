@@ -1,9 +1,9 @@
 import logging
 import configparser
 import os
-from .. import settings
-from . import math_utils
-from . import string_utils
+from kde_material_you_colors import settings
+from kde_material_you_colors.utils import math_utils
+from kde_material_you_colors.utils import string_utils
 
 
 def sierra_breeze_button_colors(schemes, light=None):

@@ -1,8 +1,8 @@
 import configparser
 import logging
 import os
-from .utils import color_utils
-from .utils import math_utils
+from kde_material_you_colors.utils import color_utils
+from kde_material_you_colors.utils import math_utils
 
 
 class Configs:

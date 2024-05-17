@@ -1,5 +1,5 @@
-import dbus
 import logging
+import dbus
 
 
 def send_notification(heading="", content="", icon=None):

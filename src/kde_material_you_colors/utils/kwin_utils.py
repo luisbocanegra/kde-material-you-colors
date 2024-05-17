@@ -2,7 +2,7 @@ import logging
 import subprocess
 import dbus
 import time
-from .. import settings
+from kde_material_you_colors import settings
 
 
 def reload():
