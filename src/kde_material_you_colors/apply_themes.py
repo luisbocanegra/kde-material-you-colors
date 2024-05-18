@@ -1,4 +1,6 @@
+import json
 from kde_material_you_colors import schemeconfigs
+from kde_material_you_colors import settings
 from kde_material_you_colors.config import Configs
 from kde_material_you_colors.utils.wallpaper_utils import WallpaperReader
 from kde_material_you_colors.utils import (
@@ -18,6 +20,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     material_colors = m3_scheme_utils.get_color_schemes(
         wallpaper, config.read("ncolor"), config.read("scheme_variant")
     )
+
     if material_colors is None:
         return
     schemes = schemeconfigs.ThemeConfig(
