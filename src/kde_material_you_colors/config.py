@@ -132,7 +132,7 @@ class Configs:
     @property
     def defaults(self):
         # property : [value, fallback, type]
-        # Types: 0 = bool, 1 = int, 2 = float, 3 = str
+        # Types: bool(0), int(1), float(2), str(3)
         args = self._args
         return {
             "light": [self._light, None, 0],
@@ -168,6 +168,8 @@ class Configs:
             "pause_mode": [None, False, 0],
             "screenshot_only_mode": [args.screenshot_only_mode, False, 0],
             "scheme_variant": [args.scheme_variant, 5, 1],
+            "chroma_multiplier": [args.chroma_multiplier, 1, 2],
+            "tone_multiplier": [args.tone_multiplier, 1, 2],
         }
 
     def parse_conf(self):

@@ -318,6 +318,22 @@ def main():
         metavar="<integer>",
     )
 
+    parser.add_argument(
+        "--chroma-multiplier",
+        type=float,
+        help="Colorfulness of the theme (value from 0.5 to 10, default is 1)",
+        default=None,
+        metavar="<float>",
+    )
+
+    parser.add_argument(
+        "--tone-multiplier",
+        type=float,
+        help="Brightness of the theme (value from 0 to 1.5, default is 1)",
+        default=None,
+        metavar="<float>",
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments

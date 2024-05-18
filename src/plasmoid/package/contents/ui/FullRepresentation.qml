@@ -518,8 +518,6 @@ ColumnLayout {
                                     property int ncolor: 0; \
                                     property bool pywal:false; \
                                     property bool pywal_light: false; \
-                                    property real light_blend_multiplier: 1.0; \
-                                    property real dark_blend_multiplier: 1.0; \
                                     property real light_saturation_multiplier: 1.0; \
                                     property real dark_saturation_multiplier: 1.0; \
                                     property real light_brightness_multiplier: 1.0; \
@@ -548,6 +546,8 @@ ColumnLayout {
                                     property bool pause_mode: false; \
                                     property bool screenshot_only_mode: false; \
                                     property int scheme_variant: 5; \
+                                    property real chroma_multiplier: 1.0; \
+                                    property real tone_multiplier: 1.0; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1250,23 +1250,62 @@ ColumnLayout {
                                 }
                             }
 
+                            // Chroma mult
+                            RowLayout {
+                                width: parent.width
+                                Layout.fillWidth: true
 
-                            // Dark blend
+                                PlasmaComponents3.Label {
+                                    text: "Colorfulness"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.Slider {
+                                    id: lightBlend
+                                    value: settings.chroma_multiplier
+                                    from: 0
+                                    to: 10
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.chroma_multiplier = Math.round(value * 10) / 10
+                                    }
+                                }
+
+                                PlasmaComponents3.TextField {
+                                    id: lightBlendManual
+                                    Layout.preferredWidth: controlWidth
+                                    placeholderText: "0-10"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseFloat(settings.chroma_multiplier)
+
+                                    validator: DoubleValidator {
+                                        bottom: 0
+                                        top: 10
+                                        decimals: 1
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+
+                                    onAccepted: {
+                                        settings.chroma_multiplier = parseFloat(text)
+                                    }
+                                }
+                            }
+
+                            // Tone mult
                             RowLayout {
                                 PlasmaComponents3.Label {
-                                    text: "Dark blend"
+                                    text: "Brightness"
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
                                 PlasmaComponents3.Slider {
                                     id: darkBlend
-                                    value: settings.dark_blend_multiplier
-                                    from: 0
-                                    to: 4.0
-                                    stepSize: 0.2
+                                    value: settings.tone_multiplier
+                                    from: 0.5
+                                    to: 1.5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.dark_blend_multiplier = Math.round(value * 10) / 10
+                                        settings.tone_multiplier = Math.round(value * 10) / 10
                                     }
                                 }
 
@@ -1275,63 +1314,21 @@ ColumnLayout {
                                     Layout.preferredWidth: controlWidth
                                     placeholderText: "0-4"
                                     horizontalAlignment: TextInput.AlignHCenter
-                                    text: parseFloat(settings.dark_blend_multiplier)
+                                    text: parseFloat(settings.tone_multiplier)
 
                                     validator: DoubleValidator {
-                                        bottom: 0.0
-                                        top: 4.0
+                                        bottom: 0.5
+                                        top: 1.5
                                         decimals: 1
                                         notation: DoubleValidator.StandardNotation
                                     }
 
                                     onAccepted: {
-                                        settings.dark_blend_multiplier = parseFloat(text)
+                                        settings.tone_multiplier = parseFloat(text)
                                     }
                                 }
                             }
 
-
-                            // Light blend
-                            RowLayout {
-                                width: parent.width
-                                Layout.fillWidth: true
-
-                                PlasmaComponents3.Label {
-                                    text: "Light blend"
-                                    Layout.alignment: Qt.AlignLeft
-                                }
-
-                                PlasmaComponents3.Slider {
-                                    id: lightBlend
-                                    value: settings.light_blend_multiplier
-                                    from: 0
-                                    to: 4.0
-                                    stepSize: 0.2
-                                    Layout.fillWidth: true
-                                    onValueChanged: {
-                                        settings.light_blend_multiplier = Math.round(value * 10) / 10
-                                    }
-                                }
-
-                                PlasmaComponents3.TextField {
-                                    id: lightBlendManual
-                                    Layout.preferredWidth: controlWidth
-                                    placeholderText: "0-4"
-                                    horizontalAlignment: TextInput.AlignHCenter
-                                    text: parseFloat(settings.light_blend_multiplier)
-
-                                    validator: DoubleValidator {
-                                        bottom: 0.0
-                                        top: 4.0
-                                        decimals: 1
-                                        notation: DoubleValidator.StandardNotation
-                                    }
-
-                                    onAccepted: {
-                                        settings.light_blend_multiplier = parseFloat(text)
-                                    }
-                                }
-                            }
 
                             PlasmaComponents3.ToolButton {
                                 Layout.alignment: Qt.AlignHCenter

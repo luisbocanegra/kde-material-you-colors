@@ -17,6 +17,7 @@ from materialyoucolor.scheme.scheme_content import SchemeContent
 from materialyoucolor.palettes.tonal_palette import TonalPalette
 from materialyoucolor.dislike.dislike_analyzer import DislikeAnalyzer
 from materialyoucolor.blend import Blend
+from materialyoucolor.dynamiccolor.dynamic_color import DynamicColor
 from materialyoucolor.utils.color_utils import argb_from_rgba
 from kde_material_you_colors.utils.color_utils import rgb2hex
 from kde_material_you_colors.utils.color_utils import argbFromHex
@@ -27,6 +28,7 @@ from kde_material_you_colors.utils import notify
 from kde_material_you_colors.utils.wallpaper_utils import WallpaperReader
 from kde_material_you_colors.utils.extra_image_utils import sourceColorsFromImage
 from kde_material_you_colors.schemeconfigs import ThemeConfig
+from kde_material_you_colors.utils.math_utils import clip
 
 
 def dict_to_hex(dark_scheme):
@@ -44,7 +46,14 @@ def palette_to_hex(palette: TonalPalette):
     return tones
 
 
-def custom_dynamic_color(custom_color, source_color=0, blend=True, scheme_variant=5):
+def custom_dynamic_color(
+    custom_color,
+    source_color=0,
+    blend=True,
+    scheme_variant=5,
+    chroma_mult=1.0,
+    tone_mult=1.0,
+):
     value = custom_color["value"]
     value = DislikeAnalyzer.fix_if_disliked(Hct.from_int(value)).to_int()
     if custom_color["blend"]:
@@ -53,8 +62,8 @@ def custom_dynamic_color(custom_color, source_color=0, blend=True, scheme_varian
     hct = Hct.from_int(value)
     scheme = getScheme(scheme_variant, hct, False, 0)
     schemeDark = getScheme(scheme_variant, hct, True, 0)
-    colorsLight = getColors(scheme)
-    colorsDark = getColors(schemeDark)
+    colorsLight = getColors(scheme, chroma_mult, tone_mult)
+    colorsDark = getColors(schemeDark, chroma_mult, tone_mult)
 
     return {
         "source": hexFromArgb(custom_color["value"]),
@@ -84,21 +93,26 @@ def getScheme(scheme_variant, source, isDark, contrastLevel):
     return scheme_class(source, isDark, contrastLevel)
 
 
-def getColors(scheme):
+def getColors(scheme, chroma_mult, tone_mult):
     colors = {}
     for color in vars(MaterialDynamicColors).keys():
-        color_name = getattr(MaterialDynamicColors, color)
+        color_name: DynamicColor = getattr(MaterialDynamicColors, color)
         if hasattr(color_name, "get_hct"):  # is a color
-            colors[color] = hexFromArgb(color_name.get_argb(scheme))
+            argb = color_name.get_argb(scheme)
+            hct = Hct(argb)
+            hct.chroma = hct.chroma * clip(chroma_mult, 0, 10, 1)
+            hct.tone = int(hct.tone * clip(tone_mult, 0.5, 1.5, 1))
+            final = hct.to_int()
+            colors[color] = hexFromArgb(final)
     return colors
 
 
-def themeFromSourceColor(seed_color, scheme_variant=5):
+def themeFromSourceColor(seed_color, scheme_variant=5, chroma_mult=1, tone_mult=1):
     source = Hct.from_int(seed_color)
     scheme = getScheme(scheme_variant, source, False, 0)
     schemeDark = getScheme(scheme_variant, source, True, 0)
-    colorsLight = getColors(scheme)
-    colorsDark = getColors(schemeDark)
+    colorsLight = getColors(scheme, chroma_mult, tone_mult)
+    colorsDark = getColors(schemeDark, chroma_mult, tone_mult)
     # Base text states taken from Breeze Color Scheme
     base_text_states = [
         {"name": "link", "value": argbFromHex("#2980b9"), "blend": False},
@@ -112,7 +126,12 @@ def themeFromSourceColor(seed_color, scheme_variant=5):
 
     for color in base_text_states:
         cc[color["name"]] = custom_dynamic_color(
-            color, argbFromHex(colorsDark["primary"]), True, 6
+            color,
+            argbFromHex(colorsDark["primary"]),
+            True,
+            6,
+            chroma_mult,
+            tone_mult,
         )
 
     out = {
@@ -131,7 +150,9 @@ def themeFromSourceColor(seed_color, scheme_variant=5):
     return out
 
 
-def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant):
+def get_material_you_colors(
+    wallpaper_data, ncolor, source_type, scheme_variant, chroma_mult, tone_mult
+):
     """Get material you colors from wallpaper or hex color using material-color-utility
 
     Args:
@@ -168,7 +189,9 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant)
         if ncolor is None or ncolor > totalColors - 1:
             ncolor = 0
         source_color = hexFromArgb(source_colors[ncolor])
-        theme = themeFromSourceColor(argbFromHex(source_color), scheme_variant)
+        theme = themeFromSourceColor(
+            argbFromHex(source_color), scheme_variant, chroma_mult, tone_mult
+        )
 
         materialYouColors = {
             "best": best_colors,
@@ -199,7 +222,13 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant)
         return None
 
 
-def get_color_schemes(wallpaper: WallpaperReader, ncolor=None, scheme_variant=5):
+def get_color_schemes(
+    wallpaper: WallpaperReader,
+    ncolor=None,
+    scheme_variant=5,
+    chroma_mult=1.0,
+    tone_mult=1.0,
+):
     """Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
 
@@ -222,18 +251,22 @@ def get_color_schemes(wallpaper: WallpaperReader, ncolor=None, scheme_variant=5)
                 return None
             materialYouColors = get_material_you_colors(
                 wallpaper_data,
-                ncolor=ncolor,
-                source_type="image",
-                scheme_variant=scheme_variant,
+                ncolor,
+                "image",
+                scheme_variant,
+                chroma_mult,
+                tone_mult,
             )
 
         elif wallpaper_type == "color" and wallpaper_data:
             color = color_utils.color2hex(wallpaper_data)
             materialYouColors = get_material_you_colors(
                 color,
-                ncolor=ncolor,
-                source_type=wallpaper_type,
-                scheme_variant=scheme_variant,
+                ncolor,
+                wallpaper_type,
+                scheme_variant,
+                chroma_mult,
+                tone_mult,
             )
 
         if materialYouColors is not None:
