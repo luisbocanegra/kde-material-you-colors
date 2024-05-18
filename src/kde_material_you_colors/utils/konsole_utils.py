@@ -82,16 +82,18 @@ def export_scheme(
     )
 
     for i in range(0, 8):
-        config[f"Color{i}"]["Color"] = tup2str(hex2rgb(pywal_colors["colors"][i]))
+        config[f"Color{i}"]["Color"] = tup2str(
+            hex2rgb(pywal_colors["colors"][f"color{i}"])
+        )
 
     for i in range(0, 8):
         config[f"Color{i}Intense"]["Color"] = tup2str(
-            hex2rgb(pywal_colors["colors"][i + 8])
+            hex2rgb(pywal_colors["colors"][f"color{i+8}"])
         )
 
     for i in range(0, 8):
         config[f"Color{i}Faint"]["Color"] = tup2str(
-            hex2rgb(pywal_colors["colors"][i + 16])
+            hex2rgb(pywal_colors["colors"][f"color{i+16}"])
         )
 
     config["Foreground"]["Color"] = tup2str(

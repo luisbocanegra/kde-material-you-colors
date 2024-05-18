@@ -1,9 +1,10 @@
 import json
 import os
 from kde_material_you_colors import settings
+from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 
-def export_schemes(schemes=None):
+def export_schemes(schemes: ThemeConfig):
     # Make sure the schemes path exists
     if not os.path.exists(settings.KSYNTAX_THEMES_DIR):
         os.makedirs(settings.KSYNTAX_THEMES_DIR)

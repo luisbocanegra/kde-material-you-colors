@@ -15,6 +15,8 @@ from materialyoucolor.scheme.scheme_neutral import SchemeNeutral
 from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity
 from materialyoucolor.scheme.scheme_content import SchemeContent
 from materialyoucolor.palettes.tonal_palette import TonalPalette
+from materialyoucolor.dislike.dislike_analyzer import DislikeAnalyzer
+from materialyoucolor.blend import Blend
 from materialyoucolor.utils.color_utils import argb_from_rgba
 from kde_material_you_colors.utils.color_utils import rgb2hex
 from kde_material_you_colors.utils.color_utils import argbFromHex
@@ -40,6 +42,28 @@ def palette_to_hex(palette: TonalPalette):
     for x in range(100):
         tones.append(hexFromArgb(argb_from_rgba(palette.tone(x))))
     return tones
+
+
+def custom_dynamic_color(custom_color, source_color=0, blend=True, scheme_variant=5):
+    value = custom_color["value"]
+    value = DislikeAnalyzer.fix_if_disliked(Hct.from_int(value)).to_int()
+    if custom_color["blend"]:
+        value = Blend.harmonize(value, source_color)
+
+    hct = Hct.from_int(value)
+    scheme = getScheme(scheme_variant, hct, False, 0)
+    schemeDark = getScheme(scheme_variant, hct, True, 0)
+    colorsLight = getColors(scheme)
+    colorsDark = getColors(schemeDark)
+
+    return {
+        "source": hexFromArgb(custom_color["value"]),
+        "value": hexFromArgb(value),
+        "blended": blend,
+        "light": colorsLight,
+        "dark": colorsDark,
+        "palette": palette_to_hex(scheme.primary_palette),
+    }
 
 
 schemes = [
@@ -75,6 +99,21 @@ def themeFromSourceColor(seed_color, scheme_variant=5):
     schemeDark = getScheme(scheme_variant, source, True, 0)
     colorsLight = getColors(scheme)
     colorsDark = getColors(schemeDark)
+    # Base text states taken from Breeze Color Scheme
+    base_text_states = [
+        {"name": "link", "value": argbFromHex("#2980b9"), "blend": False},
+        {"name": "visited", "value": argbFromHex("#9b59b6"), "blend": False},
+        {"name": "negative", "value": argbFromHex("#da4453"), "blend": False},
+        {"name": "neutral", "value": argbFromHex("#f67400"), "blend": False},
+        {"name": "positive", "value": argbFromHex("#27ae60"), "blend": False},
+    ]
+
+    cc = {}
+
+    for color in base_text_states:
+        cc[color["name"]] = custom_dynamic_color(
+            color, argbFromHex(colorsDark["primary"]), True, 6
+        )
 
     out = {
         "source": seed_color,
@@ -87,26 +126,9 @@ def themeFromSourceColor(seed_color, scheme_variant=5):
             "neutralVariant": palette_to_hex(scheme.neutral_variant_palette),
             "error": palette_to_hex(scheme.error_palette),
         },
-        "customColors": [],
+        "customColors": cc,
     }
     return out
-
-
-def get_custom_colors(custom_colors):
-    colors = {}
-    for custom_color in custom_colors:
-        value = hexFromArgb(custom_color["color"]["value"])
-        colors.update(
-            {
-                value: {
-                    "color": dict_to_hex(custom_color["color"]),
-                    "value": hexFromArgb(custom_color["value"]),
-                    "light": dict_to_hex(custom_color["light"]),
-                    "dark": dict_to_hex(custom_color["dark"]),
-                }
-            },
-        )
-    return colors
 
 
 def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant):
@@ -166,7 +188,7 @@ def get_material_you_colors(wallpaper_data, ncolor, source_type, scheme_variant)
                 "neutralVariant": theme["palettes"]["neutralVariant"],
                 "error": theme["palettes"]["error"],
             },
-            "custom": [get_custom_colors(theme["customColors"])],
+            "custom": theme["customColors"],
         }
         return materialYouColors
 

@@ -65,7 +65,7 @@ def print_color_palette(
         schemes.get_wal_light_scheme() if mode else schemes.get_wal_dark_scheme()
     )
 
-    for i, color in enumerate(pywal_colors["colors"]):
+    for i, (name, color) in enumerate(pywal_colors["colors"].items()):
         fg = "30"
         if i == 0:
             fg = "39"
