@@ -18,7 +18,11 @@ from kde_material_you_colors.utils import (
 def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     needs_kwin_reload = False
     material_colors = m3_scheme_utils.get_color_schemes(
-        wallpaper, config.read("ncolor"), config.read("scheme_variant")
+        wallpaper,
+        config.read("ncolor"),
+        config.read("scheme_variant"),
+        config.read("chroma_multiplier"),
+        config.read("tone_multiplier"),
     )
 
     if material_colors is None:
