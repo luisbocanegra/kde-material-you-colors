@@ -4,9 +4,10 @@ import os
 from kde_material_you_colors import settings
 from kde_material_you_colors.utils import math_utils
 from kde_material_you_colors.utils import string_utils
+from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 
-def sierra_breeze_button_colors(schemes, light=None):
+def sierra_breeze_button_colors(schemes: ThemeConfig, light=None):
     if light == True:
         colors = schemes.get_sierra_breeze_light_colors()
     elif light == False:
@@ -120,17 +121,17 @@ def titlebar_opacity(opacity_light, opacity_dark, light):
                 logging.exception(f"Error writing Klassy titlebar opacity:\n{e}")
 
 
-def klassy_windeco_outline_color(schemes, light=None):
+def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
     """Tint Klassy window decoration outline https://github.com/paulmcauley/klassy
 
     Args:
         schemes (ThemeConfig): generated color schemes
         light (bool, optional): Light or dark mode. Defaults to None.
     """
-    if light == True:
-        outline_color = schemes.get_extras()["dark"]["selectionAlt"]
-    elif light == False:
-        outline_color = schemes.get_extras()["dark"]["selectionAlt"]
+    if light:
+        outline_color = schemes.get_material_schemes()["light"]["surfaceTint"]
+    else:
+        outline_color = schemes.get_material_schemes()["dark"]["surfaceTint"]
 
     klassyrc = configparser.ConfigParser()
     # preserve case
