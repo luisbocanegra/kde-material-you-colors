@@ -51,6 +51,14 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
 ## Installing
 
+- Arch Linux [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper (e.g `yay -S kde-material-you-colors`)
+
+- openSUSE Tumbleweed [Install instructions](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+
+- Fedora 40 and Fedora Rawhide [Install instructions](https://copr.fedorainfracloud.org/coprs/luisbocanegra/kde-material-you-colors/)
+
+### Manual install
+
 1. Install `pipx` system packages from your distribution packages.
 
 2. Install the backend
@@ -101,14 +109,6 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 To upgrade to a new version repeat these steps.
 
 **Note:** When you upgrade te widget to a newer version it will inform you if it requires a new version of the backend.
-
-### Arch Linux
-
-- [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper e.g:
-
-```sh
-yay -S kde-material-you-colors
-```
 
 ## Running
 
