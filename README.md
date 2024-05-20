@@ -43,7 +43,8 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 - Alternative Material You color selection if the wallpaper provides more than one
 - Use your favorite color to generate Material You color schemes
 - Custom colors list used for konsole/pywal
-- Custom amount for background color tint
+- Custom amount for colorfulness and brightness of theme
+- Color scheme variants from Material You (Vibrant, Monochrome, Neutral...)
 - Dark/light Color schemes (Plasma and pywal/konsole independently)
 - Set a script that will be executed on start or wallpaper/dark/light/settings change
 - Configuration file
