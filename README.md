@@ -9,6 +9,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 [![AUR version](https://img.shields.io/aur/version/kde-material-you-colors?style=for-the-badge&logo=archlinux&labelColor=2d333b&color=1f425f)](https://aur.archlinux.org/packages/kde-material-you-colors)
 [![PyPI - Version](https://img.shields.io/pypi/v/kde-material-you-colors?style=for-the-badge&logo=python&labelColor=2d333b&color=1f425f)](https://pypi.org/project/kde-material-you-colors/)
 [![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2136963)
+[![Liberapay](https://img.shields.io/liberapay/patrons/luisbocanegra?style=for-the-badge&logo=liberapay&logoColor=%23F6C814&labelColor=%232D333B&label=supporters)](https://liberapay.com/luisbocanegra/)
 
 </div>
 
@@ -190,7 +191,15 @@ Both methods are somewhat robust but there are edge cases when detection will fa
 
 Please read the [Contributing guidelines in this repository](https://github.com/luisbocanegra/kde-material-you-colors/blob/main/CONTRIBUTING.md)
 
-## Credits
+## Support the development
+
+If you like the project you can:
+
+[!["Buy Me A Coffee"](https://img.shields.io/badge/Buy%20me%20a%20coffe-supporter?logo=buymeacoffee&logoColor=%23282828&labelColor=%23FF803F&color=%23FF803F)](https://www.buymeacoffee.com/luisbocanegra) [![Liberapay](https://img.shields.io/badge/Become%20a%20supporter-supporter?logo=liberapay&logoColor=%23282828&labelColor=%23F6C814&color=%23F6C814)](https://liberapay.com/luisbocanegra/)
+
+Thank you ❤️
+
+## Acknowledgements
 
 - [@T-Dynamos Python Implementation](https://github.com/T-Dynamos/materialyoucolor-python) of Material Color Utilities used by this project.
 - [@avanisubbiah Python Implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities (used until v1.8.0).
