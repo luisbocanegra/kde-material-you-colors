@@ -1,6 +1,5 @@
-import json
+import logging
 from kde_material_you_colors import schemeconfigs
-from kde_material_you_colors import settings
 from kde_material_you_colors.config import Configs
 from kde_material_you_colors.utils.wallpaper_utils import WallpaperReader
 from kde_material_you_colors.utils import (
@@ -17,6 +16,14 @@ from kde_material_you_colors.utils import (
 
 def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     needs_kwin_reload = False
+    qdbus_executable = config.read("qdbus_executable")
+    if qdbus_executable is None:
+        qdbus_executable = "qdbus6"
+    if utils.find_executable(qdbus_executable) is None:
+        logging.error(
+            f"QDbus executable '{qdbus_executable}' wasn't found, there will be errors. Please set the correct one in the configuration"
+        )
+
     material_colors = m3_scheme_utils.get_color_schemes(
         wallpaper,
         config.read("ncolor"),
@@ -71,7 +78,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         dark_light=dark_light,
     )
     if config.read("disable_konsole") is not True:
-        konsole_utils.apply_color_scheme()
+        konsole_utils.apply_color_scheme(qdbus_executable)
     if config.read("darker_window_list"):
         titlebar_utils.kwin_rule_darker_titlebar(
             (
@@ -90,7 +97,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
             dark_light=dark_light,
         )
     if needs_kwin_reload is True:
-        kwin_utils.reload()
+        kwin_utils.reload(qdbus_executable)
     pywal_utils.print_color_palette(
         light=config.read("light"),
         pywal_light=config.read("pywal_light"),

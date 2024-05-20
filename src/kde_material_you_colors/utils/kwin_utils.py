@@ -5,10 +5,10 @@ import time
 from kde_material_you_colors import settings
 
 
-def reload():
+def reload(qdbus_executable: str):
     logging.info(f"Reloading KWin")
     subprocess.Popen(
-        "qdbus org.kde.KWin /KWin reconfigure",
+        qdbus_executable + " org.kde.KWin /KWin reconfigure",
         shell=True,
         stderr=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
@@ -29,7 +29,7 @@ def blend_changes():
         )
 
 
-def load_desktop_window_id_script():
+def load_desktop_window_id_script(qdbus_executable: str):
     # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     is_loaded = False
     try:
@@ -65,7 +65,7 @@ def load_desktop_window_id_script():
     try:
         # Construct the command with the necessary arguments
         command = [
-            "qdbus",
+            qdbus_executable,
             "org.kde.KWin",
             "/Scripting",
             "org.kde.kwin.Scripting.loadScript",
@@ -93,7 +93,9 @@ def load_desktop_window_id_script():
         raise
 
 
-def get_desktop_window_id(screen: int = 0) -> str | None:
+def get_desktop_window_id(
+    screen: int = 0, qdbus_executable: str = "qdbus6"
+) -> str | None:
     # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     """_summary_
 
@@ -124,14 +126,15 @@ for (var i = 0; i < windows.length; i++) {{
 // it seems the list of windows is sorted by the screens positions(?)
 // and (at least on my machine) this works for any arrangement
 //desktopWindows.sort((b,a) => (a.pos.x - b.pos.x))
-print("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
+// FIXME: Use callDBus + dbus service instead
+console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
 """
     with open(settings.KWIN_DESKTOP_ID_JSCRIPT, "w", encoding="utf-8") as js:
         js.write(script_str)
 
     # Load the script using qdbus
     try:
-        script_id = load_desktop_window_id_script()
+        script_id = load_desktop_window_id_script(qdbus_executable)
     except Exception as error:
         logging.error(error)
         raise

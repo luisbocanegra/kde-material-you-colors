@@ -121,7 +121,7 @@ def export_scheme(
         config.write(configfile, space_around_delimiters=False)
 
 
-def apply_color_scheme():
+def apply_color_scheme(qdbus_executable: str):
     """Applies the color scheme to the existing default profile or a new one"""
     profile_name = set_default_profile(settings.KONSOLE_DEFAULT_THEMED_PROFILE)
     profile_path = settings.KONSOLE_DIR + profile_name + ".profile"
@@ -157,10 +157,10 @@ def apply_color_scheme():
     except Exception as e:
         logging.exception(f"Error applying Konsole profile:\n{e}")
 
-    reload_profile(profile_name)
+    reload_profile(profile_name, qdbus_executable)
 
 
-def reload_profile(profile: str):
+def reload_profile(profile: str, qdbus_executable: str):
     """Reload the konsole profile for all running konsole sessions
 
     Args:
@@ -180,7 +180,7 @@ def reload_profile(profile: str):
         for service in konsole_dbus_services:
             try:
                 # get open sessions (tabs and splits)
-                cmd = ["qdbus", service]
+                cmd = [qdbus_executable, service]
                 result = subprocess.run(
                     cmd,
                     stdout=subprocess.PIPE,

@@ -334,6 +334,14 @@ def main():
         metavar="<float>",
     )
 
+    parser.add_argument(
+        "--qdbus-executable",
+        type=str,
+        help="Name or location of the QDbus executable e.g qdbus6, qdbus-qt6... (default is qdbus6)",
+        default=None,
+        metavar="<string>",
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments

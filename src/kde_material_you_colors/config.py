@@ -170,6 +170,7 @@ class Configs:
             "scheme_variant": [args.scheme_variant, 5, 1],
             "chroma_multiplier": [args.chroma_multiplier, 1, 2],
             "tone_multiplier": [args.tone_multiplier, 1, 2],
+            "qdbus_executable": [args.qdbus_executable, None, 3],
         }
 
     def parse_conf(self):

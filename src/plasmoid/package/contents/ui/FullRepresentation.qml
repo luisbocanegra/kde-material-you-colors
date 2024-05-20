@@ -548,6 +548,7 @@ ColumnLayout {
                                     property int scheme_variant: 5; \
                                     property real chroma_multiplier: 1.0; \
                                     property real tone_multiplier: 1.0; \
+                                    property string qdbus_executable; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1795,6 +1796,55 @@ ColumnLayout {
                                 opacity: dividerOpacity
                             }
 
+                            RowLayout {
+                                Layout.alignment: Qt.AlignHCenter
+                                PlasmaExtras.Heading {
+                                    level: 1
+                                    text: "QDbus executable"
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    id: qdbusInfoBtn
+                                    icon.name: "help-hint"
+                                    opacity: 0.7
+                                    hoverEnabled: true
+                                    onClicked: qdbusInfoPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: qdbusInfoPopup
+                                        x: qdbusInfoBtn.width / 2
+                                        y: qdbusInfoBtn.height
+                                        text: "Name or location of the QDbus executable e.g qdbus6, qdbus-qt6... (default is qdbus6)"
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Executable"
+                                }
+                                PlasmaComponents3.TextField {
+                                    placeholderText: qsTr("e.g qdbus6, qdbus-qt6... (default is qdbus6)")
+                                    Layout.fillWidth: true
+                                    text: settings.qdbus_executable
+                                    onAccepted: {
+                                        settings.qdbus_executable = text
+                                    }
+                                }
+                                PlasmaComponents3.Button {
+                                    icon.name: "document-open"
+                                    onClicked: {
+                                        fileDialogQdbusExec.open()
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
                             PlasmaExtras.Heading {
                                 level: 1
                                 text: "Delay & screenshot options"
@@ -2026,6 +2076,13 @@ ColumnLayout {
                                 id: fileDialogHookExec
                                 onAccepted: {
                                     mainLayout.settings.on_change_hook = fileDialogHookExec.fileUrl.toString().substring(7)
+                                }
+                            }
+
+                            FileDialog {
+                                id: fileDialogQdbusExec
+                                onAccepted: {
+                                    mainLayout.settings.qdbus_executable = fileDialogQdbusExec.fileUrl.toString().substring(7)
                                 }
                             }
 
