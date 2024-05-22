@@ -1,7 +1,8 @@
 import logging
 import subprocess
-import dbus
 import time
+import dbus
+import dbus.lowlevel
 from kde_material_you_colors import settings
 
 
@@ -13,6 +14,15 @@ def reload(qdbus_executable: str):
         stderr=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
     )
+
+
+def klassy_update_decoration_color_cache():
+    logging.info("Updating Klassy decoration color cache")
+    path = "/KlassyDecoration"
+    interface = "org.kde.Klassy.Style"
+    method = "updateDecorationColorCache"
+    msg = dbus.lowlevel.SignalMessage(path, interface, method)
+    dbus.SessionBus().send_message(msg)
 
 
 def blend_changes():
