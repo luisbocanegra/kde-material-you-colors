@@ -8,9 +8,9 @@ from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 
 def sierra_breeze_button_colors(schemes: ThemeConfig, light=None):
-    if light == True:
+    if light:
         colors = schemes.get_sierra_breeze_light_colors()
-    elif light == False:
+    else:
         colors = schemes.get_sierra_breeze_dark_colors()
 
     breezerc = configparser.ConfigParser()
@@ -67,9 +67,9 @@ def sierra_breeze_button_colors(schemes: ThemeConfig, light=None):
                 reload = True
             else:
                 reload = False
-            if reload == True:
-                logging.info(f"Applying SierraBreeze window button colors")
-                with open(settings.BREEZE_RC, "w") as configfile:
+            if reload:
+                logging.info("Applying SierraBreeze window button colors")
+                with open(settings.BREEZE_RC, "w", encoding="utf-8") as configfile:
                     breezerc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing breeze window button colors:\n{e}")
@@ -129,9 +129,15 @@ def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
         light (bool, optional): Light or dark mode. Defaults to None.
     """
     if light:
-        outline_color = schemes.get_material_schemes()["light"]["surfaceTint"]
+        outline = schemes.get_material_schemes()["schemes"]["light"]["primary"]
+        outline_inactive = schemes.get_material_schemes()["schemes"]["light"][
+            "outlineVariant"
+        ]
     else:
-        outline_color = schemes.get_material_schemes()["dark"]["surfaceTint"]
+        outline = schemes.get_material_schemes()["schemes"]["dark"]["primaryFixedDim"]
+        outline_inactive = schemes.get_material_schemes()["schemes"]["dark"][
+            "outlineVariant"
+        ]
 
     klassyrc = configparser.ConfigParser()
     # preserve case
@@ -139,17 +145,33 @@ def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
     if os.path.exists(settings.KLASSY_RC):
         try:
             klassyrc.read(settings.KLASSY_RC)
-            if "Windeco" in klassyrc:
-                klassyrc["Windeco"][
-                    "ThinWindowOutlineStyle"
+            if "WindowOutlineStyle" in klassyrc:
+                klassyrc["WindowOutlineStyle"][
+                    "ThinWindowOutlineStyleActive"
                 ] = "WindowOutlineCustomColor"
-                klassyrc["Windeco"]["ThinWindowOutlineCustomColor"] = outline_color
+                klassyrc["WindowOutlineStyle"][
+                    "ThinWindowOutlineStyleInactive"
+                ] = "WindowOutlineCustomColor"
+
+                klassyrc["WindowOutlineStyle"][
+                    "ThinWindowOutlineCustomColorActive"
+                ] = outline
+                klassyrc["WindowOutlineStyle"][
+                    "ThinWindowOutlineCustomColorInactive"
+                ] = outline_inactive
+
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineCustomColorOpacityActive"
+                ] = "100"
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineCustomColorOpacityInactive"
+                ] = "100"
                 reload = True
             else:
                 reload = False
-            if reload == True:
-                logging.info(f"Applying Klassy outline color")
-                with open(settings.KLASSY_RC, "w") as configfile:
+            if reload:
+                logging.info("Applying Klassy outline color")
+                with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
                     klassyrc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing Klassy outline color:\n{e}")
