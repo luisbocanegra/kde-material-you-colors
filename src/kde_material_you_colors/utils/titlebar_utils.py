@@ -107,16 +107,15 @@ def titlebar_opacity(opacity_light, opacity_dark, light):
         if os.path.exists(settings.KLASSY_RC):
             try:
                 conf_file.read(settings.KLASSY_RC)
-                if "Common" in conf_file:
-                    conf_file["Common"]["ActiveTitlebarOpacity"] = str(int(opacity))
-                    conf_file["Common"]["InactiveTitlebarOpacity"] = str(int(opacity))
-                    reload = True
-                else:
-                    reload = False
-                if reload:
-                    logging.info("Applying Klassy titlebar opacity")
-                    with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
-                        conf_file.write(configfile, space_around_delimiters=False)
+                conf_file["TitleBarOpacity"]["ActiveTitleBarOpacity"] = str(
+                    int(opacity)
+                )
+                conf_file["TitleBarOpacity"]["InactiveTitleBarOpacity"] = str(
+                    int(opacity)
+                )
+                logging.info("Applying Klassy titlebar opacity")
+                with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
+                    conf_file.write(configfile, space_around_delimiters=False)
             except Exception as e:
                 logging.exception(f"Error writing Klassy titlebar opacity:\n{e}")
 

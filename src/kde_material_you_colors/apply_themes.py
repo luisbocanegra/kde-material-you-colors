@@ -69,6 +69,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
             config.read("titlebar_opacity_dark"),
             dark_light,
         )
+        kwin_utils.klassy_update_decoration_color_cache()
         needs_kwin_reload = True
     konsole_utils.export_scheme(
         light=config.read("light"),
