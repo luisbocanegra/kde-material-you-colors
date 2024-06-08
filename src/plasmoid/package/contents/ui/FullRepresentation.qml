@@ -387,7 +387,7 @@ ColumnLayout {
             id: rootContent
             anchors.fill: parent
 
-            PlasmaComponents3.ScrollView {
+            ScrollView {
                 id: scrollView
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -395,8 +395,8 @@ ColumnLayout {
                 topPadding: Kirigami.Units.smallSpacing
                 bottomPadding: Kirigami.Units.smallSpacing
 
-                PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
-                PlasmaComponents3.ScrollBar.vertical.policy: PlasmaComponents3.ScrollBar.AsNeeded
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
                 contentWidth: availableWidth - contentItem.leftMargin - contentItem.rightMargin
 
