@@ -87,8 +87,8 @@ ColumnLayout {
     // Get a list of installed icon themes as id,name
     // - discard hidden themes
     // - discard cursor themes
-    // Non escaped version: find /usr/share/icons ~/.local/share/icons -maxdepth 2 -type f -path '*/icons/*/index.theme' ! -path '*/share/icons' ! -exec grep -q '^Hidden=true' {} \; ! -execdir test -d cursors \; -printf '%p\n' | while read line; do echo "$(basename $(dirname $line)),$(grep '^Name=' $line | sed 's/^Name=//')"; done
-    property string getIconThemesCommand: "find /usr/share/icons " +homeDir+"/.local/share/icons -maxdepth 2 -type f -path '*/icons/*/index.theme' ! -path '*/share/icons' ! -exec grep -q '^Hidden=true' {} \\; ! -execdir test -d cursors \\; -printf '%p\\n' | while read line; do echo \"$(basename $(dirname $line)),$(grep '^Name=' $line | sed 's/^Name=//;s/-/ /')\"; done | sort --field-separator=, --key=2n -k2,2"
+    // Non escaped version: find /usr/share/icons ~/.local/share/icons -maxdepth 1 -type d -exec test -f "{}/index.theme" \; ! -exec grep -q '^Hidden=true' {}/index.theme \; -exec sh -c 'test "$(find "$1" -maxdepth 1 -type d | wc -l)" -gt 2' _ {} \; -printf '%p\n' | while read line; do echo "$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')"; done | sort --field-separator=, --key=2n -k2,2
+    property string getIconThemesCommand: "find /usr/share/icons " +homeDir+"/.local/share/icons -maxdepth 1 -type d -exec test -f \"{}/index.theme\" \\; ! -exec grep -q '^Hidden=true' {}/index.theme \\; -exec sh -c 'test \"$(find \"$1\" -maxdepth 1 -type d | wc -l)\" -gt 2' _ {} \\; -printf '%p\\n' | while read line; do echo \"$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')\"; done | sort --field-separator=, --key=2n -k2,2"
 
     ListModel {
         id: iconThemeList
