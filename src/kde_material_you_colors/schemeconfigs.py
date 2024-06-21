@@ -276,8 +276,8 @@ ForegroundPositive={extras['positive']['light']['primary']}
 ForegroundVisited={extras['visited']['light']['primary']}
 
 [Colors:Header]
-BackgroundAlternate={colors_light['surface']}
-BackgroundNormal={colors_light['surface']}
+BackgroundAlternate={colors_light['surfaceContainer']}
+BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
@@ -285,13 +285,13 @@ ForegroundInactive={colors_light['outline']}
 ForegroundLink={extras['link']['light']['primary']}
 ForegroundNegative={extras['negative']['light']['primary']}
 ForegroundNeutral={extras['neutral']['light']['primary']}
-ForegroundNormal={colors_light['onSurface']}
+ForegroundNormal={colors_light['onSurfaceVariant']}
 ForegroundPositive={extras['positive']['light']['primary']}
 ForegroundVisited={extras['visited']['light']['primary']}
 
 [Colors:Header][Inactive]
-BackgroundAlternate={colors_light['surface']}
-BackgroundNormal={colors_light['surface']}
+BackgroundAlternate={colors_light['surfaceContainer']}
+BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
@@ -427,8 +427,8 @@ ForegroundPositive={extras['positive']['dark']['primary']}
 ForegroundVisited={extras['visited']['dark']['primary']}
 
 [Colors:Header]
-BackgroundAlternate={colors_dark['surface']}
-BackgroundNormal={colors_dark['surface']}
+BackgroundAlternate={colors_dark['surfaceContainer']}
+BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
@@ -441,8 +441,8 @@ ForegroundPositive={extras['positive']['dark']['primary']}
 ForegroundVisited={extras['visited']['dark']['primary']}
 
 [Colors:Header][Inactive]
-BackgroundAlternate={colors_dark['surface']}
-BackgroundNormal={colors_dark['surface']}
+BackgroundAlternate={colors_dark['surfaceContainer']}
+BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
