@@ -62,8 +62,8 @@ def custom_dynamic_color(
     hct = Hct.from_int(value)
     scheme = getScheme(scheme_variant, hct, False, 0)
     schemeDark = getScheme(scheme_variant, hct, True, 0)
-    colorsLight = getColors(scheme, chroma_mult, tone_mult)
-    colorsDark = getColors(schemeDark, chroma_mult, tone_mult)
+    colorsLight = getColors(scheme, chroma_mult, tone_mult, False)
+    colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
 
     return {
         "source": hexFromArgb(custom_color["value"]),
@@ -93,17 +93,20 @@ def getScheme(scheme_variant, source, isDark, contrastLevel):
     return scheme_class(source, isDark, contrastLevel)
 
 
-def getColors(scheme, chroma_mult, tone_mult):
+def getColors(scheme, chroma_mult, tone_mult, is_dark):
     colors = {}
     for color in vars(MaterialDynamicColors).keys():
         color_name: DynamicColor = getattr(MaterialDynamicColors, color)
         if hasattr(color_name, "get_hct"):  # is a color
             argb = color_name.get_argb(scheme)
-            hct = Hct(argb)
-            hct.chroma = hct.chroma * clip(chroma_mult, 0, 10, 1)
-            hct.tone = int(hct.tone * clip(tone_mult, 0.5, 1.5, 1))
-            final = hct.to_int()
-            colors[color] = hexFromArgb(final)
+            if color.startswith("surface") or color.endswith("Container"):
+                hct = Hct(argb)
+                hct.chroma = hct.chroma * clip(chroma_mult, 0, 10, 1)
+                hct.tone = int(
+                    hct.tone * clip(tone_mult, 0.0 if is_dark else 0.5, 1.5, 1)
+                )
+                argb = hct.to_int()
+            colors[color] = hexFromArgb(argb)
     return colors
 
 
@@ -111,8 +114,8 @@ def themeFromSourceColor(seed_color, scheme_variant=5, chroma_mult=1, tone_mult=
     source = Hct.from_int(seed_color)
     scheme = getScheme(scheme_variant, source, False, 0)
     schemeDark = getScheme(scheme_variant, source, True, 0)
-    colorsLight = getColors(scheme, chroma_mult, tone_mult)
-    colorsDark = getColors(schemeDark, chroma_mult, tone_mult)
+    colorsLight = getColors(scheme, chroma_mult, tone_mult, False)
+    colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
     # Base text states taken from Breeze Color Scheme
     base_text_states = [
         {"name": "link", "value": argbFromHex("#2980b9"), "blend": False},

@@ -1282,7 +1282,7 @@ ColumnLayout {
                                     validator: DoubleValidator {
                                         bottom: 0
                                         top: 10
-                                        decimals: 1
+                                        decimals: 2
                                         notation: DoubleValidator.StandardNotation
                                     }
 
@@ -1302,7 +1302,7 @@ ColumnLayout {
                                 PlasmaComponents3.Slider {
                                     id: darkBlend
                                     value: settings.tone_multiplier
-                                    from: 0.5
+                                    from: 0.0
                                     to: 1.5
                                     Layout.fillWidth: true
                                     onValueChanged: {
@@ -1318,9 +1318,9 @@ ColumnLayout {
                                     text: parseFloat(settings.tone_multiplier)
 
                                     validator: DoubleValidator {
-                                        bottom: 0.5
+                                        bottom: 0.0
                                         top: 1.5
-                                        decimals: 1
+                                        decimals: 2
                                         notation: DoubleValidator.StandardNotation
                                     }
 
