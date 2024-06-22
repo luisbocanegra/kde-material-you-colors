@@ -204,20 +204,25 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
 
 def screenshot_window(window_handle, output_file):
     screenshot_taken = False
+    result = None
     command = [settings.SCREENSHOT_HELPER_PATH, window_handle, output_file]
     try:
         result = subprocess.run(
             command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            capture_output=True,
             text=True,
-            check=True,
+            check=False,
         )
-        output = result.returncode
+        return_code = result.returncode
     except subprocess.CalledProcessError as e:
         error = f"Error taking screenshot for window {window_handle}: {e}"
         logging.exception(error)
-        raise subprocess.CalledProcessError(e.returncode, command, e.output, e.stdout)
+        raise subprocess.CalledProcessError(e.returncode, command, e.stdout, e.stderr)
 
-    screenshot_taken = output == 0
+    if result is not None and len(result.stderr) > 0:
+        raise subprocess.CalledProcessError(
+            result.returncode, command, result.stdout, result.stderr
+        )
+
+    screenshot_taken = return_code == 0
     return screenshot_taken

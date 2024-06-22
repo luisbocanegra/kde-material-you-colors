@@ -1,5 +1,6 @@
 import os
 import logging
+import subprocess
 import dbus
 from kde_material_you_colors import settings
 from kde_material_you_colors.utils import color_utils
@@ -100,6 +101,10 @@ class WallpaperReader:
             screenshot_taken = get_desktop_screenshot(
                 self._monitor, self._qdbus_executable
             )
+        except subprocess.CalledProcessError as e:
+            logging.exception(e)
+            self._error = "cmd: " + " ".join(e.cmd) + "\nError: " + e.stderr
+            return
         except Exception as e:
             logging.exception(e)
             self._error = str(e)
