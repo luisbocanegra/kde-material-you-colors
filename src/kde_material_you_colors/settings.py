@@ -7,7 +7,7 @@ import shutil
 import sysconfig
 from kde_material_you_colors.utils.utils import find_executable
 
-__version__ = "1.9.1"
+__version__ = "1.9.2"
 USERNAME = getpass.getuser()
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
