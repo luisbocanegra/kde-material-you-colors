@@ -103,7 +103,7 @@ class WallpaperReader:
             )
         except subprocess.CalledProcessError as e:
             logging.exception(e)
-            self._error = "cmd: " + " ".join(e.cmd) + "\nError: " + e.stderr
+            self._error = f"cmd {e.cmd}\nError: {e.stderr}"
             return
         except Exception as e:
             logging.exception(e)

@@ -156,6 +156,7 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
         script = dbus.Interface(kwin, "org.kde.kwin.Script")
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         script.run()
+        time.sleep(0.1)
         try:
             command = [
                 "journalctl",
