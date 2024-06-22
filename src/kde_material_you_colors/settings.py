@@ -13,8 +13,12 @@ USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
 TEMPDIR = tempfile.gettempdir()
 PKG_INSTALL_DIR = os.path.dirname(__file__)
-PKG_BIN = sysconfig.get_path("scripts") + "/kde-material-you-colors"
-
+scheme = (
+    "rpm_prefix"
+    if "rpm_prefix" in sysconfig.get_scheme_names()
+    else sysconfig.get_default_scheme()
+)
+PKG_BIN = sysconfig.get_path("scripts", scheme) + "/kde-material-you-colors"
 SAMPLE_CONFIG_FILE = "sample_config.conf"
 CONFIG_FILE = "config.conf"
 SAMPLE_CONFIG_PATH = PKG_INSTALL_DIR + "/data/"
