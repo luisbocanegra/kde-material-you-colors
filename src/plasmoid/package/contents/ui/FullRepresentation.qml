@@ -38,7 +38,7 @@ ColumnLayout {
     property string backendVersionCommand: execPath + ' --version'
     property string backendVersion: ""
     property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
-    property string recommendedVersion: "1.9.2"
+    property string recommendedVersion: "1.9.3"
     property string versionStatus: "same"
     property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2136963'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
     property bool showVersionMessage: false
