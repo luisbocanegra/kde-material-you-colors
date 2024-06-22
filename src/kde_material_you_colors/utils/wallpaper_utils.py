@@ -129,7 +129,7 @@ class WallpaperReader:
             return
 
         try:
-            output = get_wallpaper_config(self._monitor)
+            wallpaper_config = get_wallpaper_config(self._monitor)
         except dbus.DBusException as e:
             logging.error(e.get_dbus_message())
             self._error = e.get_dbus_message()
@@ -138,35 +138,21 @@ class WallpaperReader:
             logging.error(e)
             self._error = str(e)
             return
-        # Get plugin data, allow commas in plugin config
-        plugin, plugin_config = (output).split(",", 1)
-        # split config and value
-        plugin_config = plugin_config.split(",", 1)
+
+        plugin = wallpaper_config["wallpaperPlugin"]
 
         # special case for picture of the day plugin that requires a
         # directory, provider and sometimes a category
         self._plugin = plugin
         if plugin == settings.PICTURE_OF_DAY_PLUGIN:
             self._type = "image"
-            potd = get_picture_of_the_day(plugin_config)
+            potd = get_picture_of_the_day(wallpaper_config)
             if potd:
                 self._source = potd
                 return
 
-        # Color based wallpapers
-        elif plugin_config[0] in ["color", "Color"] and len(plugin_config) >= 2:
-            self._type = "color"
-            color = color_utils.color2hex(plugin_config[1])
-            if color:
-                self._source = color
-                return
-            else:
-                error = f"Could not resolve color from {plugin}: {plugin_config[1]}"
-                logging.error(error)
-                self._error = error
-
         # wallpaper plugin that stores current image
-        wallpaper = get_wallpaper_image(plugin_config, self._light)
+        wallpaper = get_wallpaper_image(wallpaper_config, self._light)
         if wallpaper:
             self._type = "image"
             # if a single image wasn't returned show the error
@@ -176,9 +162,22 @@ class WallpaperReader:
             else:
                 self._source = wallpaper
                 return
-        else:
-            # if everything fails, try taking a screenshot of the desktop
-            self.screenshot(self._skip_screenshot)
+
+        # wallpaper plugin that stores current color
+        color = wallpaper_config.get("color", wallpaper_config.get("Color"))
+        if color:
+            self._type = "color"
+            color = color_utils.color2hex(int(color[0]))
+            if color:
+                self._source = color
+                return
+
+            error = f"Could not resolve color from {plugin}: {wallpaper_config}"
+            logging.error(error)
+            self._error = error
+
+        # if everything fails, try taking a screenshot of the desktop
+        self.screenshot(self._skip_screenshot)
 
     def update(self, config: Configs, skip_screenshot=False):
         """Update from config and reload wallpaper"""
@@ -199,30 +198,6 @@ class WallpaperReader:
 
     def is_screenshot(self):
         return self._type == "screenshot"
-
-
-def evaluate_script(script: str):
-    """Make a dbus call to org.kde.PlasmaShell.evaluateScript
-
-    Args:
-        script (str): js string to evaluate
-
-    Returns:
-        string : Script output
-    """
-    script_output = ""
-    try:
-        bus = dbus.SessionBus()
-        plasma = dbus.Interface(
-            bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
-            dbus_interface="org.kde.PlasmaShell",
-        )
-        script_output = str(plasma.evaluateScript(script)).replace("file://", "")
-    except dbus.DBusException as e:
-        error = f"Error getting wallpaper from dbus: {e.get_dbus_message()}"
-        logging.exception(error)
-        raise
-    return script_output
 
 
 def get_desktop_screenshot(screen=0, qdbus_executable="qdbus6"):
@@ -246,65 +221,35 @@ def get_desktop_screenshot(screen=0, qdbus_executable="qdbus6"):
 
 
 def get_wallpaper_config(monitor=0):
-    script = f"""
-function getConfig(desktop, keys) {{
-    for (const key of keys) {{
-        const value = desktop.readConfig(key);
-        if (value !== "") {{
-            if (key == "Provider") {{
-                return key + "," + value + "," + desktop.readConfig("Category");
-            }}
-            return key + "," + value;
-        }}
-    }}
-}}
-var desktops = desktops();
-var desktop;
-if ({monitor} < desktops.length) {{
-    for (let i=0; i<desktops.length; i++) {{
-        if (desktops[i].screen == {monitor}) {{
-            desktop = desktops[i];
-            break
-        }}
-    }}
-    if (desktop !== undefined) {{
-        if ('wallpaperPlugin' in desktop) {{
-            var plugin = desktop.wallpaperPlugin
-            desktop.currentConfigGroup = Array("Wallpaper", plugin, "General");
-            const keys = ["Image", "Color","color","Provider"];
-            var config = getConfig(desktop, keys);
-            print(plugin+","+config);
-        }}
-    }} else {{
-        print("monitor value '{monitor}' didn't match any Desktop")
-    }}
-}} else {{
-    print("monitor value '{monitor}' out of range")
-}}
-"""
-    script_output = ""
+    dbus_output = ""
     try:
-        script_output = evaluate_script(script)
+        bus = dbus.SessionBus()
+        plasma = dbus.Interface(
+            bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
+            dbus_interface="org.kde.PlasmaShell",
+        )
+        dbus_output = plasma.wallpaper(monitor)
+        # print(dbus_output)
     except dbus.DBusException as e:
-        logging.error(e.get_dbus_message())
+        logging.exception(e.get_dbus_message(), "\n", e)
         raise
     except Exception as e:
         logging.error(e)
         raise
-    else:
-        try:
-            if len(script_output.split(",")) < 2:
-                raise ValueError(f"Plasma Scripting API says: {script_output}")
-            return script_output
-        except ValueError as e:
-            logging.exception(e)
-            raise
+
+    try:
+        if len(dbus_output) < 1:
+            raise ValueError(f"Wallpaper DBus API says: {dbus_output}")
+        return dbus_output
+    except ValueError as e:
+        logging.exception(e)
+        raise
 
 
-def get_picture_of_the_day(plugin_config):
+def get_picture_of_the_day(wallpaper_config):
     potd_cache_dir = settings.PICTURE_OF_DAY_PLUGIN_CACHE_DIR
-    plugin_config = plugin_config[1] if len(plugin_config) > 1 else ""
-    img_provider, provider_category = (plugin_config + ",").split(",")[:2]
+    img_provider = wallpaper_config["Provider"]
+    provider_category = wallpaper_config.get("Category")
 
     if not img_provider:
         img_provider = settings.PICTURE_OF_DAY_DEFAULT_PROVIDER
@@ -329,11 +274,14 @@ def get_picture_of_the_day(plugin_config):
     return potd_image if os.path.exists(potd_image) else None
 
 
-def get_wallpaper_image(plugin_config, light):
-    if plugin_config[0] != "Image" or len(plugin_config) < 2:
+def get_wallpaper_image(wallpaper_config, light):
+
+    wallpaper = wallpaper_config.get("Image", wallpaper_config.get("image"))
+
+    if wallpaper is None:
         return None
 
-    wallpaper = plugin_config[1]
+    wallpaper = wallpaper.replace("file://", "")
     if not os.path.isdir(wallpaper):
         return wallpaper
 
@@ -342,7 +290,7 @@ def get_wallpaper_image(plugin_config, light):
 
     if not light and os.path.exists(dark_path):
         return file_utils.get_smallest_image(dark_path)
-    elif os.path.exists(normal_path):
+    if os.path.exists(normal_path):
         return file_utils.get_smallest_image(normal_path)
 
     return wallpaper

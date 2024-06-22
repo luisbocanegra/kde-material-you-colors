@@ -286,23 +286,27 @@ def validate_color(color):
         int: color type rgb(1) or hex(2)
         None: for invalid color
     """
+    if isinstance(color, int):
+        return 3
     is_hex = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color)
     is_rgb = re.search(r"^(?:(?:^|,\s*)([01]?\d\d?|2[0-4]\d|25[0-5])){3}$", color)
     if is_rgb:
         return 1
-    elif is_hex:
+    if is_hex:
         return 2
-    else:
-        return None
+
+    return None
 
 
-def color2hex(color: str):
-    format = validate_color(color)
-    if format == 1:
+def color2hex(color):
+    fmt = validate_color(color)
+    if fmt == 1:
         r, g, b = [int(c) for c in color.split(",")]
         return rgb2hex(r, g, b)
-    elif format == 2:
+    if fmt == 2:
         return color
+    if fmt == 3:
+        return hexFromArgb(color)
 
 
 def hexFromArgb(argb):
