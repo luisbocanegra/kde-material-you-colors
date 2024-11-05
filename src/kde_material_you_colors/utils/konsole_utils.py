@@ -5,6 +5,7 @@ import logging
 import dbus
 from kde_material_you_colors.utils.color_utils import hex2rgb
 from kde_material_you_colors.utils.string_utils import tup2str
+from kde_material_you_colors.utils.dbus_utils import list_paths
 from kde_material_you_colors import settings
 from kde_material_you_colors.schemeconfigs import ThemeConfig
 
@@ -121,7 +122,7 @@ def export_scheme(
         config.write(configfile, space_around_delimiters=False)
 
 
-def apply_color_scheme(qdbus_executable: str):
+def apply_color_scheme():
     """Applies the color scheme to the existing default profile or a new one"""
     profile_name = set_default_profile(settings.KONSOLE_DEFAULT_THEMED_PROFILE)
     profile_path = settings.KONSOLE_DIR + profile_name + ".profile"
@@ -157,10 +158,10 @@ def apply_color_scheme(qdbus_executable: str):
     except Exception as e:
         logging.exception(f"Error applying Konsole profile:\n{e}")
 
-    reload_profile(profile_name, qdbus_executable)
+    reload_profile(profile_name)
 
 
-def reload_profile(profile: str, qdbus_executable: str):
+def reload_profile(profile: str):
     """Reload the konsole profile for all running konsole sessions
 
     Args:
@@ -175,26 +176,13 @@ def reload_profile(profile: str, qdbus_executable: str):
 
     if konsole_dbus_services:
         logging.debug(
-            f"Konsole services (windows) running ({len(konsole_dbus_services)}):"
+            f"Konsole services (windows) running: {len(konsole_dbus_services)}"
         )
         for service in konsole_dbus_services:
             try:
                 # get open sessions (tabs and splits)
-                cmd = [qdbus_executable, service]
-                result = subprocess.run(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    check=True,
-                )
-
-                sessions = [
-                    line
-                    for line in result.stdout.splitlines()
-                    if line.startswith("/Sessions/")
-                ]
-                logging.debug(f"{service} ({len(sessions)} sessions)")
+                sessions = list_paths(bus, service, "/Sessions")
+                logging.debug(f"window: {service} sessions: {len(sessions)}")
 
                 # reload colors by switching profiles
                 for session in sessions:

@@ -119,6 +119,11 @@ class Configs:
                 f"Value for main_loop_delay ({options['main_loop_delay']}) should be smaller than screenshot_delay ({options['screenshot_delay']}), will be set to {options['screenshot_delay']}"
             )
 
+        if options["qdbus_executable"] is not None:
+            logging.warning(
+                "--qdbus-executable (qdbus_executable in config) is deprecated as of version 1.10.0 and will be removed in a later version"
+            )
+
         self._options = options
 
     @property
