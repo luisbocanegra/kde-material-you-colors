@@ -337,7 +337,7 @@ def main():
     parser.add_argument(
         "--qdbus-executable",
         type=str,
-        help="Name or location of the QDbus executable e.g qdbus6, qdbus-qt6... (default is qdbus6)",
+        help="(Deprecated as of version 1.10.0) Name or location of the QDbus executable e.g qdbus6, qdbus-qt6... (default is qdbus6)",
         default=None,
         metavar="<string>",
     )

@@ -98,14 +98,18 @@ def getColors(scheme, chroma_mult, tone_mult, is_dark):
     for color in vars(MaterialDynamicColors).keys():
         color_name: DynamicColor = getattr(MaterialDynamicColors, color)
         if hasattr(color_name, "get_hct"):  # is a color
-            argb = color_name.get_argb(scheme)
-            if color.startswith("surface") or color.endswith("Container"):
-                hct = Hct(argb)
-                hct.chroma = hct.chroma * clip(chroma_mult, 0, 10, 1)
+            hct = color_name.get_hct(scheme)
+            is_bg = color_name.is_background is True
+
+            if is_bg:
                 hct.tone = int(
                     hct.tone * clip(tone_mult, 0.0 if is_dark else 0.5, 1.5, 1)
                 )
-                argb = hct.to_int()
+
+            boost_all = True
+            if boost_all or is_bg:
+                hct.chroma = hct.chroma * clip(chroma_mult, 0, 10, 1)
+            argb = hct.to_int()
             colors[color] = hexFromArgb(argb)
     return colors
 
@@ -242,56 +246,57 @@ def get_color_schemes(
     Returns:
 
     """
-    if wallpaper is not None:
-        materialYouColors = None
-        wallpaper_type = wallpaper.type
-        wallpaper_data = wallpaper.source
-        if wallpaper_type in ["image", "screenshot"] and (
-            wallpaper_data and os.path.exists(wallpaper_data)
-        ):
-            if os.path.isdir(wallpaper_data):
-                logging.error(f'"{wallpaper_data}" is a directory, aborting')
-                return None
-            materialYouColors = get_material_you_colors(
-                wallpaper_data,
-                ncolor,
-                "image",
-                scheme_variant,
-                chroma_mult,
-                tone_mult,
-            )
+    if wallpaper is None:
+        return
+    materialYouColors = None
+    wallpaper_type = wallpaper.type
+    wallpaper_data = wallpaper.source
+    if wallpaper_type in ["image", "screenshot"] and (
+        wallpaper_data and os.path.exists(wallpaper_data)
+    ):
+        if os.path.isdir(wallpaper_data):
+            logging.error(f'"{wallpaper_data}" is a directory, aborting')
+            return
+        materialYouColors = get_material_you_colors(
+            wallpaper_data,
+            ncolor,
+            "image",
+            scheme_variant,
+            chroma_mult,
+            tone_mult,
+        )
 
-        elif wallpaper_type == "color" and wallpaper_data:
-            color = color_utils.color2hex(wallpaper_data)
-            materialYouColors = get_material_you_colors(
-                color,
-                ncolor,
-                wallpaper_type,
-                scheme_variant,
-                chroma_mult,
-                tone_mult,
-            )
+    elif wallpaper_type == "color" and wallpaper_data:
+        color = color_utils.color2hex(wallpaper_data)
+        materialYouColors = get_material_you_colors(
+            color,
+            ncolor,
+            wallpaper_type,
+            scheme_variant,
+            chroma_mult,
+            tone_mult,
+        )
 
-        if materialYouColors is not None:
-            if len(materialYouColors["best"]) > 1:
-                best_colors = f"Best colors: {settings.TERM_STY_BOLD}"
-                for i, color in enumerate(materialYouColors["best"]):
-                    rgb = color_utils.hex2rgb(color)
-                    preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
-                    best_colors += (
-                        f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{i}:{preview}"
-                    )
-                logging.info(best_colors[:-5])
+    if materialYouColors is not None:
+        if len(materialYouColors["best"]) > 1:
+            best_colors = f"Best colors: {settings.TERM_STY_BOLD}"
+            for i, color in enumerate(materialYouColors["best"]):
+                rgb = color_utils.hex2rgb(color)
+                preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{color} \033[0m"
+                best_colors += (
+                    f"{settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{i}:{preview}"
+                )
+            logging.info(best_colors[:-5])
 
-            seed = materialYouColors["seed"]
-            sedColor = seed["color"]
-            seedNo = seed["index"]
-            rgb = color_utils.hex2rgb(sedColor)
-            preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{sedColor}\033[0m"
-            logging.info(
-                f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{preview}"
-            )
-            return materialYouColors
+        seed = materialYouColors["seed"]
+        sedColor = seed["color"]
+        seedNo = seed["index"]
+        rgb = color_utils.hex2rgb(sedColor)
+        preview = f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]};1m{sedColor}\033[0m"
+        logging.info(
+            f"Using seed: {settings.TERM_COLOR_DEF+settings.TERM_STY_BOLD}{seedNo}:{preview}"
+        )
+        return materialYouColors
 
 
 def export_schemes(theme: ThemeConfig):

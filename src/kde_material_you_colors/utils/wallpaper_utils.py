@@ -23,7 +23,6 @@ class WallpaperReader:
         self._file = config.read("file")
         self._color = config.read("color")
         self._light = config.read("light")
-        self._qdbus_executable = config.read("qdbus_executable") or "qdbus6"
         self._plugin = None
         self._type = None
         self._source = None
@@ -98,9 +97,7 @@ class WallpaperReader:
             self._error = "Screenshot helper is not installed. Use another wallpaper plugin or install the helper"
             return
         try:
-            screenshot_taken = get_desktop_screenshot(
-                self._monitor, self._qdbus_executable
-            )
+            screenshot_taken = get_desktop_screenshot(self._monitor)
         except subprocess.CalledProcessError as e:
             logging.exception(e)
             self._error = f"cmd {e.cmd}\nError: {e.stderr}"
@@ -205,10 +202,10 @@ class WallpaperReader:
         return self._type == "screenshot"
 
 
-def get_desktop_screenshot(screen=0, qdbus_executable="qdbus6"):
+def get_desktop_screenshot(screen=0):
     # take screenshot of desktop
     try:
-        window_handle = kwin_utils.get_desktop_window_id(screen, qdbus_executable)
+        window_handle = kwin_utils.get_desktop_window_id(screen)
     except Exception as e:
         logging.exception(e)
         raise

@@ -1,19 +1,21 @@
 import logging
 import subprocess
 import time
+import re
 import dbus
 import dbus.lowlevel
 from kde_material_you_colors import settings
 
 
-def reload(qdbus_executable: str):
-    logging.info(f"Reloading KWin")
-    subprocess.Popen(
-        qdbus_executable + " org.kde.KWin /KWin reconfigure",
-        shell=True,
-        stderr=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
+def reload():
+    logging.info("Reloading KWin")
+
+    bus = dbus.SessionBus()
+    kwin = dbus.Interface(
+        bus.get_object("org.kde.KWin", "/KWin"),
+        dbus_interface="org.kde.KWin",
     )
+    kwin.reconfigure()
 
 
 def klassy_update_decoration_color_cache():
@@ -39,7 +41,7 @@ def blend_changes():
         )
 
 
-def load_desktop_window_id_script(qdbus_executable: str):
+def load_desktop_window_id_script():
     # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     is_loaded = False
     try:
@@ -69,27 +71,27 @@ def load_desktop_window_id_script(qdbus_executable: str):
             logging.exception(f"An unexpected error occurred: {e}")
             raise
 
-    # Calling this overloaded method raises TypeError:
-    # Fewer items found in D-Bus signature than in Python arguments
-    # So have use subprocess with qdbus instead :(
     try:
-        # Construct the command with the necessary arguments
         command = [
-            qdbus_executable,
+            "gdbus",
+            "call",
+            "--session",
+            "--dest",
             "org.kde.KWin",
+            "--object-path",
             "/Scripting",
+            "--method",
             "org.kde.kwin.Scripting.loadScript",
             settings.KWIN_DESKTOP_ID_JSCRIPT,
             "kde_material_you_get_desktop_view_id",
         ]
 
-        # Execute the command and decode the output
         result = subprocess.run(command, capture_output=True, text=True, check=True)
-        script_id = result.stdout.strip()
+        # keep only the id
+        script_id = re.sub(r"\D", "", result.stdout.strip())
 
         # logging.debug(f"Script loaded id: {command}")
 
-        # Check if the script_id is an integer and convert it
         if script_id.isdigit():
             return script_id
         else:
@@ -103,9 +105,7 @@ def load_desktop_window_id_script(qdbus_executable: str):
         raise
 
 
-def get_desktop_window_id(
-    screen: int = 0, qdbus_executable: str = "qdbus6"
-) -> str | None:
+def get_desktop_window_id(screen: int = 0) -> str | None:
     # based on https://github.com/jinliu/kdotool/blob/master/src/main.rs 7eebebe
     """_summary_
 
@@ -142,9 +142,9 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
     with open(settings.KWIN_DESKTOP_ID_JSCRIPT, "w", encoding="utf-8") as js:
         js.write(script_str)
 
-    # Load the script using qdbus
+    # Load the script
     try:
-        script_id = load_desktop_window_id_script(qdbus_executable)
+        script_id = load_desktop_window_id_script()
     except Exception as error:
         logging.error(error)
         raise
