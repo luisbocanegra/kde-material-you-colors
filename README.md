@@ -54,9 +54,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
 - Arch Linux [AUR](https://aur.archlinux.org/packages/kde-material-you-colors) use your preferred AUR helper (e.g `yay -S kde-material-you-colors`)
 
-- openSUSE Tumbleweed [Install instructions](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
-
-- Fedora 40 and Fedora Rawhide [Install instructions](https://copr.fedorainfracloud.org/coprs/luisbocanegra/kde-material-you-colors/)
+- openSUSE Tumbleweed, Fedora 40/41/Rawhide see [openSUSE Build Service repositories](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors). These might break from time to time, reach out to me if you want to help maintaining them.
 
 ### Manual install
 
