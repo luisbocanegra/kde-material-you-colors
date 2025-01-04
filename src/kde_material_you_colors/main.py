@@ -230,6 +230,13 @@ def main():
         metavar="<integer>",
     )
 
+    parser.add_argument (
+        "--konsole-blur",
+        action="store_true",
+        help="Apply blur to Konsole background.",
+        default=None,
+    )
+
     parser.add_argument(
         "--stop",
         action="store_true",

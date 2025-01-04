@@ -71,6 +71,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         konsole_opacity=config.read("konsole_opacity"),
         konsole_opacity_dark=config.read("konsole_opacity_dark"),
         dark_light=dark_light,
+        blur=config.read("konsole_blur"),
     )
     if config.read("disable_konsole") is not True:
         konsole_utils.apply_color_scheme()

@@ -17,6 +17,7 @@ def export_scheme(
     konsole_opacity=100,
     konsole_opacity_dark=100,
     dark_light=False,
+    blur=False,
 ):
     """Exports the color scheme files to the konsole configuration folder
 
@@ -25,6 +26,7 @@ def export_scheme(
         pywal_light (_type_, optional): Light mode from pywal setting. Defaults to None.
         schemes (ThemeConfig, optional): Theme configuration. Defaults to None.
         konsole_opacity (int, optional): Konsole background opacity. Defaults to 100.
+        blur (bool, optional): Applies blur to Konsole background. Defaults to False.
     """
     # Make sure the konsole config path exists
     if not os.path.exists(settings.KONSOLE_DIR):
@@ -109,6 +111,7 @@ def export_scheme(
 
     config["General"]["Description"] = "MaterialYou"
     config["General"]["Opacity"] = str(opacity)
+    config["General"]["Blur"] = str(blur).lower()
 
     with open(settings.KONSOLE_COLOR_SCHEME_PATH, "w", encoding="utf-8") as configfile:
         config.write(configfile, space_around_delimiters=False)

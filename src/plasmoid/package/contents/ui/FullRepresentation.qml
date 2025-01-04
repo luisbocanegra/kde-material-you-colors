@@ -529,6 +529,7 @@ ColumnLayout {
                                     property string iconsdark; \
                                     property int konsole_opacity: 100; \
                                     property int konsole_opacity_dark: 100; \
+                                    property bool konsole_blur: false; \
                                     property int titlebar_opacity: 100; \
                                     property int titlebar_opacity_dark: 100; \
                                     property int toolbar_opacity: 100; \
@@ -1419,6 +1420,21 @@ ColumnLayout {
                                         settings.konsole_opacity_dark = value
                                     }
                                 }
+                            }
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Apply blur to background"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    checked: settings.konsole_blur
+
+                                    onCheckedChanged: {
+                                        settings.konsole_blur = checked
+                                    }
+                                }
+
                             }
 
                             Rectangle {
