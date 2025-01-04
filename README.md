@@ -96,6 +96,8 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
     ./install-screenshot-helper.sh
     ```
 
+    **NOTE:** Helper is now installed with `/usr` prefix, reboot if you get `The process is not authorized to take a screenshot` error
+
     **Plasma 5**
 
     Install `git extra-cmake-modules` system packages or their equivalent for your distribution.

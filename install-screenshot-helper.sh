@@ -3,6 +3,9 @@ if [ -d "build" ]; then
     rm -rf build
 fi
 
-cmake -B build -S . -DCMAKE_INSTALL_PREFIX=~/.local
+# remove local install
+rm -f ~/.local/share/applications/kde-material-you-colors-screenshot-helper.desktop ~/.local/bin/kde-material-you-colors-screenshot-helper
+
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build build
-cmake --install build
+sudo cmake --install build
