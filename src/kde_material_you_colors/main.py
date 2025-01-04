@@ -348,6 +348,12 @@ def main():
         default=None,
         metavar="<string>",
     )
+    parser.add_argument(
+        "--manual-fetch",
+        action="store_true",
+        help="Dissables automatic color fetching",
+        default=None,
+    )
 
     # Get commandline arguments
     args = parser.parse_args()
@@ -395,12 +401,17 @@ def main():
     plugin_watcher = utils.Watcher(wallpaper.plugin)
     source_watcher = utils.Watcher(wallpaper.source)
     pause_watcher = utils.Watcher(config.read("pause_mode"))
+    manual_fetch_watcher = utils.Watcher(config.read("manual_fetch"))
+    fetch_watcher = utils.Watcher(config.read("fetch_colors"))
     if pause_watcher.value:
         msg = "Pause mode enabled" if pause_watcher.value else "Pause mode disabled"
         logging.warning(msg)
     if wallpaper.type == "screenshot":
         head = "Screenshot mode enabled"
-        cont = f"Waiting {config.read('screenshot_delay')}s between updates"
+        if config.read("manual_fetch"):
+            cont = "Manual color fetch enabled, press 'Fetch colors' in the widget to take a new screenshot"
+        else:
+            cont = f"Waiting {config.read('screenshot_delay')}s between updates"
         notify.send_notification(head, cont)
         logging.warning("%s, %s", head, cont)
     if wallpaper.error:
@@ -436,10 +447,21 @@ def main():
         #
         #
         #
-        #
-        # update wallpaper
-        wallpaper.update(config, skip_screenshot=counter != 0)
-        wallpaper_watcher.set_value(wallpaper.current)
+        # update wallpaper, only if manual_fetch is false
+        manual_fetch_watcher.set_value(config.read("manual_fetch"))
+
+        if manual_fetch_watcher.has_changed():
+            msg = "Manual color fetch enabled." if manual_fetch_watcher.value else "Manual color fetch disabled."
+            logging.info(msg)
+
+        fetch_watcher.set_value(config.read("fetch_colors"))
+        if fetch_watcher.has_changed() and fetch_watcher.value:
+            logging.info("Fetching colors in current wallpaper...")
+            counter = 0
+
+        if not config.read("manual_fetch") or (fetch_watcher.has_changed() and fetch_watcher.value):
+            wallpaper.update(config, skip_screenshot=counter != 0)
+            wallpaper_watcher.set_value(wallpaper.current)
 
         target_cycles = config.read("screenshot_delay") / (
             config.read("main_loop_delay") or 1
@@ -477,6 +499,7 @@ def main():
                 logging.info(f"{wallpaper}")
                 apply_themes.apply(config, wallpaper, light_mode_watcher.value)
                 apply = False
+                counter += 1
 
         if group1:
             if wallpaper.error:
@@ -486,7 +509,10 @@ def main():
                 logging.error(f"Could not get wallpaper {str(wallpaper.error)}")
             if plugin_watcher.changed and wallpaper.type == "screenshot":
                 head = "Screenshot mode enabled"
-                cont = f"Waiting {config.read('screenshot_delay')}s between updates"
+                if config.read("manual_fetch"):
+                    cont = "Manual color fetch enabled, press 'Fetch colors' in the widget to take a new screenshot"
+                else:
+                    cont = f"Waiting {config.read('screenshot_delay')}s between updates"
                 notify.send_notification(head, cont)
                 logging.warning("%s, %s", head, cont)
             if wallpaper.source:
@@ -499,7 +525,7 @@ def main():
             apply_themes.apply(config, wallpaper, light_mode_watcher.value)
             counter = 0
 
-        if wallpaper.is_screenshot():
+        if wallpaper.is_screenshot() and not config.read("manual_fetch"):
             if target_cycles > counter:
                 counter += 1
             else:

@@ -59,7 +59,11 @@ ColumnLayout {
 
     property bool pauseMode: false
 
+    property bool manual_fetch: false
+
+
     signal savePauseMode()
+
 
     property Item parentMain
 
@@ -82,7 +86,6 @@ ColumnLayout {
             parentMain.pauseModeMain = fullRepresentation.pauseMode
         }
     }
-
 
     // Get a list of installed icon themes as id,name
     // - discard hidden themes
@@ -331,7 +334,6 @@ ColumnLayout {
                     level: 1
                     text: Plasmoid.metaData.name
                 }
-
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
                     visible: !onDesktop
@@ -346,7 +348,6 @@ ColumnLayout {
                         text: parent.text
                     }
                 }
-
                 PlasmaComponents3.ToolButton {
                     display: PlasmaComponents3.AbstractButton.IconOnly
                     checkable: false
@@ -452,14 +453,12 @@ ColumnLayout {
                                 }
                             }
                         }
-
                         Connections {
                             target: fullRepresentation
                             function onSavePauseMode() {
                                 settings.pause_mode = fullRepresentation.pauseMode
                             }
                         }
-
                         onMaterialYouDataChanged: {
                             if (materialYouData!=null && materialYouDataString!=null) {
                                 if (JSON.stringify(materialYouData) !== materialYouDataString) {
@@ -545,6 +544,8 @@ ColumnLayout {
                                     property int screenshot_delay: 900; \
                                     property bool once_after_change: false; \
                                     property bool pause_mode: false; \
+                                    property bool manual_fetch: false; \
+                                    property bool fetch_colors: false; \
                                     property bool screenshot_only_mode: false; \
                                     property int scheme_variant: 5; \
                                     property real chroma_multiplier: 1.0; \
@@ -813,17 +814,37 @@ ColumnLayout {
                             // Color selection
                             RowLayout {
                                 Layout.preferredWidth: mainLayout.width
-
-                                PlasmaComponents3.Label {
-                                    text: "Select color"
-                                    id:selectColorLabel
-                                    Layout.fillWidth: settings.color!==""
+                                RowLayout {
+                                    id: selectColorLayout
+                                    PlasmaComponents3.Label {
+                                        text: "Select color"
+                                        id:selectColorLabel
+                                    }
+                                    // Button to manually fetch the colors on screen //
+                                    Timer {
+                                        id: fetchTimer
+                                        interval: settings.main_loop_delay * 1000; running: false; repeat: false;
+                                        onTriggered: settings.fetch_colors = false
+                                    }
+                                    RowLayout {
+                                        PlasmaComponents3.Button {
+                                            text: "Fetch colors"
+                                            icon.name: 'refreshstructure'
+                                            onClicked: {
+                                                settings.fetch_colors = true
+                                                fetchTimer.start()
+                                            }
+                                            PlasmaComponents3.ToolTip {
+                                                text: "Manually fetch the colors on the current wallpaper"
+                                            }
+                                        }
+                                    }
                                 }
 
                                 // Single color picker when color is not empty
                                 Components.CustomColorButton { // Components.Custom
                                     id: colorButton
-                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.alignment : Qt.AlignRight
                                     visible: settings.color!==""
                                     showAlphaChannel: false
                                     dialogTitle: "Choose source color"
@@ -841,7 +862,7 @@ ColumnLayout {
                                 GridLayout { //PlasmaComponents3.ScrollView
                                     property var gridSpacing: Kirigami.Units.mediumSpacing
                                     visible: settings.color===""
-                                    columns: Math.floor((mainLayout.width - selectColorLabel.width) / (
+                                    columns: Math.floor((mainLayout.width - selectColorLayout.width) / (
                                         controlHeight * .75 + gridSpacing))
                                     rowSpacing: gridSpacing
                                     columnSpacing: gridSpacing
@@ -1935,6 +1956,36 @@ ColumnLayout {
                                     }
                                 }
                             }
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Manual color fetch only"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    checked: settings.manual_fetch
+
+                                    onCheckedChanged: {
+                                        settings.manual_fetch = checked
+                                        fullRepresentation.manual_fetch = checked
+                                    }
+                                }
+
+                                PlasmaComponents3.ToolButton {
+                                    icon.name: "help-contents"
+
+                                    hoverEnabled: true
+                                    onClicked: manualFetchPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: manualFetchPopup
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "The backend won't fetch the colors in the delay times, instead, it will fetch only when the 'Fetch colors' button is pressed by the user. Useful when using dynamic wallpapers."
+                                    }
+                                }
+                            }
+
 
                             RowLayout {
                                 PlasmaComponents3.Label {
