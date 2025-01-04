@@ -159,6 +159,7 @@ class Configs:
             "toolbar_opacity_dark": [args.toolbar_opacity_dark, None, 1],
             "konsole_opacity": [args.konsole_opacity, None, 1],
             "konsole_opacity_dark": [args.konsole_opacity_dark, None, 1],
+            "konsole_blur": [args.konsole_blur, False, 0],
             "color": [args.color, None, 3],
             "klassy_windeco_outline": [args.klassy_windeco_outline, None, 0],
             "custom_colors_list": [args.custom_colors_list, None, 3],
