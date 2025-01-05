@@ -91,7 +91,13 @@ class WallpaperReader:
 
     def screenshot(self, skip_screenshot):
         self._type = "screenshot"
+        screenshot_taken = False
         if skip_screenshot:
+            self._source = (
+                settings.SCREENSHOT_PATH
+                if os.path.exists(settings.SCREENSHOT_PATH)
+                else None
+            )
             return
         if settings.SCREENSHOT_HELPER_PATH is None:
             self._error = "Screenshot helper is not installed. Use another wallpaper plugin or install the helper"
@@ -107,9 +113,13 @@ class WallpaperReader:
             self._error = str(e)
             return
 
-        if screenshot_taken:
-            self._source = settings.SCREENSHOT_PATH
-        else:
+        self._source = (
+            settings.SCREENSHOT_PATH
+            if os.path.exists(settings.SCREENSHOT_PATH)
+            else None
+        )
+
+        if not screenshot_taken:
             error = "Could not take Desktop screenshot"
             logging.error(error)
             self._error = error
