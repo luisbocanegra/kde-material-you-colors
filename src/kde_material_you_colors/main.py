@@ -230,7 +230,7 @@ def main():
         metavar="<integer>",
     )
 
-    parser.add_argument (
+    parser.add_argument(
         "--konsole-blur",
         action="store_true",
         help="Apply blur to Konsole background.",
@@ -379,6 +379,7 @@ def main():
         pidfile.close()
 
     config = Configs(args, settings.USER_CONFIG_PATH + settings.CONFIG_FILE)
+    logging.debug(config.options)
 
     # startup delay
     time.sleep(
@@ -393,7 +394,6 @@ def main():
     apply = False
     stop_apply = False
     config_watcher = utils.Watcher(config.options)
-    wallpaper_watcher = utils.Watcher(None)
     light_mode_watcher = utils.Watcher(None)
     config_modified = utils.Watcher(file_utils.get_file_sha1(config_file))
     wallpaper = wallpaper_utils.WallpaperReader(config)
@@ -419,8 +419,6 @@ def main():
         logging.error(f"Could not get wallpaper {str(wallpaper.error)}")
 
     counter = 0
-
-    logging.debug(config.options)
 
     while True:
         config_modified.set_value(file_utils.get_file_sha1(config_file))
@@ -451,7 +449,11 @@ def main():
         manual_fetch_watcher.set_value(config.read("manual_fetch"))
 
         if manual_fetch_watcher.has_changed():
-            msg = "Manual color fetch enabled." if manual_fetch_watcher.value else "Manual color fetch disabled."
+            msg = (
+                "Manual color fetch enabled."
+                if manual_fetch_watcher.value
+                else "Manual color fetch disabled."
+            )
             logging.info(msg)
 
         fetch_watcher.set_value(config.read("fetch_colors"))
@@ -459,9 +461,10 @@ def main():
             logging.info("Fetching colors in current wallpaper...")
             counter = 0
 
-        if not config.read("manual_fetch") or (fetch_watcher.has_changed() and fetch_watcher.value):
+        if not config.read("manual_fetch") or (
+            fetch_watcher.has_changed() and fetch_watcher.value
+        ):
             wallpaper.update(config, skip_screenshot=counter != 0)
-            wallpaper_watcher.set_value(wallpaper.current)
 
         target_cycles = config.read("screenshot_delay") / (
             config.read("main_loop_delay") or 1
@@ -499,7 +502,6 @@ def main():
                 logging.info(f"{wallpaper}")
                 apply_themes.apply(config, wallpaper, light_mode_watcher.value)
                 apply = False
-                counter += 1
 
         if group1:
             if wallpaper.error:
@@ -519,11 +521,14 @@ def main():
                 apply = True
 
         if plugin_watcher.changed or config_watcher.changed:
-            apply = False
-            stop_apply = False
-            logging.info(f"{wallpaper}")
-            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
-            counter = 0
+            # ignore when fetch_colors is set back to false
+            if fetch_watcher.has_changed() and fetch_watcher.value is False:
+                counter = 0
+            else:
+                apply = False
+                stop_apply = False
+                logging.info(f"{wallpaper}")
+                apply_themes.apply(config, wallpaper, light_mode_watcher.value)
 
         if wallpaper.is_screenshot() and not config.read("manual_fetch"):
             if target_cycles > counter:
