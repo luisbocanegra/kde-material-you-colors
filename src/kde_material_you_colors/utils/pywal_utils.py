@@ -41,7 +41,7 @@ def apply_schemes(
                 # Reload xrdb, i3 and polybar.
                 pywal.reload.env()
             except Exception as e:
-                logging.info(f"Failed setting pywal colors:{e}")
+                logging.exception(f"Failed setting pywal colors:{e}")
         else:
             logging.warning(
                 "Pywal option enabled but python module is not installed, ignored"
