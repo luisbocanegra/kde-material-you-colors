@@ -823,8 +823,10 @@ ColumnLayout {
                                     // Button to manually fetch the colors on screen //
                                     Timer {
                                         id: fetchTimer
-                                        interval: settings.main_loop_delay * 1000; running: false; repeat: false;
-                                        onTriggered: settings.fetch_colors = false
+                                        interval: 2000
+                                        onTriggered: {
+                                            settings.fetch_colors = false
+                                        }
                                     }
                                     RowLayout {
                                         PlasmaComponents3.Button {
@@ -832,7 +834,7 @@ ColumnLayout {
                                             icon.name: 'refreshstructure'
                                             onClicked: {
                                                 settings.fetch_colors = true
-                                                fetchTimer.start()
+                                                fetchTimer.restart()
                                             }
                                             PlasmaComponents3.ToolTip {
                                                 text: "Manually fetch the colors on the current wallpaper"
