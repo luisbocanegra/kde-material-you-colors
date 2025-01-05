@@ -33,7 +33,7 @@ kde-material-you-colors = "kde_material_you_colors.main:main"
 
 [project.optional-dependencies]
 cli = [
-    "pywal>=3.3.0"
+    "pywal16>=3.7.2"
 ]
 
 [project.urls]
