@@ -531,6 +531,7 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
 
         self._wal_light_scheme = {
             "wallpaper": wallpaper_data,
+            "checksum": "",
             "alpha": "100",
             "special": {
                 "background": pywal_colors_light[0],
@@ -579,6 +580,7 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
 
         self._wal_dark_scheme = {
             "wallpaper": wallpaper_data,
+            "checksum": "",
             "alpha": "100",
             "special": {
                 "background": pywal_colors_dark[0],
