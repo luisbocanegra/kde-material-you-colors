@@ -14,7 +14,7 @@
         "Icon":"preferences-desktop-theme-global",
         "License": "GPL-3.0",
         "Name": "KDE Material You Colors",
-        "Version": "0.4.3",
+        "Version": "1.9.3",
         "Website": "https://github.com/luisbocanegra/kde-material-you-colors"
     },
     "X-Plasma-NotificationArea": true,
