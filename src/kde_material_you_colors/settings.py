@@ -3,11 +3,12 @@ import getpass
 import tempfile
 from pathlib import Path
 import importlib.util
+import importlib.metadata
 import shutil
 import sysconfig
 from kde_material_you_colors.utils.utils import find_executable
 
-__version__ = "1.9.3"
+__version__ = importlib.metadata.version("kde_material_you_colors")
 USERNAME = getpass.getuser()
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())

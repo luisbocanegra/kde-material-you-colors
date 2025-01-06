@@ -3,9 +3,9 @@ import os
 import time
 import argparse
 import logging
-from . import settings
-from .utils import utils
-from .logging_config import MyLogFormatter
+from kde_material_you_colors import settings
+from kde_material_you_colors.utils import utils
+from kde_material_you_colors.logging_config import MyLogFormatter
 
 
 logger = MyLogFormatter.set_format()
@@ -371,7 +371,7 @@ def main():
     from .utils import plasma_utils
     from . import apply_themes
 
-    logging.info("###### STARTED NEW SESSION ######")
+    logging.info(f"###### STARTED NEW SESSION v{settings.__version__} ######")
     logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
 
     with open(settings.PIDFILE_PATH, "w", encoding="utf-8") as pidfile:
