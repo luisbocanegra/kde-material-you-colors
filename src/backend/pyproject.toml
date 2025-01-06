@@ -25,6 +25,9 @@ dependencies = [
     "materialyoucolor>=2.0.8",
 ]
 
+[tool.setuptools]
+packages = ["kde_material_you_colors"]
+
 [project.scripts]
 kde-material-you-colors = "kde_material_you_colors.main:main"
 

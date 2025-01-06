@@ -1,0 +1,2 @@
+include kde_material_you_colors/data/*.desktop
+include kde_material_you_colors/data/*.conf

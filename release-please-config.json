@@ -1,6 +1,6 @@
 {
     "packages": {
-        ".": {
+        "src/backend": {
             "changelog-path": "CHANGELOG.md",
             "release-type": "simple",
             "extra-files": [
@@ -8,6 +8,17 @@
                     "type": "toml",
                     "path": "pyproject.toml",
                     "jsonpath": "$.project.version"
+                }
+            ]
+        },
+        "src/plasmoid": {
+            "changelog-path": "CHANGELOG.md",
+            "release-type": "simple",
+            "extra-files": [
+                {
+                    "type": "json",
+                    "path": "package/metadata.json",
+                    "jsonpath": "$.KPlugin.Version"
                 }
             ]
         }
