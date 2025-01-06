@@ -11,7 +11,7 @@
         "Category": "System Information",
         "Description": "Companion widget for KDE Material You Colors",
         "Id": "luisbocanegra.kdematerialyou.colors",
-        "Icon":"preferences-desktop-theme-global",
+        "Icon": "preferences-desktop-theme-global",
         "License": "GPL-3.0",
         "Name": "KDE Material You Colors",
         "Version": "0.4.3",
