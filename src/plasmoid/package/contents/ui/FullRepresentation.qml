@@ -2058,6 +2058,7 @@ ColumnLayout {
                             ColumnLayout {
                                 spacing: Kirigami.Units.mediumSpacing
                                 opacity: 0.9
+                                Layout.alignment: Qt.AlignHCenter
                                 PlasmaExtras.Heading {
                                     level: 2
                                     text: "About " + Plasmoid.metaData.name
@@ -2076,25 +2077,8 @@ ColumnLayout {
                                     Layout.alignment: Qt.AlignHCenter
                                 }
 
-                                TextEdit {
-                                    text: "If you like the project you can leave a review in <a href='https://store.kde.org/p/2136963'>KDE Store</a> or give it a star on <a href='https://github.com/luisbocanegra/kde-material-you-colors'>Github</a>. For bugs and feature requests please go to the <a href='https://github.com/luisbocanegra/kde-material-you-colors/issues'>issues page</a>."
-                                    wrapMode: Text.WordWrap
-                                    readOnly: true
-                                    textFormat: TextEdit.RichText
+                                Components.About {
                                     Layout.alignment: Qt.AlignHCenter
-                                    Layout.preferredWidth: mainLayout.width
-                                    horizontalAlignment: Text.AlignHCenter
-
-                                    color: Kirigami.Theme.textColor
-                                    selectedTextColor: Kirigami.Theme.highlightedTextColor
-                                    selectionColor: Kirigami.Theme.highlightColor
-
-                                    onLinkActivated: (url) => Qt.openUrlExternally(url)
-
-                                    HoverHandler {
-                                        acceptedButtons: Qt.NoButton
-                                        cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                    }
                                 }
                             }
 
