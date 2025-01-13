@@ -9,7 +9,6 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 [![AUR version](https://img.shields.io/aur/version/kde-material-you-colors?style=for-the-badge&logo=archlinux&labelColor=2d333b&color=1f425f)](https://aur.archlinux.org/packages/kde-material-you-colors)
 [![PyPI - Version](https://img.shields.io/pypi/v/kde-material-you-colors?style=for-the-badge&logo=python&labelColor=2d333b&color=1f425f)](https://pypi.org/project/kde-material-you-colors/)
 [![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&style=for-the-badge&color=1f425f&labelColor=2d333b&logo=kde&label=Plasmoid)](https://store.kde.org/p/2136963)
-[![Liberapay](https://img.shields.io/liberapay/patrons/luisbocanegra?style=for-the-badge&logo=liberapay&logoColor=%23F6C814&labelColor=%232D333B&label=supporters)](https://liberapay.com/luisbocanegra/)
 
 </div>
 
@@ -35,8 +34,8 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 ### Themeable programs
 
 - Konsole color scheme
-  - opacity control
-- **[Pywal](https://github.com/dylanaraps/pywal) support to theme other programs using Material You Colors**
+  - opacity & blur control
+- Pywal support to theme other programs using Material You Colors
 - Basic KSyntaxHighlighting support (Kate, KWrite, KDevelop...)
 
 ### Theming options
@@ -73,7 +72,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
     ```sh
     pipx install kde-material-you-colors
-    pipx inject kde-material-you-colors pywal
+    pipx inject kde-material-you-colors pywal16
     # to upgrade to newer version
     pipx upgrade kde-material-you-colors
     ```
@@ -193,20 +192,18 @@ Please read the [Contributing guidelines in this repository](https://github.com/
 
 ## Support the development
 
-If you like the project you can:
+- If you like the project please consider donating/sponsoring this and [my other open source work](https://github.com/luisbocanegra?tab=repositories&q=&type=source&language=&sort=stargazers)
 
-[!["Buy Me A Coffee"](https://img.shields.io/badge/Buy%20me%20a%20coffe-supporter?logo=buymeacoffee&logoColor=%23282828&labelColor=%23FF803F&color=%23FF803F)](https://www.buymeacoffee.com/luisbocanegra) [![Liberapay](https://img.shields.io/badge/Become%20a%20supporter-supporter?logo=liberapay&logoColor=%23282828&labelColor=%23F6C814&color=%23F6C814)](https://liberapay.com/luisbocanegra/)
+  [![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-supporter?logo=githubsponsors&color=%2329313C)](https://github.com/sponsors/luisbocanegra) [![Ko-fi](https://img.shields.io/badge/Ko--fi-supporter?logo=ko-fi&logoColor=%23ffffff&color=%23467BEB)](https://ko-fi.com/luisbocanegra) [!["Buy Me A Coffee"](https://img.shields.io/badge/Buy%20me%20a%20coffe-supporter?logo=buymeacoffee&logoColor=%23282828&color=%23FF803F)](https://www.buymeacoffee.com/luisbocanegra) [![Liberapay](https://img.shields.io/badge/Liberapay-supporter?logo=liberapay&logoColor=%23282828&color=%23F6C814)](https://liberapay.com/luisbocanegra/) [![PayPal](https://img.shields.io/badge/PayPal-supporter?logo=paypal&logoColor=%23ffffff&color=%23003087)](https://www.paypal.com/donate/?hosted_button_id=Y5TMH3Z4YZRDA)
 
-Thank you ❤️
+- [Give it a star on GitHub](https://aur.archlinux.org/packages/kde-material-you-colors)
+- Rate / leave review in the [KDE Store](https://store.kde.org/p/2136963)
 
 ## Acknowledgements
 
-- [@T-Dynamos Python Implementation](https://github.com/T-Dynamos/materialyoucolor-python) of Material Color Utilities used by this project.
-- [@avanisubbiah Python Implementation](https://github.com/avanishsubbiah/material-color-utilities-python) of Material Color Utilities (used until v1.8.0).
-- [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
-- [Pywal](https://github.com/dylanaraps/pywal) used to apply material colors to pywal supported software
-- [MaterialColorUtilities (C#)](https://github.com/albi005/MaterialColorUtilities) (used until v0.8.0).
+- [materialyoucolor-python](https://github.com/T-Dynamos/materialyoucolor-python) Python Implementation of Material Color Utilities used by this project.
+- [Pywal16](https://github.com/eylles/pywal16) to apply material colors to pywal supported software
 - [xdg-desktop-portal-kde](https://invent.kde.org/plasma/xdg-desktop-portal-kde) base for desktop screenshot helper.
 - [kdotool](https://github.com/jinliu/kdotool) base for getting desktop window id.
-- [Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) for the widget icon assets.
-- [This comment on Reddit](https://www.reddit.com/r/kde/comments/mg6wr4/comment/gssbtqe/?utm_source=share&utm_medium=web2x&context=3) and [ksetwallpaper](https://github.com/pashazz/ksetwallpaper) for the code to get the current Wallpaper that served me as inspiration.
+- [ksetwallpaper](https://github.com/pashazz/ksetwallpaper) code to get the current Wallpaper that served me as inspiration.
+- [Google LLC. / Pictogrammers](https://pictogrammers.com/library/mdi/) widget icon assets.
