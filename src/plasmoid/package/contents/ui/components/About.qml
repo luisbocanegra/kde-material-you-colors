@@ -2,8 +2,6 @@ import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
-import org.kde.plasma.plasma5support as P5Support
 
 RowLayout {
     id: root
@@ -102,6 +100,7 @@ RowLayout {
         }
     }
     ToolButton {
+        text: "Links"
         icon.name: "application-menu"
         id: linksButton
         onClicked: {

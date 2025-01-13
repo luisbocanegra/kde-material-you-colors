@@ -2072,9 +2072,35 @@ ColumnLayout {
                                     Layout.alignment: Qt.AlignHCenter
                                 }
 
+                                TextEdit {
+                                    text: Qt.resolvedUrl("../../").toString().substring(7)
+                                    Layout.alignment: Qt.AlignHCenter
+                                    opacity: 0.6
+                                    readOnly: true
+                                    wrapMode: Text.WordWrap
+                                    Layout.preferredWidth: mainLayout.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    color: Kirigami.Theme.textColor
+                                    selectedTextColor: Kirigami.Theme.highlightedTextColor
+                                    selectionColor: Kirigami.Theme.highlightColor
+                                }
+
                                 PlasmaComponents3.Label {
                                     text: "Backend version: " + fullRepresentation.backendVersionDisplay
                                     Layout.alignment: Qt.AlignHCenter
+                                }
+
+                                TextEdit {
+                                    text: fullRepresentation.execPath
+                                    Layout.alignment: Qt.AlignHCenter
+                                    opacity: 0.6
+                                    readOnly: true
+                                    wrapMode: Text.WordWrap
+                                    Layout.preferredWidth: mainLayout.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    color: Kirigami.Theme.textColor
+                                    selectedTextColor: Kirigami.Theme.highlightedTextColor
+                                    selectionColor: Kirigami.Theme.highlightColor
                                 }
 
                                 Components.About {
