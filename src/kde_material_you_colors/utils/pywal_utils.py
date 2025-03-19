@@ -4,7 +4,6 @@ from kde_material_you_colors import settings
 from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 if settings.USER_HAS_PYWAL:
-    from kde_material_you_colors.utils import pywal_sequences_timeout
     import pywal
 
 
@@ -35,7 +34,7 @@ def apply_schemes(
                 # Second argument is a boolean for VTE terminals.
                 # Set it to true if the terminal you're using is
                 # VTE based. (xfce4-terminal, termite, gnome-terminal.)
-                pywal_sequences_timeout.send(pywal_colors, vte_fix=False)
+                pywal.sequences.send(pywal_colors, vte_fix=False)
                 # Export all template files.
                 pywal.export.every(pywal_colors)
                 # Reload xrdb, i3 and polybar.
