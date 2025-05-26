@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/luisbocanegra/kde-material-you-colors/compare/v1.10.0...v1.10.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* switch back to pywal.sequences ([8d0ccba](https://github.com/luisbocanegra/kde-material-you-colors/commit/8d0ccba44be806d104d3f90e9c3abcbd7547b7ea))
+
 ## [1.10.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v1.9.3...v1.10.0) (2025-01-13)
 
 
