@@ -161,7 +161,7 @@ There are some key differences:
 - Brighter accent/buttons colors
 - Option to choose another color if the wallpaper returns more than one
 - Can also apply colors to Konsole and pywal (both from wallpaper and custom ones)
-- Colors comparison https://imgur.com/a/a28uZka (kde-material-you-colors top, default tint option bottom)
+- Colors comparison <https://imgur.com/a/a28uZka> (kde-material-you-colors top, default tint option bottom)
 
 **Q.** Why there are duplicated color schemes in **System Settings**
 
@@ -185,6 +185,10 @@ The wallpaper is obtained in the following order:
 The backend uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and calls the screenshot helper to take a Screenshot of the Desktop view using the [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot)
 
 Both methods are somewhat robust but there are edge cases when detection will fail, which are [explained here](https://github.com/luisbocanegra/kde-material-you-colors/issues/187)
+
+**Q.** Broken theming in Qt5 applications [#220](https://github.com/luisbocanegra/kde-material-you-colors/issues/220)
+
+Install `plasma5-integration` or the equivalent from your distribution packages.
 
 ## Bug reporting / Feature requests / Contributing
 
