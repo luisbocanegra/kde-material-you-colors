@@ -92,6 +92,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
     ```sh
     git clone https://github.com/luisbocanegra/kde-material-you-colors
+    cd kde-material-you-colors
     ./install-screenshot-helper.sh
     ```
 
@@ -103,6 +104,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
     ```sh
     git clone https://github.com/luisbocanegra/kde-material-you-colors -b plasma5
+    cd kde-material-you-colors
     ./install-screenshot-helper.sh
     ```
 
