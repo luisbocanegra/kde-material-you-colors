@@ -354,6 +354,12 @@ def main():
         help="Dissables automatic color fetching",
         default=None,
     )
+    parser.add_argument(
+        "--override-titlebar-opacity",
+        action="store_true",
+        help="Override opacity values for titlebar",
+        default=None,
+    )
 
     # Get commandline arguments
     args = parser.parse_args()
