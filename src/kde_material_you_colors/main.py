@@ -177,10 +177,17 @@ def main():
     )
 
     parser.add_argument(
+        "--override-titlebar-opacity",
+        action="store_true",
+        help="Override opacity values for titlebar",
+        default=None,
+    )
+
+    parser.add_argument(
         "--titlebar-opacity",
         "-tio",
         type=int,
-        help="Titlebar opacity in normal mode (value from 0 to 100, default is 100)",
+        help="Titlebar opacity in normal mode (value from 0 to 100, default is 100). Requires --override-titlebar-opacity to function",
         default=None,
         metavar="<integer>",
     )
@@ -189,7 +196,7 @@ def main():
         "--titlebar-opacity-dark",
         "-tiod",
         type=int,
-        help="Titlebar opacity in dark mode (value from 0 to 100, default is 100)",
+        help="Titlebar opacity in dark mode (value from 0 to 100, default is 100) Requires --override-titlebar-opacity to function",
         default=None,
         metavar="<integer>",
     )
