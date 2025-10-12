@@ -535,6 +535,7 @@ ColumnLayout {
                                     property int toolbar_opacity_dark: 100; \
                                     property bool sierra_breeze_buttons_color: false; \
                                     property bool klassy_windeco_outline: false; \
+                                    property bool automatic_opacity: false; \
                                     property string darker_window_list; \
                                     property string on_change_hook; \
                                     property string gui_custom_exec_location; \
@@ -1737,6 +1738,23 @@ ColumnLayout {
 
                                     onCheckedChanged: {
                                         settings.klassy_windeco_outline = checked
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                PlasmaComponents3.Label {
+                                    text: "Automatically change titlebar opacity"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    id: enableAutomaticOpacity
+                                    checked: settings.automatic_opacity
+
+                                    onCheckedChanged: {
+                                        settings.automatic_opacity = checked
                                     }
                                 }
                             }

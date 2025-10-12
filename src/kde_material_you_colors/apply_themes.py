@@ -56,7 +56,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         titlebar_utils.klassy_windeco_outline_color(schemes, dark_light)
         kwin_utils.klassy_update_decoration_color_cache()
         needs_kwin_reload = True
-    if config.read("titlebar_opacity") or config.read("titlebar_opacity_dark"):
+    if (config.read("titlebar_opacity") or config.read("titlebar_opacity_dark")) and config.read("automatic_opacity"):
         titlebar_utils.titlebar_opacity(
             config.read("titlebar_opacity"),
             config.read("titlebar_opacity_dark"),
