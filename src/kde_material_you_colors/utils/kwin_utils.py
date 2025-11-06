@@ -8,14 +8,24 @@ from kde_material_you_colors import settings
 
 
 def reload():
+    if not settings.DESKTOP_IS_KDE:
+        return
     logging.info("Reloading KWin")
 
-    bus = dbus.SessionBus()
-    kwin = dbus.Interface(
-        bus.get_object("org.kde.KWin", "/KWin"),
-        dbus_interface="org.kde.KWin",
-    )
-    kwin.reconfigure()
+    try:
+        bus = dbus.SessionBus()
+        kwin = dbus.Interface(
+            bus.get_object("org.kde.KWin", "/KWin"),
+            dbus_interface="org.kde.KWin",
+        )
+        kwin.reconfigure()
+    except dbus.DBusException as e:
+        msg = e.get_dbus_message() if hasattr(e, "get_dbus_message") else str(e)
+        logging.warning(f"Could not call KWin.reconfigure: {msg}")
+        return
+    except Exception as e:
+        logging.exception(f"Unexpected error while reloading KWin: {e}")
+        return
 
 
 def klassy_update_decoration_color_cache():
@@ -113,8 +123,11 @@ def get_desktop_window_id(screen: int = 0) -> str | None:
         screen (int): Screen number
 
     Returns:
-        str: Window id (empty if not found)
+        str|none: Window id (None if not found)
     """
+
+    if not settings.DESKTOP_IS_KDE:
+        return None
 
     win_id = None
     script_str = f"""var windows = workspace.windowList()

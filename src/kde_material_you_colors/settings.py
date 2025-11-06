@@ -72,6 +72,8 @@ PLASMA_CHANGEICONS_PATH = find_executable(CHANGE_ICONS_PROGRAM)
 
 SCREENSHOT_HELPER = "kde-material-you-colors-screenshot-helper"
 SCREENSHOT_HELPER_PATH = find_executable(SCREENSHOT_HELPER)
+DESKTOP = os.environ.get("XDG_CURRENT_DESKTOP")
+DESKTOP_IS_KDE = DESKTOP == "KDE"
 
 TERM_COLOR_RED = "\033[31m"
 TERM_COLOR_GRE = "\033[32m"
