@@ -170,7 +170,7 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
                 "--output",
                 "cat",
                 "-g",
-                "js: KMYC-desktop-window-id",
+                "KMYC-desktop-window-id",
             ]
 
             # Execute the command using subprocess.run
@@ -184,7 +184,7 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
 
             # The output is now stored in result.stdout
             output = result.stdout.strip()
-            win_id = output.split(" ")[2]
+            win_id = output.split(" ").pop()
         except subprocess.CalledProcessError as e:
             error = f"Script id {script_id} didn't return a desktop id for screen {screen}: {e}"
             # Replace time to make notify show the error only one time
