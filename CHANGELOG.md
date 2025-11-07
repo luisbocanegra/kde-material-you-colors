@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.0.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v1.10.1...v2.0.0) (2025-11-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* Titlebar opacity requires manual enabling ([#272](https://github.com/luisbocanegra/kde-material-you-colors/issues/272))
+
+### Features
+
+* allow passing an image file to 'file' option ([85e3c54](https://github.com/luisbocanegra/kde-material-you-colors/commit/85e3c547ecc1dc38ac9b6d93e4f985f753c828e0))
+* rename 'override_titlebar_opacity' to 'titlebar_opacity_override' ([296e00f](https://github.com/luisbocanegra/kde-material-you-colors/commit/296e00fca588aa854ebabc71bc4ad424b9f42aaa))
+* Titlebar opacity requires manual enabling ([#272](https://github.com/luisbocanegra/kde-material-you-colors/issues/272)) ([b222ae6](https://github.com/luisbocanegra/kde-material-you-colors/commit/b222ae6f802d488c9731858c25d7a9744af789bc))
+
+
+### Bug Fixes
+
+* check if running in KDE and handle missing reconfigure method ([f0ee5e1](https://github.com/luisbocanegra/kde-material-you-colors/commit/f0ee5e183339eed8165a122a2e90736f9625e086))
+* screenshot method not working in plasma 6.5 and later ([d28cdbd](https://github.com/luisbocanegra/kde-material-you-colors/commit/d28cdbd4a2f87247024990a2afcde89409ac8c8c))
+
 ## [1.10.1](https://github.com/luisbocanegra/kde-material-you-colors/compare/v1.10.0...v1.10.1) (2025-05-26)
 
 
