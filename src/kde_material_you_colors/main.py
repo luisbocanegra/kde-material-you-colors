@@ -42,7 +42,7 @@ def main():
         "--file",
         "-f",
         type=str,
-        help="Text file that contains wallpaper absolute path (Takes precedence over automatic wallpaper detection and --color options)",
+        help="Image or plain text file containing the absolute path of an image (Takes precedence over automatic wallpaper detection and --color options)",
         default=None,
         metavar="<filename>",
     )

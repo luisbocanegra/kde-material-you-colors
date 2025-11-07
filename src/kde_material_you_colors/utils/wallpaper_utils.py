@@ -8,6 +8,7 @@ from kde_material_you_colors.utils import file_utils
 from kde_material_you_colors.utils import math_utils
 from kde_material_you_colors.utils import kwin_utils
 from kde_material_you_colors.config import Configs
+from kde_material_you_colors.utils.file_utils import is_plain_text
 
 
 class WallpaperReader:
@@ -54,12 +55,20 @@ class WallpaperReader:
             # TODO: detect image file too
             self._type = "image"
             if os.path.exists(self._file):
-                with open(self._file, encoding="utf-8") as text_file:
-                    wallpaper = str(text_file.read()).replace("file://", "").strip()
-                    if wallpaper:
-                        self._source = wallpaper
+                if is_plain_text(self._file):
+                    with open(self._file, encoding="utf-8") as text_file:
+                        self._source = (
+                            str(text_file.read()).replace("file://", "").strip()
+                        )
+                else:
+                    self._source = self._file
             else:
                 error = f"File '{self._file}' does not exist"
+                logging.error(error)
+                self._error = error
+
+            if self._source and not os.path.exists(self._source):
+                error = f"Resolved file '{self._source}' does not exist"
                 logging.error(error)
                 self._error = error
 

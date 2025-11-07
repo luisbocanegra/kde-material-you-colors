@@ -1,7 +1,8 @@
-import PIL
-import PIL.Image
 import os
 import hashlib
+import PIL
+import PIL.Image
+import magic
 
 
 def get_last_modification(file):
@@ -64,3 +65,20 @@ def get_file_sha1(file_path):
                     return file_sha1
             except Exception as e:
                 print(f"Error:\n{e}")
+
+
+def is_plain_text(file_path):
+    """Check if a file is plain text
+
+    Args:
+        file_path (str): Absolute path of file
+    Returns:
+        bool: True if plain text, False otherwise
+    """
+    if file_path is not None:
+        if os.path.exists(file_path):
+            try:
+                return magic.from_file(file_path, mime=True) == "text/plain"
+            except Exception as e:
+                print(f"Error:\n{e}")
+                return False
