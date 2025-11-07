@@ -23,6 +23,7 @@ dependencies = [
     "numpy>=1.20",
     "pillow>=9.2.0",
     "materialyoucolor>=2.0.8",
+    "python-magic>=0.4.27",
 ]
 
 [project.scripts]
