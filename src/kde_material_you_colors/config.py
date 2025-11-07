@@ -162,7 +162,7 @@ class Configs:
             "konsole_blur": [args.konsole_blur, False, 0],
             "color": [args.color, None, 3],
             "klassy_windeco_outline": [args.klassy_windeco_outline, None, 0],
-            "override_titlebar_opacity": [args.override_titlebar_opacity, None, 0],
+            "titlebar_opacity_override": [args.titlebar_opacity_override, None, 0],
             "custom_colors_list": [args.custom_colors_list, None, 3],
             "darker_window_list": [args.darker_window_list, None, 3],
             "use_startup_delay": [args.use_startup_delay, None, 0],

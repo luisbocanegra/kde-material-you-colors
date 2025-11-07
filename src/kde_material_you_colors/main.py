@@ -177,7 +177,7 @@ def main():
     )
 
     parser.add_argument(
-        "--override-titlebar-opacity",
+        "--titlebar-opacity-override",
         action="store_true",
         help="Override opacity values for titlebar",
         default=None,

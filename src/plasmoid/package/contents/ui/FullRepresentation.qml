@@ -535,7 +535,7 @@ ColumnLayout {
                                     property int toolbar_opacity_dark: 100; \
                                     property bool sierra_breeze_buttons_color: false; \
                                     property bool klassy_windeco_outline: false; \
-                                    property bool override_titlebar_opacity: false; \
+                                    property bool titlebar_opacity_override: false; \
                                     property string darker_window_list; \
                                     property string on_change_hook; \
                                     property string gui_custom_exec_location; \
@@ -1576,6 +1576,24 @@ ColumnLayout {
                             }
 
                             RowLayout {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                PlasmaComponents3.Label {
+                                    text: "Override titlebar opacity"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    id: titleBarOpacityOverride
+                                    checked: settings.titlebar_opacity_override
+
+                                    onCheckedChanged: {
+                                        settings.titlebar_opacity_override = checked
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                enabled: titleBarOpacityOverride.checked
                                 PlasmaComponents3.Label {
                                     text: "Light"
                                     Layout.alignment: Qt.AlignLeft
@@ -1603,6 +1621,7 @@ ColumnLayout {
                             }
 
                             RowLayout {
+                                enabled: titleBarOpacityOverride.checked
                                 PlasmaComponents3.Label {
                                     text: "Dark"
                                     Layout.alignment: Qt.AlignLeft
@@ -1649,6 +1668,23 @@ ColumnLayout {
                                         x: toolbarOpacityHelpBtn.width / 2
                                         y: toolbarOpacityHelpBtn.height
                                         text: "Requires <strong>Lightly</strong> Application Style"
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                PlasmaComponents3.Label {
+                                    text: "Override toolbar opacity"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    id: toolbarOpacityOverride
+                                    checked: settings.toolbar_opacity_override
+
+                                    onCheckedChanged: {
+                                        settings.toolbar_opacity_override = checked
                                     }
                                 }
                             }
@@ -1741,25 +1777,6 @@ ColumnLayout {
                                     }
                                 }
                             }
-
-                            RowLayout {
-                                Layout.topMargin: Kirigami.Units.mediumSpacing
-                                PlasmaComponents3.Label {
-                                    text: "Override titlebar opacity"
-                                    Layout.alignment: Qt.AlignLeft
-                                }
-
-                                PlasmaComponents3.CheckBox {
-                                    id: enableOpacityOverride
-                                    checked: settings.override_titlebar_opacity
-
-                                    onCheckedChanged: {
-                                        settings.override_titlebar_opacity = checked
-                                    }
-                                }
-                            }
-
-
 
                             RowLayout {
                                 PlasmaComponents3.Label {
