@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.0...v2.0.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* make plain text detection also work with python3-file-magic ([5de370f](https://github.com/luisbocanegra/kde-material-you-colors/commit/5de370f6169ce1b7b6831240d5f1408dd7c9193d))
+
 ## [2.0.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v1.10.1...v2.0.0) (2025-11-07)
 
 
