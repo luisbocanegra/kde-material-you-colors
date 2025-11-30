@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.1...v2.0.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* remove debug prints ([330cf0a](https://github.com/luisbocanegra/kde-material-you-colors/commit/330cf0aa0439048914d857620a1938a0e454024f))
+
 ## [2.0.1](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.0...v2.0.1) (2025-11-30)
 
 
