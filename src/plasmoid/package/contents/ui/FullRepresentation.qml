@@ -551,6 +551,7 @@ ColumnLayout {
                                     property int scheme_variant: 5; \
                                     property real chroma_multiplier: 1.0; \
                                     property real tone_multiplier: 1.0; \
+                                    property real frame_contrast: 1.0; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1352,6 +1353,50 @@ ColumnLayout {
                                         settings.tone_multiplier = parseFloat(text)
                                     }
                                 }
+                            }
+
+                            // Outline contrast
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Frames and outlines contrast"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.Slider {
+                                    value: settings.frame_contrast
+                                    from: 0.0
+                                    to: 1.5
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.frame_contrast = value.toFixed(2)
+                                    }
+                                }
+
+                                PlasmaComponents3.TextField {
+                                    Layout.preferredWidth: controlWidth
+                                    placeholderText: "0-4"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseFloat(settings.frame_contrast)
+
+                                    validator: DoubleValidator {
+                                        bottom: 0
+                                        top: 1
+                                        decimals: 2
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+
+                                    onAccepted: {
+                                        settings.frame_contrast = parseFloat(text)
+                                    }
+                                }
+                            }
+
+                            PlasmaComponents3.Label {
+                                text: "Values below 15% may produce visually awkward effects with some applications and color schemes."
+                                Layout.fillWidth: true
+                                color: Kirigami.Theme.neutralTextColor
+                                wrapMode: PlasmaComponents3.Label.WordWrap
+                                font: Kirigami.Theme.smallFont
                             }
 
 

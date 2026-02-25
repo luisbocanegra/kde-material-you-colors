@@ -362,6 +362,14 @@ def main():
         default=None,
     )
 
+    parser.add_argument(
+        "--frame-contrast",
+        type=float,
+        help="Frames and outlines contrast",
+        default=None,
+        metavar="<float>",
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments
