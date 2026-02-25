@@ -32,7 +32,7 @@ ColumnLayout {
 
     property string execName: 'kde-material-you-colors'
     property string execPath: ""
-    property string checkBackendCommand: 'ps -o user,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | grep -ve "--version" | grep "" | awk \'{print $2}\''
+    property string checkBackendCommand: 'ps -o user:256,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | grep -ve "--version" | awk \'{print $2}\''
     property string startBackendCommand: execPath
     property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
     property string backendVersionCommand: execPath + ' --version'
