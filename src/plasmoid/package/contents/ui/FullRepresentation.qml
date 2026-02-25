@@ -551,6 +551,7 @@ ColumnLayout {
                                     property int scheme_variant: 5; \
                                     property real chroma_multiplier: 1.0; \
                                     property real tone_multiplier: 1.0; \
+                                    property real frame_contrast: 1.0; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1354,7 +1355,6 @@ ColumnLayout {
                                 }
                             }
 
-
                             PlasmaComponents3.ToolButton {
                                 Layout.alignment: Qt.AlignHCenter
                                 text: fullRepresentation.showAdvanced?"Hide advanced settings":"Show advanced settings"
@@ -1869,13 +1869,6 @@ ColumnLayout {
                                 opacity: dividerOpacity
                             }
 
-                            Rectangle {
-                                Layout.preferredWidth: mainLayout.width
-                                height: 1
-                                color: dividerColor
-                                opacity: dividerOpacity
-                            }
-
                             PlasmaExtras.Heading {
                                 level: 1
                                 text: "Delay & screenshot options"
@@ -2081,6 +2074,69 @@ ColumnLayout {
                                     }
                                 }
                             }
+
+                            Rectangle {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Frames and outlines"
+                                Layout.alignment: Qt.AlignHCenter
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            // Outline contrast
+                            RowLayout {
+                                visible: fullRepresentation.showAdvanced
+                                PlasmaComponents3.Label {
+                                    text: "Contrast"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.Slider {
+                                    value: settings.frame_contrast
+                                    from: 0.0
+                                    to: 1
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.frame_contrast = value.toFixed(2)
+                                    }
+                                }
+
+                                PlasmaComponents3.TextField {
+                                    Layout.preferredWidth: controlWidth
+                                    placeholderText: "0-4"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseFloat(settings.frame_contrast)
+
+                                    validator: DoubleValidator {
+                                        bottom: 0
+                                        top: 1
+                                        decimals: 2
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+
+                                    onAccepted: {
+                                        settings.frame_contrast = parseFloat(text)
+                                    }
+                                }
+                            }
+
+                            PlasmaComponents3.Label {
+                                text: "Values below 15% may produce visually awkward effects with some applications and color schemes."
+                                Layout.fillWidth: true
+                                color: Kirigami.Theme.neutralTextColor
+                                wrapMode: PlasmaComponents3.Label.WordWrap
+                                font: Kirigami.Theme.smallFont
+                                visible: fullRepresentation.showAdvanced && settings.frame_contrast < 0.15
+                            }
+
 
                             Rectangle {
                                 Layout.topMargin: Kirigami.Units.mediumSpacing

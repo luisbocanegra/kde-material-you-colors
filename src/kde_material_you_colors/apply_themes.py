@@ -35,6 +35,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         config.read("toolbar_opacity"),
         config.read("toolbar_opacity_dark"),
         config.read("custom_colors_list"),
+        config.read("frame_contrast"),
     )
 
     # Export generated schemes to output file
