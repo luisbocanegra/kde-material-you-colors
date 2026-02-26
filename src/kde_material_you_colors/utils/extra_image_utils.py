@@ -11,7 +11,6 @@ SCORE_OPTIONS = ScoreOptions(
     desired=7,  # ANSI colors target
     fallback_color_argb=0xFF4285F4,  # Google Blue.
     filter=True,  # Avoid unsuitable colors.
-    dislike_filter=True,  # Fix globally disliked colors
 )
 
 
