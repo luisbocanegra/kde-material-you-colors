@@ -42,7 +42,7 @@ def dict_to_hex(dark_scheme):
 def palette_to_hex(palette: TonalPalette):
     tones = []
     for x in range(100):
-        tones.append(hexFromArgb(argb_from_rgba(palette.tone(x))))
+        tones.append(hexFromArgb((palette.tone(x))))
     return tones
 
 
