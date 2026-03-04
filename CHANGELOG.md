@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.2...v2.0.3) (2026-03-04)
+
+
+### Bug Fixes
+
+* backend running check with long user names ([5064335](https://github.com/luisbocanegra/kde-material-you-colors/commit/5064335c2b1a584936d23622bd85d048f66b3882))
+
 ## [2.0.2](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.1...v2.0.2) (2025-11-30)
 
 
