@@ -21,6 +21,7 @@ class ThemeConfig:
         toolbar_opacity=None,
         toolbar_opacity_dark=None,
         custom_colors_list=None,
+        frame_contrast=None,
     ):
         if custom_colors_list is not None:
             colors_best = custom_colors_list
@@ -368,6 +369,7 @@ shadeSortColumn=true
 
 [KDE]
 contrast=4
+frameContrast={frame_contrast if frame_contrast is not None else 0.2}
 
 [WM]
 activeBackground={hex2alpha(colors_light["surfaceContainerHighest"],toolbar_opacity)}
@@ -519,6 +521,7 @@ shadeSortColumn=true
 
 [KDE]
 contrast=4
+frameContrast={frame_contrast if frame_contrast is not None else 0.2}
 
 [WM]
 activeBackground={hex2alpha(colors_dark['surfaceContainerHighest'],toolbar_opacity_dark)}
