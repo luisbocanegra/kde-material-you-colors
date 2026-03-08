@@ -1,11 +1,16 @@
 import colorsys
 import re
 import operator
+import copy
 import numpy
 from materialyoucolor.blend import Blend
 from materialyoucolor.utils.color_utils import red_from_argb
 from materialyoucolor.utils.color_utils import green_from_argb
 from materialyoucolor.utils.color_utils import blue_from_argb
+from materialyoucolor.dynamiccolor.dynamic_scheme import DynamicScheme
+from materialyoucolor.hct import Hct
+from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
+from materialyoucolor.palettes.tonal_palette import TonalPalette
 from kde_material_you_colors.utils import math_utils
 
 
@@ -356,6 +361,34 @@ def argbFromHex(hex):
     return rshift(
         ((255 << 24) | ((r & 0x0FF) << 16) | ((g & 0x0FF) << 8) | (b & 0x0FF)), 0
     )
+
+
+def static_color(scheme: DynamicScheme, color, blend=True) -> dict:
+    """_summary_
+
+    Args:
+        scheme (DynamicScheme): DynamicScheme to use as source
+        color (int): color to generate static version of
+        blend (bool, optional): Whether to blend the color with the scheme's source color. Defaults to True.
+
+    Returns:
+        dict: Static color roles for the given color in hex format
+    """
+    md = MaterialDynamicColors()
+    if blend:
+        color = Blend.harmonize(color, scheme.source_color_argb)
+    hct = Hct.from_int(color)
+    palette = TonalPalette.from_hue_and_chroma(hct.hue, hct.chroma)
+
+    scheme2 = copy.copy(scheme)
+    scheme2.error_palette = palette
+
+    return {
+        "color": md.error.get_hex(scheme2)[:-2],
+        "onColor": md.onError.get_hex(scheme2)[:-2],
+        "container": md.errorContainer.get_hex(scheme2)[:-2],
+        "onContainer": md.onErrorContainer.get_hex(scheme2)[:-2],
+    }
 
 
 # Tests

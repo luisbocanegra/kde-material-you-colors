@@ -45,7 +45,7 @@ class ThemeConfig:
 
         self._extras = colors["custom"]
 
-        extras = self._extras
+        extras = self.get_extras()
 
         best_colors_count = len(colors_best)
         # bg , ansi 30
@@ -254,12 +254,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['onSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurface']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:Complementary]
 BackgroundAlternate={colors_light['surface']}
@@ -268,12 +268,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:Header]
 BackgroundAlternate={colors_light['surfaceContainer']}
@@ -282,12 +282,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:Header][Inactive]
 BackgroundAlternate={colors_light['surfaceContainer']}
@@ -296,12 +296,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['inverseSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:Selection]
 BackgroundAlternate={colors_light['primary']}
@@ -310,12 +310,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['secondary']}
 ForegroundActive={colors_light['onPrimary']}
 ForegroundInactive={colors_light['onPrimary']}
-ForegroundLink={extras['link']['light']['onPrimaryFixedVariant']}
-ForegroundNegative={extras['negative']['light']['onPrimaryFixedVariant']}
-ForegroundNeutral={extras['neutral']['light']['onPrimaryFixedVariant']}
+ForegroundLink={extras['link']['light']['container']}
+ForegroundNegative={extras['negative']['light']['container']}
+ForegroundNeutral={extras['neutral']['light']['container']}
 ForegroundNormal={colors_light['onPrimary']}
-ForegroundPositive={extras['positive']['light']['onPrimaryFixedVariant']}
-ForegroundVisited={extras['visited']['light']['onPrimaryFixedVariant']}
+ForegroundPositive={extras['positive']['light']['container']}
+ForegroundVisited={extras['visited']['light']['container']}
 
 [Colors:Tooltip]
 BackgroundAlternate={colors_light['surfaceVariant']}
@@ -324,12 +324,12 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
 ForegroundActive={colors_light['onSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurface']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:View]
 BackgroundAlternate={colors_light['surfaceContainer']}
@@ -339,27 +339,27 @@ DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['secondaryFixed']}
 ForegroundActive={colors_light['inverseSurface']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 ForegroundNormal={colors_light['onSurface']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [Colors:Window]
 BackgroundAlternate={colors_light['surfaceVariant']}
 BackgroundNormal={colors_light['surfaceContainer']}
 DecorationFocus={colors_light['primary']}
 DecorationHover={colors_light['primary']}
-ForegroundActive={extras['link']['light']['primary']}
+ForegroundActive={extras['link']['light']['color']}
 ForegroundInactive={colors_light['outline']}
-ForegroundLink={extras['link']['light']['primary']}
-ForegroundNegative={extras['negative']['light']['primary']}
-ForegroundNeutral={extras['neutral']['light']['primary']}
+ForegroundLink={extras['link']['light']['color']}
+ForegroundNegative={extras['negative']['light']['color']}
+ForegroundNeutral={extras['neutral']['light']['color']}
 #--- Window titles, context icons
 ForegroundNormal={colors_light['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['light']['primary']}
-ForegroundVisited={extras['visited']['light']['primary']}
+ForegroundPositive={extras['positive']['light']['color']}
+ForegroundVisited={extras['visited']['light']['color']}
 
 [General]
 ColorScheme=MaterialYouLight
@@ -405,12 +405,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurface']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:Complementary]
 BackgroundAlternate={colors_dark['surface']}
@@ -419,12 +419,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:Header]
 BackgroundAlternate={colors_dark['surfaceContainer']}
@@ -433,12 +433,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:Header][Inactive]
 BackgroundAlternate={colors_dark['surfaceContainer']}
@@ -447,12 +447,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:Selection]
 BackgroundAlternate={colors_dark['primary']}
@@ -461,12 +461,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['secondary']}
 ForegroundActive={colors_dark['onPrimary']}
 ForegroundInactive={colors_dark['onPrimary']}
-ForegroundLink={extras['link']['dark']['onPrimaryFixedVariant']}
-ForegroundNegative={extras['negative']['dark']['onPrimaryFixedVariant']}
-ForegroundNeutral={extras['neutral']['dark']['onPrimaryFixedVariant']}
+ForegroundLink={extras['link']['dark']['container']}
+ForegroundNegative={extras['negative']['dark']['container']}
+ForegroundNeutral={extras['neutral']['dark']['container']}
 ForegroundNormal={colors_dark['onPrimary']}
-ForegroundPositive={extras['positive']['dark']['onPrimaryFixedVariant']}
-ForegroundVisited={extras['visited']['dark']['onPrimaryFixedVariant']}
+ForegroundPositive={extras['positive']['dark']['container']}
+ForegroundVisited={extras['visited']['dark']['container']}
 
 [Colors:Tooltip]
 BackgroundAlternate={colors_dark['surfaceVariant']}
@@ -475,12 +475,12 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
 ForegroundActive={colors_dark['onSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurface']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:View]
 BackgroundAlternate={colors_dark['surfaceContainer']}
@@ -490,27 +490,27 @@ DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['inversePrimary']}
 ForegroundActive={colors_dark['inverseSurface']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 ForegroundNormal={colors_dark['onSurface']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [Colors:Window]
 BackgroundAlternate={colors_dark['surfaceVariant']}
 BackgroundNormal={colors_dark['surfaceContainer']}
 DecorationFocus={colors_dark['primary']}
 DecorationHover={colors_dark['primary']}
-ForegroundActive={extras['link']['dark']['primary']}
+ForegroundActive={extras['link']['dark']['color']}
 ForegroundInactive={colors_dark['outline']}
-ForegroundLink={extras['link']['dark']['primary']}
-ForegroundNegative={extras['negative']['dark']['primary']}
-ForegroundNeutral={extras['neutral']['dark']['primary']}
+ForegroundLink={extras['link']['dark']['color']}
+ForegroundNegative={extras['negative']['dark']['color']}
+ForegroundNeutral={extras['neutral']['dark']['color']}
 #--- Window titles, context icons
 ForegroundNormal={colors_dark['onSurfaceVariant']}
-ForegroundPositive={extras['positive']['dark']['primary']}
-ForegroundVisited={extras['visited']['dark']['primary']}
+ForegroundPositive={extras['positive']['dark']['color']}
+ForegroundVisited={extras['visited']['dark']['color']}
 
 [General]
 ColorScheme=MaterialYouDark
@@ -712,9 +712,9 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 "MarkBreakpointActive": "#8b0607",
                 "MarkBreakpointDisabled": "#820683",
                 "MarkBreakpointReached": "#6d6e07",
-                "MarkError": extras["negative"]["dark"]["onPrimaryFixedVariant"],
+                "MarkError": extras["negative"]["dark"]["onColor"],
                 "MarkExecution": "#4d4e50",
-                "MarkWarning": extras["neutral"]["dark"]["onPrimaryFixedVariant"],
+                "MarkWarning": extras["neutral"]["dark"]["onColor"],
                 "ModifiedLines": "#c04900",
                 "ReplaceHighlight": "#808021",
                 "SavedLines": "#1c8042",
@@ -848,8 +848,8 @@ inactiveForeground={colors_dark['onSecondaryContainer']}
                 "MarkBreakpointReached": "#ffff00",
                 "MarkBreakpointDisabled": "#ff00ff",
                 "MarkExecution": "#a0a0a4",
-                "MarkWarning": extras["neutral"]["dark"]["onPrimaryFixedVariant"],
-                "MarkError": extras["negative"]["dark"]["onPrimaryFixedVariant"],
+                "MarkWarning": extras["neutral"]["dark"]["onColor"],
+                "MarkError": extras["negative"]["dark"]["onColor"],
                 "ModifiedLines": "#fdbc4b",
                 "ReplaceHighlight": "#00ff00",
                 "SavedLines": "#2ecc71",
