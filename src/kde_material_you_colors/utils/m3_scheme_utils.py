@@ -9,16 +9,11 @@ from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
 from materialyoucolor.scheme.scheme_expressive import SchemeExpressive
 from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
 from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome
-from materialyoucolor.scheme.scheme_rainbow import SchemeRainbow
-from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant
-from materialyoucolor.scheme.scheme_neutral import SchemeNeutral
-from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity
-from materialyoucolor.scheme.scheme_content import SchemeContent
+from materialyoucolor.scheme import *
 from materialyoucolor.palettes.tonal_palette import TonalPalette
 from materialyoucolor.dislike.dislike_analyzer import DislikeAnalyzer
 from materialyoucolor.blend import Blend
 from materialyoucolor.dynamiccolor.dynamic_color import DynamicColor
-from materialyoucolor.utils.color_utils import argb_from_rgba
 from kde_material_you_colors.utils.color_utils import rgb2hex
 from kde_material_you_colors.utils.color_utils import argbFromHex
 from kde_material_you_colors.utils.color_utils import hexFromArgb
@@ -29,6 +24,7 @@ from kde_material_you_colors.utils.wallpaper_utils import WallpaperReader
 from kde_material_you_colors.utils.extra_image_utils import sourceColorsFromImage
 from kde_material_you_colors.schemeconfigs import ThemeConfig
 from kde_material_you_colors.utils.math_utils import clip
+from kde_material_you_colors.utils.color_utils import static_color
 
 
 def dict_to_hex(dark_scheme):
@@ -71,7 +67,6 @@ def custom_dynamic_color(
         "blended": blend,
         "light": colorsLight,
         "dark": colorsDark,
-        "palette": palette_to_hex(scheme.primary_palette),
     }
 
 
@@ -122,24 +117,23 @@ def themeFromSourceColor(seed_color, scheme_variant=5, chroma_mult=1, tone_mult=
     colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
     # Base text states taken from Breeze Color Scheme
     base_text_states = [
-        {"name": "link", "value": argbFromHex("#2980b9"), "blend": False},
-        {"name": "visited", "value": argbFromHex("#9b59b6"), "blend": False},
-        {"name": "negative", "value": argbFromHex("#da4453"), "blend": False},
-        {"name": "neutral", "value": argbFromHex("#f67400"), "blend": False},
-        {"name": "positive", "value": argbFromHex("#27ae60"), "blend": False},
+        {"name": "link", "value": argbFromHex("#2980b9"), "blend": True},
+        {"name": "visited", "value": argbFromHex("#9b59b6"), "blend": True},
+        {"name": "negative", "value": argbFromHex("#da4453"), "blend": True},
+        {"name": "neutral", "value": argbFromHex("#f67400"), "blend": True},
+        {"name": "positive", "value": argbFromHex("#27ae60"), "blend": True},
     ]
 
     cc = {}
 
     for color in base_text_states:
-        cc[color["name"]] = custom_dynamic_color(
-            color,
-            argbFromHex(colorsDark["primary"]),
-            True,
-            6,
-            chroma_mult,
-            tone_mult,
-        )
+        cc[color["name"]] = {
+            "source": hexFromArgb(seed_color),
+            "value": hexFromArgb(color["value"]),
+            "blend": color["blend"],
+            "light": static_color(scheme, color["value"], color["blend"]),
+            "dark": static_color(schemeDark, color["value"], color["blend"]),
+        }
 
     out = {
         "source": seed_color,
