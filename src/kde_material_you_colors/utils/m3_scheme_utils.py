@@ -302,7 +302,6 @@ def export_schemes(theme: ThemeConfig):
     colors = theme.get_material_schemes()
     colors.update(
         {
-            "extras": theme.get_extras(),
             "pywal": {
                 "light": theme.get_wal_light_scheme(),
                 "dark": theme.get_wal_dark_scheme(),
