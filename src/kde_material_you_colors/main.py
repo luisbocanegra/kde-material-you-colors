@@ -370,6 +370,14 @@ def main():
         metavar="<float>",
     )
 
+    parser.add_argument(
+        "--contrast-level",
+        type=float,
+        help="General contrast level (value from -1 to 1, default is 0)",
+        default=None,
+        metavar="<float>",
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments

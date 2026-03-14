@@ -551,7 +551,8 @@ ColumnLayout {
                                     property int scheme_variant: 5; \
                                     property real chroma_multiplier: 1.0; \
                                     property real tone_multiplier: 1.0; \
-                                    property real frame_contrast: 1.0; \
+                                    property real frame_contrast: 0.2; \
+                                    property real contrast_level: 0.0; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -2137,6 +2138,53 @@ ColumnLayout {
                                 visible: fullRepresentation.showAdvanced && settings.frame_contrast < 0.15
                             }
 
+                            Rectangle {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Contrast"
+                                Layout.alignment: Qt.AlignHCenter
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            RowLayout {
+                                visible: fullRepresentation.showAdvanced
+
+                                PlasmaComponents3.Slider {
+                                    value: settings.contrast_level
+                                    from: -1
+                                    to: 1
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        settings.contrast_level = value.toFixed(2)
+                                    }
+                                }
+
+                                PlasmaComponents3.TextField {
+                                    Layout.preferredWidth: controlWidth
+                                    placeholderText: "-1-1"
+                                    horizontalAlignment: TextInput.AlignHCenter
+                                    text: parseFloat(settings.contrast_level)
+
+                                    validator: DoubleValidator {
+                                        bottom: -1
+                                        top: 1
+                                        decimals: 2
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+
+                                    onAccepted: {
+                                        settings.contrast_level = parseFloat(text)
+                                    }
+                                }
+                            }
 
                             Rectangle {
                                 Layout.topMargin: Kirigami.Units.mediumSpacing
