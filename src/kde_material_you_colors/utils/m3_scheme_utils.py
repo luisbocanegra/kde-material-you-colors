@@ -42,34 +42,6 @@ def palette_to_hex(palette: TonalPalette):
     return tones
 
 
-def custom_dynamic_color(
-    custom_color,
-    source_color=0,
-    blend=True,
-    scheme_variant=5,
-    chroma_mult=1.0,
-    tone_mult=1.0,
-):
-    value = custom_color["value"]
-    value = DislikeAnalyzer.fix_if_disliked(Hct.from_int(value)).to_int()
-    if custom_color["blend"]:
-        value = Blend.harmonize(value, source_color)
-
-    hct = Hct.from_int(value)
-    scheme = getScheme(scheme_variant, hct, False, 0)
-    schemeDark = getScheme(scheme_variant, hct, True, 0)
-    colorsLight = getColors(scheme, chroma_mult, tone_mult, False)
-    colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
-
-    return {
-        "source": hexFromArgb(custom_color["value"]),
-        "value": hexFromArgb(value),
-        "blended": blend,
-        "light": colorsLight,
-        "dark": colorsDark,
-    }
-
-
 schemes = [
     SchemeContent,
     SchemeExpressive,
@@ -85,7 +57,11 @@ schemes = [
 
 def getScheme(scheme_variant, source, isDark, contrastLevel):
     scheme_class = schemes[scheme_variant]
-    return scheme_class(source, isDark, contrastLevel)
+    return scheme_class(
+        source_color_hct=source,
+        is_dark=isDark,
+        contrast_level=contrastLevel,
+    )
 
 
 def getColors(scheme, chroma_mult, tone_mult, is_dark):
@@ -109,10 +85,12 @@ def getColors(scheme, chroma_mult, tone_mult, is_dark):
     return colors
 
 
-def themeFromSourceColor(seed_color, scheme_variant=5, chroma_mult=1, tone_mult=1):
+def themeFromSourceColor(
+    seed_color, scheme_variant=5, chroma_mult=1, tone_mult=1, contrast_level=0
+):
     source = Hct.from_int(seed_color)
-    scheme = getScheme(scheme_variant, source, False, 0)
-    schemeDark = getScheme(scheme_variant, source, True, 0)
+    scheme = getScheme(scheme_variant, source, False, contrast_level)
+    schemeDark = getScheme(scheme_variant, source, True, contrast_level)
     colorsLight = getColors(scheme, chroma_mult, tone_mult, False)
     colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
     # Base text states taken from Breeze Color Scheme
@@ -152,7 +130,13 @@ def themeFromSourceColor(seed_color, scheme_variant=5, chroma_mult=1, tone_mult=
 
 
 def get_material_you_colors(
-    wallpaper_data, ncolor, source_type, scheme_variant, chroma_mult, tone_mult
+    wallpaper_data,
+    ncolor,
+    source_type,
+    scheme_variant,
+    chroma_mult,
+    tone_mult,
+    contrast_level,
 ):
     """Get material you colors from wallpaper or hex color using material-color-utility
 
@@ -191,7 +175,11 @@ def get_material_you_colors(
             ncolor = 0
         source_color = hexFromArgb(source_colors[ncolor])
         theme = themeFromSourceColor(
-            argbFromHex(source_color), scheme_variant, chroma_mult, tone_mult
+            argbFromHex(source_color),
+            scheme_variant,
+            chroma_mult,
+            tone_mult,
+            contrast_level,
         )
 
         materialYouColors = {
@@ -229,6 +217,7 @@ def get_color_schemes(
     scheme_variant=5,
     chroma_mult=1.0,
     tone_mult=1.0,
+    contrast_level=0.0,
 ):
     """Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
@@ -258,6 +247,7 @@ def get_color_schemes(
             scheme_variant,
             chroma_mult,
             tone_mult,
+            contrast_level,
         )
 
     elif wallpaper_type == "color" and wallpaper_data:
@@ -269,6 +259,7 @@ def get_color_schemes(
             scheme_variant,
             chroma_mult,
             tone_mult,
+            contrast_level,
         )
 
     if materialYouColors is not None:

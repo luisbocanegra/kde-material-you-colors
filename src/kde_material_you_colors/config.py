@@ -178,6 +178,7 @@ class Configs:
             "chroma_multiplier": [args.chroma_multiplier, 1, 2],
             "tone_multiplier": [args.tone_multiplier, 1, 2],
             "frame_contrast": [args.frame_contrast, 1, 2],
+            "contrast_level": [args.contrast_level, 1, 2],
             "qdbus_executable": [args.qdbus_executable, None, 3],
             "manual_fetch": [args.manual_fetch, False, 0],
             "fetch_colors": [None, False, 0],
