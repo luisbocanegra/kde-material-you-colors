@@ -130,14 +130,14 @@ def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
         light (bool, optional): Light or dark mode. Defaults to None.
     """
     if light:
-        outline = schemes.get_material_schemes()["schemes"]["light"]["primary"]
+        outline = schemes.get_material_schemes()["schemes"]["light"]["primaryFixed"]
         outline_inactive = schemes.get_material_schemes()["schemes"]["light"][
-            "outlineVariant"
+            "surfaceDim"
         ]
     else:
-        outline = schemes.get_material_schemes()["schemes"]["dark"]["primaryFixedDim"]
+        outline = schemes.get_material_schemes()["schemes"]["dark"]["primaryFixed"]
         outline_inactive = schemes.get_material_schemes()["schemes"]["dark"][
-            "outlineVariant"
+            "surfaceBright"
         ]
 
     klassyrc = configparser.ConfigParser()
