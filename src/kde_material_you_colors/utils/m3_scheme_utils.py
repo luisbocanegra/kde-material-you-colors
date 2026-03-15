@@ -14,6 +14,7 @@ from materialyoucolor.palettes.tonal_palette import TonalPalette
 from materialyoucolor.dislike.dislike_analyzer import DislikeAnalyzer
 from materialyoucolor.blend import Blend
 from materialyoucolor.dynamiccolor.dynamic_color import DynamicColor
+from kde_material_you_colors.config import Configs
 from kde_material_you_colors.utils.color_utils import rgb2hex
 from kde_material_you_colors.utils.color_utils import argbFromHex
 from kde_material_you_colors.utils.color_utils import hexFromArgb
@@ -284,7 +285,12 @@ def get_color_schemes(
         return materialYouColors
 
 
-def export_schemes(theme: ThemeConfig):
+def export_schemes(
+    theme: ThemeConfig,
+    config: Configs,
+    wallpaper: WallpaperReader,
+    dark_light: None | bool,
+):
     """Export generated schemes to MATERIAL_YOU_COLORS_JSON
 
     Args:
@@ -297,6 +303,12 @@ def export_schemes(theme: ThemeConfig):
                 "light": theme.get_wal_light_scheme(),
                 "dark": theme.get_wal_dark_scheme(),
             },
+            "wallpaper": {
+                "type": wallpaper.type,
+                "data": wallpaper.source,
+            },
+            "light": dark_light,
+            "config": config.options,
         }
     )
 
