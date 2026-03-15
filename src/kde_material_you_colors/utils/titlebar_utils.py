@@ -165,6 +165,22 @@ def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
                 klassyrc["WindowOutlineStyle"][
                     "WindowOutlineCustomColorOpacityInactive"
                 ] = "100"
+
+                # klassy 6.5
+
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineStyleActive"
+                ] = "WindowOutlineCustomColor"
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineStyleInactive"
+                ] = "WindowOutlineCustomColor"
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineCustomColorActive"
+                ] = outline
+                klassyrc["WindowOutlineStyle"][
+                    "WindowOutlineCustomColorInactive"
+                ] = outline_inactive
+
                 reload = True
             else:
                 reload = False
