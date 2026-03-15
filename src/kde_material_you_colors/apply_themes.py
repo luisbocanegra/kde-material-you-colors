@@ -40,7 +40,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
     )
 
     # Export generated schemes to output file
-    m3_scheme_utils.export_schemes(schemes)
+    m3_scheme_utils.export_schemes(schemes, config, wallpaper, dark_light)
 
     # Make plasma color schemes
     plasma_utils.make_scheme(schemes)
