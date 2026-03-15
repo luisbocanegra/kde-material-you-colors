@@ -1,5 +1,5 @@
-import Qt.labs.platform
-import Qt.labs.settings
+// import Qt.labs.platform
+import QtCore
 import Qt5Compat.GraphicalEffects
 
 import QtQuick
@@ -10,7 +10,6 @@ import QtQuick.Layouts
 import "components" as Components
 import org.kde.coreaddons 1.0 as KCoreAddons
 import org.kde.kirigami as Kirigami
-import org.kde.kquickcontrols
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasma5support as P5Support
@@ -2184,6 +2183,25 @@ ColumnLayout {
                                         settings.contrast_level = parseFloat(text)
                                     }
                                 }
+                            }
+
+                            Rectangle {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Colors"
+                                Layout.alignment: Qt.AlignHCenter
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            Components.ColorsPreview {
+                                mdc: mainLayout.materialYouData
                             }
 
                             Rectangle {
