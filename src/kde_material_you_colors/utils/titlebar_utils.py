@@ -107,6 +107,8 @@ def titlebar_opacity(opacity_light, opacity_dark, light):
         if os.path.exists(settings.KLASSY_RC):
             try:
                 conf_file.read(settings.KLASSY_RC)
+                if "TitleBarOpacity" not in conf_file:
+                    conf_file.add_section("TitleBarOpacity")
                 conf_file["TitleBarOpacity"]["ActiveTitleBarOpacity"] = str(
                     int(opacity)
                 )
@@ -144,50 +146,45 @@ def klassy_windeco_outline_color(schemes: ThemeConfig, light=None):
     if os.path.exists(settings.KLASSY_RC):
         try:
             klassyrc.read(settings.KLASSY_RC)
-            if "WindowOutlineStyle" in klassyrc:
-                klassyrc["WindowOutlineStyle"][
-                    "ThinWindowOutlineStyleActive"
-                ] = "WindowOutlineCustomColor"
-                klassyrc["WindowOutlineStyle"][
-                    "ThinWindowOutlineStyleInactive"
-                ] = "WindowOutlineCustomColor"
+            if "WindowOutlineStyle" not in klassyrc:
+                klassyrc.add_section("WindowOutlineStyle")
+            klassyrc["WindowOutlineStyle"][
+                "ThinWindowOutlineStyleActive"
+            ] = "WindowOutlineCustomColor"
+            klassyrc["WindowOutlineStyle"][
+                "ThinWindowOutlineStyleInactive"
+            ] = "WindowOutlineCustomColor"
 
-                klassyrc["WindowOutlineStyle"][
-                    "ThinWindowOutlineCustomColorActive"
-                ] = outline
-                klassyrc["WindowOutlineStyle"][
-                    "ThinWindowOutlineCustomColorInactive"
-                ] = outline_inactive
+            klassyrc["WindowOutlineStyle"][
+                "ThinWindowOutlineCustomColorActive"
+            ] = outline
+            klassyrc["WindowOutlineStyle"][
+                "ThinWindowOutlineCustomColorInactive"
+            ] = outline_inactive
 
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineCustomColorOpacityActive"
-                ] = "100"
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineCustomColorOpacityInactive"
-                ] = "100"
+            klassyrc["WindowOutlineStyle"][
+                "WindowOutlineCustomColorOpacityActive"
+            ] = "100"
+            klassyrc["WindowOutlineStyle"][
+                "WindowOutlineCustomColorOpacityInactive"
+            ] = "100"
 
-                # klassy 6.5
+            # klassy 6.5
 
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineStyleActive"
-                ] = "WindowOutlineCustomColor"
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineStyleInactive"
-                ] = "WindowOutlineCustomColor"
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineCustomColorActive"
-                ] = outline
-                klassyrc["WindowOutlineStyle"][
-                    "WindowOutlineCustomColorInactive"
-                ] = outline_inactive
+            klassyrc["WindowOutlineStyle"][
+                "WindowOutlineStyleActive"
+            ] = "WindowOutlineCustomColor"
+            klassyrc["WindowOutlineStyle"][
+                "WindowOutlineStyleInactive"
+            ] = "WindowOutlineCustomColor"
+            klassyrc["WindowOutlineStyle"]["WindowOutlineCustomColorActive"] = outline
+            klassyrc["WindowOutlineStyle"][
+                "WindowOutlineCustomColorInactive"
+            ] = outline_inactive
 
-                reload = True
-            else:
-                reload = False
-            if reload:
-                logging.info("Applying Klassy outline color")
-                with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
-                    klassyrc.write(configfile, space_around_delimiters=False)
+            logging.info("Applying Klassy outline color")
+            with open(settings.KLASSY_RC, "w", encoding="utf-8") as configfile:
+                klassyrc.write(configfile, space_around_delimiters=False)
         except Exception as e:
             logging.error(f"Error writing Klassy outline color:\n{e}")
     else:
