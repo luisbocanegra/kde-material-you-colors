@@ -552,6 +552,7 @@ ColumnLayout {
                                     property real tone_multiplier: 1.0; \
                                     property real frame_contrast: 0.2; \
                                     property real contrast_level: 0.0; \
+                                    property string spec_version: "2025"; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -2181,6 +2182,58 @@ ColumnLayout {
 
                                     onAccepted: {
                                         settings.contrast_level = parseFloat(text)
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Spec Version"
+                                Layout.alignment: Qt.AlignHCenter
+                                visible: fullRepresentation.showAdvanced
+                            }
+
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Version"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.ComboBox {
+                                    model: ["2021", "2025"]
+                                    Layout.fillWidth: true
+                                    currentValue: settings.spec_version
+                                    onActivated: (index) => {
+                                        settings.spec_version = currentText
+                                    }
+
+                                    // Prevent starting scrolling on collapsed combobox
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onWheel: {}
+                                        onClicked: parent.popup.open()
+                                    }
+                                }
+                                PlasmaComponents3.ToolButton {
+                                    icon.name: "help-contents"
+
+                                    hoverEnabled: true
+                                    onClicked: specPopup.open()
+
+                                    PlasmaComponents3.ToolTip {
+                                        id: specPopup
+                                        x: parent.width / 2
+                                        y: parent.height
+                                        text: "The version of the material color specification to use"
                                     }
                                 }
                             }

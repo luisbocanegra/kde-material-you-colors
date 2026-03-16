@@ -378,6 +378,14 @@ def main():
         metavar="<float>",
     )
 
+    parser.add_argument(
+        "--spec-version",
+        type=str,
+        help="The version of the material color specification to use (2021, 2025)",
+        default=None,
+        metavar="<version>",
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments
