@@ -54,12 +54,13 @@ schemes = [
 ]
 
 
-def getScheme(scheme_variant, source, isDark, contrastLevel):
+def getScheme(scheme_variant, source, isDark, contrastLevel, spec):
     scheme_class = schemes[scheme_variant]
     return scheme_class(
         source_color_hct=source,
         is_dark=isDark,
         contrast_level=contrastLevel,
+        spec_version=spec if spec is not None else "2025",
     )
 
 
@@ -85,11 +86,16 @@ def getColors(scheme, chroma_mult, tone_mult, is_dark):
 
 
 def themeFromSourceColor(
-    seed_color, scheme_variant=5, chroma_mult=1, tone_mult=1, contrast_level=0
+    seed_color,
+    scheme_variant=5,
+    chroma_mult=1,
+    tone_mult=1,
+    contrast_level=0,
+    spec_version="2025",
 ):
     source = Hct.from_int(seed_color)
-    scheme = getScheme(scheme_variant, source, False, contrast_level)
-    schemeDark = getScheme(scheme_variant, source, True, contrast_level)
+    scheme = getScheme(scheme_variant, source, False, contrast_level, spec_version)
+    schemeDark = getScheme(scheme_variant, source, True, contrast_level, spec_version)
     colorsLight = getColors(scheme, chroma_mult, tone_mult, False)
     colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
     # Base text states taken from Breeze Color Scheme
@@ -136,6 +142,7 @@ def get_material_you_colors(
     chroma_mult,
     tone_mult,
     contrast_level,
+    spec_version,
 ):
     """Get material you colors from wallpaper or hex color using material-color-utility
 
@@ -179,6 +186,7 @@ def get_material_you_colors(
             chroma_mult,
             tone_mult,
             contrast_level,
+            spec_version,
         )
 
         materialYouColors = {
@@ -217,6 +225,7 @@ def get_color_schemes(
     chroma_mult=1.0,
     tone_mult=1.0,
     contrast_level=0.0,
+    spec_version="2025",
 ):
     """Display best colors, allow to select alternative color,
     and make and apply color schemes for dark and light mode
@@ -247,6 +256,7 @@ def get_color_schemes(
             chroma_mult,
             tone_mult,
             contrast_level,
+            spec_version,
         )
 
     elif wallpaper_type == "color" and wallpaper_data:
@@ -259,6 +269,7 @@ def get_color_schemes(
             chroma_mult,
             tone_mult,
             contrast_level,
+            spec_version,
         )
 
     if materialYouColors is not None:

@@ -24,6 +24,7 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         config.read("chroma_multiplier"),
         config.read("tone_multiplier"),
         config.read("contrast_level"),
+        config.read("spec_version"),
     )
 
     if material_colors is None:
