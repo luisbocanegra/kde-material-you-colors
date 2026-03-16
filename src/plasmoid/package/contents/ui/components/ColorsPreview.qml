@@ -59,27 +59,30 @@ ColumnLayout {
 
     GridLayout {
         columns: 2
-        rows: 10
+        rows: 12
         columnSpacing: 0
         rowSpacing: 0
         flow: GridLayout.TopToBottom
         Repeater {
             model: [
                 { role: "primary", onRole: "onPrimary" },
-                { role: "primaryContainer", onRole: "onPrimaryContainer" },
+                { role: "primaryDim", onRole: "onPrimary" },
                 { role: "primaryFixed", onRole: "onPrimaryFixed" },
                 { role: "primaryFixed", onRole: "onPrimaryFixedVariant" },
                 { role: "primaryFixedDim", onRole: "onPrimaryFixed" },
+                { role: "primaryContainer", onRole: "onPrimaryContainer" },
                 { role: "tertiary", onRole: "onTertiary" },
-                { role: "tertiaryContainer", onRole: "onTertiaryContainer" },
+                { role: "tertiaryDim", onRole: "onTertiary" },
                 { role: "tertiaryFixed", onRole: "onTertiaryFixed" },
                 { role: "tertiaryFixed", onRole: "onTertiaryFixedVariant" },
                 { role: "tertiaryFixedDim", onRole: "onTertiaryFixed" },
+                { role: "tertiaryContainer", onRole: "onTertiaryContainer" },
                 { role: "secondary", onRole: "onSecondary" },
-                { role: "secondaryContainer", onRole: "onSecondaryContainer" },
+                { role: "secondaryDim", onRole: "onSecondary" },
                 { role: "secondaryFixed", onRole: "onSecondaryFixed" },
                 { role: "secondaryFixed", onRole: "onSecondaryFixedVariant" },
                 { role: "secondaryFixedDim", onRole: "onSecondaryFixed" },
+                { role: "secondaryContainer", onRole: "onSecondaryContainer" },
             ]
             delegate: ColorRolePreview {
                 required property var modelData
@@ -131,6 +134,7 @@ ColumnLayout {
         Repeater {
             model: [
                 { role: "error", onRole: "onError" },
+                { role: "errorDim", onRole: "onError" },
                 { role: "errorContainer", onRole: "onErrorContainer" },
                 { role: "outline", onRole: "onSurface" },
                 { role: "outlineVariant", onRole: "onSurface" },

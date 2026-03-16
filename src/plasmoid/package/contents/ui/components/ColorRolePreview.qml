@@ -14,25 +14,49 @@ Rectangle {
     color: scheme[root.role]
     ColumnLayout {
         id: col
-        spacing: 2
+        spacing: 0
         anchors.fill: parent
 
-        Text {
-            text: root.customName !== "" ? `${root.customName}` : `${root.role}`
-            color: root.scheme[root.onRole]
-            font.bold: true
-            font.pixelSize: Kirigami.Theme.defaultFont.pixelSize
-            elide: Text.ElideRight
-            Layout.fillWidth: true
+        RowLayout{
+            Layout.leftMargin: Kirigami.Units.smallSpacing
+            Layout.rightMargin: Kirigami.Units.smallSpacing
+            Text {
+                text: root.customName !== "" ? `${root.customName}` : `${root.role}`
+                color: root.scheme[root.onRole]
+                font.bold: true
+                font.pixelSize: Kirigami.Theme.defaultFont.pixelSize
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+            }
+            Text {
+                text: `${root.scheme[root.role]}`
+                color: root.scheme[root.onRole]
+                font.pixelSize: Kirigami.Theme.smallFont.pixelSize
+                Layout.alignment: Qt.AlignRight
+                opacity: 0.7
+                font.family: "monospace"
+            }
         }
 
-        Text {
-            text: `${root.onRole}`
-            color: root.scheme[root.onRole]
-            font.pixelSize: Kirigami.Theme.smallFont.pixelSize
-            visible: root.customName === ""
-            elide: Text.ElideRight
-            Layout.fillWidth: true
+        RowLayout {
+            Layout.leftMargin: Kirigami.Units.smallSpacing
+            Layout.rightMargin: Kirigami.Units.smallSpacing
+            Text {
+                text: `${root.onRole}`
+                color: root.scheme[root.onRole]
+                font.pixelSize: Kirigami.Theme.smallFont.pixelSize
+                opacity: root.customName === ""
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+            }
+            Text {
+                text: `${root.scheme[root.onRole]}`
+                color: root.scheme[root.onRole]
+                font.pixelSize: Kirigami.Theme.smallFont.pixelSize
+                Layout.alignment: Qt.AlignRight
+                opacity: 0.7
+                font.family: "monospace"
+            }
         }
     }
 }
