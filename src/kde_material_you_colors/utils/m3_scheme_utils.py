@@ -11,8 +11,6 @@ from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
 from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome
 from materialyoucolor.scheme import *
 from materialyoucolor.palettes.tonal_palette import TonalPalette
-from materialyoucolor.dislike.dislike_analyzer import DislikeAnalyzer
-from materialyoucolor.blend import Blend
 from materialyoucolor.dynamiccolor.dynamic_color import DynamicColor
 from kde_material_you_colors.config import Configs
 from kde_material_you_colors.utils.color_utils import rgb2hex
@@ -96,22 +94,22 @@ def themeFromSourceColor(
     colorsDark = getColors(schemeDark, chroma_mult, tone_mult, True)
     # Base text states taken from Breeze Color Scheme
     base_text_states = [
-        {"name": "link", "value": argbFromHex("#2980b9"), "blend": True},
-        {"name": "visited", "value": argbFromHex("#9b59b6"), "blend": True},
-        {"name": "negative", "value": argbFromHex("#da4453"), "blend": True},
-        {"name": "neutral", "value": argbFromHex("#f67400"), "blend": True},
-        {"name": "positive", "value": argbFromHex("#27ae60"), "blend": True},
+        {"name": "link", "value": 4280910009, "hex": "#2980b9"},
+        {"name": "visited", "value": 4288371126, "hex": "#9b59b6"},
+        {"name": "negative", "value": 4292494419, "hex": "#da4453"},
+        {"name": "neutral", "value": 4294341632, "hex": "#f67400"},
+        {"name": "positive", "value": 4280790624, "hex": "#27ae60"},
     ]
 
     cc = {}
+    seed_color_hex = hexFromArgb(seed_color)
 
     for color in base_text_states:
         cc[color["name"]] = {
-            "source": hexFromArgb(seed_color),
-            "value": hexFromArgb(color["value"]),
-            "blend": color["blend"],
-            "light": static_color(scheme, color["value"], color["blend"]),
-            "dark": static_color(schemeDark, color["value"], color["blend"]),
+            "source": seed_color_hex,
+            "value": color["hex"],
+            "light": static_color(scheme, color["value"], True),
+            "dark": static_color(schemeDark, color["value"], True),
         }
 
     out = {

@@ -363,31 +363,28 @@ def argbFromHex(hex):
     )
 
 
-def static_color(scheme: DynamicScheme, color, blend=True) -> dict:
+def static_color(scheme: DynamicScheme, argb: int, blend=True) -> dict:
     """_summary_
 
     Args:
         scheme (DynamicScheme): DynamicScheme to use as source
-        color (int): color to generate static version of
-        blend (bool, optional): Whether to blend the color with the scheme's source color. Defaults to True.
+        argb (int): argb value of the color to generate static version of
+        blend (bool, optional): Whether to blend the color towards the source color. Defaults to True.
 
     Returns:
         dict: Static color roles for the given color in hex format
     """
-    md = MaterialDynamicColors()
     if blend:
-        color = Blend.harmonize(color, scheme.source_color_argb)
-    hct = Hct.from_int(color)
-    palette = TonalPalette.from_hue_and_chroma(hct.hue, hct.chroma)
+        argb = Blend.harmonize(argb, scheme.source_color_argb)
 
-    scheme2 = copy.copy(scheme)
-    scheme2.error_palette = palette
+    scheme.error_palette = TonalPalette.from_int(argb)
+    mdc = MaterialDynamicColors()
 
     return {
-        "color": md.error.get_hex(scheme2)[:-2],
-        "onColor": md.onError.get_hex(scheme2)[:-2],
-        "container": md.errorContainer.get_hex(scheme2)[:-2],
-        "onContainer": md.onErrorContainer.get_hex(scheme2)[:-2],
+        "color": mdc.error.get_hex(scheme)[:-2],
+        "onColor": mdc.onError.get_hex(scheme)[:-2],
+        "container": mdc.errorContainer.get_hex(scheme)[:-2],
+        "onContainer": mdc.onErrorContainer.get_hex(scheme)[:-2],
     }
 
 
