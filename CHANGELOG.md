@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.1.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.2...v2.1.0) (2026-03-18)
+
+
+### Features
+
+* add wallpaper and config to json file ([b947110](https://github.com/luisbocanegra/kde-material-you-colors/commit/b94711066c796b1c6d12d2cac5261bb52f51fbb0))
+* colors preview in widget ([f9ff715](https://github.com/luisbocanegra/kde-material-you-colors/commit/f9ff715ba8fdf81810fd85285d01875f8a4e4a5e))
+* contrast level ([a8a9ec4](https://github.com/luisbocanegra/kde-material-you-colors/commit/a8a9ec495bc4637fa9e86b1e3353edae8f2ed47f))
+* frames and outlines contrast ([55ba059](https://github.com/luisbocanegra/kde-material-you-colors/commit/55ba059cf4566be97101041a674396e1c5beb1f3))
+* material specification version configuration ([e27f1fa](https://github.com/luisbocanegra/kde-material-you-colors/commit/e27f1fa6e8bff4de37bce32c05b7d434b939c77f))
+* update klassy decoration outline color ([c354ba7](https://github.com/luisbocanegra/kde-material-you-colors/commit/c354ba7c5fbfa901d153831dee8bb820a434d661))
+
+
+### Bug Fixes
+
+* backend running check with long user names ([5064335](https://github.com/luisbocanegra/kde-material-you-colors/commit/5064335c2b1a584936d23622bd85d048f66b3882))
+* duplicate custom colors in json output ([679c68e](https://github.com/luisbocanegra/kde-material-you-colors/commit/679c68ea2b1391937bb64028d2d06a0c42be8c5f))
+* ensure sections exist in klassy configuration ([006d5ef](https://github.com/luisbocanegra/kde-material-you-colors/commit/006d5ef9d155b1ffaaf13589cd6a167f57f3675f))
+* klassy 6.5 decoration outline color ([02617bd](https://github.com/luisbocanegra/kde-material-you-colors/commit/02617bd1aaf3ee0b15503691bf39d62dc382f95b))
+* port away from deprecated Qt.labs.settings ([0c79646](https://github.com/luisbocanegra/kde-material-you-colors/commit/0c79646331bc12f8b39772a119d1100e79e27c45))
+
 ## [2.0.2](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.1...v2.0.2) (2025-11-30)
 
 
