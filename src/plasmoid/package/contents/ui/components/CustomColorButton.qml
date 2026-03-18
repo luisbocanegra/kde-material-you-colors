@@ -50,7 +50,7 @@ PlasmaComponents3.Button {
                 title: plasmoid.title
                 selectedColor: colorButton.color || undefined /* Prevent transparent colors */
                 onAccepted: {
-                    colorButton.color = selectedColor
+                    colorButton.color = selectedColor;
                     colorButton.accepted(selectedColor);
                     window.destroy();
                 }
@@ -63,6 +63,6 @@ PlasmaComponents3.Button {
 
     onClicked: {
         // colorDialog.color = colorButton.color
-        colorWindowComponent.createObject(colorButton)
+        colorWindowComponent.createObject(colorButton);
     }
 }

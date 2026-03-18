@@ -30,15 +30,42 @@ ColumnLayout {
         Layout.fillWidth: true
         Repeater {
             model: [
-                { role: "background", onRole: "onBackground" },
-                { role: "surfaceDim", onRole: "onSurface" },
-                { role: "surfaceContainerLowest", onRole: "onSurface" },
-                { role: "surfaceContainerLow", onRole: "onSurface" },
-                { role: "surfaceContainer", onRole: "onSurface" },
-                { role: "surfaceContainerHigh", onRole: "onSurface" },
-                { role: "surfaceContainerHighest", onRole: "onSurface" },
-                { role: "surface", onRole: "onSurface" },
-                { role: "surfaceBright", onRole: "onSurface" }
+                {
+                    role: "background",
+                    onRole: "onBackground"
+                },
+                {
+                    role: "surfaceDim",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceContainerLowest",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceContainerLow",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceContainer",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceContainerHigh",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceContainerHighest",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surface",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "surfaceBright",
+                    onRole: "onSurface"
+                }
             ]
             delegate: ColorRolePreview {
                 required property var modelData
@@ -65,24 +92,78 @@ ColumnLayout {
         flow: GridLayout.TopToBottom
         Repeater {
             model: [
-                { role: "primary", onRole: "onPrimary" },
-                { role: "primaryDim", onRole: "onPrimary" },
-                { role: "primaryFixed", onRole: "onPrimaryFixed" },
-                { role: "primaryFixed", onRole: "onPrimaryFixedVariant" },
-                { role: "primaryFixedDim", onRole: "onPrimaryFixed" },
-                { role: "primaryContainer", onRole: "onPrimaryContainer" },
-                { role: "tertiary", onRole: "onTertiary" },
-                { role: "tertiaryDim", onRole: "onTertiary" },
-                { role: "tertiaryFixed", onRole: "onTertiaryFixed" },
-                { role: "tertiaryFixed", onRole: "onTertiaryFixedVariant" },
-                { role: "tertiaryFixedDim", onRole: "onTertiaryFixed" },
-                { role: "tertiaryContainer", onRole: "onTertiaryContainer" },
-                { role: "secondary", onRole: "onSecondary" },
-                { role: "secondaryDim", onRole: "onSecondary" },
-                { role: "secondaryFixed", onRole: "onSecondaryFixed" },
-                { role: "secondaryFixed", onRole: "onSecondaryFixedVariant" },
-                { role: "secondaryFixedDim", onRole: "onSecondaryFixed" },
-                { role: "secondaryContainer", onRole: "onSecondaryContainer" },
+                {
+                    role: "primary",
+                    onRole: "onPrimary"
+                },
+                {
+                    role: "primaryDim",
+                    onRole: "onPrimary"
+                },
+                {
+                    role: "primaryFixed",
+                    onRole: "onPrimaryFixed"
+                },
+                {
+                    role: "primaryFixed",
+                    onRole: "onPrimaryFixedVariant"
+                },
+                {
+                    role: "primaryFixedDim",
+                    onRole: "onPrimaryFixed"
+                },
+                {
+                    role: "primaryContainer",
+                    onRole: "onPrimaryContainer"
+                },
+                {
+                    role: "tertiary",
+                    onRole: "onTertiary"
+                },
+                {
+                    role: "tertiaryDim",
+                    onRole: "onTertiary"
+                },
+                {
+                    role: "tertiaryFixed",
+                    onRole: "onTertiaryFixed"
+                },
+                {
+                    role: "tertiaryFixed",
+                    onRole: "onTertiaryFixedVariant"
+                },
+                {
+                    role: "tertiaryFixedDim",
+                    onRole: "onTertiaryFixed"
+                },
+                {
+                    role: "tertiaryContainer",
+                    onRole: "onTertiaryContainer"
+                },
+                {
+                    role: "secondary",
+                    onRole: "onSecondary"
+                },
+                {
+                    role: "secondaryDim",
+                    onRole: "onSecondary"
+                },
+                {
+                    role: "secondaryFixed",
+                    onRole: "onSecondaryFixed"
+                },
+                {
+                    role: "secondaryFixed",
+                    onRole: "onSecondaryFixedVariant"
+                },
+                {
+                    role: "secondaryFixedDim",
+                    onRole: "onSecondaryFixed"
+                },
+                {
+                    role: "secondaryContainer",
+                    onRole: "onSecondaryContainer"
+                },
             ]
             delegate: ColorRolePreview {
                 required property var modelData
@@ -107,8 +188,14 @@ ColumnLayout {
         rowSpacing: 0
         Repeater {
             model: [
-                { role: "inverseSurface", onRole: "inverseOnSurface" },
-                { role: "inversePrimary", onRole: "onPrimaryContainer" }
+                {
+                    role: "inverseSurface",
+                    onRole: "inverseOnSurface"
+                },
+                {
+                    role: "inversePrimary",
+                    onRole: "onPrimaryContainer"
+                }
             ]
             delegate: ColorRolePreview {
                 required property var modelData
@@ -133,13 +220,34 @@ ColumnLayout {
         rowSpacing: 0
         Repeater {
             model: [
-                { role: "error", onRole: "onError" },
-                { role: "errorDim", onRole: "onError" },
-                { role: "errorContainer", onRole: "onErrorContainer" },
-                { role: "outline", onRole: "onSurface" },
-                { role: "outlineVariant", onRole: "onSurface" },
-                { role: "shadow", onRole: "onSurface" },
-                { role: "scrim", onRole: "onSurface" }
+                {
+                    role: "error",
+                    onRole: "onError"
+                },
+                {
+                    role: "errorDim",
+                    onRole: "onError"
+                },
+                {
+                    role: "errorContainer",
+                    onRole: "onErrorContainer"
+                },
+                {
+                    role: "outline",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "outlineVariant",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "shadow",
+                    onRole: "onSurface"
+                },
+                {
+                    role: "scrim",
+                    onRole: "onSurface"
+                }
             ]
             delegate: ColorRolePreview {
                 required property var modelData
@@ -164,12 +272,20 @@ ColumnLayout {
         rowSpacing: 0
         Repeater {
             model: {
-                let pairs = []
+                let pairs = [];
                 for (const key of Object.keys(r.mdc.custom)) {
-                    pairs.push({name: key, role: "color", onRole: "onColor"})
-                    pairs.push({name: key, role: "container", onRole: "onContainer"})
+                    pairs.push({
+                        name: key,
+                        role: "color",
+                        onRole: "onColor"
+                    });
+                    pairs.push({
+                        name: key,
+                        role: "container",
+                        onRole: "onContainer"
+                    });
                 }
-                return pairs
+                return pairs;
             }
             delegate: ColorRolePreview {
                 required property var modelData

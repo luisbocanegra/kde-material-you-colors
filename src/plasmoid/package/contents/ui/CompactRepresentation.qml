@@ -21,7 +21,6 @@ MouseArea {
     Layout.preferredHeight: compact.width
     property bool wasExpanded
 
-
     Components.PlasmoidIcon {
         width: isVertical ? compact.height : compact.width
         customIcon: plasmoid.configuration.icon

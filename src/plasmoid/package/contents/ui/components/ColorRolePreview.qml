@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
-
 Rectangle {
     id: root
     property string role
@@ -17,7 +16,7 @@ Rectangle {
         spacing: 0
         anchors.fill: parent
 
-        RowLayout{
+        RowLayout {
             Layout.leftMargin: Kirigami.Units.smallSpacing
             Layout.rightMargin: Kirigami.Units.smallSpacing
             Text {
@@ -60,5 +59,3 @@ Rectangle {
         }
     }
 }
-
-

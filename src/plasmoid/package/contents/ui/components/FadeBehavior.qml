@@ -13,7 +13,7 @@ Behavior {
             duration: root.duration
             easing.type: Easing.InQuad
         }
-        PropertyAction { } // actually change the controlled property between the 2 other animations
+        PropertyAction {} // actually change the controlled property between the 2 other animations
         NumberAnimation {
             target: root.fadeTarget
             property: "opacity"

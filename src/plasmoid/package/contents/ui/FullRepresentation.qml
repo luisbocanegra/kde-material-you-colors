@@ -25,13 +25,12 @@ ColumnLayout {
 
     property bool autoHide: true
     property bool backendRunning: true
-    property string homeDir: StandardPaths.writableLocation(
-                            StandardPaths.HomeLocation).toString().substring(7)
+    property string homeDir: StandardPaths.writableLocation(StandardPaths.HomeLocation).toString().substring(7)
     property string username: kuser.loginName
 
     property string execName: 'kde-material-you-colors'
     property string execPath: ""
-    property string checkBackendCommand: 'ps -o user:256,pid,cmd -C '+execName+' --no-headers | grep -e "'+username+'" | grep -v "<defunct>" | grep -ve "--version" | awk \'{print $2}\''
+    property string checkBackendCommand: 'ps -o user:256,pid,cmd -C ' + execName + ' --no-headers | grep -e "' + username + '" | grep -v "<defunct>" | grep -ve "--version" | awk \'{print $2}\''
     property string startBackendCommand: execPath
     property string autoStartBackendCommand: execPath + ' --autostart;' + execPath
     property string backendVersionCommand: execPath + ' --version'
@@ -39,7 +38,7 @@ ColumnLayout {
     property string backendVersionDisplay: backendVersion !== "" ? backendVersion : "unknown"
     property string recommendedVersion: "2.0.0"
     property string versionStatus: "same"
-    property string versionMessage: "You're using a "+versionStatus+" version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>"+ recommendedVersion+ "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2136963'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
+    property string versionMessage: "You're using a " + versionStatus + " version of the backend (<strong>" + backendVersionDisplay + "</strong>) than this widget version was written for (<strong>" + recommendedVersion + "</strong>). Some features may be missing or not work as intended. You can find the latest versions of the widget <a href='https://store.kde.org/p/2136963'>here</a> and the backend <a href='https://github.com/luisbocanegra/kde-material-you-colors'>here</a>."
     property bool showVersionMessage: false
 
     property bool onDesktop: plasmoid.location === PlasmaCore.Types.Floating
@@ -51,7 +50,7 @@ ColumnLayout {
 
     // used to trigger a reload if the config file has changed
     property string configPath: homeDir + "/.config/kde-material-you-colors/config.conf"
-    property string checkConfigChangeCommand: "sha1sum " + configPath+" 2> /dev/null"
+    property string checkConfigChangeCommand: "sha1sum " + configPath + " 2> /dev/null"
     property string configSha1
 
     property bool showAdvanced: false
@@ -60,9 +59,7 @@ ColumnLayout {
 
     property bool manual_fetch: false
 
-
-    signal savePauseMode()
-
+    signal savePauseMode
 
     property Item parentMain
 
@@ -73,16 +70,16 @@ ColumnLayout {
     Connections {
         target: parentMain
         function onTogglePauseMode() {
-            fullRepresentation.pauseMode = !fullRepresentation.pauseMode
-            parentMain.pauseModeMain = fullRepresentation.pauseMode
-            savePauseMode()
+            fullRepresentation.pauseMode = !fullRepresentation.pauseMode;
+            parentMain.pauseModeMain = fullRepresentation.pauseMode;
+            savePauseMode();
         }
     }
 
     Connections {
         target: parentMain
         function onUpdatePauseMode() {
-            parentMain.pauseModeMain = fullRepresentation.pauseMode
+            parentMain.pauseModeMain = fullRepresentation.pauseMode;
         }
     }
 
@@ -90,7 +87,7 @@ ColumnLayout {
     // - discard hidden themes
     // - discard cursor themes
     // Non escaped version: find /usr/share/icons ~/.local/share/icons -maxdepth 1 -type d -exec test -f "{}/index.theme" \; ! -exec grep -q '^Hidden=true' {}/index.theme \; -exec sh -c 'test "$(find "$1" -maxdepth 1 -type d | wc -l)" -gt 2' _ {} \; -printf '%p\n' | while read line; do echo "$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')"; done | sort --field-separator=, --key=2n -k2,2
-    property string getIconThemesCommand: "find /usr/share/icons " +homeDir+"/.local/share/icons -maxdepth 1 -type d -exec test -f \"{}/index.theme\" \\; ! -exec grep -q '^Hidden=true' {}/index.theme \\; -exec sh -c 'test \"$(find \"$1\" -maxdepth 1 -type d | wc -l)\" -gt 2' _ {} \\; -printf '%p\\n' | while read line; do echo \"$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')\"; done | sort --field-separator=, --key=2n -k2,2"
+    property string getIconThemesCommand: "find /usr/share/icons " + homeDir + "/.local/share/icons -maxdepth 1 -type d -exec test -f \"{}/index.theme\" \\; ! -exec grep -q '^Hidden=true' {}/index.theme \\; -exec sh -c 'test \"$(find \"$1\" -maxdepth 1 -type d | wc -l)\" -gt 2' _ {} \\; -printf '%p\\n' | while read line; do echo \"$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')\"; done | sort --field-separator=, --key=2n -k2,2"
 
     ListModel {
         id: iconThemeList
@@ -98,42 +95,67 @@ ColumnLayout {
 
     ListModel {
         id: schemeVariantsModel
-        ListElement { text: "Content"; value: 0 }
-        ListElement { text: "Expressive"; value: 1 }
-        ListElement { text: "Fidelity"; value: 2 }
-        ListElement { text: "Monochrome"; value: 3 }
-        ListElement { text: "Neutral"; value: 4 }
-        ListElement { text: "TonalSpot"; value: 5 }
-        ListElement { text: "Vibrant"; value: 6 }
-        ListElement { text: "Rainbow"; value: 7 }
-        ListElement { text: "FruitSalad"; value: 8 }
+        ListElement {
+            text: "Content"
+            value: 0
+        }
+        ListElement {
+            text: "Expressive"
+            value: 1
+        }
+        ListElement {
+            text: "Fidelity"
+            value: 2
+        }
+        ListElement {
+            text: "Monochrome"
+            value: 3
+        }
+        ListElement {
+            text: "Neutral"
+            value: 4
+        }
+        ListElement {
+            text: "TonalSpot"
+            value: 5
+        }
+        ListElement {
+            text: "Vibrant"
+            value: 6
+        }
+        ListElement {
+            text: "Rainbow"
+            value: 7
+        }
+        ListElement {
+            text: "FruitSalad"
+            value: 8
+        }
     }
 
     onPlasmoidExpandedChanged: {
-        checkConfigChange.exec(checkConfigChangeCommand)
-        findExecutablePath()
+        checkConfigChange.exec(checkConfigChangeCommand);
+        findExecutablePath();
     }
 
     onConfigSha1Changed: {
         // trigger a reload when config changes to update view
-        console.log("@@@@@ RELOADING ID:", plasmoid.id)
-        doSettingsReload = true
-        doSettingsReload = false
+        console.log("@@@@@ RELOADING ID:", plasmoid.id);
+        doSettingsReload = true;
+        doSettingsReload = false;
     }
 
     function findExecutablePath() {
-        var temp = ""
-        temp = StandardPaths.findExecutable(execName).toString().substring(7)
+        var temp = "";
+        temp = StandardPaths.findExecutable(execName).toString().substring(7);
         if (temp == "") {
-            temp = StandardPaths.findExecutable(execName,
-                        homeDir+"/.local/bin").toString().substring(7)
+            temp = StandardPaths.findExecutable(execName, homeDir + "/.local/bin").toString().substring(7);
         }
-        execPath = temp
-
+        execPath = temp;
     }
 
     Component.onCompleted: {
-        findExecutablePath()
+        findExecutablePath();
     }
 
     P5Support.DataSource {
@@ -141,22 +163,21 @@ ColumnLayout {
         engine: "executable"
         connectedSources: []
 
-        onNewData: function(source, data) {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-            exited(source, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(source) // cmd finished
+        onNewData: function (source, data) {
+            var exitCode = data["exit code"];
+            var exitStatus = data["exit status"];
+            var stdout = data["stdout"];
+            var stderr = data["stderr"];
+            exited(source, exitCode, exitStatus, stdout, stderr);
+            disconnectSource(source); // cmd finished
         }
 
         function exec(cmd) {
-            checkBackend.connectSource(cmd )
+            checkBackend.connectSource(cmd);
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
-
 
     Connections {
         target: checkBackend
@@ -166,7 +187,7 @@ ColumnLayout {
             // console.log("exitCode:",exitCode);
             // console.log("stdout:",stdout);
             // console.log("stderr:",stderr);
-            backendRunning = stdout.replace('\n', '').trim().length>0
+            backendRunning = stdout.replace('\n', '').trim().length > 0;
         }
     }
 
@@ -175,22 +196,21 @@ ColumnLayout {
         engine: "executable"
         connectedSources: []
 
-        onNewData: function(source, data) {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-            exited(source, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(source) // cmd finished
+        onNewData: function (source, data) {
+            var exitCode = data["exit code"];
+            var exitStatus = data["exit status"];
+            var stdout = data["stdout"];
+            var stderr = data["stderr"];
+            exited(source, exitCode, exitStatus, stdout, stderr);
+            disconnectSource(source); // cmd finished
         }
 
         function exec(cmd) {
-            checkBackendVersion.connectSource(cmd)
+            checkBackendVersion.connectSource(cmd);
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
-
 
     Connections {
         target: checkBackendVersion
@@ -200,8 +220,8 @@ ColumnLayout {
             // console.log("exitCode:",exitCode);
             // console.log("stdout:",stdout);
             // console.log("stderr:",stderr);
-            backendVersion = stdout.replace('\n', '').trim()
-            versionStatus = compareVersions(backendVersion,recommendedVersion)
+            backendVersion = stdout.replace('\n', '').trim();
+            versionStatus = compareVersions(backendVersion, recommendedVersion);
         }
     }
 
@@ -244,33 +264,32 @@ ColumnLayout {
         engine: "executable"
         connectedSources: []
 
-        onNewData: function(source, data) {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-            exited(source, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(source) // cmd finished
+        onNewData: function (source, data) {
+            var exitCode = data["exit code"];
+            var exitStatus = data["exit status"];
+            var stdout = data["stdout"];
+            var stderr = data["stderr"];
+            exited(source, exitCode, exitStatus, stdout, stderr);
+            disconnectSource(source); // cmd finished
         }
 
         function exec(cmd) {
             //console.log("checking if config changed",checkConfigChangeCommand);
-            checkConfigChange.connectSource(cmd)
+            checkConfigChange.connectSource(cmd);
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
 
-
     Connections {
         target: checkConfigChange
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            var out = stdout.replace('\n', '').trim()
+            var out = stdout.replace('\n', '').trim();
             //console.log("COMMAND:",cmd);
             //console.log("OUTS:",exitCode,exitStatus);
             //console.log("CONFIG SHA1:",out);
             if (out != "") {
-                configSha1 = out.split(" ")[0]
+                configSha1 = out.split(" ")[0];
             }
         }
     }
@@ -280,47 +299,49 @@ ColumnLayout {
         engine: "executable"
         connectedSources: []
 
-        onNewData: function(source, data) {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-            exited(source, exitCode, exitStatus, stdout, stderr)
-            disconnectSource(source) // cmd finished
+        onNewData: function (source, data) {
+            var exitCode = data["exit code"];
+            var exitStatus = data["exit status"];
+            var stdout = data["stdout"];
+            var stderr = data["stderr"];
+            exited(source, exitCode, exitStatus, stdout, stderr);
+            disconnectSource(source); // cmd finished
         }
 
         function exec() {
-            getIconThemes.connectSource(getIconThemesCommand)
+            getIconThemes.connectSource(getIconThemesCommand);
         }
 
         signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
 
-
     Connections {
         target: getIconThemes
         function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            iconThemeList.clear()
-            var lines = stdout.trim().split("\n")
-            for (let i=0; i<lines.length; i++) {
-                var line = lines[i].toString().split(",")
+            iconThemeList.clear();
+            var lines = stdout.trim().split("\n");
+            for (let i = 0; i < lines.length; i++) {
+                var line = lines[i].toString().split(",");
                 // discard lines that are not actual themes e.g default,
                 if (line.length === 2 && line[1] !== '') {
-                    iconThemeList.append({"name":line[0], "label":line[1]})
+                    iconThemeList.append({
+                        "name": line[0],
+                        "label": line[1]
+                    });
                 }
             }
         }
     }
 
     PlasmaExtras.Representation {
-        collapseMarginsHint: true
         id: rootRep
+        collapseMarginsHint: true
 
         Layout.fillWidth: true
         Layout.fillHeight: true
 
         header: PlasmaExtras.PlasmoidHeading {
-            id:heading
+            id: heading
             visible: !(plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
 
             leftPadding: Kirigami.Units.smallSpacing
@@ -340,7 +361,7 @@ ColumnLayout {
                     text: plasmoid.internalAction("configure").text
 
                     onClicked: {
-                        plasmoid.internalAction("configure").trigger()
+                        plasmoid.internalAction("configure").trigger();
                     }
 
                     PlasmaComponents3.ToolTip {
@@ -348,15 +369,15 @@ ColumnLayout {
                     }
                 }
                 PlasmaComponents3.ToolButton {
+                    id: pauseBtn
                     display: PlasmaComponents3.AbstractButton.IconOnly
                     checkable: false
-                    id: pauseBtn
                     icon.name: fullRepresentation.pauseMode ? 'media-playback-start' : 'media-playback-pause'
                     text: fullRepresentation.pauseMode ? 'Resume automatic theming' : 'Pause automatic theming'
 
                     onClicked: {
-                        fullRepresentation.pauseMode = !fullRepresentation.pauseMode
-                        savePauseMode()
+                        fullRepresentation.pauseMode = !fullRepresentation.pauseMode;
+                        savePauseMode();
                     }
 
                     PlasmaComponents3.ToolTip {
@@ -376,8 +397,8 @@ ColumnLayout {
                     }
 
                     onClicked: {
-                        autoHide = !autoHide
-                        main.hideOnWindowDeactivate = autoHide
+                        autoHide = !autoHide;
+                        main.hideOnWindowDeactivate = autoHide;
                     }
                 }
             }
@@ -403,11 +424,11 @@ ColumnLayout {
                 // scroll ScrollView to the bottom
                 // https://stackoverflow.com/a/64449107
                 function scrollToBottom() {
-                    ScrollBar.vertical.position = 1.0 - ScrollBar.vertical.size
+                    ScrollBar.vertical.position = 1.0 - ScrollBar.vertical.size;
                 }
 
                 function scrollToTop() {
-                    ScrollBar.vertical.position = 0
+                    ScrollBar.vertical.position = 0;
                 }
 
                 contentItem: ListView {
@@ -423,9 +444,9 @@ ColumnLayout {
                     // width: rootContent.width
 
                     delegate: ColumnLayout {
+                        id: mainLayout
                         // Inherit theme from parent, without this colors don't change on light/dark switch
                         Kirigami.Theme.inherit: true
-                        id: mainLayout
                         anchors.left: parent.left
                         anchors.right: parent.right
 
@@ -448,54 +469,54 @@ ColumnLayout {
                                 createSettings();
                                 // FIXME: really should figure this red thing out...
                                 if (settings.color_last === "red") {
-                                    settings.color_last = "#d0265c"
+                                    settings.color_last = "#d0265c";
                                 }
                             }
                         }
                         Connections {
                             target: fullRepresentation
                             function onSavePauseMode() {
-                                settings.pause_mode = fullRepresentation.pauseMode
+                                settings.pause_mode = fullRepresentation.pauseMode;
                             }
                         }
                         onMaterialYouDataChanged: {
-                            if (materialYouData!=null && materialYouDataString!=null) {
+                            if (materialYouData != null && materialYouDataString != null) {
                                 if (JSON.stringify(materialYouData) !== materialYouDataString) {
                                     console.log("@@@ MATERIAL YOU DATA CHANGED @@@");
-                                    console.log(materialYouData,materialYouDataString);
+                                    console.log(materialYouData, materialYouDataString);
                                 }
                                 materialYouDataString = JSON.stringify(materialYouData);
                             }
                         }
 
                         Component.onCompleted: {
-                            createSettings()
-                            console.log("@@@@@ BACKEND RUNNING:", backendRunning)
-                            readMaterialYouData.exec()
-                            getIconThemes.exec()
-                            statupTimer.start()
+                            createSettings();
+                            console.log("@@@@@ BACKEND RUNNING:", backendRunning);
+                            readMaterialYouData.exec();
+                            getIconThemes.exec();
+                            statupTimer.start();
                         }
 
                         Timer {
                             interval: autoReloadEnabled ? 1000 : 2000
                             running: true
-                            repeat: true;
+                            repeat: true
                             onTriggered: {
-                                checkConfigChange.exec(checkConfigChangeCommand)
-                                readMaterialYouData.exec()
-                                fullRepresentation.pauseMode = settings.pause_mode
-                                parentMain.updatePauseMode()
+                                checkConfigChange.exec(checkConfigChangeCommand);
+                                readMaterialYouData.exec();
+                                fullRepresentation.pauseMode = settings.pause_mode;
+                                parentMain.updatePauseMode();
                             }
                         }
 
                         Timer {
                             interval: autoReloadEnabled ? 2000 : 5000
                             running: true
-                            repeat: true;
+                            repeat: true
                             onTriggered: {
-                                checkBackend.exec(checkBackendCommand)
-                                findExecutablePath()
-                                checkBackendVersion.exec(backendVersionCommand)
+                                checkBackend.exec(checkBackendCommand);
+                                findExecutablePath();
+                                checkBackendVersion.exec(backendVersionCommand);
                             }
                         }
 
@@ -556,19 +577,15 @@ ColumnLayout {
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
-                            settings.fileName = StandardPaths.writableLocation(
-                                        StandardPaths.HomeLocation).toString().substring(7) +
-                                        "/.config/kde-material-you-colors/config.conf"
-                            customTextColorsCheck.checked = settings.custom_colors_list == ""
-                            customColorCheck.checked = settings.color == ""
-
+                            settings.fileName = StandardPaths.writableLocation(StandardPaths.HomeLocation).toString().substring(7) + "/.config/kde-material-you-colors/config.conf";
+                            customTextColorsCheck.checked = settings.custom_colors_list == "";
+                            customColorCheck.checked = settings.color == "";
                         }
 
                         function destroySettings() {
-                            settings.destroy()
-                            // settings = null
+                            settings.destroy();
+                        // settings = null
                         }
-
 
                         function saveCustomColorsList() {
                             var colors = [];
@@ -578,7 +595,7 @@ ColumnLayout {
                             }
                             // do not re-enable custom colors if is disabled
                             if (customTextColorsCheck.checked) {
-                                settings.custom_colors_list = ""
+                                settings.custom_colors_list = "";
                             } else {
                                 settings.custom_colors_list = colors.join(" ");
                                 settings.custom_colors_list_last = colors.join(" ");
@@ -590,19 +607,17 @@ ColumnLayout {
                             engine: "executable"
                             connectedSources: []
 
-                            onNewData: function(source, data) {
-                                var exitCode = data["exit code"]
-                                var exitStatus = data["exit status"]
-                                var stdout = data["stdout"]
-                                var stderr = data["stderr"]
-                                exited(source, exitCode, exitStatus, stdout, stderr)
-                                disconnectSource(source) // cmd finished
+                            onNewData: function (source, data) {
+                                var exitCode = data["exit code"];
+                                var exitStatus = data["exit status"];
+                                var stdout = data["stdout"];
+                                var stderr = data["stderr"];
+                                exited(source, exitCode, exitStatus, stdout, stderr);
+                                disconnectSource(source); // cmd finished
                             }
 
-                                function exec() {
-                                    readMaterialYouData.connectSource(
-                                        "cat /tmp/kde-material-you-colors-"+username+".json"
-                                        )
+                            function exec() {
+                                readMaterialYouData.connectSource("cat /tmp/kde-material-you-colors-" + username + ".json");
                             }
 
                             signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
@@ -612,8 +627,8 @@ ColumnLayout {
                             target: readMaterialYouData
                             function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
                                 try {
-                                    materialYouData = JSON.parse(stdout)
-                                } catch(error) {
+                                    materialYouData = JSON.parse(stdout);
+                                } catch (error) {
                                     if (error instanceof SyntaxError) {
                                         console.log("@@@@@ Error parsing JSON data:", error.message);
                                     } else {
@@ -637,23 +652,23 @@ ColumnLayout {
                                     icon.name: "media-playback-start"
                                     text: "Start"
                                     onTriggered: {
-                                        findExecutablePath()
-                                        checkBackend.exec(startBackendCommand)
+                                        findExecutablePath();
+                                        checkBackend.exec(startBackendCommand);
                                     }
                                 },
                                 Kirigami.Action {
                                     icon.name: "media-playback-start"
                                     text: "Start && enable Autostart"
                                     onTriggered: {
-                                        findExecutablePath()
-                                        checkBackend.exec(autoStartBackendCommand)
+                                        findExecutablePath();
+                                        checkBackend.exec(autoStartBackendCommand);
                                     }
                                 },
                                 Kirigami.Action {
                                     icon.name: "help-about-symbolic"
                                     text: "Install guide"
                                     onTriggered: {
-                                        Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing")
+                                        Qt.openUrlExternally("https://github.com/luisbocanegra/kde-material-you-colors#installing");
                                     }
                                 }
                             ]
@@ -678,7 +693,9 @@ ColumnLayout {
                             spacing: Kirigami.Units.smallSpacing
 
                             RowLayout {
-                                Item { Layout.fillWidth: true }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
                                 // visible: fullRepresentation.versionStatus !== "same"
                                 visible: fullRepresentation.showVersionMessage
                                 TextEdit {
@@ -692,7 +709,7 @@ ColumnLayout {
                                     selectedTextColor: Kirigami.Theme.highlightedTextColor
                                     selectionColor: Kirigami.Theme.highlightColor
 
-                                    onLinkActivated: (url) => Qt.openUrlExternally(url)
+                                    onLinkActivated: url => Qt.openUrlExternally(url)
 
                                     HoverHandler {
                                         acceptedButtons: Qt.NoButton
@@ -700,7 +717,8 @@ ColumnLayout {
                                     }
                                 }
 
-                                ToolButton { // PlasmaComponents3 one doesnt take colors??
+                                ToolButton {
+                                    // PlasmaComponents3 one doesnt take colors??
                                     icon.name: "dialog-warning"
                                     visible: fullRepresentation.showVersionMessage
                                     opacity: 0.8
@@ -710,9 +728,9 @@ ColumnLayout {
 
                                     hoverEnabled: true
                                     onClicked: {
-                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
+                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage;
                                     }
-                                    Layout.alignment: Qt.AlignHRight|Qt.AlignTop
+                                    Layout.alignment: Qt.AlignHRight | Qt.AlignTop
 
                                     PlasmaComponents3.ToolTip {
                                         x: parent.width / 2
@@ -724,7 +742,9 @@ ColumnLayout {
 
                             // COLOR SELECTION FROM WALLPAPER OR CUSTOM COLOR
                             RowLayout {
-                                Item { Layout.fillWidth: true }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
                                 PlasmaExtras.Heading {
                                     level: 1
                                     text: "Colors source"
@@ -734,9 +754,7 @@ ColumnLayout {
                                 ToolButton { // PlasmaComponents3 one doesnt take colors??
                                     id: versionInfoBtn
                                     icon.name: "dialog-warning"
-                                    visible: !fullRepresentation.showVersionMessage &&
-                                        fullRepresentation.versionStatus !== "same" &&
-                                        fullRepresentation.execPath !== ""
+                                    visible: !fullRepresentation.showVersionMessage && fullRepresentation.versionStatus !== "same" && fullRepresentation.execPath !== ""
                                     opacity: 0.8
                                     Kirigami.Theme.inherit: false
                                     Kirigami.Theme.textColor: Kirigami.Theme.neutralTextColor
@@ -744,7 +762,7 @@ ColumnLayout {
 
                                     hoverEnabled: true
                                     onClicked: {
-                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage
+                                        fullRepresentation.showVersionMessage = !fullRepresentation.showVersionMessage;
                                     }
                                     PlasmaComponents3.ToolTip {
                                         x: parent.width / 2
@@ -752,7 +770,6 @@ ColumnLayout {
                                         text: "Tap to show"
                                     }
                                 }
-
                             }
 
                             RowLayout {
@@ -763,19 +780,19 @@ ColumnLayout {
                                 PlasmaComponents3.CheckBox {
                                     id: customColorCheck
                                     onCheckedChanged: {
-                                        settings.color = checked?"":settings.color_last
+                                        settings.color = checked ? "" : settings.color_last;
                                     }
                                 }
 
                                 // Monitor number when wallpaper colors is enabled
                                 PlasmaComponents3.Label {
-                                    visible: settings.color==""
+                                    visible: settings.color == ""
                                     text: "on screen"
                                 }
 
                                 PlasmaComponents3.TextField {
                                     id: monitorNumber
-                                    visible: settings.color==""
+                                    visible: settings.color == ""
                                     Layout.preferredWidth: controlWidth
                                     placeholderText: "0-?"
                                     horizontalAlignment: TextInput.AlignHCenter
@@ -786,21 +803,21 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.monitor = parseInt(text)
+                                        settings.monitor = parseInt(text);
                                         // reset color selection
-                                        settings.ncolor = 0
+                                        settings.ncolor = 0;
                                     }
                                 }
 
                                 PlasmaComponents3.Button {
                                     id: screenInfoBtn
-                                    visible: (main.screen !== -1 && settings.color==="")
+                                    visible: (main.screen !== -1 && settings.color === "")
                                     opacity: 0.7
                                     text: "This screen"
 
                                     hoverEnabled: true
                                     onClicked: {
-                                        settings.monitor = main.screen
+                                        settings.monitor = main.screen;
                                     }
 
                                     PlasmaComponents3.ToolTip {
@@ -812,23 +829,21 @@ ColumnLayout {
                                 }
                             }
 
-
-
                             // Color selection
                             RowLayout {
                                 Layout.preferredWidth: mainLayout.width
                                 RowLayout {
                                     id: selectColorLayout
                                     PlasmaComponents3.Label {
+                                        id: selectColorLabel
                                         text: "Select color"
-                                        id:selectColorLabel
                                     }
                                     // Button to manually fetch the colors on screen //
                                     Timer {
                                         id: fetchTimer
                                         interval: 2000
                                         onTriggered: {
-                                            settings.fetch_colors = false
+                                            settings.fetch_colors = false;
                                         }
                                     }
                                     RowLayout {
@@ -836,8 +851,8 @@ ColumnLayout {
                                             text: "Fetch colors"
                                             icon.name: 'refreshstructure'
                                             onClicked: {
-                                                settings.fetch_colors = true
-                                                fetchTimer.restart()
+                                                settings.fetch_colors = true;
+                                                fetchTimer.restart();
                                             }
                                             PlasmaComponents3.ToolTip {
                                                 text: "Manually fetch the colors on the current wallpaper"
@@ -849,26 +864,26 @@ ColumnLayout {
                                 // Single color picker when color is not empty
                                 Components.CustomColorButton { // Components.Custom
                                     id: colorButton
-                                    Layout.alignment : Qt.AlignRight
-                                    visible: settings.color!==""
+                                    Layout.alignment: Qt.AlignRight
+                                    visible: settings.color !== ""
                                     showAlphaChannel: false
                                     dialogTitle: "Choose source color"
                                     Layout.preferredHeight: controlHeight
                                     Layout.preferredWidth: controlWidth
-                                    color: settings.color?settings.color:settings.color_last
+                                    color: settings.color ? settings.color : settings.color_last
                                     onAccepted: {
-                                        settings.color = color.toString()
-                                        settings.color_last = settings.color
+                                        settings.color = color.toString();
+                                        settings.color_last = settings.color;
                                     }
                                 }
 
                                 // Choose color from wallpaper when colors is not set
                                 // IDEA: center buttons in separate row maybe?
-                                GridLayout { //PlasmaComponents3.ScrollView
+                                GridLayout {
+                                    //PlasmaComponents3.ScrollView
                                     property var gridSpacing: Kirigami.Units.mediumSpacing
-                                    visible: settings.color===""
-                                    columns: Math.floor((mainLayout.width - selectColorLayout.width) / (
-                                        controlHeight * .75 + gridSpacing))
+                                    visible: settings.color === ""
+                                    columns: Math.floor((mainLayout.width - selectColorLayout.width) / (controlHeight * .75 + gridSpacing))
                                     rowSpacing: gridSpacing
                                     columnSpacing: gridSpacing
 
@@ -881,15 +896,15 @@ ColumnLayout {
                                             Layout.preferredWidth: controlHeight * .75
                                             Layout.preferredHeight: controlHeight * .75
 
-                                            property string color1: Kirigami.ColorUtils.brightnessForColor(materialYouData.best[index]) === Kirigami.ColorUtils.Dark ? "#ffffff":"#000000"
-                                            property string hoverColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index],color1, .18)
-                                            property string selectColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index],color1, .7)
+                                            property string color1: Kirigami.ColorUtils.brightnessForColor(materialYouData.best[index]) === Kirigami.ColorUtils.Dark ? "#ffffff" : "#000000"
+                                            property string hoverColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index], color1, .18)
+                                            property string selectColor: Kirigami.ColorUtils.tintWithAlpha(materialYouData.best[index], color1, .7)
 
                                             Rectangle {
                                                 anchors.fill: parent
                                                 radius: parent.height
 
-                                                color: settings.ncolor==index?circleRepeater.itemAt(index).selectColor:materialYouData.best[index]
+                                                color: settings.ncolor == index ? circleRepeater.itemAt(index).selectColor : materialYouData.best[index]
                                                 border.width: parent.width / 4
                                                 border.color: materialYouData.best[index]
                                             }
@@ -908,28 +923,28 @@ ColumnLayout {
                                                 hoverEnabled: true
 
                                                 onEntered: {
-                                                    circleRepeater.itemAt(index).children[0].border.color = circleRepeater.itemAt(index).hoverColor
-                                                    if (index!=settings.ncolor){
-                                                        circleRepeater.itemAt(index).children[0].color = circleRepeater.itemAt(index).hoverColor
+                                                    circleRepeater.itemAt(index).children[0].border.color = circleRepeater.itemAt(index).hoverColor;
+                                                    if (index != settings.ncolor) {
+                                                        circleRepeater.itemAt(index).children[0].color = circleRepeater.itemAt(index).hoverColor;
                                                     }
                                                 }
 
                                                 onExited: {
-                                                    circleRepeater.itemAt(index).children[0].border.color = materialYouData.best[index]
-                                                    if (index!=settings.ncolor){
-                                                        circleRepeater.itemAt(index).children[0].color = materialYouData.best[index]
+                                                    circleRepeater.itemAt(index).children[0].border.color = materialYouData.best[index];
+                                                    if (index != settings.ncolor) {
+                                                        circleRepeater.itemAt(index).children[0].color = materialYouData.best[index];
                                                     }
                                                 }
 
                                                 onClicked: {
-                                                    console.log("SELECTED COLOR:",materialYouData.best[index])
-                                                    settings.ncolor = index
+                                                    console.log("SELECTED COLOR:", materialYouData.best[index]);
+                                                    settings.ncolor = index;
 
-                                                    for (let i=0; i < circleRepeater.count; i++) {
-                                                        if (i == settings.ncolor){
-                                                            circleRepeater.itemAt(i).children[0].color = circleRepeater.itemAt(index).selectColor
+                                                    for (let i = 0; i < circleRepeater.count; i++) {
+                                                        if (i == settings.ncolor) {
+                                                            circleRepeater.itemAt(i).children[0].color = circleRepeater.itemAt(index).selectColor;
                                                         } else {
-                                                            circleRepeater.itemAt(i).children[0].color = materialYouData.best[i]
+                                                            circleRepeater.itemAt(i).children[0].color = materialYouData.best[i];
                                                         }
                                                     }
                                                 }
@@ -938,7 +953,6 @@ ColumnLayout {
                                     }
                                 }
                             }
-
 
                             Rectangle {
                                 Layout.preferredWidth: mainLayout.width
@@ -949,7 +963,9 @@ ColumnLayout {
 
                             // TEXT COLORS SECTION
                             RowLayout {
-                                Item { Layout.fillWidth: true }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
 
                                 PlasmaExtras.Heading {
                                     id: headingTextColors
@@ -979,15 +995,15 @@ ColumnLayout {
                             // Enable/disable taking text colors from wallpaper
                             RowLayout {
                                 PlasmaComponents3.Label {
-                                    id:customTextColorsLabel
+                                    id: customTextColorsLabel
                                     text: "From Wallpaper/color"
-                                    Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+                                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 }
                                 PlasmaComponents3.CheckBox {
                                     id: customTextColorsCheck
 
                                     onCheckedChanged: {
-                                        settings.custom_colors_list = checked?"":settings.custom_colors_list_last
+                                        settings.custom_colors_list = checked ? "" : settings.custom_colors_list_last;
                                     }
                                 }
                             }
@@ -997,25 +1013,23 @@ ColumnLayout {
                             // Row of color pickers
                             RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                                visible: settings.custom_colors_list!==""
+                                visible: settings.custom_colors_list !== ""
                                 Repeater {
-                                    model: 7
                                     id: colorPickerRepeater
+                                    model: 7
                                     delegate: Components.CustomColorButton {
                                         showAlphaChannel: false
                                         dialogTitle: "Choose custom color"
                                         Layout.preferredHeight: controlHeight
                                         Layout.preferredWidth: controlWidth
-                                        property var colorList: settings.custom_colors_list ?
-                                                                settings.custom_colors_list :
-                                                                settings.custom_colors_list_last
+                                        property var colorList: settings.custom_colors_list ? settings.custom_colors_list : settings.custom_colors_list_last
                                         color: colorList.split(" ")[index]
 
                                         onAccepted: {
-                                            let colors = settings.custom_colors_list.split(" ")
-                                            colors[index] = color
+                                            let colors = settings.custom_colors_list.split(" ");
+                                            colors[index] = color;
                                             if (customTextColorsCheck.checked) {
-                                                settings.custom_colors_list = ""
+                                                settings.custom_colors_list = "";
                                             } else {
                                                 settings.custom_colors_list = colors.join(" ");
                                                 settings.custom_colors_list_last = colors.join(" ");
@@ -1029,9 +1043,9 @@ ColumnLayout {
                             // Row of non clickable colors from a color or wallpaper
                             RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                                visible: settings.custom_colors_list===""
+                                visible: settings.custom_colors_list === ""
                                 Repeater {
-                                    model: materialYouData ? Object.keys(materialYouData.pywal.dark.colors).slice(1,8) : []
+                                    model: materialYouData ? Object.keys(materialYouData.pywal.dark.colors).slice(1, 8) : []
 
                                     delegate: Item {
                                         Layout.preferredWidth: controlHeight * .75
@@ -1040,7 +1054,7 @@ ColumnLayout {
                                         Rectangle {
                                             anchors.fill: parent
                                             radius: parent.height
-                                            color: materialYouData.pywal.dark.colors["color"+(index+1).toString()]
+                                            color: materialYouData.pywal.dark.colors["color" + (index + 1).toString()]
                                         }
                                     }
                                 }
@@ -1058,7 +1072,7 @@ ColumnLayout {
                                     checked: settings.pywal
 
                                     onCheckedChanged: {
-                                        settings.pywal = checked
+                                        settings.pywal = checked;
                                     }
                                 }
                             }
@@ -1075,11 +1089,10 @@ ColumnLayout {
                                     checked: !settings.disable_konsole
 
                                     onCheckedChanged: {
-                                        settings.disable_konsole = !checked
+                                        settings.disable_konsole = !checked;
                                     }
                                 }
                             }
-
 
                             Rectangle {
                                 Layout.preferredWidth: mainLayout.width
@@ -1094,10 +1107,10 @@ ColumnLayout {
                                     Layout.fillWidth: true
                                 }
                                 PlasmaExtras.Heading {
+                                    id: headingDarkMode
                                     level: 1
                                     text: "Dark mode"
                                     anchors.centerIn: parent
-                                    id: headingDarkMode
                                 }
 
                                 PlasmaComponents3.ToolButton {
@@ -1125,7 +1138,7 @@ ColumnLayout {
 
                                     PlasmaExtras.Heading {
                                         text: "Plasma"
-                                        Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                         Layout.preferredWidth: parent.width
                                         color: Kirigami.Theme.textColor
                                         wrapMode: Text.WordWrap
@@ -1135,11 +1148,11 @@ ColumnLayout {
                                 }
 
                                 ColumnLayout {
-                                    Layout.preferredWidth: mainLayout.width/2
+                                    Layout.preferredWidth: mainLayout.width / 2
 
                                     PlasmaExtras.Heading {
                                         text: "Konsole, Pywal, KSyntaxHighlighting"
-                                        Layout.alignment: Qt.AlignHCenter|Qt.AlignVCenter
+                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                         Layout.preferredWidth: parent.width
                                         color: Kirigami.Theme.textColor
                                         wrapMode: Text.WordWrap
@@ -1152,7 +1165,7 @@ ColumnLayout {
                             RowLayout {
                                 Layout.preferredWidth: mainLayout.width
                                 ColumnLayout {
-                                    Layout.preferredWidth: mainLayout.width/2
+                                    Layout.preferredWidth: mainLayout.width / 2
                                     Layout.alignment: Qt.AlignBottom
 
                                     ButtonGroup {
@@ -1160,11 +1173,11 @@ ColumnLayout {
                                     }
 
                                     PlasmaComponents3.RadioButton {
-                                        id:plasmaEnableDark
+                                        id: plasmaEnableDark
                                         checked: !settings.light
                                         text: qsTr("Enabled")
                                         onCheckedChanged: {
-                                            settings.light = !checked
+                                            settings.light = !checked;
                                         }
                                         ButtonGroup.group: plasmaModeGroup
                                     }
@@ -1181,14 +1194,14 @@ ColumnLayout {
                                         checked: settings.plasma_follows_scheme
                                         text: qsTr("Follow color scheme")
                                         onCheckedChanged: {
-                                                settings.plasma_follows_scheme = checked
+                                            settings.plasma_follows_scheme = checked;
                                         }
                                         ButtonGroup.group: plasmaModeGroup
                                     }
                                 }
 
                                 ColumnLayout {
-                                    Layout.preferredWidth: mainLayout.width/2
+                                    Layout.preferredWidth: mainLayout.width / 2
                                     Layout.alignment: Qt.AlignTop
 
                                     ButtonGroup {
@@ -1196,11 +1209,11 @@ ColumnLayout {
                                     }
 
                                     PlasmaComponents3.RadioButton {
-                                        id:pywalEnableDark
+                                        id: pywalEnableDark
                                         checked: !settings.pywal_light
                                         text: qsTr("Enabled")
                                         onCheckedChanged: {
-                                            settings.pywal_light = !checked
+                                            settings.pywal_light = !checked;
                                         }
                                         ButtonGroup.group: pywalModeGroup
                                     }
@@ -1217,7 +1230,7 @@ ColumnLayout {
                                         checked: settings.pywal_follows_scheme
                                         text: qsTr("Follow color scheme")
                                         onCheckedChanged: {
-                                                settings.pywal_follows_scheme = checked
+                                            settings.pywal_follows_scheme = checked;
                                         }
                                         ButtonGroup.group: pywalModeGroup
                                     }
@@ -1260,7 +1273,9 @@ ColumnLayout {
                                 Layout.preferredWidth: mainLayout.width
                                 spacing: 6
 
-                                ButtonGroup { id: buttonGroup }
+                                ButtonGroup {
+                                    id: buttonGroup
+                                }
 
                                 Repeater {
                                     model: schemeVariantsModel
@@ -1271,7 +1286,8 @@ ColumnLayout {
                                         text: checked ? model.text : model.text
                                         checked: index === settings.scheme_variant
                                         onCheckedChanged: {
-                                            if (checked) settings.scheme_variant = index
+                                            if (checked)
+                                                settings.scheme_variant = index;
                                         }
                                     }
                                 }
@@ -1294,7 +1310,7 @@ ColumnLayout {
                                     to: 10
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.chroma_multiplier = Math.round(value * 10) / 10
+                                        settings.chroma_multiplier = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1313,7 +1329,7 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.chroma_multiplier = parseFloat(text)
+                                        settings.chroma_multiplier = parseFloat(text);
                                     }
                                 }
                             }
@@ -1332,7 +1348,7 @@ ColumnLayout {
                                     to: 1.5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.tone_multiplier = Math.round(value * 10) / 10
+                                        settings.tone_multiplier = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1351,18 +1367,18 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.tone_multiplier = parseFloat(text)
+                                        settings.tone_multiplier = parseFloat(text);
                                     }
                                 }
                             }
 
                             PlasmaComponents3.ToolButton {
                                 Layout.alignment: Qt.AlignHCenter
-                                text: fullRepresentation.showAdvanced?"Hide advanced settings":"Show advanced settings"
+                                text: fullRepresentation.showAdvanced ? "Hide advanced settings" : "Show advanced settings"
                                 icon.name: 'configure'
                                 checked: fullRepresentation.showAdvanced
                                 onClicked: {
-                                    fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced
+                                    fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced;
                                 }
                             }
                         }
@@ -1375,7 +1391,7 @@ ColumnLayout {
 
                             onVisibleChanged: {
                                 if (visible) {
-                                    scrollTimer.start()
+                                    scrollTimer.start();
                                 }
                             }
 
@@ -1406,7 +1422,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.konsole_opacity = Math.round(value * 10) / 10
+                                        settings.konsole_opacity = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1415,7 +1431,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.konsole_opacity
                                     onValueModified: {
-                                        settings.konsole_opacity = value
+                                        settings.konsole_opacity = value;
                                     }
                                 }
                             }
@@ -1433,7 +1449,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.konsole_opacity_dark = Math.round(value * 10) / 10
+                                        settings.konsole_opacity_dark = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1442,7 +1458,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.konsole_opacity_dark
                                     onValueModified: {
-                                        settings.konsole_opacity_dark = value
+                                        settings.konsole_opacity_dark = value;
                                     }
                                 }
                             }
@@ -1456,10 +1472,9 @@ ColumnLayout {
                                     checked: settings.konsole_blur
 
                                     onCheckedChanged: {
-                                        settings.konsole_blur = checked
+                                        settings.konsole_blur = checked;
                                     }
                                 }
-
                             }
 
                             Rectangle {
@@ -1483,16 +1498,16 @@ ColumnLayout {
                                 }
 
                                 PlasmaComponents3.ComboBox {
-                                    id:iconThemeDarkCombo
+                                    id: iconThemeDarkCombo
                                     model: iconThemeList
                                     textRole: "label"
                                     Layout.fillWidth: true
                                     valueRole: "name"
-                                    currentIndex:0
+                                    currentIndex: 0
                                     popup.height: 300
 
                                     onCurrentIndexChanged: {
-                                        settings.iconsdark = model.get(currentIndex)["name"]
+                                        settings.iconsdark = model.get(currentIndex)["name"];
                                     }
 
                                     // Prevent starting scrolling on collapsed combobox
@@ -1512,16 +1527,16 @@ ColumnLayout {
                                 }
 
                                 PlasmaComponents3.ComboBox {
-                                    id:iconThemeLightCombo
+                                    id: iconThemeLightCombo
                                     model: iconThemeList
                                     textRole: "label"
                                     Layout.fillWidth: true
                                     valueRole: "name"
-                                    currentIndex:0
+                                    currentIndex: 0
                                     popup.height: 300
 
                                     onCurrentIndexChanged: {
-                                        settings.iconslight = model.get(currentIndex)["name"]
+                                        settings.iconslight = model.get(currentIndex)["name"];
                                     }
 
                                     // Prevent starting scrolling on collapsed combobox
@@ -1550,7 +1565,6 @@ ColumnLayout {
                                 wrapMode: Text.WordWrap
                                 horizontalAlignment: Text.AlignHCenter
                             }
-
 
                             RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
@@ -1588,7 +1602,7 @@ ColumnLayout {
                                     checked: settings.titlebar_opacity_override
 
                                     onCheckedChanged: {
-                                        settings.titlebar_opacity_override = checked
+                                        settings.titlebar_opacity_override = checked;
                                     }
                                 }
                             }
@@ -1607,7 +1621,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.titlebar_opacity = Math.round(value * 10) / 10
+                                        settings.titlebar_opacity = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1616,7 +1630,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.titlebar_opacity
                                     onValueModified: {
-                                        settings.titlebar_opacity = value
+                                        settings.titlebar_opacity = value;
                                     }
                                 }
                             }
@@ -1635,7 +1649,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.titlebar_opacity_dark = Math.round(value * 10) / 10
+                                        settings.titlebar_opacity_dark = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1644,7 +1658,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.titlebar_opacity_dark
                                     onValueModified: {
-                                        settings.titlebar_opacity_dark = value
+                                        settings.titlebar_opacity_dark = value;
                                     }
                                 }
                             }
@@ -1685,7 +1699,7 @@ ColumnLayout {
                                     checked: settings.toolbar_opacity_override
 
                                     onCheckedChanged: {
-                                        settings.toolbar_opacity_override = checked
+                                        settings.toolbar_opacity_override = checked;
                                     }
                                 }
                             }
@@ -1703,7 +1717,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.toolbar_opacity = Math.round(value * 10) / 10
+                                        settings.toolbar_opacity = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1712,7 +1726,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.toolbar_opacity
                                     onValueModified: {
-                                        settings.toolbar_opacity = value
+                                        settings.toolbar_opacity = value;
                                     }
                                 }
                             }
@@ -1730,7 +1744,7 @@ ColumnLayout {
                                     stepSize: 5
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.toolbar_opacity_dark = Math.round(value * 10) / 10
+                                        settings.toolbar_opacity_dark = Math.round(value * 10) / 10;
                                     }
                                 }
 
@@ -1739,7 +1753,7 @@ ColumnLayout {
                                     to: 100
                                     value: settings.toolbar_opacity_dark
                                     onValueModified: {
-                                        settings.toolbar_opacity_dark = value
+                                        settings.toolbar_opacity_dark = value;
                                     }
                                 }
                             }
@@ -1756,7 +1770,7 @@ ColumnLayout {
                                     checked: settings.sierra_breeze_buttons_color
 
                                     onCheckedChanged: {
-                                        settings.sierra_breeze_buttons_color = checked
+                                        settings.sierra_breeze_buttons_color = checked;
                                     }
                                 }
                             }
@@ -1774,7 +1788,7 @@ ColumnLayout {
                                     checked: settings.klassy_windeco_outline
 
                                     onCheckedChanged: {
-                                        settings.klassy_windeco_outline = checked
+                                        settings.klassy_windeco_outline = checked;
                                     }
                                 }
                             }
@@ -1793,7 +1807,7 @@ ColumnLayout {
                                     text: settings.darker_window_list
 
                                     onAccepted: {
-                                        settings.darker_window_list = text
+                                        settings.darker_window_list = text;
                                     }
                                 }
                                 PlasmaComponents3.ToolButton {
@@ -1848,17 +1862,17 @@ ColumnLayout {
                                     text: "Script"
                                 }
                                 PlasmaComponents3.TextField {
-                                    placeholderText: qsTr("e.g /home/"+username+"/scripts/script.sh")
+                                    placeholderText: qsTr("e.g /home/" + username + "/scripts/script.sh")
                                     Layout.fillWidth: true
                                     text: settings.on_change_hook
                                     onAccepted: {
-                                        settings.on_change_hook = text
+                                        settings.on_change_hook = text;
                                     }
                                 }
                                 PlasmaComponents3.Button {
                                     icon.name: "document-open"
                                     onClicked: {
-                                        fileDialogHookExec.open()
+                                        fileDialogHookExec.open();
                                     }
                                 }
                             }
@@ -1876,7 +1890,7 @@ ColumnLayout {
                                 Layout.alignment: Qt.AlignHCenter
                             }
 
-                            RowLayout{
+                            RowLayout {
                                 PlasmaComponents3.Label {
                                     text: "Startup delay (seconds)"
                                 }
@@ -1892,9 +1906,9 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.startup_delay = parseInt(text)
+                                        settings.startup_delay = parseInt(text);
                                         // reset color selection
-                                        settings.use_startup_delay = settings.startup_delay > 0
+                                        settings.use_startup_delay = settings.startup_delay > 0;
                                     }
                                 }
 
@@ -1930,7 +1944,7 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.main_loop_delay = parseInt(text)
+                                        settings.main_loop_delay = parseInt(text);
                                         // reset color selection
                                     }
                                 }
@@ -1967,7 +1981,7 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.screenshot_delay = parseInt(text)
+                                        settings.screenshot_delay = parseInt(text);
                                         // reset color selection
                                     }
                                 }
@@ -1997,8 +2011,8 @@ ColumnLayout {
                                     checked: settings.manual_fetch
 
                                     onCheckedChanged: {
-                                        settings.manual_fetch = checked
-                                        fullRepresentation.manual_fetch = checked
+                                        settings.manual_fetch = checked;
+                                        fullRepresentation.manual_fetch = checked;
                                     }
                                 }
 
@@ -2017,7 +2031,6 @@ ColumnLayout {
                                 }
                             }
 
-
                             RowLayout {
                                 PlasmaComponents3.Label {
                                     text: "Only use screenshot method"
@@ -2028,7 +2041,7 @@ ColumnLayout {
                                     checked: settings.screenshot_only_mode
 
                                     onCheckedChanged: {
-                                        settings.screenshot_only_mode = checked
+                                        settings.screenshot_only_mode = checked;
                                     }
                                 }
 
@@ -2057,7 +2070,7 @@ ColumnLayout {
                                     checked: settings.once_after_change
 
                                     onCheckedChanged: {
-                                        settings.once_after_change = checked
+                                        settings.once_after_change = checked;
                                     }
                                 }
 
@@ -2106,7 +2119,7 @@ ColumnLayout {
                                     to: 1
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.frame_contrast = value.toFixed(2)
+                                        settings.frame_contrast = value.toFixed(2);
                                     }
                                 }
 
@@ -2124,7 +2137,7 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.frame_contrast = parseFloat(text)
+                                        settings.frame_contrast = parseFloat(text);
                                     }
                                 }
                             }
@@ -2163,7 +2176,7 @@ ColumnLayout {
                                     to: 1
                                     Layout.fillWidth: true
                                     onValueChanged: {
-                                        settings.contrast_level = value.toFixed(2)
+                                        settings.contrast_level = value.toFixed(2);
                                     }
                                 }
 
@@ -2181,7 +2194,7 @@ ColumnLayout {
                                     }
 
                                     onAccepted: {
-                                        settings.contrast_level = parseFloat(text)
+                                        settings.contrast_level = parseFloat(text);
                                     }
                                 }
                             }
@@ -2211,8 +2224,8 @@ ColumnLayout {
                                     model: ["2021", "2025"]
                                     Layout.fillWidth: true
                                     currentValue: settings.spec_version
-                                    onActivated: (index) => {
-                                        settings.spec_version = currentText
+                                    onActivated: index => {
+                                        settings.spec_version = currentText;
                                     }
 
                                     // Prevent starting scrolling on collapsed combobox
@@ -2321,14 +2334,14 @@ ColumnLayout {
                             FileDialog {
                                 id: fileDialogHookExec
                                 onAccepted: {
-                                    mainLayout.settings.on_change_hook = fileDialogHookExec.fileUrl.toString().substring(7)
+                                    mainLayout.settings.on_change_hook = fileDialogHookExec.fileUrl.toString().substring(7);
                                 }
                             }
 
                             FileDialog {
                                 id: fileDialogBackendExec
                                 onAccepted: {
-                                    mainLayout.settings.gui_custom_exec_location = fileDialogBackendExec.fileUrl.toString().substring(7)
+                                    mainLayout.settings.gui_custom_exec_location = fileDialogBackendExec.fileUrl.toString().substring(7);
                                 }
                             }
                         }
@@ -2338,7 +2351,7 @@ ColumnLayout {
                             interval: 20
                             repeat: false
                             onTriggered: {
-                                scrollView.scrollToTop()
+                                scrollView.scrollToTop();
                             }
                         }
 
@@ -2350,30 +2363,30 @@ ColumnLayout {
                             onTriggered: {
                                 // Default colors
                                 // FIXME: for some reason color_last starts with red??
-                                if(settings.color_last==="" || settings.color_last ==="red") {
-                                    settings.color_last = "#d0265c"
+                                if (settings.color_last === "" || settings.color_last === "red") {
+                                    settings.color_last = "#d0265c";
                                 }
-                                if (settings.custom_colors_list_last==="") {
-                                    settings.custom_colors_list_last = "#d0265c #74e448 #eece4f #66a3ef #532066 #297d81 #ccc1c1"
+                                if (settings.custom_colors_list_last === "") {
+                                    settings.custom_colors_list_last = "#d0265c #74e448 #eece4f #66a3ef #532066 #297d81 #ccc1c1";
                                 }
 
                                 var index = 0;
-                                var darkFound = false
-                                var lightFound = false
+                                var darkFound = false;
+                                var lightFound = false;
                                 // set currently selected icon theme here now that it has been loaded
                                 for (var i = 0; i < iconThemeList.count; i++) {
-                                    if (iconThemeList.get(i)["name"]===settings.iconsdark) {
+                                    if (iconThemeList.get(i)["name"] === settings.iconsdark) {
                                         iconThemeDarkCombo.currentIndex = i;
-                                        darkFound = true
+                                        darkFound = true;
                                     }
 
-                                    if (iconThemeList.get(i)["name"]===settings.iconslight) {
+                                    if (iconThemeList.get(i)["name"] === settings.iconslight) {
                                         iconThemeLightCombo.currentIndex = i;
-                                        lightFound = true
+                                        lightFound = true;
                                     }
                                     // stop looking if both are found
                                     if (darkFound && lightFound) {
-                                        break
+                                        break;
                                     }
                                 }
                             }
@@ -2397,7 +2410,7 @@ ColumnLayout {
                     icon.name: 'configure'
                     checked: fullRepresentation.showAdvanced
                     onClicked: {
-                        fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced
+                        fullRepresentation.showAdvanced = !fullRepresentation.showAdvanced;
                     }
                 }
             }

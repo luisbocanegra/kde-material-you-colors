@@ -10,7 +10,7 @@ import Qt.labs.settings 1.0
 import "components" as Components
 
 KCM.SimpleKCM {
-    id:root
+    id: root
     signal configurationChanged
     property string cfg_icon: plasmoid.configuration.icon
     property string defaultIconName: ""
@@ -42,8 +42,7 @@ KCM.SimpleKCM {
             KSvg.FrameSvgItem {
                 id: previewFrame
                 anchors.centerIn: parent
-                imagePath: plasmoid.formFactor === PlasmaCore.Types.Vertical || plasmoid.formFactor === PlasmaCore.Types.Horizontal
-                        ? "widgets/panel-background" : "widgets/background"
+                imagePath: plasmoid.formFactor === PlasmaCore.Types.Vertical || plasmoid.formFactor === PlasmaCore.Types.Horizontal ? "widgets/panel-background" : "widgets/background"
                 width: Kirigami.Units.iconSizes.large + fixedMargins.left + fixedMargins.right
                 height: Kirigami.Units.iconSizes.large + fixedMargins.top + fixedMargins.bottom
 

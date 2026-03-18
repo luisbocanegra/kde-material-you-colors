@@ -7,14 +7,14 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: main
 
-    signal togglePauseMode()
-    signal updatePauseMode()
+    signal togglePauseMode
+    signal updatePauseMode
 
     property bool doSettingsReload: false
     property bool pauseModeMain: true
     property bool lastPauseState: true
     property bool inTray: (plasmoid.containmentDisplayHints & PlasmaCore.Types.ContainmentDrawsPlasmoidHeading)
-    property bool trayExpanded: (expanded && inTray )
+    property bool trayExpanded: (expanded && inTray)
     property string pauseBtnIcon: pauseModeMain ? 'media-playback-start' : 'media-playback-pause'
     property string pauseBtnText: pauseModeMain ? 'Resume automatic theming' : 'Pause automatic theming'
 
@@ -37,8 +37,8 @@ PlasmoidItem {
     // }
 
     function action_pauseBackend() {
-        console.log("action_pauseBackend called")
-        togglePauseMode()
+        console.log("action_pauseBackend called");
+        togglePauseMode();
     }
 
     // Component.onCompleted: function() {
@@ -53,24 +53,24 @@ PlasmoidItem {
             icon.name: pauseBtnIcon
             // cheched:
             onTriggered: {
-                togglePauseMode()
+                togglePauseMode();
             }
         }
     ]
 
     Timer {
+        id: startMe
         interval: trayExpanded ? 100 : 1000
         running: true
         repeat: true
-        id: startMe
-        onTriggered: function() {
+        onTriggered: function () {
             if (pauseModeMain !== lastPauseState) {
                 // Plasmoid.removeAction('pauseBackend')
                 // Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
-                pauseAction.text = pauseBtnText
-                pauseAction.icon.name = pauseBtnIcon
+                pauseAction.text = pauseBtnText;
+                pauseAction.icon.name = pauseBtnIcon;
             }
-            lastPauseState = pauseModeMain
+            lastPauseState = pauseModeMain;
         }
     }
 }
