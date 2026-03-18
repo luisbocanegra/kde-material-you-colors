@@ -6,7 +6,6 @@ import org.kde.ksvg as KSvg
 import org.kde.iconthemes as KIconThemes
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
-import Qt.labs.settings
 import "components" as Components
 
 KCM.SimpleKCM {

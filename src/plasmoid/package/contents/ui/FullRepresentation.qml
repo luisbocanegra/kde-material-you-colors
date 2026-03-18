@@ -524,8 +524,8 @@ ColumnLayout {
                         property var settings: null
 
                         function createSettings() {
-                            var settingsString = 'import Qt.labs.settings 1.0; \
-                                Settings { \
+                            var settingsString = 'import QtCore; \
+                                    Settings { \
                                     category: "CUSTOM"; \
                                     property int monitor: 0; \
                                     property string color; \
@@ -576,7 +576,7 @@ ColumnLayout {
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
-                            settings.fileName = StandardPaths.writableLocation(StandardPaths.HomeLocation).toString().substring(7) + "/.config/kde-material-you-colors/config.conf";
+                            settings.location = StandardPaths.locate(StandardPaths.HomeLocation, "/.config/kde-material-you-colors/config.conf", StandardPaths.LocateFile);
                             customTextColorsCheck.checked = settings.custom_colors_list == "";
                             customColorCheck.checked = settings.color == "";
                         }
