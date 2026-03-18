@@ -1,4 +1,3 @@
-// import Qt.labs.platform
 import QtCore
 import Qt5Compat.GraphicalEffects
 
@@ -8,7 +7,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import "components" as Components
-import org.kde.coreaddons 1.0 as KCoreAddons
+import org.kde.coreaddons as KCoreAddons
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.core as PlasmaCore

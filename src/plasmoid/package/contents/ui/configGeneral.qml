@@ -1,12 +1,12 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.0
-import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
 import org.kde.ksvg as KSvg
 import org.kde.iconthemes as KIconThemes
-import org.kde.kirigami 2.20 as Kirigami
+import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
-import Qt.labs.settings 1.0
+import Qt.labs.settings
 import "components" as Components
 
 KCM.SimpleKCM {
