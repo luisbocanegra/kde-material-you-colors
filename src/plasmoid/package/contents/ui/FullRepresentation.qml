@@ -576,13 +576,15 @@ ColumnLayout {
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
-                            settings.location = StandardPaths.locate(StandardPaths.HomeLocation, "/.config/kde-material-you-colors/config.conf", StandardPaths.LocateFile);
+                            settings.location = StandardPaths.writableLocation(StandardPaths.ConfigLocation) + "/kde-material-you-colors/config.conf";
                             customTextColorsCheck.checked = settings.custom_colors_list == "";
                             customColorCheck.checked = settings.color == "";
                         }
 
                         function destroySettings() {
-                            settings.destroy();
+                            if (settings) {
+                                settings.destroy();
+                            }
                         // settings = null
                         }
 
