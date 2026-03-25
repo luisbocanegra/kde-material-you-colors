@@ -240,3 +240,19 @@ def screenshot_window(window_handle, output_file):
 
     screenshot_taken = return_code == 0
     return screenshot_taken
+
+
+def kde_rounded_corners_reload_effect():
+    try:
+        bus = dbus.SessionBus()
+        kwin = bus.get_object("org.kde.KWin", "/Effects")
+        effects_iface = dbus.Interface(kwin, "org.kde.kwin.Effects")
+        is_loaded = effects_iface.isEffectLoaded("kwin4_effect_shapecorners")
+        if is_loaded:
+            effects_iface.reconfigureEffect("kwin4_effect_shapecorners")
+    except dbus.exceptions.DBusException as e:
+        logging.exception(
+            f"Error reloading rounded corners effect: {e.get_dbus_message()}"
+        )
+    except Exception as e:
+        logging.exception(f"Unexpected error reloading rounded corners effect: {e}")

@@ -573,6 +573,7 @@ ColumnLayout {
                                     property real frame_contrast: 0.2; \
                                     property real contrast_level: 0.0; \
                                     property string spec_version: "2025"; \
+                                    property bool kde_rounded_corners_effect_outline: false; \
                                 }';
 
                             settings = Qt.createQmlObject(settingsString, mainLayout, "settingsObject");
@@ -1790,6 +1791,23 @@ ColumnLayout {
 
                                     onCheckedChanged: {
                                         settings.klassy_windeco_outline = checked;
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.topMargin: Kirigami.Units.mediumSpacing
+                                PlasmaComponents3.Label {
+                                    text: "Tint KDE Rounded Corners desktop effect window outline"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.CheckBox {
+                                    id: enableKdeRoundedCornersEffectOutline
+                                    checked: settings.kde_rounded_corners_effect_outline
+
+                                    onCheckedChanged: {
+                                        settings.kde_rounded_corners_effect_outline = checked;
                                     }
                                 }
                             }
