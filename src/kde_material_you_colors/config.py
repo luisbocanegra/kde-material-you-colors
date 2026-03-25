@@ -183,6 +183,11 @@ class Configs:
             "manual_fetch": [args.manual_fetch, False, 0],
             "fetch_colors": [None, False, 0],
             "spec_version": [args.spec_version, None, 3],
+            "kde_rounded_corners_effect_outline": [
+                args.kde_rounded_corners_effect_outline,
+                None,
+                0,
+            ],
         }
 
     def parse_conf(self):

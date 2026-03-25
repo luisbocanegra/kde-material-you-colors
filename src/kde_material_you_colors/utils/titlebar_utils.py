@@ -4,6 +4,7 @@ import os
 from kde_material_you_colors import settings
 from kde_material_you_colors.utils import math_utils
 from kde_material_you_colors.utils import string_utils
+from kde_material_you_colors.utils import color_utils
 from kde_material_you_colors.schemeconfigs import ThemeConfig
 
 
@@ -272,3 +273,53 @@ def kwin_rule_darker_titlebar(light, darker_window_list):
 
     with open(settings.KWIN_RULES_RC, "w") as configfile:
         kwin_rules.write(configfile, space_around_delimiters=False)
+
+
+def kde_rounded_corners_effect_outline_color(schemes: ThemeConfig, light=None):
+    if light:
+        outline = string_utils.tup2str(
+            color_utils.hex2rgb(
+                schemes.get_material_schemes()["schemes"]["light"]["primaryFixed"]
+            )
+        )
+        outline_inactive = string_utils.tup2str(
+            color_utils.hex2rgb(
+                schemes.get_material_schemes()["schemes"]["light"]["surfaceDim"]
+            )
+        )
+    else:
+        outline = string_utils.tup2str(
+            color_utils.hex2rgb(
+                schemes.get_material_schemes()["schemes"]["dark"]["primaryFixed"]
+            )
+        )
+        outline_inactive = string_utils.tup2str(
+            color_utils.hex2rgb(
+                schemes.get_material_schemes()["schemes"]["dark"]["surfaceBright"]
+            )
+        )
+
+    kwinrc = configparser.ConfigParser()
+    # preserve case
+    kwinrc.optionxform = str
+    if os.path.exists(settings.KWIN_RC):
+        try:
+            kwinrc.read(settings.KWIN_RC)
+            if "Round-Corners" not in kwinrc:
+                kwinrc.add_section("Round-Corners")
+            kwinrc["Round-Corners"]["OutlineColor"] = outline
+            kwinrc["Round-Corners"]["InactiveOutlineColor"] = outline_inactive
+            kwinrc["Round-Corners"]["ActiveOutlineAlpha"] = "255"
+            kwinrc["Round-Corners"]["InactiveOutlineAlpha"] = "255"
+
+            logging.info(
+                "Applying KDE Rounded Corners desktop effect window outline color"
+            )
+            with open(settings.KWIN_RC, "w", encoding="utf-8") as configfile:
+                kwinrc.write(configfile, space_around_delimiters=False)
+        except Exception as e:
+            logging.error(
+                f"Error writing KDE Rounded Corners desktop effect window outline color:\n{e}"
+            )
+    else:
+        logging.warning(f"KWin config '{settings.KWIN_RC}' not found, skipping")

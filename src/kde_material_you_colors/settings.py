@@ -54,6 +54,7 @@ LOG_FILE_PATH = HOME + "/.local/share/kde-material-you-colors/"
 LOG_FILE_NAME = "kde-material-you-colors.log"
 MATERIAL_YOU_COLORS_JSON = f"{TEMPDIR}/kde-material-you-colors-" + USERNAME + ".json"
 KWIN_RULES_RC = HOME + "/.config/kwinrulesrc"
+KWIN_RC = HOME + "/.config/kwinrc"
 PIDFILE_PATH = f"{TEMPDIR}/kde-material-you-colors-{USERNAME}.pid"
 SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNAME}.png"
 KWIN_DESKTOP_ID_JSCRIPT = (

@@ -386,6 +386,13 @@ def main():
         metavar="<version>",
     )
 
+    parser.add_argument(
+        "--kde-rounded-corners-effect-outline",
+        action="store_true",
+        help="Tint KDE Rounded Corners desktop effect window outline",
+        default=None,
+    )
+
     # Get commandline arguments
     args = parser.parse_args()
     # Check for one shot arguments
