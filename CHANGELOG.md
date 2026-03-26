@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.1.0...v2.2.0) (2026-03-26)
+
+
+### Features
+
+* tint KDE Rounded Corners effect window outline ([ba906b4](https://github.com/luisbocanegra/kde-material-you-colors/commit/ba906b4de9d1f8b82a8de50ab357c45b72e376d6))
+
+
+### Bug Fixes
+
+* use correct default contrast values ([a6d1c2d](https://github.com/luisbocanegra/kde-material-you-colors/commit/a6d1c2d513bf4cc4d85eb4eec130cac69edf8452))
+* widget doesn't create configuration file ([652a55a](https://github.com/luisbocanegra/kde-material-you-colors/commit/652a55a95b39e1e0c3f909ceed184c7a821397f7))
+
 ## [2.1.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.0.2...v2.1.0) (2026-03-23)
 
 
