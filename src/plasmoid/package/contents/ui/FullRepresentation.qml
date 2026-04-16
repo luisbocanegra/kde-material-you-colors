@@ -586,7 +586,6 @@ ColumnLayout {
                             if (settings) {
                                 settings.destroy();
                             }
-                        // settings = null
                         }
 
                         function saveCustomColorsList() {
@@ -1252,24 +1251,6 @@ ColumnLayout {
                                 text: "Color scheme"
                                 Layout.alignment: Qt.AlignHCenter
                             }
-
-                            // RowLayout {
-                            //     PlasmaComponents3.Label {
-                            //         text: "Variant"
-                            //         Layout.alignment: Qt.AlignLeft
-                            //     }
-                            //     PlasmaComponents3.ComboBox {
-                            //         model: schemeVariantsModel
-                            //         Layout.fillWidth: true
-                            //         textRole: "text"
-                            //         valueRole: "value"
-                            //         currentIndex: settings.scheme_variant
-
-                            //         onCurrentIndexChanged: {
-                            //             settings.scheme_variant = model.get(currentIndex)["value"]
-                            //         }
-                            //     }
-                            // }
 
                             Flow {
                                 Layout.preferredWidth: mainLayout.width
@@ -2242,7 +2223,7 @@ ColumnLayout {
                                 PlasmaComponents3.ComboBox {
                                     model: ["2021", "2025"]
                                     Layout.fillWidth: true
-                                    currentValue: settings.spec_version
+                                    currentIndex: indexOfValue(settings.spec_version)
                                     onActivated: index => {
                                         settings.spec_version = currentText;
                                     }
