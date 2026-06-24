@@ -1,10 +1,59 @@
 import logging
 import subprocess
-import time
 import re
+import threading
+import queue
 import dbus
 import dbus.lowlevel
+import dbus.service
+from dbus.mainloop.glib import DBusGMainLoop
+from gi.repository import GLib
 from kde_material_you_colors import settings
+
+DBusGMainLoop(set_as_default=True)
+
+
+class WindowIdReceiver(dbus.service.Object):
+    def __init__(self, bus, loop, result_queue):
+        self.loop = loop
+        self.bus = bus
+        self.result_queue = result_queue
+        self._quit = False
+        self.bus.request_name(settings.DBUS_NAME, dbus.bus.NAME_FLAG_REPLACE_EXISTING)
+        super().__init__(self.bus, "/")
+
+    @dbus.service.method(settings.DBUS_NAME)
+    def result(self, text):
+        self.result_queue.put(text)
+        self.cleanup()
+
+    def cleanup(self):
+        if self._quit:
+            return
+        self.remove_from_connection()
+
+        try:
+            dbus_daemon = self.bus.get_object(
+                "org.freedesktop.DBus", "/org/freedesktop/DBus"
+            )
+            dbus_interface = dbus.Interface(dbus_daemon, "org.freedesktop.DBus")
+            dbus_interface.ReleaseName(settings.DBUS_NAME)
+        except dbus.exceptions.DBusException as e:
+            logging.exception(f"Error releasing name: {e.get_dbus_message()}")
+
+        self.loop.quit()
+        self._quit = True
+
+
+def run_dbus_service(result_queue):
+    loop = GLib.MainLoop()
+    bus = dbus.SessionBus()
+
+    service = WindowIdReceiver(bus, loop, result_queue)
+    GLib.timeout_add(2000, service.cleanup)
+
+    logging.debug("D-Bus service waiting for window id")
+    loop.run()
 
 
 def reload():
@@ -100,7 +149,7 @@ def load_desktop_window_id_script():
         # keep only the id
         script_id = re.sub(r"\D", "", result.stdout.strip())
 
-        # logging.debug(f"Script loaded id: {command}")
+        logging.debug(f"Script loaded id: {script_id}")
 
         if script_id.isdigit():
             return script_id
@@ -149,8 +198,7 @@ for (var i = 0; i < windows.length; i++) {{
 // it seems the list of windows is sorted by the screens positions(?)
 // and (at least on my machine) this works for any arrangement
 //desktopWindows.sort((b,a) => (a.pos.x - b.pos.x))
-// FIXME: Use callDBus + dbus service instead
-console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
+callDBus("{settings.DBUS_NAME}", "/", "{settings.DBUS_NAME}", "result", desktopWindows[{screen}].id.toString());
 """
     with open(settings.KWIN_DESKTOP_ID_JSCRIPT, "w", encoding="utf-8") as js:
         js.write(script_str)
@@ -163,56 +211,28 @@ console.error("KMYC-desktop-window-id:", desktopWindows[{screen}].id)
         raise
 
     try:
+        result_queue: queue.Queue = queue.Queue()
+        t = threading.Thread(target=run_dbus_service, args=(result_queue,))
+        t.start()
+
         # run the script
         bus = dbus.SessionBus()
         kwin = bus.get_object("org.kde.KWin", "/Scripting/Script" + script_id)
         script = dbus.Interface(kwin, "org.kde.kwin.Script")
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         script.run()
-        time.sleep(0.1)
         try:
-            command = [
-                "journalctl",
-                "--since",
-                timestamp,
-                "--user",
-                "-u",
-                "plasma-kwin_wayland.service",
-                "-u",
-                "plasma-kwin_x11.service",
-                "--output",
-                "cat",
-                "-g",
-                "KMYC-desktop-window-id",
-            ]
+            win_id = result_queue.get(block=True, timeout=2)
+        except queue.Empty:
+            win_id = None
 
-            # Execute the command using subprocess.run
-            result = subprocess.run(
-                command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                check=True,
-            )
-
-            # The output is now stored in result.stdout
-            output = result.stdout.strip()
-            win_id = output.split(" ").pop()
-        except subprocess.CalledProcessError as e:
-            error = f"Script id {script_id} didn't return a desktop id for screen {screen}: {e}"
-            # Replace time to make notify show the error only one time
-            cmd = str(e).replace(timestamp, "TIME_NOW")
-            logging.exception(error)
-            script.stop()
-            raise subprocess.CalledProcessError(e.returncode, cmd, e.output, e.stderr)
+        t.join()
+        script.stop()
     except dbus.exceptions.DBusException as e:
         msg = f"Error running script with id {script_id}: {e.get_dbus_message()}"
         logging.exception(msg)
         raise
-    else:
-        script.stop()
 
-    # logging.debug(f"HANDLE: {win_id}")
+    logging.debug(f"Desktop window id: {win_id}")
     return win_id
 
 
