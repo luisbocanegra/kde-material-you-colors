@@ -60,6 +60,7 @@ SCREENSHOT_PATH = f"{TEMPDIR}/kde-material-you-colors-desktop-screenshot-{USERNA
 KWIN_DESKTOP_ID_JSCRIPT = (
     f"{TEMPDIR}/kde-material-you-colors-desktop-win-id-{USERNAME}.js"
 )
+DBUS_NAME = "luisbocanegra.kdematerialyou.colors"
 KONSOLE_ACTIVE_PROFILE_NAME = (
     f"{TEMPDIR}/kde-material-you-colors-konsole-profile-{USERNAME}"
 )
