@@ -24,6 +24,7 @@ dependencies = [
     "pillow>=9.2.0",
     "materialyoucolor>=3.0.2",
     "python-magic>=0.4.27",
+    "PyGObject>=3.56.3",
 ]
 
 [project.scripts]
