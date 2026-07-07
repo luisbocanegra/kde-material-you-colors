@@ -409,7 +409,7 @@ def main():
     from .utils import plasma_utils
     from . import apply_themes
 
-    logging.info(f"###### STARTED NEW SESSION v{settings.__version__} ######")
+    logging.info(f"###### STARTED NEW SESSION {settings.__version__} ######")
     logging.debug(f"Installed in {settings.PKG_INSTALL_DIR}")
 
     with open(settings.PIDFILE_PATH, "w", encoding="utf-8") as pidfile:

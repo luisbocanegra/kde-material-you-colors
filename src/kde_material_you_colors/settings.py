@@ -8,7 +8,11 @@ import shutil
 import sysconfig
 from kde_material_you_colors.utils.utils import find_executable
 
-__version__ = importlib.metadata.version("kde_material_you_colors")
+try:
+    __version__ = f"v{importlib.metadata.version("kde_material_you_colors")}"
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "[dev]"
+
 USERNAME = getpass.getuser()
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
