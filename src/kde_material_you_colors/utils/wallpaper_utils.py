@@ -149,53 +149,55 @@ class WallpaperReader:
         if self._source:
             return
 
+        wallpaper_config = None
         try:
             wallpaper_config = get_wallpaper_config(self._monitor)
         except dbus.DBusException as e:
-            logging.error(e.get_dbus_message())
+            logging.warning(f"Could not get wallpaper config from D-Bus: {e.get_dbus_message()}")
             self._error = e.get_dbus_message()
-            return
+            # Do not return here, fallback to screenshot instead
         except Exception as e:
-            logging.error(e)
+            logging.warning(f"Could not get wallpaper config: {e}")
             self._error = str(e)
-            return
+            # Do not return here, fallback to screenshot instead
 
-        plugin = wallpaper_config["wallpaperPlugin"]
+        if wallpaper_config:
+            plugin = wallpaper_config.get("wallpaperPlugin")
+            self._plugin = plugin
 
-        # special case for picture of the day plugin that requires a
-        # directory, provider and sometimes a category
-        self._plugin = plugin
-        if plugin == settings.PICTURE_OF_DAY_PLUGIN:
-            self._type = "image"
-            potd = get_picture_of_the_day(wallpaper_config)
-            if potd:
-                self._source = potd
-                return
+            # special case for picture of the day plugin that requires a
+            # directory, provider and sometimes a category
+            if plugin == settings.PICTURE_OF_DAY_PLUGIN:
+                self._type = "image"
+                potd = get_picture_of_the_day(wallpaper_config)
+                if potd:
+                    self._source = potd
+                    return
 
-        # wallpaper plugin that stores current image
-        wallpaper = get_wallpaper_image(wallpaper_config, self._light)
-        if wallpaper:
-            self._type = "image"
-            # if a single image wasn't returned show the error
-            # and continue with screenshot method
-            if isinstance(wallpaper, list):
-                self._error = f"Could not get compatible image from plugin {plugin}, using screenshot method"
-            else:
-                self._source = wallpaper
-                return
+            # wallpaper plugin that stores current image
+            wallpaper = get_wallpaper_image(wallpaper_config, self._light)
+            if wallpaper:
+                self._type = "image"
+                # if a single image wasn't returned show the error
+                # and continue with screenshot method
+                if isinstance(wallpaper, list):
+                    self._error = f"Could not get compatible image from plugin {plugin}, using screenshot method"
+                else:
+                    self._source = wallpaper
+                    return
 
-        # wallpaper plugin that stores current color
-        color = wallpaper_config.get("color", wallpaper_config.get("Color"))
-        if color:
-            self._type = "color"
-            color = color_utils.color2hex(int(color[0]))
+            # wallpaper plugin that stores current color
+            color = wallpaper_config.get("color", wallpaper_config.get("Color"))
             if color:
-                self._source = color
-                return
+                self._type = "color"
+                color = color_utils.color2hex(int(color[0]))
+                if color:
+                    self._source = color
+                    return
 
-            error = f"Could not resolve color from {plugin}: {wallpaper_config}"
-            logging.error(error)
-            self._error = error
+                error = f"Could not resolve color from {plugin}: {wallpaper_config}"
+                logging.error(error)
+                self._error = error
 
         # if everything fails, try taking a screenshot of the desktop
         self.screenshot(self._skip_screenshot)
@@ -249,13 +251,13 @@ def get_wallpaper_config(monitor=0):
             bus.get_object("org.kde.plasmashell", "/PlasmaShell"),
             dbus_interface="org.kde.PlasmaShell",
         )
-        dbus_output = plasma.wallpaper(monitor)
+        dbus_output = plasma.wallpaper(dbus.UInt32(monitor))
         # print(dbus_output)
     except dbus.DBusException as e:
-        logging.exception(e.get_dbus_message(), "\n", e)
+        logging.warning(f"Wallpaper DBus API error: {e.get_dbus_message()}")
         raise
     except Exception as e:
-        logging.error(e)
+        logging.error(f"Unexpected error getting wallpaper config: {e}")
         raise
 
     try:
