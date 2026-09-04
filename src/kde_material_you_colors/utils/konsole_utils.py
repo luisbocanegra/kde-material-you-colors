@@ -204,7 +204,7 @@ def reload_profile(profile: str):
                         tmp.write(new_profile)
 
             except dbus.exceptions.DBusException as e:
-                logging.exception(f"{e}")
+                logging.warning(f"Konsole profile switch skipped (access denied or unavailable): {e.get_dbus_message()}")
             except (FileNotFoundError, subprocess.CalledProcessError) as e:
                 logging.exception(f"{e}")
 
