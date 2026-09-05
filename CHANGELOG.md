@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.1](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.2.0...v2.2.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* **konsole:** demote AccessDenied traceback to single-line warning ([9407f29](https://github.com/luisbocanegra/kde-material-you-colors/commit/9407f29fe2ed5a0cadaac43bc0b207dd39cd9d53))
+* **wallpaper:** strict dbus typing, log fixes and screenshot fallback ([0b4d150](https://github.com/luisbocanegra/kde-material-you-colors/commit/0b4d1502eca20bd12eb7b310eb8293a19030f397))
+* widget not loading on Qt version 6.9 or older ([7242129](https://github.com/luisbocanegra/kde-material-you-colors/commit/72421299789ce863d902dec38daaadaddc378b2e))
+
 ## [2.2.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.1.0...v2.2.0) (2026-03-26)
 
 
