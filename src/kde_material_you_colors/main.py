@@ -7,7 +7,6 @@ from kde_material_you_colors import settings
 from kde_material_you_colors.utils import utils
 from kde_material_you_colors.logging_config import MyLogFormatter
 
-
 logger = MyLogFormatter.set_format()
 
 
@@ -453,8 +452,8 @@ def main():
         notify.send_notification(head, cont)
         logging.warning("%s, %s", head, cont)
     if wallpaper.error:
-        notify.send_notification("Could not get wallpaper", str(wallpaper.error))
-        logging.error(f"Could not get wallpaper {str(wallpaper.error)}")
+        notify.send_notification("Could not get wallpaper:", str(wallpaper.error))
+        logging.error(f"Could not get wallpaper: {str(wallpaper.error)}")
 
     counter = 0
 
@@ -499,7 +498,7 @@ def main():
             logging.info("Fetching colors in current wallpaper...")
             counter = 0
 
-        if not config.read("manual_fetch") or (
+        if (not config.read("manual_fetch") and not first_run) or (
             fetch_watcher.has_changed() and fetch_watcher.value
         ):
             wallpaper.update(config, skip_screenshot=counter != 0)

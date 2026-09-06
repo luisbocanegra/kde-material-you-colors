@@ -122,13 +122,13 @@ class WallpaperReader:
             self._error = str(e)
             return
 
-        self._source = (
-            settings.SCREENSHOT_PATH
-            if os.path.exists(settings.SCREENSHOT_PATH)
-            else None
-        )
-
-        if not screenshot_taken:
+        if screenshot_taken:
+            self._source = (
+                settings.SCREENSHOT_PATH
+                if os.path.exists(settings.SCREENSHOT_PATH)
+                else None
+            )
+        else:
             error = "Could not take Desktop screenshot"
             logging.error(error)
             self._error = error
