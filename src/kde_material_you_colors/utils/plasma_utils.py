@@ -1,6 +1,7 @@
 import configparser
 import logging
 import os
+import shutil
 import subprocess
 from kde_material_you_colors import settings
 from kde_material_you_colors.utils import file_utils
@@ -56,24 +57,13 @@ def apply_color_schemes(light=False):
         universal_newlines=True,
     ).strip()
     logging.info(colorscheme_out)
+
     # Get hash of the updated theme
     colors_hash = file_utils.get_file_sha1(color_scheme + ".colors")
-    # Update ColorScheme hash in kdeglobals file
-    if os.path.exists(settings.KDE_GLOBALS) and colors_hash is not None:
-        kdeglobals = configparser.ConfigParser()
-        kdeglobals.optionxform = str
-        try:
-            kdeglobals.read(settings.KDE_GLOBALS)
-            if "General" not in kdeglobals:
-                kdeglobals.add_section("General")
 
-            general = kdeglobals["General"]
-            general["ColorSchemeHash"] = colors_hash
-
-            with open(settings.KDE_GLOBALS, "w", encoding="utf-8") as configfile:
-                kdeglobals.write(configfile, space_around_delimiters=False)
-        except Exception as e:
-            logging.error(f"Error:\n{e}")
+    # Update ColorSchemeHash using KDE configuration utility
+    if colors_hash is not None:
+        write_kde_config("ColorSchemeHash", colors_hash)
 
 
 def set_icons(icons_light, icons_dark, light=False):
@@ -108,19 +98,21 @@ def set_icons(icons_light, icons_dark, light=False):
 
 
 def kde_globals_light():
-    kdeglobals = configparser.ConfigParser()
-    if os.path.exists(settings.KDE_GLOBALS):
-        try:
-            kdeglobals.read(settings.KDE_GLOBALS)
-            if "General" in kdeglobals:
-                general = kdeglobals["General"]
-                if "ColorScheme" in general:
-                    if "MaterialYouLight" in general["ColorScheme"]:
-                        return True
-        except Exception as e:
-            logging.error(f"Error:\n{e}")
+    """Return True for Material You Light, False for Dark, None if unknown."""
+    color_scheme = read_kde_config("ColorScheme")
 
-    return False
+    if color_scheme is None:
+        logging.warning("Could not detect KDE color scheme")
+        return None
+
+    if "MaterialYouLight" in color_scheme:
+        return True
+
+    if "MaterialYouDark" in color_scheme:
+        return False
+
+    logging.info(f"Unknown KDE color scheme: {color_scheme}")
+    return None
 
 
 def get_initial_mode():
@@ -142,15 +134,7 @@ def get_initial_mode():
         "Couldn't find theme by name, trying to resolve theme from last stored hash..."
     )
 
-    current_theme_hash = None
-    kdeglobals = configparser.ConfigParser()
-    kdeglobals.optionxform = str
-    try:
-        kdeglobals.read(settings.KDE_GLOBALS)
-        if "General" in kdeglobals and "ColorSchemeHash" in kdeglobals["General"]:
-            current_theme_hash = kdeglobals["General"]["ColorSchemeHash"]
-    except Exception as e:
-        logging.error(f"Error:\n{e}")
+    current_theme_hash = read_kde_config("ColorSchemeHash")
 
     if current_theme_hash is not None:
         logging.debug(f"Config file hash: {current_theme_hash}")
@@ -223,10 +207,82 @@ def plasma_darker_header(schemes):
 def update_light_mode(config: Configs, light_mode_watcher: Watcher, first_run: bool):
     if config.read("light") is not None:
         light_mode_watcher.set_value(config.read("light"))
-    # try to get the initial theme with from hash
+
     elif first_run is True:
         light_mode_watcher.set_value(plasma_utils.get_initial_mode())
+
     else:
-        light_mode_watcher.set_value(plasma_utils.kde_globals_light())
+        detected_mode = plasma_utils.kde_globals_light()
+
+        if detected_mode is not None:
+            light_mode_watcher.set_value(detected_mode)
 
     return light_mode_watcher
+
+
+def read_kde_config(key):
+    """Read a value from KDE configuration using KConfig."""
+    executable = shutil.which("kreadconfig6")
+
+    if executable is None:
+        logging.error(
+            "kreadconfig6 not found. Please install KDE Frameworks 6 KConfig."
+        )
+        return None
+
+    try:
+        result = subprocess.run(
+            [
+                executable,
+                "--file", "kdeglobals",
+                "--group", "General",
+                "--key", key,
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        value = result.stdout.strip()
+        return value if value else None
+
+    except subprocess.SubprocessError as e:
+        logging.error(f"Error reading KDE config key '{key}': {e}")
+        return None
+    except OSError as e:
+        logging.error(f"Could not execute kreadconfig6: {e}")
+        return None
+
+
+def write_kde_config(key, value):
+    """Write a value to KDE configuration using KConfig."""
+    executable = shutil.which("kwriteconfig6")
+
+    if executable is None:
+        logging.error(
+            "kwriteconfig6 not found. Please install KDE Frameworks 6 KConfig."
+        )
+        return False
+
+    try:
+        subprocess.run(
+            [
+                executable,
+                "--file", "kdeglobals",
+                "--group", "General",
+                "--key", key,
+                "--notify",
+                str(value),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return True
+
+    except subprocess.SubprocessError as e:
+        logging.error(f"Error writing KDE config key '{key}': {e}")
+        return False
+    except OSError as e:
+        logging.error(f"Could not execute kwriteconfig6: {e}")
+        return False

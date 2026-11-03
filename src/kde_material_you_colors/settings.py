@@ -43,7 +43,6 @@ PICTURE_OF_DAY_UNSPLASH_PROVIDER = "unsplash"
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = "1065976"
 PICTURE_OF_DAY_DEFAULT_PROVIDER = "apod"  # astronomy picture of the day
 PICTURE_OF_DAY_BING_PROVIDER = "bing"
-KDE_GLOBALS = HOME + "/.config/kdeglobals"
 BREEZE_RC = HOME + "/.config/breezerc"
 SBE_RC = HOME + "/.config/sierrabreezeenhancedrc"
 KLASSY_RC = HOME + "/.config/klassy/klassyrc"
