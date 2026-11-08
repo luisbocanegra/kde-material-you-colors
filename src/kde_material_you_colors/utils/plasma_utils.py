@@ -1,7 +1,6 @@
 import configparser
 import logging
 import os
-import shutil
 import subprocess
 from kde_material_you_colors import settings
 from kde_material_you_colors.utils import file_utils
@@ -221,68 +220,51 @@ def update_light_mode(config: Configs, light_mode_watcher: Watcher, first_run: b
 
 
 def read_kde_config(key):
-    """Read a value from KDE configuration using KConfig."""
-    executable = shutil.which("kreadconfig6")
+    """Read a value from KDE configuration.
 
-    if executable is None:
-        logging.error(
-            "kreadconfig6 not found. Please install KDE Frameworks 6 KConfig."
-        )
-        return None
+    User configuration takes precedence over default configuration.
+    """
+    defaults_path = settings.KDE_GLOBALS_DEFAULTS
+    user_path = settings.KDE_GLOBALS
+
+    config = configparser.ConfigParser(interpolation=None)
+    config.optionxform = str
 
     try:
-        result = subprocess.run(
-            [
-                executable,
-                "--file", "kdeglobals",
-                "--group", "General",
-                "--key", key,
-            ],
-            capture_output=True,
-            text=True,
-            check=True,
+        config.read(
+            [defaults_path, user_path],
+            encoding="utf-8",
         )
 
-        value = result.stdout.strip()
-        return value if value else None
+        value = config.get("General", key, fallback=None)
 
-    except subprocess.SubprocessError as e:
+        return value.strip() if value else None
+
+    except (configparser.Error, OSError) as e:
         logging.error(f"Error reading KDE config key '{key}': {e}")
-        return None
-    except OSError as e:
-        logging.error(f"Could not execute kreadconfig6: {e}")
         return None
 
 
 def write_kde_config(key, value):
-    """Write a value to KDE configuration using KConfig."""
-    executable = shutil.which("kwriteconfig6")
+    """Write a value to the user KDE configuration."""
+    user_path = settings.KDE_GLOBALS
 
-    if executable is None:
-        logging.error(
-            "kwriteconfig6 not found. Please install KDE Frameworks 6 KConfig."
-        )
-        return False
+    config = configparser.ConfigParser(interpolation=None)
+    config.optionxform = str
 
     try:
-        subprocess.run(
-            [
-                executable,
-                "--file", "kdeglobals",
-                "--group", "General",
-                "--key", key,
-                "--notify",
-                str(value),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        config.read(user_path, encoding="utf-8")
+
+        if not config.has_section("General"):
+            config.add_section("General")
+
+        config.set("General", key, str(value))
+
+        with open(user_path, "w", encoding="utf-8") as configfile:
+            config.write(configfile, space_around_delimiters=False)
+
         return True
 
-    except subprocess.SubprocessError as e:
+    except (configparser.Error, OSError) as e:
         logging.error(f"Error writing KDE config key '{key}': {e}")
-        return False
-    except OSError as e:
-        logging.error(f"Could not execute kwriteconfig6: {e}")
         return False

@@ -95,8 +95,6 @@ Install instructions: <https://software.opensuse.org//download.html?project=home
 
     **For Plasma 6**
 
-    Make sure the KDE Frameworks 6 KConfig command-line utilities (`kreadconfig6` and `kwriteconfig6`) are installed and available in your `PATH`.
-
     ```sh
     pipx install kde-material-you-colors
     pipx inject kde-material-you-colors pywal16
