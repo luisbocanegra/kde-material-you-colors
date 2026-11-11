@@ -16,6 +16,10 @@ except importlib.metadata.PackageNotFoundError:
 USERNAME = getpass.getuser()
 USER_HAS_PYWAL = importlib.util.find_spec("pywal") is not None
 HOME = str(Path.home())
+XDG_CONFIG_HOME = os.environ.get(
+    "XDG_CONFIG_HOME",
+    os.path.join(HOME, ".config"),
+)
 TEMPDIR = tempfile.gettempdir()
 PKG_INSTALL_DIR = os.path.dirname(__file__)
 scheme = (
@@ -43,7 +47,12 @@ PICTURE_OF_DAY_UNSPLASH_PROVIDER = "unsplash"
 PICTURE_OF_DAY_UNSPLASH_DEFAULT_CATEGORY = "1065976"
 PICTURE_OF_DAY_DEFAULT_PROVIDER = "apod"  # astronomy picture of the day
 PICTURE_OF_DAY_BING_PROVIDER = "bing"
-KDE_GLOBALS = HOME + "/.config/kdeglobals"
+KDE_GLOBALS = os.path.join(XDG_CONFIG_HOME, "kdeglobals")
+KDE_GLOBALS_DEFAULTS = os.path.join(
+    XDG_CONFIG_HOME,
+    "kdedefaults",
+    "kdeglobals",
+)
 BREEZE_RC = HOME + "/.config/breezerc"
 SBE_RC = HOME + "/.config/sierrabreezeenhancedrc"
 KLASSY_RC = HOME + "/.config/klassy/klassyrc"
