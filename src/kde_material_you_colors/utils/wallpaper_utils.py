@@ -153,7 +153,9 @@ class WallpaperReader:
         try:
             wallpaper_config = get_wallpaper_config(self._monitor)
         except dbus.DBusException as e:
-            logging.warning(f"Could not get wallpaper config from D-Bus: {e.get_dbus_message()}")
+            logging.warning(
+                f"Could not get wallpaper config from D-Bus: {e.get_dbus_message()}"
+            )
             self._error = e.get_dbus_message()
             # Do not return here, fallback to screenshot instead
         except Exception as e:
@@ -186,18 +188,18 @@ class WallpaperReader:
                     self._source = wallpaper
                     return
 
-            # wallpaper plugin that stores current color
-            color = wallpaper_config.get("color", wallpaper_config.get("Color"))
-            if color:
-                self._type = "color"
-                color = color_utils.color2hex(int(color[0]))
+            if plugin == settings.PLAIN_COLOR_PLUGIN:
+                color = wallpaper_config.get("color", wallpaper_config.get("Color"))
                 if color:
-                    self._source = color
-                    return
+                    self._type = "color"
+                    color = color_utils.color2hex(int(color[0]))
+                    if color:
+                        self._source = color
+                        return
 
-                error = f"Could not resolve color from {plugin}: {wallpaper_config}"
-                logging.error(error)
-                self._error = error
+                    error = f"Could not resolve color from {plugin}: {wallpaper_config}"
+                    logging.error(error)
+                    self._error = error
 
         # if everything fails, try taking a screenshot of the desktop
         self.screenshot(self._skip_screenshot)
@@ -243,8 +245,16 @@ def get_desktop_screenshot(screen=0):
     return screenshot_taken
 
 
-def get_wallpaper_config(monitor=0):
-    dbus_output = ""
+def get_wallpaper_config(monitor=0) -> dbus.types.Dictionary:
+    """Get the wallpaper configuration for a given monitor
+
+    Args:
+        monitor (int, optional): The monitor index to get the wallpaper configuration for
+
+    Returns:
+        dbus.types.Dictionary: wallpaper configuration
+    """
+    dbus_output = dbus.types.Dictionary({}, signature="sv")
     try:
         bus = dbus.SessionBus()
         plasma = dbus.Interface(
@@ -252,7 +262,6 @@ def get_wallpaper_config(monitor=0):
             dbus_interface="org.kde.PlasmaShell",
         )
         dbus_output = plasma.wallpaper(dbus.UInt32(monitor))
-        # print(dbus_output)
     except dbus.DBusException as e:
         logging.warning(f"Wallpaper DBus API error: {e.get_dbus_message()}")
         raise
@@ -260,16 +269,14 @@ def get_wallpaper_config(monitor=0):
         logging.error(f"Unexpected error getting wallpaper config: {e}")
         raise
 
-    try:
-        if len(dbus_output) < 1:
-            raise ValueError(f"Wallpaper DBus API says: {dbus_output}")
-        return dbus_output
-    except ValueError as e:
-        logging.exception(e)
-        raise
+    if len(dbus_output) < 1:
+        logging.warning(
+            f"Wallpaper DBus API returned empty configuration for monitor {monitor}"
+        )
+    return dbus_output
 
 
-def get_picture_of_the_day(wallpaper_config):
+def get_picture_of_the_day(wallpaper_config: dbus.types.Dictionary):
     potd_cache_dir = settings.PICTURE_OF_DAY_PLUGIN_CACHE_DIR
     img_provider = wallpaper_config["Provider"]
     provider_category = wallpaper_config.get("Category")
@@ -297,11 +304,11 @@ def get_picture_of_the_day(wallpaper_config):
     return potd_image if os.path.exists(potd_image) else None
 
 
-def get_wallpaper_image(wallpaper_config, light):
+def get_wallpaper_image(wallpaper_config: dbus.types.Dictionary, light: bool):
 
     wallpaper = wallpaper_config.get("Image", wallpaper_config.get("image"))
-
-    if wallpaper is None:
+    # wallpaper dbus api returns default value which is an empty string
+    if wallpaper is None or wallpaper == "":
         return None
 
     wallpaper = wallpaper.replace("file://", "")
