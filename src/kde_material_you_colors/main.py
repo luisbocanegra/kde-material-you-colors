@@ -534,12 +534,6 @@ def main():
         if wallpaper.is_screenshot():
             stop_apply = config.read("once_after_change")
 
-        if apply and wallpaper.source and stop_apply is False and not first_run:
-            if counter == 0:
-                logging.info(f"{wallpaper}")
-                apply_themes.apply(config, wallpaper, light_mode_watcher.value)
-                apply = False
-
         if group1:
             if wallpaper.error:
                 notify.send_notification(
@@ -575,6 +569,10 @@ def main():
                 stop_apply = False
                 logging.info(f"{wallpaper}")
                 apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+        elif apply and wallpaper.source and stop_apply is False and counter == 0:
+            logging.info(f"{wallpaper}")
+            apply_themes.apply(config, wallpaper, light_mode_watcher.value)
+            apply = False
 
         if wallpaper.is_screenshot() and not config.read("manual_fetch"):
             if target_cycles > counter:
@@ -584,7 +582,7 @@ def main():
         elif not wallpaper.is_screenshot():
             counter = 0
 
-        # print("counter:", counter, wallpaper)
+        # print(f"counter: {counter}, wallpaper: {wallpaper}")
 
         time.sleep(config.read("main_loop_delay"))
         first_run = False
