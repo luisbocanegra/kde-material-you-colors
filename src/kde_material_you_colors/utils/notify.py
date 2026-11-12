@@ -17,5 +17,5 @@ def send_notification(heading="", content="", icon=None):
         notify.Notify(
             "KDE Material You Colors", 0, icon or "", heading, content, [], hints, -1
         )
-    except dbus.exceptions.DBusException as e:
+    except Exception as e:
         logging.warning(f"An error occurred while sending the notification: {e}")

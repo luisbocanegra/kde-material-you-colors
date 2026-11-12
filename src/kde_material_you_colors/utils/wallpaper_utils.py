@@ -99,9 +99,9 @@ class WallpaperReader:
         return o
 
     def screenshot(self, skip_screenshot):
-        self._type = "screenshot"
         screenshot_taken = False
         if skip_screenshot:
+            self._type = "screenshot"
             self._source = (
                 settings.SCREENSHOT_PATH
                 if os.path.exists(settings.SCREENSHOT_PATH)
@@ -132,6 +132,9 @@ class WallpaperReader:
             error = "Could not take Desktop screenshot"
             logging.error(error)
             self._error = error
+            return
+
+        self._type = "screenshot"
 
     def reload(self):
         """Reload current wallpaper"""

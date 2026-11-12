@@ -7,7 +7,6 @@ from kde_material_you_colors import settings
 from kde_material_you_colors.utils import utils
 from kde_material_you_colors.logging_config import MyLogFormatter
 
-
 logger = MyLogFormatter.set_format()
 
 
@@ -558,7 +557,11 @@ def main():
             if wallpaper.source:
                 apply = True
 
-        if plugin_watcher.changed or config_watcher.changed or light_mode_watcher.changed:
+        if (
+            plugin_watcher.changed
+            or config_watcher.changed
+            or light_mode_watcher.changed
+        ):
             # ignore when fetch_colors is set back to false
             if fetch_watcher.has_changed() and fetch_watcher.value is False:
                 counter = 0
