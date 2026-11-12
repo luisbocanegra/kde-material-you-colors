@@ -576,8 +576,10 @@ def main():
                 counter += 1
             else:
                 counter = 0
+        elif not wallpaper.is_screenshot():
+            counter = 0
 
-        # print("counter:", counter)
+        # print("counter:", counter, wallpaper)
 
         time.sleep(config.read("main_loop_delay"))
         first_run = False
