@@ -498,7 +498,7 @@ def main():
             logging.info("Fetching colors in current wallpaper...")
             counter = 0
 
-        if not config.read("manual_fetch") or (
+        if (not config.read("manual_fetch") and first_run is False) or (
             fetch_watcher.has_changed() and fetch_watcher.value
         ):
             wallpaper.update(config, skip_screenshot=counter != 0)
@@ -534,7 +534,7 @@ def main():
         if wallpaper.is_screenshot():
             stop_apply = config.read("once_after_change")
 
-        if apply and wallpaper.source and stop_apply is False or first_run:
+        if apply and wallpaper.source and stop_apply is False and not first_run:
             if counter == 0:
                 logging.info(f"{wallpaper}")
                 apply_themes.apply(config, wallpaper, light_mode_watcher.value)
@@ -558,12 +558,17 @@ def main():
                 apply = True
 
         if (
-            plugin_watcher.changed
+            first_run
+            or plugin_watcher.changed
             or config_watcher.changed
             or light_mode_watcher.changed
         ):
             # ignore when fetch_colors is set back to false
-            if fetch_watcher.has_changed() and fetch_watcher.value is False:
+            if (
+                not first_run
+                and fetch_watcher.has_changed()
+                and fetch_watcher.value is False
+            ):
                 counter = 0
             else:
                 apply = False
