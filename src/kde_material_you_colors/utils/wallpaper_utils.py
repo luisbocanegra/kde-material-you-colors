@@ -315,6 +315,10 @@ def get_wallpaper_image(wallpaper_config: dbus.types.Dictionary, light: bool):
         return None
 
     wallpaper = wallpaper.replace("file://", "")
+
+    if not os.path.exists(wallpaper):
+        return None
+
     if not os.path.isdir(wallpaper):
         return wallpaper
 
