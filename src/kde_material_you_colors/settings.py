@@ -9,7 +9,7 @@ import sysconfig
 from kde_material_you_colors.utils.utils import find_executable
 
 try:
-    __version__ = f"v{importlib.metadata.version("kde_material_you_colors")}"
+    __version__ = f"{importlib.metadata.version("kde_material_you_colors")}"
 except importlib.metadata.PackageNotFoundError:
     __version__ = "[dev]"
 
