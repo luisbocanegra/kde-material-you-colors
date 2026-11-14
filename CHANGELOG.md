@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.3.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.2.0...v2.3.0) (2026-11-14)
+
+
+### Features
+
+* option to change dark/light plasma style ([d8476cf](https://github.com/luisbocanegra/kde-material-you-colors/commit/d8476cf4188a62b9008de5d9ef15aa3c7870aa98)), closes [#291](https://github.com/luisbocanegra/kde-material-you-colors/issues/291)
+* option to hide widget when used outside system tray ([f315962](https://github.com/luisbocanegra/kde-material-you-colors/commit/f315962193d06584720bc15f072ac25b3d7d11eb)), closes [#198](https://github.com/luisbocanegra/kde-material-you-colors/issues/198)
+
+
+### Bug Fixes
+
+* colors applying twice on startup ([9d2f838](https://github.com/luisbocanegra/kde-material-you-colors/commit/9d2f838073b3c21807d4b2f94d7a346296d75137))
+* colors not applying the first time the desktop screenshot changes ([c4a660f](https://github.com/luisbocanegra/kde-material-you-colors/commit/c4a660f9021ca9e7dce530112d6c4d04a2fa6fba))
+* default wallpaper returns configured background color ([616f647](https://github.com/luisbocanegra/kde-material-you-colors/commit/616f647b54c70efd6b6e698a919934c6a2442cf8))
+* handle non-existent wallpaper path ([ac72e3f](https://github.com/luisbocanegra/kde-material-you-colors/commit/ac72e3fcb120b2cef393d9f5d04b21223fa37b64))
+* **konsole:** demote AccessDenied traceback to single-line warning ([9407f29](https://github.com/luisbocanegra/kde-material-you-colors/commit/9407f29fe2ed5a0cadaac43bc0b207dd39cd9d53))
+* survive plasmashell restart (again) ([959b38e](https://github.com/luisbocanegra/kde-material-you-colors/commit/959b38e8d883c9115234d2db26b9e36637326b6c))
+* wallpaper change detection after returning from screenshot mode ([760df57](https://github.com/luisbocanegra/kde-material-you-colors/commit/760df57db0d900ad908491d94a0dc8e58024262e))
+* **wallpaper:** strict dbus typing, log fixes and screenshot fallback ([0b4d150](https://github.com/luisbocanegra/kde-material-you-colors/commit/0b4d1502eca20bd12eb7b310eb8293a19030f397))
+* widget not loading on Qt version 6.9 or older ([7242129](https://github.com/luisbocanegra/kde-material-you-colors/commit/72421299789ce863d902dec38daaadaddc378b2e))
+
 ## [2.2.0](https://github.com/luisbocanegra/kde-material-you-colors/compare/v2.1.0...v2.2.0) (2026-03-26)
 
 
