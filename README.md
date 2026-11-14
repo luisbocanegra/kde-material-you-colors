@@ -4,11 +4,16 @@
 
 [![AUR version](https://img.shields.io/aur/version/kde-material-you-colors?logo=archlinux&labelColor=2d333b&style=for-the-badge&color=7ad3ff)](https://aur.archlinux.org/packages/kde-material-you-colors)
 [![PyPI - Version](https://img.shields.io/pypi/v/kde-material-you-colors?logo=python&labelColor=2d333b&style=for-the-badge&color=ffde7a)](https://pypi.org/project/kde-material-you-colors/)
-[![KDE Store](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&logo=kde&label=Plasmoid&labelColor=2d333b&style=for-the-badge&color=7ad3ff)](https://store.kde.org/p/2136963)
-[![OBS Fedora 43](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_43%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2043&labelColor=2d333b&style=for-the-badge&color=7acaff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
-[![OBS Fedora Rawhide](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_Rawhide%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%20Rawhide&labelColor=2d333b&style=for-the-badge&color=7acaff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
-[![OBS openSUSE Tumbleweed](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FopenSUSE_Tumbleweed%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=opensuse&label=openSUSE%20Tumbleweed&labelColor=2d333b&style=for-the-badge&color=c1ff7a)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
-[![OBS openSUSE Slowroll](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FopenSUSE_Slowroll%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=opensuse&label=openSUSE%20Slowroll&labelColor=2d333b&style=for-the-badge&color=c1ff7a)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![KDE Store](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fluisbocanegra%2Fkde-material-you-colors%2Fmain%2Fsrc%2Fplasmoid%2Fpackage%2Fmetadata.json&query=KPlugin.Version&logo=kde&label=KDE%20Widget&labelColor=2d333b&style=for-the-badge&color=b0ffb9)](https://store.kde.org/p/2136963)
+[![OBS Fedora 40](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_40%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2040&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora 41](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_41%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2041&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora 42](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_42%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2042&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora 43](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_43%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2043&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora 44](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_44%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2044&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora 45](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_45%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%2045&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS Fedora Rawhide](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FFedora_Rawhide%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=fedora&label=Fedora%20Rawhide&labelColor=2d333b&style=for-the-badge&color=9cc7ff)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS openSUSE Tumbleweed](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FopenSUSE_Tumbleweed%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=opensuse&label=openSUSE%20Tumbleweed&labelColor=2d333b&style=for-the-badge&color=d2ff8e)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
+[![OBS openSUSE Slowroll](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fapi.opensuse.org%2Fpublic%2Fbuild%2Fhome%3Aluisbocanegra%2FopenSUSE_Slowroll%2Fx86_64%2Fkde-material-you-colors%2F_buildinfo&query=%2Fbuildinfo%2Fversrel%2Ftext()&logo=opensuse&label=openSUSE%20Slowroll&labelColor=2d333b&style=for-the-badge&color=d2ff8e)](https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors)
 
 Automatically generate light/dark color themes for KDE (and pywal if installed) from your current wallpaper, using [@T-Dynamos Python implementation](https://github.com/T-Dynamos/materialyoucolor-python) of Google's [Material Color Utilities](https://github.com/material-foundation/material-color-utilities)
 
@@ -16,7 +21,7 @@ Automatically generate light/dark color themes for KDE (and pywal if installed) 
 
 [![Screenshots](https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif)](https://user-images.githubusercontent.com/15076387/188578458-8171e42b-f36c-44c1-9eb0-506c301d4f16.gif)
 
-If you enjoy using the plugin consider sponsoring or donating so I can dedicate more time to maintain and improve this and [my other projects](https://github.com/luisbocanegra?tab=repositories&q=&type=source&language=&sort=stargazers).
+If you enjoy using the project consider sponsoring or donating to support the maintenance of this and [my other projects](https://github.com/luisbocanegra?tab=repositories&q=&type=source&language=&sort=stargazers).
 
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-%2329313C?logo=githubsponsors&style=for-the-badge)](https://github.com/sponsors/luisbocanegra)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-supporter?logo=ko-fi&logoColor=%23ffffff&color=%23467BEB&style=for-the-badge)](https://ko-fi.com/luisbocanegra)
@@ -25,6 +30,8 @@ If you enjoy using the plugin consider sponsoring or donating so I can dedicate 
 [![Patreon](https://img.shields.io/badge/Patreon-%23000000?logo=patreon&logoColor=%23ffffff&style=for-the-badge)](https://patreon.com/luisbocanegra?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
 
 ## Join our Discord / Matrix
+
+Help/Support/Discussion about my projects
 
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/ZqD75dzKTe)
 [![Discord](https://img.shields.io/badge/Matrix-%23121212.svg?style=for-the-badge&logo=matrix&logoColor=white)](https://matrix.to/#/#kde-plasma-smart-video-wallpaper-reborn:matrix.org)
@@ -68,17 +75,17 @@ If you enjoy using the plugin consider sponsoring or donating so I can dedicate 
 
 ### Arch Linux
 
-<https://aur.archlinux.org/packages/kde-material-you-colors>
-
 ```sh
 yay -S kde-material-you-colors
 ```
 
+> Maintained by me at <https://aur.archlinux.org/packages/kde-material-you-colors>
+
 ### openSUSE Build Service packages (Fedora, openSUSE)
 
-Maintained with @pallaswept and me at <https://build.opensuse.org/package/show/home:luisbocanegra/kde-material-you-colors>
-
 Install instructions: <https://software.opensuse.org//download.html?project=home%3Aluisbocanegra&package=kde-material-you-colors>
+
+> Packaged by me at <https://build.opensuse.org/package/show/home:luisbocanegra/kde-material-you-colors>
 
 ### Manual install
 
@@ -121,7 +128,7 @@ Install instructions: <https://software.opensuse.org//download.html?project=home
     ./install-screenshot-helper.sh
     ```
 
-    **NOTE:** Helper is now installed with `/usr` prefix, reboot if you get `The process is not authorized to take a screenshot` error
+    **NOTE:** Reboot if you get `The process is not authorized to take a screenshot` error
 
     **Plasma 5**
 
@@ -151,7 +158,7 @@ Run `kde-material-you-colors -h` to see the list of available options (Flags tak
 
 ### Starting/Stopping Desktop entries
 
-**If not installed by your package manager**, run `kde-material-you-colors -cl`
+**If not installed by your install method**, run `kde-material-you-colors -cl`
 
 - To start the program launch **KDE Material You Colors** from your applications list
 - To stop, launch **Stop KDE Material You Colors** from your applications list
@@ -190,7 +197,10 @@ There are some key differences:
 - Can also apply colors to Konsole and pywal (both from wallpaper and custom ones)
 - Colors comparison <https://imgur.com/a/a28uZka> (kde-material-you-colors top, default tint option bottom)
 
-**Q.** Why there are duplicated color schemes in **System Settings**
+> [!IMPORTANT]
+> Make sure "**System Settings**" > "**Colors**" is set to "**Accent color from color scheme**"
+
+**Q.** Why are there  duplicated color schemes in **System Settings**?
 
 To update color with `plasma-apply-colorscheme` (utility provided by KDE developers), the file containing the new color scheme must have a different name than the current one, to workaround that, this program creates two color scheme files with different names, then applies one after the other. As a result you end up with duplicated color schemes and maybe some lag while updating schemes.
 
@@ -206,8 +216,8 @@ Try enabling **Only use screenshot method** from the widget **Advanced settings*
 
 The wallpaper is obtained in the following order:
 
-- First, uses the [Plasma Desktop Scripting API](https://develop.kde.org/docs/plasma/scripting/api/) to read Wallpaper plugin configuration.
-- If the previous fails, the screenshot helper (if installed) is used
+1. Uses the [Plasma Wallpaper DBus API](https://invent.kde.org/plasma/plasma-workspace/-/blob/54bce18146ea3e9d4dd02e05a9f4bf0ee8a6c646/shell/dbus/org.kde.PlasmaShell.xml) to read Wallpaper plugin configuration.
+2. If that does not return a usable image or color, the screenshot helper (if installed) is used.
 
 The backend uses the [KWin Scripting API](https://develop.kde.org/docs/plasma/kwin/api/) and calls the screenshot helper to take a Screenshot of the Desktop view using the [KWin's Screenshot plugin](https://github.com/KDE/kwin/tree/master/src/plugins/screenshot)
 
