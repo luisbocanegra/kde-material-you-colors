@@ -96,7 +96,7 @@ def main():
     parser.add_argument(
         "--iconslight",
         type=str,
-        help="Icons theme for Dark scheme",
+        help="Icons theme for Light scheme",
         default=None,
         metavar="<icon-theme-name>",
     )
@@ -104,9 +104,25 @@ def main():
     parser.add_argument(
         "--iconsdark",
         type=str,
-        help="Icons theme for Light scheme",
+        help="Icons theme for Dark scheme",
         default=None,
         metavar="<icon-theme-name>",
+    )
+
+    parser.add_argument(
+        "--plasma-style-dark",
+        type=str,
+        help="Plasma style for Dark scheme. You can get the available plasma styles with plasma-apply-desktoptheme --list-themes",
+        default=None,
+        metavar="<theme-name>",
+    )
+
+    parser.add_argument(
+        "--plasma-style-light",
+        type=str,
+        help="Plasma style for Light scheme",
+        default=None,
+        metavar="<theme-name>",
     )
 
     parser.add_argument(

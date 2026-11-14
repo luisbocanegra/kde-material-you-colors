@@ -52,6 +52,11 @@ def apply(config: Configs, wallpaper: WallpaperReader, dark_light):
         config.read("iconsdark"),
         dark_light,
     )
+    plasma_utils.set_plasma_style(
+        config.read("plasma_style_light"),
+        config.read("plasma_style_dark"),
+        dark_light,
+    )
     if config.read("sierra_breeze_buttons_color"):
         titlebar_utils.sierra_breeze_button_colors(schemes, dark_light)
         needs_kwin_reload = True
