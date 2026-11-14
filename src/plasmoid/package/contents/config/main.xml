@@ -4,7 +4,10 @@
 
     <group name="General">
         <entry name="icon" type="String">
-          <default></default>
-      </entry>
+        <default></default>
+        </entry>
+        <entry name="hideWidget" type="Bool">
+        <default>false</default>
+        </entry>
     </group>
 </kcfg>

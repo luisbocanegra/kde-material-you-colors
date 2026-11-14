@@ -368,6 +368,22 @@ ColumnLayout {
                     }
                 }
                 PlasmaComponents3.ToolButton {
+                    id: hideWidgetBtn
+                    display: PlasmaComponents3.AbstractButton.IconOnly
+                    checkable: false
+                    icon.name: Plasmoid.configuration.hideWidget ? "view-visible-off-symbolic" : "view-visible-off-symbolic"
+                    text: Plasmoid.configuration.hideWidget ? 'Show Widget' : 'Hide widget (visible in Edit Mode)'
+
+                    onClicked: {
+                        Plasmoid.configuration.hideWidget = !Plasmoid.configuration.hideWidget;
+                        Plasmoid.configuration.writeConfig();
+                    }
+
+                    PlasmaComponents3.ToolTip {
+                        text: hideWidgetBtn.text
+                    }
+                }
+                PlasmaComponents3.ToolButton {
                     id: pauseBtn
                     display: PlasmaComponents3.AbstractButton.IconOnly
                     checkable: false

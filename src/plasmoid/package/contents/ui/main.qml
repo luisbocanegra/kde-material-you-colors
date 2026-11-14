@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -17,14 +18,34 @@ PlasmoidItem {
     property bool trayExpanded: (expanded && inTray)
     property string pauseBtnIcon: pauseModeMain ? 'media-playback-start' : 'media-playback-pause'
     property string pauseBtnText: pauseModeMain ? 'Resume automatic theming' : 'Pause automatic theming'
+    readonly property bool hideWidget: Plasmoid.configuration.hideWidget
+    property bool onDesktop: Plasmoid.location === PlasmaCore.Types.Floating
+    property bool inEditMode: Plasmoid.containment?.corona?.editMode ?? false
 
+    function updateWidgetStatus() {
+        Plasmoid.status = main.hideWidget ? PlasmaCore.Types.HiddenStatus : PlasmaCore.Types.ActiveStatus;
+    }
+    onHideWidgetChanged: {
+        updateWidgetStatus();
+    }
+    Component.onCompleted: updateWidgetStatus()
     compactRepresentation: CompactRepresentation {
+        icon: Plasmoid.configuration.icon || Qt.resolvedUrl("../icons/icon.svg")
         anchors.fill: parent
     }
 
     fullRepresentation: FullRepresentation {
         id: fullRepresentationComponent
         parentMain: main
+        visible: !main.hideWidget || !main.onDesktop
+    }
+
+    Plasmoid.backgroundHints: {
+        if (main.inEditMode || !hideWidget || !main.onDesktop) {
+            return PlasmaCore.Types.DefaultBackground;
+        } else {
+            return PlasmaCore.Types.NoBackground;
+        }
     }
 
     // MouseArea {
@@ -45,18 +66,29 @@ PlasmoidItem {
     //     Plasmoid.setAction('pauseBackend', pauseBtnText , pauseBtnIcon)
     // }
 
-    Plasmoid.contextualActions: [
-        PlasmaCore.Action {
-            id: pauseAction
-            text: pauseBtnText
-            checkable: false
-            icon.name: pauseBtnIcon
-            // cheched:
-            onTriggered: {
-                togglePauseMode();
-            }
+    PlasmaCore.Action {
+        id: hideWidgetAction
+        text: (Plasmoid.configuration.hideWidget ? i18n("Show") : i18n("Hide")) + " widget"
+        icon.name: "visibility-symbolic"
+        onTriggered: {
+            Plasmoid.configuration.hideWidget = !Plasmoid.configuration.hideWidget;
+            Plasmoid.configuration.writeConfig();
         }
-    ]
+        visible: !main.inTray
+    }
+
+    PlasmaCore.Action {
+        id: pauseAction
+        text: pauseBtnText
+        checkable: false
+        icon.name: pauseBtnIcon
+        // cheched:
+        onTriggered: {
+            togglePauseMode();
+        }
+    }
+
+    Plasmoid.contextualActions: [hideWidgetAction, pauseAction]
 
     Timer {
         id: startMe
