@@ -87,9 +87,14 @@ ColumnLayout {
     // - discard cursor themes
     // Non escaped version: find /usr/share/icons ~/.local/share/icons -maxdepth 1 -type d -exec test -f "{}/index.theme" \; ! -exec grep -q '^Hidden=true' {}/index.theme \; -exec sh -c 'test "$(find "$1" -maxdepth 1 -type d | wc -l)" -gt 2' _ {} \; -printf '%p\n' | while read line; do echo "$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')"; done | sort --field-separator=, --key=2n -k2,2
     property string getIconThemesCommand: "find /usr/share/icons " + homeDir + "/.local/share/icons -maxdepth 1 -type d -exec test -f \"{}/index.theme\" \\; ! -exec grep -q '^Hidden=true' {}/index.theme \\; -exec sh -c 'test \"$(find \"$1\" -maxdepth 1 -type d | wc -l)\" -gt 2' _ {} \\; -printf '%p\\n' | while read line; do echo \"$(basename $line),$(grep '^Name=' $line/index.theme | sed 's/^Name=//')\"; done | sort --field-separator=, --key=2n -k2,2"
+    property string getPlasmaStylesCommand: "plasma-apply-desktoptheme --list-themes"
 
     ListModel {
         id: iconThemeList
+    }
+
+    ListModel {
+        id: plasmaStyleList
     }
 
     ListModel {
@@ -293,41 +298,52 @@ ColumnLayout {
         }
     }
 
-    P5Support.DataSource {
-        id: getIconThemes
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: function (source, data) {
-            var exitCode = data["exit code"];
-            var exitStatus = data["exit status"];
-            var stdout = data["stdout"];
-            var stderr = data["stderr"];
-            exited(source, exitCode, exitStatus, stdout, stderr);
-            disconnectSource(source); // cmd finished
+    RunCommand {
+        id: runCmd
+        Component.onCompleted: {
+            runCmd.exec(fullRepresentation.getIconThemesCommand, output => {
+                if (output.exitCode !== 0) {
+                    return;
+                }
+                fullRepresentation.parseIconThemes(output.stdout);
+                runCmd.exec(fullRepresentation.getPlasmaStylesCommand, output => {
+                    if (output.exitCode !== 0) {
+                        return;
+                    }
+                    fullRepresentation.parsePlasmaStyles(output.stdout);
+                });
+            });
         }
-
-        function exec() {
-            getIconThemes.connectSource(getIconThemesCommand);
-        }
-
-        signal exited(string cmd, int exitCode, int exitStatus, string stdout, string stderr)
     }
 
-    Connections {
-        target: getIconThemes
-        function onExited(cmd, exitCode, exitStatus, stdout, stderr) {
-            iconThemeList.clear();
-            var lines = stdout.trim().split("\n");
-            for (let i = 0; i < lines.length; i++) {
-                var line = lines[i].toString().split(",");
-                // discard lines that are not actual themes e.g default,
-                if (line.length === 2 && line[1] !== '') {
-                    iconThemeList.append({
-                        "name": line[0],
-                        "label": line[1]
-                    });
-                }
+    function parseIconThemes(stdout) {
+        var lines = stdout.trim().split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].toString().split(",");
+            // discard lines that are not actual themes e.g default,
+            if (line.length === 2 && line[1] !== '') {
+                iconThemeList.append({
+                    "name": line[0],
+                    "label": line[1]
+                });
+            }
+        }
+    }
+
+    function parsePlasmaStyles(stdout) {
+        var lines = stdout.trim().split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].toString().trim().split(" ");
+            console.log(line);
+            if (line[0] !== "*") {
+                continue;
+            }
+            const theme = line[1];
+            console.log(theme);
+            if (theme) {
+                plasmaStyleList.append({
+                    "name": theme
+                });
             }
         }
     }
@@ -508,7 +524,6 @@ ColumnLayout {
                             createSettings();
                             console.log("@@@@@ BACKEND RUNNING:", backendRunning);
                             readMaterialYouData.exec();
-                            getIconThemes.exec();
                             statupTimer.start();
                         }
 
@@ -561,6 +576,8 @@ ColumnLayout {
                                     property bool disable_konsole: false; \
                                     property string iconslight; \
                                     property string iconsdark; \
+                                    property string plasma_style_light; \
+                                    property string plasma_style_dark; \
                                     property int konsole_opacity: 100; \
                                     property int konsole_opacity_dark: 100; \
                                     property bool konsole_blur: false; \
@@ -1472,6 +1489,75 @@ ColumnLayout {
 
                                     onCheckedChanged: {
                                         settings.konsole_blur = checked;
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.preferredWidth: mainLayout.width
+                                height: 1
+                                color: dividerColor
+                                opacity: dividerOpacity
+                            }
+
+                            PlasmaExtras.Heading {
+                                level: 1
+                                text: "Plasma style"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Dark"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.ComboBox {
+                                    id: plasmaStyleDarkCombo
+                                    model: plasmaStyleList
+                                    textRole: "name"
+                                    Layout.fillWidth: true
+                                    valueRole: "name"
+                                    currentIndex: 0
+
+                                    onCurrentIndexChanged: {
+                                        settings.plasma_style_dark = model.get(currentIndex)["name"];
+                                    }
+
+                                    // Prevent starting scrolling on collapsed combobox
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onWheel: {}
+                                        onClicked: parent.popup.open()
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                PlasmaComponents3.Label {
+                                    text: "Light"
+                                    Layout.alignment: Qt.AlignLeft
+                                }
+
+                                PlasmaComponents3.ComboBox {
+                                    id: plasmaStyleLightCombo
+                                    model: plasmaStyleList
+                                    textRole: "name"
+                                    Layout.fillWidth: true
+                                    valueRole: "name"
+                                    currentIndex: 0
+
+                                    onCurrentIndexChanged: {
+                                        settings.plasma_style_light = model.get(currentIndex)["name"];
+                                    }
+
+                                    // Prevent starting scrolling on collapsed combobox
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onWheel: {}
+                                        onClicked: parent.popup.open()
                                     }
                                 }
                             }

@@ -146,6 +146,8 @@ class Configs:
             "ncolor": [args.ncolor, 0, 1],
             "iconslight": [args.iconslight, None, 3],
             "iconsdark": [args.iconsdark, None, 3],
+            "plasma_style_light": [args.plasma_style_light, None, 3],
+            "plasma_style_dark": [args.plasma_style_dark, None, 3],
             "pywal": [args.pywal, None, 0],
             "pywal_light": [self._pywal_light, None, 0],
             "light_blend_multiplier": [args.lbmultiplier, 1, 2],

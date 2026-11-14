@@ -84,6 +84,7 @@ USER_LOCAL_BIN_PATH = HOME + "/.local/bin/"
 IN_PATH = bool(shutil.which("kde-material-you-colors"))
 CHANGE_ICONS_PROGRAM = "plasma-changeicons"
 PLASMA_CHANGEICONS_PATH = find_executable(CHANGE_ICONS_PROGRAM)
+PLASMA_APPLY_DESKTOP_THEME_BIN = "plasma-apply-desktoptheme"
 
 SCREENSHOT_HELPER = "kde-material-you-colors-screenshot-helper"
 SCREENSHOT_HELPER_PATH = find_executable(SCREENSHOT_HELPER)

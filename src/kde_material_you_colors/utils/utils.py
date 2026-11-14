@@ -335,13 +335,15 @@ def color_text(message: str):
         # programs, commands
         progname = sys.argv[0].split(" ")[0].split("/")[-1]
         match_progname = [
-            "(" + progname + ")",
+            f"({progname})",
             "( konsole)",
+            "(plasma-apply-desktoptheme)",
+            "( kde-material-you-colors)",
             r"([\s](.*)[a-zA-Z]-[\s][a-zA-Z](.+?)[\s])",
         ]
         line = re.sub(
             "|".join(match_progname),
-            rf"{settings.TERM_COLOR_GRE}{settings.TERM_STY_BOLD}\1\2\3{settings.TERM_STY_RESET}",
+            rf"{settings.TERM_COLOR_GRE}{settings.TERM_STY_BOLD}\1\2\3\4\5\6{settings.TERM_STY_RESET}",
             line,
         )
 

@@ -96,6 +96,31 @@ def set_icons(icons_light, icons_dark, light=False):
             )
 
 
+def set_plasma_style(style_light, style_dark, light=False):
+    """Set plasma style with plasma-apply-desktoptheme
+
+    Args:
+        style_light (str): Light mode plasma style
+        style_dark (str): Dark mode plasma style
+        light (bool): wether using light or dark mode
+    """
+
+    style = style_light if light else style_dark
+
+    if style:
+        try:
+            output = subprocess.check_output(
+                [settings.PLASMA_APPLY_DESKTOP_THEME_BIN, style],
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            ).strip()
+            logging.info(f"Plasma style changed to {style}: {output}")
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Error changing plasma style to {style}: {e.output}")
+    else:
+        if not style:
+            logging.debug("No plasma style theme specified.")
+
 def kde_globals_light():
     """Return True for Material You Light, False for Dark, None if unknown."""
     color_scheme = read_kde_config("ColorScheme")
